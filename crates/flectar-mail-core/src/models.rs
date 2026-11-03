@@ -2643,7 +2643,11 @@ mod tests {
         assert_eq!(defaults.mail_sidebar_width, 230);
         // Settings stored before these preferences existed still load.
         let mut json = serde_json::to_value(&defaults).unwrap();
-        for key in ["unifiedMailbox", "readingPanePosition", "readingPaneBottomPercent"] {
+        for key in [
+            "unifiedMailbox",
+            "readingPanePosition",
+            "readingPaneBottomPercent",
+        ] {
             json.as_object_mut().unwrap().remove(key);
         }
         let old: Settings = serde_json::from_value(json.clone()).unwrap();
@@ -2658,14 +2662,21 @@ mod tests {
 
     #[test]
     fn invalid_certificate_choice_parses_and_defaults_to_reject() {
-        assert_eq!(InvalidCertificates::parse("once"), InvalidCertificates::Once);
-        assert_eq!(InvalidCertificates::parse("always"), InvalidCertificates::Always);
-        assert_eq!(InvalidCertificates::parse("junk"), InvalidCertificates::Reject);
+        assert_eq!(
+            InvalidCertificates::parse("once"),
+            InvalidCertificates::Once
+        );
+        assert_eq!(
+            InvalidCertificates::parse("always"),
+            InvalidCertificates::Always
+        );
+        assert_eq!(
+            InvalidCertificates::parse("junk"),
+            InvalidCertificates::Reject
+        );
         assert!(!InvalidCertificates::Reject.allows_invalid());
-        let stored: MailConnectionSettings = serde_json::from_str(
-            r#"{"incomingSecurity":"tls","smtpSecurity":"tls"}"#,
-        )
-        .unwrap();
+        let stored: MailConnectionSettings =
+            serde_json::from_str(r#"{"incomingSecurity":"tls","smtpSecurity":"tls"}"#).unwrap();
         assert_eq!(stored.invalid_certificates, InvalidCertificates::Reject);
     }
 

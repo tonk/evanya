@@ -215,7 +215,10 @@ fn smtp_auth(auth: &SmtpAuth, username: &str) -> (Credentials, Vec<Mechanism>) {
 async fn tls_handshake(cfg: &AccountConfig, tcp: TcpStream) -> Result<MailStream> {
     let connector = net::tls::connector(
         &cfg.settings.connection.trusted_certificate_pem,
-        cfg.settings.connection.invalid_certificates.allows_invalid(),
+        cfg.settings
+            .connection
+            .invalid_certificates
+            .allows_invalid(),
     )?;
     let tls = net::tls::handshake(&connector, tcp, &cfg.smtp_host)
         .await

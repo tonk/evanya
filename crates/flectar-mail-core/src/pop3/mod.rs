@@ -204,8 +204,11 @@ impl Session {
     }
 
     async fn open(server: &Server<'_>, user: &str, password: &str) -> Result<Self> {
-        let connector = net::tls::connector(server.trusted_certificate_pem, server.allow_invalid_certificates)
-            .map_err(|error| Error::Tls(error.to_string()))?;
+        let connector = net::tls::connector(
+            server.trusted_certificate_pem,
+            server.allow_invalid_certificates,
+        )
+        .map_err(|error| Error::Tls(error.to_string()))?;
         let tcp = net::connect_tcp(server.host, server.port).await?;
         let stream = match server.security {
             ConnectionSecurity::Tls => tls_handshake(&connector, tcp, server.host).await?,

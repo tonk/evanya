@@ -196,7 +196,9 @@ async fn fetch(token: &str, sync_token: Option<&str>) -> Result<Changes> {
         }
         if !status.is_success() {
             if status == reqwest::StatusCode::BAD_REQUEST && body.contains("EXPIRED_SYNC_TOKEN") {
-                return Err(CoreError::NotFound("expired Google contacts sync token".into()));
+                return Err(CoreError::NotFound(
+                    "expired Google contacts sync token".into(),
+                ));
             }
             let detail = http_body::single_line_excerpt(&body, 300);
             return Err(super::err(format!(
@@ -235,8 +237,13 @@ pub async fn sync_account(
 ) -> Result<bool> {
     let book_id = db
         .write(move |conn| {
-            let id =
-                repo::carddav::upsert_addressbook(conn, account_id, BOOK_URL, Some(BOOK_NAME), true)?;
+            let id = repo::carddav::upsert_addressbook(
+                conn,
+                account_id,
+                BOOK_URL,
+                Some(BOOK_NAME),
+                true,
+            )?;
             repo::carddav::ensure_default(conn, account_id, id)?;
             Ok(id)
         })
@@ -369,7 +376,10 @@ pub fn person_to_vcard(person: &Person) -> String {
     }
     // The primary value first, so it is the preferred one.
     fn ordered(values: &[Typed]) -> Vec<&Typed> {
-        let mut values: Vec<&Typed> = values.iter().filter(|v| clean(&v.value).is_some()).collect();
+        let mut values: Vec<&Typed> = values
+            .iter()
+            .filter(|v| clean(&v.value).is_some())
+            .collect();
         values.sort_by_key(|value| !value.metadata.primary);
         values
     }
@@ -409,10 +419,21 @@ pub fn person_to_vcard(person: &Person) -> String {
             fields.join(";")
         ));
     }
-    if let Some(org) = person.organizations.iter().find(|org| clean(&org.name).is_some()) {
-        lines.push(format!("ORG:{}", escape(clean(&org.name).unwrap_or_default())));
+    if let Some(org) = person
+        .organizations
+        .iter()
+        .find(|org| clean(&org.name).is_some())
+    {
+        lines.push(format!(
+            "ORG:{}",
+            escape(clean(&org.name).unwrap_or_default())
+        ));
     }
-    if let Some(title) = person.organizations.iter().find_map(|org| clean(&org.title)) {
+    if let Some(title) = person
+        .organizations
+        .iter()
+        .find_map(|org| clean(&org.title))
+    {
         lines.push(format!("TITLE:{}", escape(title)));
     }
     for url in person.urls.iter().filter_map(|url| clean(&url.value)) {
@@ -465,9 +486,8 @@ mod tests {
 
     #[test]
     fn a_person_without_a_name_uses_the_email_address() {
-        let person = person(
-            r#"{"resourceName":"people/c2","emailAddresses":[{"value":"x@example.com"}]}"#,
-        );
+        let person =
+            person(r#"{"resourceName":"people/c2","emailAddresses":[{"value":"x@example.com"}]}"#);
         let card = Card::parse(person_to_vcard(&person)).expect("valid vCard");
         assert_eq!(card.record().name, "x@example.com");
     }
