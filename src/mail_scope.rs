@@ -139,14 +139,35 @@ impl Scope {
     /// zero/multiple-account cases keep their meaning.
     #[must_use]
     pub(crate) fn visible_for(self, accounts: &[Account]) -> Self {
+        self.visible_for_with(accounts, unified_mailbox_enabled())
+    }
+
+    /// [`Self::visible_for`] with the Unified mailbox preference given. With
+    /// it off, the first account's own mailbox stands in for a unified one.
+    #[must_use]
+    pub(crate) fn visible_for_with(self, accounts: &[Account], unified_enabled: bool) -> Self {
         match (self, accounts) {
-            (Self::Unified(mailbox), [account]) => Self::Account {
-                account_id: account.id,
-                mailbox,
-            },
+            (Self::Unified(mailbox), [account, ..]) if accounts.len() == 1 || !unified_enabled => {
+                Self::Account {
+                    account_id: account.id,
+                    mailbox,
+                }
+            }
             _ => self,
         }
     }
+}
+
+static UNIFIED_MAILBOX_ENABLED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(true);
+
+/// The user's "Unified mailbox" preference.
+pub(crate) fn unified_mailbox_enabled() -> bool {
+    UNIFIED_MAILBOX_ENABLED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+pub(crate) fn set_unified_mailbox_enabled(enabled: bool) {
+    UNIFIED_MAILBOX_ENABLED.store(enabled, std::sync::atomic::Ordering::Relaxed);
 }
 
 const UNIFIED_PREFIX: &str = "Unified ";
@@ -362,6 +383,23 @@ mod tests {
                 other => other,
             };
             assert_eq!(scope.unified(), expected, "{scope}");
+        }
+    }
+
+    #[test]
+    fn switching_the_unified_mailbox_off_resolves_to_the_first_account() {
+        let accounts = [account(9), account(10)];
+        for scope in every_scope() {
+            assert_eq!(scope.visible_for_with(&accounts, true), scope, "{scope}");
+            let expected = match scope {
+                Scope::Unified(mailbox) => Scope::Account {
+                    account_id: 9,
+                    mailbox,
+                },
+                other => other,
+            };
+            assert_eq!(scope.visible_for_with(&accounts, false), expected, "{scope}");
+            assert_eq!(scope.visible_for_with(&[], false), scope, "{scope}");
         }
     }
 

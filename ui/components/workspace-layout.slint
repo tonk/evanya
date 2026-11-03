@@ -101,8 +101,10 @@ export component WorkspaceSidebarSurface inherits Rectangle {
 // min/max constraints made the previous mail-only implementation jump.
 export component CollapsibleWorkspaceSidebar inherits WorkspaceSidebarSurface {
     in-out property <bool> collapsed: false;
+    // The width when open; the mail workspace lets the user change it.
+    in property <length> expanded-width: LayoutMetrics.sidebar-width;
     out property <length> current-width: animated-width;
-    private property <length> animated-width: root.collapsed ? 0px : LayoutMetrics.sidebar-width;
+    private property <length> animated-width: root.collapsed ? 0px : root.expanded-width;
 
     width: root.animated-width;
     clip: true;

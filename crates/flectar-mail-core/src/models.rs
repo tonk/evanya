@@ -263,6 +263,42 @@ impl ConnectionSecurity {
     }
 }
 
+/// Whether certificate verification may be skipped for an account's servers.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum InvalidCertificates {
+    /// Verify certificates normally.
+    #[default]
+    Reject,
+    /// Accept an invalid certificate for the current connection attempt only.
+    /// Never stored: account setup turns it back into `Reject`.
+    Once,
+    /// Always accept invalid certificates for this account.
+    Always,
+}
+
+impl InvalidCertificates {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::Reject => "reject",
+            Self::Once => "once",
+            Self::Always => "always",
+        }
+    }
+
+    pub fn parse(value: &str) -> Self {
+        match value {
+            "once" => Self::Once,
+            "always" => Self::Always,
+            _ => Self::Reject,
+        }
+    }
+
+    pub const fn allows_invalid(self) -> bool {
+        !matches!(self, Self::Reject)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MailConnectionSettings {
@@ -273,6 +309,9 @@ pub struct MailConnectionSettings {
     /// validity checks still apply. Contains public certificates, never keys.
     #[serde(default)]
     pub trusted_certificate_pem: String,
+    /// Skip certificate verification (expired, self-signed, wrong host).
+    #[serde(default)]
+    pub invalid_certificates: InvalidCertificates,
 }
 
 impl MailConnectionSettings {
@@ -281,6 +320,7 @@ impl MailConnectionSettings {
             incoming_security,
             smtp_security,
             trusted_certificate_pem: String::new(),
+            invalid_certificates: InvalidCertificates::Reject,
         }
     }
 }
@@ -1826,6 +1866,20 @@ pub struct Settings {
     /// the preference; accept it so development builds upgrade cleanly.
     #[serde(default = "default_workspace_layout", alias = "mailLayout")]
     pub workspace_layout: String,
+    /// Whether the sidebar leads with the cross-account Unified mailbox.
+    #[serde(default = "default_true")]
+    pub unified_mailbox: bool,
+    /// Where the desktop reading pane sits: "right" of the message list or
+    /// "bottom", below it.
+    #[serde(default = "default_reading_pane_position")]
+    pub reading_pane_position: String,
+    /// Logical-pixel width of the mail folder sidebar (230 to 480).
+    #[serde(default = "default_mail_sidebar_width")]
+    pub mail_sidebar_width: i64,
+    /// Percentage of the mail pane's height the message list takes when the
+    /// reading pane sits at the bottom (15 to 85).
+    #[serde(default = "default_reading_pane_bottom_percent")]
+    pub reading_pane_bottom_percent: i64,
     /// Shared logical-pixel width of the mail, contacts, and files list pane.
     /// The established layout width remains the default and hard minimum.
     #[serde(default = "default_workspace_list_pane_width")]
@@ -2088,6 +2142,15 @@ fn default_badge_source() -> String {
 fn default_notification_scope() -> String {
     "important".into()
 }
+fn default_mail_sidebar_width() -> i64 {
+    230
+}
+fn default_reading_pane_bottom_percent() -> i64 {
+    40
+}
+fn default_reading_pane_position() -> String {
+    "right".into()
+}
 fn default_workspace_layout() -> String {
     "default".into()
 }
@@ -2145,6 +2208,10 @@ impl Default for Settings {
             show_tabs: true,
             conversation_view: true,
             workspace_layout: default_workspace_layout(),
+            unified_mailbox: true,
+            reading_pane_position: default_reading_pane_position(),
+            reading_pane_bottom_percent: default_reading_pane_bottom_percent(),
+            mail_sidebar_width: default_mail_sidebar_width(),
             workspace_list_pane_width: default_workspace_list_pane_width(),
             window_frame: default_window_frame(),
             monochrome_sidebar_icons: false,
@@ -2565,6 +2632,41 @@ mod tests {
         )
         .unwrap();
         assert_eq!(settings.app_icon, AppIcon::Orange);
+    }
+
+    #[test]
+    fn mailbox_layout_preferences_default_and_deserialize() {
+        let defaults = Settings::default();
+        assert!(defaults.unified_mailbox);
+        assert_eq!(defaults.reading_pane_position, "right");
+        assert_eq!(defaults.reading_pane_bottom_percent, 40);
+        assert_eq!(defaults.mail_sidebar_width, 230);
+        // Settings stored before these preferences existed still load.
+        let mut json = serde_json::to_value(&defaults).unwrap();
+        for key in ["unifiedMailbox", "readingPanePosition", "readingPaneBottomPercent"] {
+            json.as_object_mut().unwrap().remove(key);
+        }
+        let old: Settings = serde_json::from_value(json.clone()).unwrap();
+        assert!(old.unified_mailbox);
+        assert_eq!(old.reading_pane_position, "right");
+        json["unifiedMailbox"] = false.into();
+        json["readingPanePosition"] = "bottom".into();
+        let stored: Settings = serde_json::from_value(json).unwrap();
+        assert!(!stored.unified_mailbox);
+        assert_eq!(stored.reading_pane_position, "bottom");
+    }
+
+    #[test]
+    fn invalid_certificate_choice_parses_and_defaults_to_reject() {
+        assert_eq!(InvalidCertificates::parse("once"), InvalidCertificates::Once);
+        assert_eq!(InvalidCertificates::parse("always"), InvalidCertificates::Always);
+        assert_eq!(InvalidCertificates::parse("junk"), InvalidCertificates::Reject);
+        assert!(!InvalidCertificates::Reject.allows_invalid());
+        let stored: MailConnectionSettings = serde_json::from_str(
+            r#"{"incomingSecurity":"tls","smtpSecurity":"tls"}"#,
+        )
+        .unwrap();
+        assert_eq!(stored.invalid_certificates, InvalidCertificates::Reject);
     }
 
     #[test]

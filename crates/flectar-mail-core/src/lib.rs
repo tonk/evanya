@@ -1264,6 +1264,7 @@ impl Core {
             self.db.clone(),
             self.bus.clone(),
             self.credentials.clone(),
+            self.tokens.clone(),
             account_id,
         );
         if let Some(previous) = self.card_handles.write().await.insert(account_id, handle) {
@@ -1714,6 +1715,10 @@ impl Core {
             MailProtocol::Gmail => return Err(gmail_needs_google_sign_in()),
             MailProtocol::Local => return Err(local_mail_has_no_server()),
         };
+        // "Once" covered the checks above; only "Always" is kept.
+        if args.connection.invalid_certificates == InvalidCertificates::Once {
+            args.connection.invalid_certificates = InvalidCertificates::Reject;
+        }
         let is_new_account = existing.is_none();
 
         let id = if let Some(existing) = existing {
@@ -6440,6 +6445,91 @@ impl Core {
         self.store_sign_in(&account, outcome).await?;
 
         self.attach_google_calendar(account_id).await
+    }
+
+    /// Google contacts connection: re-run the OAuth consent with the contacts
+    /// scope added, keeping the calendar scope when a Google calendar is
+    /// connected (a new grant replaces the old scopes), then start syncing
+    /// through the People API.
+    pub async fn connect_google_contacts(
+        &self,
+        account_id: i64,
+        open_url: impl FnOnce(String) -> std::result::Result<(), String> + Send,
+    ) -> Result<Vec<AddressBook>> {
+        let account = self
+            .db
+            .read(move |conn| repo::accounts::get(conn, account_id))
+            .await?
+            .ok_or_else(|| CoreError::NotFound("account".into()))?;
+        if account.provider != Provider::Gmail {
+            return Err(CoreError::CardDav(
+                "google contacts need a Gmail account".into(),
+            ));
+        }
+        credentials::check_available_async(self.credentials.clone()).await?;
+
+        let has_calendar = self
+            .calendar_db
+            .read(move |conn| {
+                Ok(repo::caldav::provider_connection(
+                    conn,
+                    account_id,
+                    CalendarConnectionKind::Google,
+                )?
+                .is_some())
+            })
+            .await?;
+        let mut scopes = vec![oauth::providers::GOOGLE_CONTACTS_SCOPE];
+        if has_calendar {
+            scopes.push(oauth::providers::GOOGLE_CALENDAR_SCOPE);
+        }
+        let outcome = tokio::select! {
+            r = oauth::flow::authorize_with_broker(
+                Provider::Gmail,
+                &scopes,
+                Some(&account.email),
+                self.oauth_redirects.clone(),
+                open_url,
+            ) => r?,
+            _ = self.oauth_cancel.notified() => {
+                return Err(CoreError::Auth("sign-in cancelled".into()));
+            }
+        };
+        self.store_sign_in(&account, outcome).await?;
+
+        let username = account.email.clone();
+        let books = self
+            .db
+            .write(move |conn| {
+                let tx = conn.transaction()?;
+                repo::carddav::upsert_config(
+                    &tx,
+                    &repo::carddav::CardDavConfig {
+                        account_id,
+                        base_url: carddav::google::BASE_URL.into(),
+                        username,
+                        principal_url: None,
+                        home_set_url: carddav::google::BASE_URL.into(),
+                        enabled: true,
+                        last_error: None,
+                    },
+                )?;
+                let id = repo::carddav::upsert_addressbook(
+                    &tx,
+                    account_id,
+                    carddav::google::BOOK_URL,
+                    Some(carddav::google::BOOK_NAME),
+                    true,
+                )?;
+                repo::carddav::ensure_default(&tx, account_id, id)?;
+                let books = repo::carddav::list_addressbooks(&tx, Some(account_id))?;
+                tx.commit()?;
+                Ok(books)
+            })
+            .await?;
+        self.spawn_card_task(account_id).await;
+        self.nudge_card(Some(account_id)).await;
+        Ok(books)
     }
 
     /// Mint a Graph token for one extra scope, widening consent in the

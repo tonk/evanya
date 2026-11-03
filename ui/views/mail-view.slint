@@ -17,9 +17,22 @@ export component MailView inherits FocusScope {
     in property <bool> compact: false;
     in property <length> available-width: 0px;
     // Keep the animated geometry outside conditionally instantiated sidebars.
-    private property <length> desktop-sidebar-width: root.mail_sidebar_collapsed ? 0px : LayoutMetrics.sidebar-width;
+    in-out property <length> sidebar-width: LayoutMetrics.sidebar-width;
+    callback sidebar-width-committed(length);
+    private property <length> sidebar-maximum-width: max(LayoutMetrics.sidebar-width, min(480px, root.available-width * 0.4));
+    private property <length> effective-sidebar-width: root.sidebar-width.clamp(LayoutMetrics.sidebar-width, root.sidebar-maximum-width);
+    private property <length> desktop-sidebar-width: root.mail_sidebar_collapsed ? 0px : root.effective-sidebar-width;
     animate desktop-sidebar-width { duration: 220ms; easing: spring(0); }
     in property <string> layout-mode: "default";
+    // "right": the message reads beside the list; "bottom": below it.
+    in property <string> reading-pane-position: "right";
+    private property <bool> reading-pane-bottom: root.reading-pane-position == "bottom";
+    // Share of the pane the list takes when the message sits below it; the
+    // divider changes it and the choice is saved.
+    in-out property <float> bottom-list-fraction: 0.4;
+    callback bottom-list-fraction-committed(float);
+    private property <bool> bottom-dragging: false;
+    private property <length> bottom-list-height: max(160px, min(pane-area.height * root.bottom-list-fraction, pane-area.height - 200px));
     in-out property <length> list-pane-width: LayoutMetrics.list-pane-width;
     callback list-pane-width-committed(length);
     in property <bool> show-avatars: true;
@@ -296,6 +309,7 @@ export component MailView inherits FocusScope {
             spacing: 0px;
 
             if root.active_view == "mail" && !root.single-pane : MailSidebar {
+                expanded-width: root.effective-sidebar-width;
                 show-profiles: root.profiles-in-sidebar;
                 profiles: root.mail_profiles;
                 active-profile: root.active_mail_profile;
@@ -344,9 +358,30 @@ export component MailView inherits FocusScope {
                 }
             }
 
+            if root.active_view == "mail" && !root.single-pane && !root.mail_sidebar_collapsed : WorkspacePaneResizeHandle {
+                leading-width: root.effective-sidebar-width;
+                minimum-leading-width: LayoutMetrics.sidebar-width;
+                maximum-leading-width: root.sidebar-maximum-width;
+                divider-color: root.border;
+                active-color: root.accent;
+                accessibility-label: @tr("Folder list width");
+                resizing(width) => { root.sidebar-width = width; }
+                resize-finished(width) => {
+                    root.sidebar-width = width;
+                    root.sidebar-width-committed(width);
+                }
+            }
+
+            pane-area := Rectangle {
+            min-width: 0px;
+            preferred-width: 0px;
+            horizontal-stretch: 1;
             desktop-list-pane := MailListPane {
                 restores-scroll: !root.single-pane;
-                width: root.effective-list-pane-width;
+                x: 0px;
+                y: 0px;
+                width: root.reading-pane-bottom ? pane-area.width : root.effective-list-pane-width;
+                height: root.reading-pane-bottom ? root.bottom-list-height : pane-area.height;
                 show-avatars: root.show-avatars;
                 loading: root.loading;
                 emails: root.emails;
@@ -395,7 +430,36 @@ export component MailView inherits FocusScope {
                 set_all_emails_checked(checked) => { root.set_all_emails_checked(checked); }
             }
 
-            WorkspacePaneResizeHandle {
+            if root.reading-pane-bottom : Rectangle {
+                x: 0px;
+                y: root.bottom-list-height - 3px;
+                width: pane-area.width;
+                height: 7px;
+                z: 5;
+                Rectangle {
+                    y: 3px;
+                    height: 1px;
+                    background: bottom-divider-hit.has-hover || root.bottom-dragging ? root.accent : root.border;
+                }
+                bottom-divider-hit := TouchArea {
+                    mouse-cursor: row-resize;
+                    pointer-event(event) => {
+                        if (event.kind == PointerEventKind.down && event.button == PointerEventButton.left) {
+                            root.bottom-dragging = true;
+                        } else if (event.kind == PointerEventKind.move && root.bottom-dragging) {
+                            let pointer-y = self.absolute-position.y + self.mouse-y - pane-area.absolute-position.y;
+                            root.bottom-list-fraction = max(0.15, min(0.85, pointer-y / pane-area.height));
+                        } else if ((event.kind == PointerEventKind.up || event.kind == PointerEventKind.cancel) && root.bottom-dragging) {
+                            root.bottom-dragging = false;
+                            root.bottom-list-fraction-committed(root.bottom-list-fraction);
+                        }
+                    }
+                }
+            }
+            if !root.reading-pane-bottom : WorkspacePaneResizeHandle {
+                x: root.effective-list-pane-width;
+                y: 0px;
+                height: pane-area.height;
                 leading-width: root.effective-list-pane-width;
                 maximum-leading-width: root.list-pane-maximum-width;
                 divider-color: root.border;
@@ -409,6 +473,10 @@ export component MailView inherits FocusScope {
             }
 
             desktop-reading-pane := MailReadingPane {
+                x: root.reading-pane-bottom ? 0px : root.effective-list-pane-width + LayoutMetrics.divider-width;
+                y: root.reading-pane-bottom ? root.bottom-list-height + 1px : 0px;
+                width: root.reading-pane-bottom ? pane-area.width : max(0px, pane-area.width - self.x);
+                height: root.reading-pane-bottom ? max(0px, pane-area.height - self.y) : pane-area.height;
                 show-avatars: root.show-avatars;
                 // This is the flexible column. Explicit constraints prevent
                 // the subject's wrapping width from becoming a hard maximum,
@@ -494,6 +562,7 @@ export component MailView inherits FocusScope {
                 }
                 select-email-text => { root.select-email-text(); }
             }
+            }
         }
 
         // Compact screens and the desktop Minimal preference share one
@@ -511,6 +580,7 @@ export component MailView inherits FocusScope {
             // navigation. The Default collapsible sidebar remains, with the
             // list/reader stack consuming its animated remainder.
             if root.active_view == "mail" && root.single-pane && !root.compact : MailSidebar {
+                expanded-width: root.effective-sidebar-width;
                 show-profiles: root.profiles-in-sidebar;
                 profiles: root.mail_profiles;
                 active-profile: root.active_mail_profile;

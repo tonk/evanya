@@ -36,6 +36,7 @@ export component OnboardingView inherits Rectangle {
     in-out property <string> incoming-security: "tls";
     in-out property <string> smtp-security: "tls";
     in-out property <string> trusted-certificate-pem;
+    in-out property <string> invalid-certificates: "reject";
     in-out property <string> account-username;
     in property <string> status: "";
     in property <color> page-bg;
@@ -47,6 +48,7 @@ export component OnboardingView inherits Rectangle {
     in property <color> ui-border;
     in-out property <string> account-email: "";
     in-out property <string> account-password: "";
+    in-out property <string> account-display-name: "";
     in-out property <string> account-protocol: "imap";
     in-out property <string> jmap-url: "";
     in-out property <string> incoming-host: "";
@@ -73,11 +75,13 @@ export component OnboardingView inherits Rectangle {
         root.account-email = "";
         root.account-username = "";
         root.account-password = "";
+        root.account-display-name = "";
         root.account-protocol = "imap";
         root.jmap-url = "";
         root.incoming-security = "tls";
         root.smtp-security = "tls";
         root.trusted-certificate-pem = "";
+        root.invalid-certificates = "reject";
         root.incoming-host = "";
         root.incoming-port = "993";
         root.smtp-host = "";
@@ -281,6 +285,14 @@ export component OnboardingView inherits Rectangle {
                 FormField {
                     enabled: !root.account-setup-in-progress;
                     height: 60px;
+                    label: @tr("Account name · Optional");
+                    label-color: root.muted-text;
+                    value <=> root.account-display-name;
+                    placeholder: @tr("Shown in the sidebar instead of the email address");
+                }
+                FormField {
+                    enabled: !root.account-setup-in-progress;
+                    height: 60px;
                     label: root.account-protocol == "jmap" ? @tr("Password, app password, or API token") : @tr("Password or app password");
                     label-color: root.muted-text;
                     value <=> root.account-password;
@@ -383,6 +395,7 @@ export component OnboardingView inherits Rectangle {
                     smtp-port <=> root.smtp-port;
                     enabled: !root.account-setup-in-progress;
                     certificate-pem <=> root.trusted-certificate-pem;
+                    invalid-certificates <=> root.invalid-certificates;
                     import-certificate => { root.import-mail-certificate(); }
                 }
                 Rectangle { height: 2px; }

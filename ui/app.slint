@@ -359,6 +359,9 @@ export global I18n {
         if (key == "Could not connect CalDAV: {}") { return @tr("Could not connect CalDAV: {}", argument); }
         if (key == "Calendar removed.") { return @tr("Calendar removed."); }
         if (key == "Could not remove calendar: {}") { return @tr("Could not remove calendar: {}", argument); }
+        if (key == "Authorize contacts access in your browser.") { return @tr("Authorize contacts access in your browser."); }
+        if (key == "Google contacts connected and initial sync started.") { return @tr("Google contacts connected and initial sync started."); }
+        if (key == "Could not connect Google contacts: {}") { return @tr("Could not connect Google contacts: {}", argument); }
         if (key == "CardDAV connected and initial sync started.") { return @tr("CardDAV connected and initial sync started."); }
         if (key == "Could not connect CardDAV: {}") { return @tr("Could not connect CardDAV: {}", argument); }
         if (key == "CardDAV sync enabled.") { return @tr("CardDAV sync enabled."); }
@@ -658,6 +661,10 @@ export component AppWindow inherits Window {
     callback mail_profile_changed();
     callback save_account_markers_visibility(bool);
     callback save_workspace_layout(string);
+    callback save_unified_mailbox(bool);
+    callback save_reading_pane_position(string);
+    callback save_reading_pane_bottom_fraction(float);
+    callback save_mail_sidebar_width(length);
     callback save_workspace_list_pane_width(length);
     callback save_language(string);
     callback save_time_format(string);
@@ -708,6 +715,7 @@ export component AppWindow inherits Window {
     callback set_calendar_connection_enabled(int, bool);
     callback remove_calendar_connection(int);
     callback connect_carddav(int, string, string, string);
+    callback connect_google_contacts(int);
     callback set_account_carddav_enabled(int, bool);
     callback disconnect_carddav(int);
     callback export_account_backup();
@@ -997,6 +1005,10 @@ export component AppWindow inherits Window {
     in-out property <bool> conversation_view: true;
     in-out property <bool> show_account_markers: false;
     in-out property <string> workspace_layout: "default";
+    in-out property <bool> unified_mailbox: true;
+    in-out property <string> reading_pane_position: "right";
+    in-out property <float> reading_pane_bottom_fraction: 0.4;
+    in-out property <length> mail_sidebar_width: 230px;
     in-out property <length> workspace_list_pane_width: LayoutMetrics.list-pane-width;
     in-out property <string> language_mode: "system";
     // "automatic" follows the regional clock; "12h" and "24h" fix it.
@@ -1059,6 +1071,7 @@ export component AppWindow inherits Window {
     out property <color> compose_editor_selection_color: root.accent;
     out property <color> compose_editor_selected_text_color: white;
     in-out property <string> account_email: "";
+    in-out property <string> account_display_name: "";
     in-out property <string> account_username: "";
     in-out property <string> account_password: "";
     in-out property <string> account_protocol: "imap";
@@ -1078,6 +1091,7 @@ export component AppWindow inherits Window {
     in-out property <string> incoming_security: "tls";
     in-out property <string> smtp_security: "tls";
     in-out property <string> trusted_certificate_pem;
+    in-out property <string> invalid_certificates: "reject";
     in property <string> oauth_authorization_url;
     in property <bool> oauth_browser_error;
     callback retry_oauth_browser();
@@ -1484,6 +1498,11 @@ export component AppWindow inherits Window {
             available-width: parent.width;
             compact: root.compact-layout;
             layout-mode: root.workspace_layout;
+            reading-pane-position: root.reading_pane_position;
+            bottom-list-fraction <=> root.reading_pane_bottom_fraction;
+            sidebar-width <=> root.mail_sidebar_width;
+            sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
+            bottom-list-fraction-committed(fraction) => { root.save_reading_pane_bottom_fraction(fraction); }
             list-pane-width <=> root.workspace_list_pane_width;
             list-pane-width-committed(width) => { root.save_workspace_list_pane_width(width); }
             show-avatars: root.show_avatars;
@@ -1945,6 +1964,8 @@ export component AppWindow inherits Window {
             conversation_view <=> root.conversation_view;
             show_account_markers <=> root.show_account_markers;
             workspace_layout <=> root.workspace_layout;
+            unified_mailbox <=> root.unified_mailbox;
+            reading_pane_position <=> root.reading_pane_position;
             language_mode <=> root.language_mode;
             time_format <=> root.time_format;
             time_format_sample: root.time_format_sample;
@@ -1963,6 +1984,7 @@ export component AppWindow inherits Window {
             launch_at_login_available: root.launch_at_login_available;
             remote-images-enabled <=> root.remote-images-enabled;
             account_email <=> root.account_email;
+            account_display_name <=> root.account_display_name;
             account_username <=> root.account_username;
             account_password <=> root.account_password;
             account_protocol <=> root.account_protocol;
@@ -1982,6 +2004,7 @@ export component AppWindow inherits Window {
             incoming_security <=> root.incoming_security;
             smtp_security <=> root.smtp_security;
             trusted_certificate_pem <=> root.trusted_certificate_pem;
+            invalid_certificates <=> root.invalid_certificates;
             oauth_authorization_url: root.oauth_authorization_url;
             oauth_browser_error: root.oauth_browser_error;
             retry_oauth_browser => { root.retry_oauth_browser(); }
@@ -2046,6 +2069,8 @@ export component AppWindow inherits Window {
                 root.save_account_markers_visibility(enabled);
             }
             save_workspace_layout(mode) => { root.save_workspace_layout(mode); }
+            save_unified_mailbox(enabled) => { root.save_unified_mailbox(enabled); }
+            save_reading_pane_position(position) => { root.save_reading_pane_position(position); }
             save_language(language) => { root.save_language(language); }
             save_time_format(format) => { root.save_time_format(format); }
             save_sidebar_icon_style(monochrome) => { root.save_sidebar_icon_style(monochrome); }
@@ -2088,6 +2113,7 @@ export component AppWindow inherits Window {
             set_calendar_connection_enabled(connection-id, enabled) => { root.set_calendar_connection_enabled(connection-id, enabled); }
             remove_calendar_connection(connection-id) => { root.remove_calendar_connection(connection-id); }
             connect_carddav(account-id, url, username, password) => { root.connect_carddav(account-id, url, username, password); }
+            connect_google_contacts(account-id) => { root.connect_google_contacts(account-id); }
             set_account_carddav_enabled(account-id, enabled) => { root.set_account_carddav_enabled(account-id, enabled); }
             disconnect_carddav(account-id) => { root.disconnect_carddav(account-id); }
             export_account_backup => { root.export_account_backup(); }
@@ -2344,12 +2370,14 @@ export component AppWindow inherits Window {
         muted-text: root.muted-text;
         ui-border: root.border;
         account-email <=> root.account_email;
+        account-display-name <=> root.account_display_name;
         account-password <=> root.account_password;
         account-protocol <=> root.account_protocol;
         jmap-url <=> root.jmap_url;
         incoming-security <=> root.incoming_security;
         smtp-security <=> root.smtp_security;
         trusted-certificate-pem <=> root.trusted_certificate_pem;
+        invalid-certificates <=> root.invalid_certificates;
         account-username <=> root.account_username;
         oauth-authorization-url: root.oauth_authorization_url;
         oauth-browser-error: root.oauth_browser_error;

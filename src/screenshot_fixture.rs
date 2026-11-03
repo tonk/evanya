@@ -257,6 +257,7 @@ fixture_row!(AccountRow {
     incoming_security,
     smtp_security,
     trusted_certificate_pem,
+    invalid_certificates,
     incoming_host,
     incoming_port,
     smtp_host,

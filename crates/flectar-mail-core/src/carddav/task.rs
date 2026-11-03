@@ -6,6 +6,8 @@ use crate::{
     db::{Db, repo},
     error::{CoreError, Result},
     events::EventBus,
+    models::Provider,
+    oauth::tokens::TokenProvider,
 };
 use std::collections::HashSet;
 use tokio::sync::mpsc;
@@ -31,6 +33,7 @@ pub fn spawn(
     db: Db,
     bus: EventBus,
     credentials: CredentialStoreHandle,
+    tokens: TokenProvider,
     account_id: i64,
 ) -> CardDavTaskHandle {
     let (tx, mut rx) = mpsc::channel(1);
@@ -52,6 +55,7 @@ pub fn spawn(
                 &db,
                 &bus,
                 credentials.clone(),
+                &tokens,
                 account_id,
                 refresh_collections,
             )
@@ -82,6 +86,7 @@ async fn run_cycle(
     db: &Db,
     bus: &EventBus,
     credentials: CredentialStoreHandle,
+    tokens: &TokenProvider,
     account_id: i64,
     refresh_collections: bool,
 ) -> Result<()> {
@@ -91,6 +96,13 @@ async fn run_cycle(
     let Some(config) = config.filter(|config| config.enabled) else {
         return Ok(());
     };
+    if super::google::is_google(&config.base_url) {
+        // Google contacts use the account's OAuth token, not a password.
+        let token = tokens.access_token(account_id, Provider::Gmail).await?;
+        return super::google::sync_account(db, bus, account_id, &token)
+            .await
+            .map(|_| ());
+    }
     let password = credentials::load_async(credentials, account_id, Slot::CarddavPassword).await?;
     let transport = HttpTransport::new(config.username.clone(), password, &config.base_url)?;
     if refresh_collections {

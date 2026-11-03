@@ -1403,6 +1403,46 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    pub async fn set_unified_mailbox(&self, enabled: bool) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        settings.unified_mailbox = enabled;
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    pub async fn set_reading_pane_position(&self, position: &str) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        settings.reading_pane_position = match position {
+            "bottom" => "bottom",
+            _ => "right",
+        }
+        .to_owned();
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    pub async fn set_mail_sidebar_width(&self, width: i64) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        settings.mail_sidebar_width = width.clamp(230, 480);
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    pub async fn set_reading_pane_bottom_percent(&self, percent: i64) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        settings.reading_pane_bottom_percent = percent.clamp(15, 85);
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
     pub async fn set_workspace_layout(&self, layout: &str) -> Result<(), String> {
         let mut settings = self.load_settings().await?;
         settings.workspace_layout = match layout {
@@ -1925,6 +1965,21 @@ impl CoreMailSource {
             Provider::Generic => return Err("add a CalDAV calendar for this account".into()),
         };
         Ok(())
+    }
+
+    pub async fn connect_google_contacts<F>(
+        &self,
+        account_id: i64,
+        open_url: F,
+    ) -> Result<(), String>
+    where
+        F: FnOnce(String) -> Result<(), String> + Send + 'static,
+    {
+        self.core
+            .connect_google_contacts(account_id, open_url)
+            .await
+            .map(|_| ())
+            .map_err(|error| error.to_string())
     }
 
     /// Add a CalDAV server to the account, or change the connection with

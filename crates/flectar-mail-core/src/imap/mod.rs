@@ -135,7 +135,10 @@ async fn connect_inner(
             "OAuth sign-in needs an encrypted connection.".into(),
         ));
     }
-    let connector = net::tls::connector(&settings.trusted_certificate_pem)?;
+    let connector = net::tls::connector(
+        &settings.trusted_certificate_pem,
+        settings.invalid_certificates.allows_invalid(),
+    )?;
     let tcp = net::connect_tcp(host, port)
         .await
         .map_err(|e| CoreError::Imap(format!("connect {host}:{port}: {e}")))?;

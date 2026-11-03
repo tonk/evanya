@@ -204,7 +204,18 @@ pub fn trusted_certificates(pem: &str) -> Result<Vec<rustls::pki_types::Certific
 
 /// The TLS client of an account: the system roots, plus any certificates the
 /// user imported for this account.
-pub fn connector(pem: &str) -> Result<TlsConnector> {
+pub fn connector(pem: &str, allow_invalid: bool) -> Result<TlsConnector> {
+    if allow_invalid {
+        tracing::warn!("accepting invalid TLS certificates for this account");
+        let provider = Arc::new(rustls::crypto::ring::default_provider());
+        let config = rustls::ClientConfig::builder_with_provider(provider.clone())
+            .with_safe_default_protocol_versions()
+            .map_err(|e| CoreError::Tls(e.to_string()))?
+            .dangerous()
+            .with_custom_certificate_verifier(Arc::new(NoVerify(provider)))
+            .with_no_client_auth();
+        return Ok(TlsConnector::from(Arc::new(config)));
+    }
     if pem.is_empty() {
         return Ok(system_connector());
     }

@@ -441,6 +441,31 @@ pub(super) fn restore_account_backup(
             {
                 settings.workspace_layout = layout.to_owned();
             }
+            if let Some(enabled) = preferences
+                .get("unifiedMailbox")
+                .and_then(|value| value.as_bool())
+            {
+                settings.unified_mailbox = enabled;
+            }
+            if let Some(position) = preferences
+                .get("readingPanePosition")
+                .and_then(|value| value.as_str())
+                && matches!(position, "right" | "bottom")
+            {
+                settings.reading_pane_position = position.to_owned();
+            }
+            if let Some(width) = preferences
+                .get("mailSidebarWidth")
+                .and_then(|value| value.as_i64())
+            {
+                settings.mail_sidebar_width = width.clamp(230, 480);
+            }
+            if let Some(percent) = preferences
+                .get("readingPaneBottomPercent")
+                .and_then(|value| value.as_i64())
+            {
+                settings.reading_pane_bottom_percent = percent.clamp(15, 85);
+            }
             if let Some(preference) = preferences
                 .get("messageAppearance")
                 .and_then(|value| value.as_str())
@@ -1317,6 +1342,10 @@ pub(super) fn register_data_management_callbacks(
                     "showTabs": settings.show_tabs,
                     "conversationView": settings.conversation_view,
                     "workspaceLayout": settings.workspace_layout,
+                    "unifiedMailbox": settings.unified_mailbox,
+                    "readingPanePosition": settings.reading_pane_position,
+                    "readingPaneBottomPercent": settings.reading_pane_bottom_percent,
+                    "mailSidebarWidth": settings.mail_sidebar_width,
                     "workspaceListPaneWidth": settings.workspace_list_pane_width,
                     "monochromeSidebarIcons": settings.monochrome_sidebar_icons,
                     "appIcon": settings.app_icon,
@@ -1642,6 +1671,11 @@ pub(super) fn register_data_management_callbacks(
                     );
                     app.set_show_account_markers(false);
                     app.set_workspace_layout("default".into());
+                    crate::sidebar_model::set_unified_mailbox_enabled(true);
+                    app.set_unified_mailbox(true);
+                    app.set_reading_pane_position("right".into());
+                    app.set_reading_pane_bottom_fraction(0.4);
+                    app.set_mail_sidebar_width(230.0);
                     app.set_workspace_list_pane_width(MIN_WORKSPACE_LIST_PANE_WIDTH as f32);
                     app.set_notifications_enabled(true);
                     app.set_notification_sound_enabled(true);

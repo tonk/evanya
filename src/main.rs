@@ -4746,6 +4746,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 app.set_incoming_security("tls".into());
                 app.set_smtp_security("tls".into());
                 app.set_trusted_certificate_pem("".into());
+                app.set_invalid_certificates("reject".into());
+                app.set_account_display_name("".into());
                 app.set_account_email("".into());
                 app.set_account_username("".into());
                 app.set_account_password("".into());
@@ -7042,6 +7044,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 app.set_incoming_security("tls".into());
                 app.set_smtp_security("tls".into());
                 app.set_trusted_certificate_pem("".into());
+                app.set_invalid_certificates("reject".into());
             }
             last_suggested_transport.borrow_mut().take();
             return;
@@ -7141,7 +7144,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             app.set_sync_status(progress);
             let args = AddPasswordAccountArgs {
                 email: email.to_string(),
-                display_name: None,
+                display_name: Some(app.get_account_display_name().trim().to_owned())
+                    .filter(|name| !name.is_empty()),
                 username: username.to_string(),
                 password: password.to_string(),
                 mail_protocol,
@@ -7152,6 +7156,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 smtp_port,
                 connection: MailConnectionSettings {
                     trusted_certificate_pem: app.get_trusted_certificate_pem().to_string(),
+                    invalid_certificates: flectar_mail_core::models::InvalidCertificates::parse(
+                        app.get_invalid_certificates().as_str(),
+                    ),
                     ..MailConnectionSettings::new(incoming_security, smtp_security)
                 },
             };
@@ -7438,6 +7445,65 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     calendar_connections: connections,
                     carddav_connections: None,
                     calendar_error,
+                    account_removal: None,
+                    clear_account_form: false,
+                    finishes_account_setup: false,
+                    finishes_oauth: true,
+                    close_to_tray: None,
+                })
+                .await;
+        });
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_google_contacts = Rc::clone(&state);
+    let runtime_for_google_contacts = Rc::clone(&runtime);
+    let updates_for_google_contacts = ui_task_tx.clone();
+    let opener_for_google_contacts = platform.external_urls.clone();
+    app.on_connect_google_contacts(move |account_id| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        if app.get_oauth_settings_saving() {
+            return;
+        }
+        if app.get_oauth_in_progress() {
+            app.set_sync_status(UiMessage::plain(
+                "Another browser authorization is already in progress; finish it or choose Cancel.",
+            ));
+            return;
+        }
+        let Some(core) = state_for_google_contacts.borrow().core.clone() else {
+            app.set_sync_status(UiMessage::plain("Calendar core is unavailable."));
+            return;
+        };
+        app.set_oauth_authorization_url("".into());
+        app.set_oauth_browser_error(false);
+        app.set_oauth_in_progress(true);
+        app.set_sync_status(UiMessage::plain(
+            "Authorize contacts access in your browser.",
+        ));
+        let updates = updates_for_google_contacts.clone();
+        let browser_app = app.as_weak();
+        let opener = opener_for_google_contacts.clone();
+        runtime_for_google_contacts.spawn(async move {
+            let result = core
+                .connect_google_contacts(i64::from(account_id), move |url| {
+                    oauth_browser::begin(browser_app.clone(), url, opener.clone())
+                })
+                .await;
+            let connections = core.load_carddav_connections().await.ok();
+            let message = match result {
+                Ok(()) => UiMessage::plain("Google contacts connected and initial sync started."),
+                Err(error) => UiMessage::detail("Could not connect Google contacts: {}", error),
+            };
+            let _ = updates
+                .send(UiTaskUpdate {
+                    message,
+                    accounts: None,
+                    calendar_connections: None,
+                    carddav_connections: connections,
+                    calendar_error: None,
                     account_removal: None,
                     clear_account_form: false,
                     finishes_account_setup: false,

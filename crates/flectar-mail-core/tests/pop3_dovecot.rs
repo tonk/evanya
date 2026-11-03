@@ -65,6 +65,7 @@ fn server(port: u16, security: ConnectionSecurity) -> pop3::Server<'static> {
         port,
         security,
         trusted_certificate_pem: "",
+        allow_invalid_certificates: false,
     }
 }
 

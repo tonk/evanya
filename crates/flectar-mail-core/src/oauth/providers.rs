@@ -5,6 +5,9 @@ use crate::models::Provider;
 /// the default GOOGLE scopes: mail-only accounts should not be asked for it.
 pub const GOOGLE_CALENDAR_SCOPE: &str = "https://www.googleapis.com/auth/calendar";
 
+/// Incremental-consent scope for reading Google contacts (People API).
+pub const GOOGLE_CONTACTS_SCOPE: &str = "https://www.googleapis.com/auth/contacts.readonly";
+
 /// Incremental-consent scope (Microsoft Graph) for creating Teams meetings.
 /// Kept out of the default MICROSOFT scopes: those all target
 /// `outlook.office.com`, and Microsoft issues a single-resource access token,

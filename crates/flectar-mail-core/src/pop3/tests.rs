@@ -126,6 +126,7 @@ fn server_at(port: u16, security: ConnectionSecurity) -> Server<'static> {
         port,
         security,
         trusted_certificate_pem: CERT,
+        allow_invalid_certificates: false,
     }
 }
 

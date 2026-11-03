@@ -321,6 +321,7 @@ async fn connect(
         port: config.incoming_port,
         security: connection.incoming_security,
         trusted_certificate_pem: &connection.trusted_certificate_pem,
+        allow_invalid_certificates: connection.invalid_certificates.allows_invalid(),
     };
     pop3::Session::connect(&server, &config.username, password)
         .await

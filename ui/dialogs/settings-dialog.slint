@@ -484,6 +484,8 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> conversation_view: true;
     in-out property <bool> show_account_markers: false;
     in-out property <string> workspace_layout: "default";
+    in-out property <bool> unified_mailbox: true;
+    in-out property <string> reading_pane_position: "right";
     in-out property <string> language_mode: "system";
     in-out property <string> time_format: "automatic";
     in property <string> time_format_sample: "13:30";
@@ -502,6 +504,7 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> launch_at_login: false;
     in property <bool> launch_at_login_available: false;
     in-out property <string> account_email: "";
+    in-out property <string> account_display_name: "";
     in-out property <string> account_username: "";
     in-out property <string> account_password: "";
     in-out property <string> account_protocol: "imap";
@@ -524,6 +527,7 @@ export component SettingsDialog inherits Rectangle {
     in-out property <string> incoming_security: "tls";
     in-out property <string> smtp_security: "tls";
     in-out property <string> trusted_certificate_pem;
+    in-out property <string> invalid_certificates: "reject";
     in property <string> oauth_authorization_url;
     in property <bool> oauth_browser_error;
     callback retry_oauth_browser();
@@ -597,6 +601,8 @@ export component SettingsDialog inherits Rectangle {
     callback delete_mail_profile(string);
     callback save_account_markers_visibility(bool);
     callback save_workspace_layout(string);
+    callback save_unified_mailbox(bool);
+    callback save_reading_pane_position(string);
     callback save_language(string);
     callback save_time_format(string);
     callback save_sidebar_icon_style(bool);
@@ -630,6 +636,7 @@ export component SettingsDialog inherits Rectangle {
     callback remove_calendar_connection(int);
     callback connect_carddav(int, string, string, string);
     callback set_account_carddav_enabled(int, bool);
+    callback connect_google_contacts(int);
     callback disconnect_carddav(int);
     callback export_account_backup();
     callback import_accounts();
@@ -849,12 +856,15 @@ export component SettingsDialog inherits Rectangle {
     function edit-account(account: AccountRow) {
         if account.provider == "generic" {
             root.account_email = account.email;
+            root.account_display_name = account.name == account.email ? "" : account.name;
             root.account_username = account.username;
             root.account_protocol = account.mail_protocol;
             root.jmap_url = account.jmap_url;
             root.incoming_security = account.incoming_security;
             root.smtp_security = account.smtp_security;
             root.trusted_certificate_pem = account.trusted_certificate_pem;
+            // "Once" is never stored, so an edit starts from Always or Reject.
+            root.invalid_certificates = account.invalid_certificates;
             root.incoming_host = account.incoming_host;
             root.incoming_port = account.incoming_port;
             root.smtp_host = account.smtp_host;
@@ -894,6 +904,7 @@ export component SettingsDialog inherits Rectangle {
     function open_new_mail_account() {
         root.account_editing = false;
         root.account_email = "";
+        root.account_display_name = "";
         root.account_username = "";
         root.account_password = "";
         root.account_protocol = "imap";
@@ -901,6 +912,7 @@ export component SettingsDialog inherits Rectangle {
         root.incoming_security = "tls";
         root.smtp_security = "tls";
         root.trusted_certificate_pem = "";
+        root.invalid_certificates = "reject";
         root.incoming_host = "";
         root.incoming_port = "993";
         root.smtp_host = "";
@@ -1190,6 +1202,32 @@ export component SettingsDialog inherits Rectangle {
                                             name: @tr("Minimal"); minimal: true;
                                             selected: root.workspace_layout == "minimal";
                                             chosen => { root.workspace_layout = "minimal"; root.save_workspace_layout(root.workspace_layout); }
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Unified mailbox");
+                                        description: @tr("Show shared Inbox, Starred and other mailboxes that combine all accounts.");
+                                        checked: root.unified_mailbox;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.unified_mailbox = checked;
+                                            root.save_unified_mailbox(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Preview at the bottom");
+                                        description: @tr("Show the message list on top and the message below it, instead of side by side.");
+                                        checked: root.reading_pane_position == "bottom";
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.reading_pane_position = checked ? "bottom" : "right";
+                                            root.save_reading_pane_position(root.reading_pane_position);
                                         }
                                     }
                                 }
@@ -2039,8 +2077,13 @@ export component SettingsDialog inherits Rectangle {
                                         if !root.compact : Button {
                                             width: max(98px, self.content-width);
                                             height: 30px;
-                                            text: account.carddav_connected ? (account.carddav_status == "" ? @tr("Manage") : @tr("Fix CardDAV")) : @tr("CardDAV");
+                                            text: account.carddav_connected ? (account.carddav_status == "" ? @tr("Manage") : @tr("Fix CardDAV")) : account.provider == "gmail" ? @tr("Google contacts") : @tr("CardDAV");
+                                            enabled: !(account.provider == "gmail" && !account.carddav_connected) || (!root.oauth_in_progress && !root.oauth_settings_saving);
                                             clicked => {
+                                                if (account.provider == "gmail" && !account.carddav_connected) {
+                                                    root.connect_google_contacts(account.id);
+                                                    return;
+                                                }
                                                 root.carddav_account_id = account.id;
                                                 root.carddav_url = account.carddav_url;
                                                 root.carddav_username = account.carddav_username;
@@ -2226,7 +2269,7 @@ export component SettingsDialog inherits Rectangle {
                                     padding-top: carddav-card.content-y + 12px; padding-right: 20px; padding-bottom: 16px; padding-left: 20px; spacing: 8px;
                                     LineEdit { text <=> root.carddav_url; placeholder-text: @tr("https://contacts.example.com/"); }
                                     HorizontalBox { spacing: 8px; LineEdit { text <=> root.carddav_username; placeholder-text: @tr("Username"); } LineEdit { text <=> root.carddav_password; input-type: password; placeholder-text: @tr("App password"); } }
-                                    HorizontalBox { spacing: 8px; if root.carddav_manage_existing : Button { text: @tr("Disconnect"); clicked => { root.disconnect_carddav(root.carddav_account_id); root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } } Rectangle { horizontal-stretch: 1; } Button { text: @tr("Cancel"); clicked => { root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } } Button { text: root.carddav_manage_existing ? @tr("Reconnect") : @tr("Connect"); primary: true; clicked => { root.connect_carddav(root.carddav_account_id, root.carddav_url, root.carddav_username, root.carddav_password); } } }
+                                    HorizontalBox { spacing: 8px; if root.carddav_manage_existing : Button { text: @tr("Disconnect"); clicked => { root.disconnect_carddav(root.carddav_account_id); root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } } Rectangle { horizontal-stretch: 1; } Button { text: @tr("Cancel"); clicked => { root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } } Button { text: root.carddav_manage_existing ? @tr("Reconnect") : @tr("Connect"); primary: true; clicked => { if (root.carddav_url == "https://people.googleapis.com/") { root.connect_google_contacts(root.carddav_account_id); root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } else { root.connect_carddav(root.carddav_account_id, root.carddav_url, root.carddav_username, root.carddav_password); } } } }
                                 }
                             }
                         }
@@ -2954,6 +2997,7 @@ export component SettingsDialog inherits Rectangle {
                                     FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("Username"); value <=> root.account_username; placeholder: @tr("Usually your email address"); label-color: root.secondary-text; }
                                 }
                                 FormField { enabled: !root.account_setup_in_progress; height: 57px; label: root.account_protocol == "jmap" ? @tr("Password, app password, or API token") : @tr("Password or app password"); value <=> root.account_password; placeholder: @tr("Stored securely in your system keyring"); input-type: password; label-color: root.secondary-text; }
+                                FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("Account name · Optional"); value <=> root.account_display_name; placeholder: @tr("Shown in the sidebar instead of the email address"); label-color: root.secondary-text; }
                                 // POP3 mail exists only on this device, so an account
                                 // never switches to or from POP3.
                                 if !(root.account_editing && root.account_protocol == "pop3") : HorizontalBox {
@@ -2997,6 +3041,7 @@ export component SettingsDialog inherits Rectangle {
                                     smtp-port <=> root.smtp_port;
                                     enabled: !root.account_setup_in_progress;
                                     certificate-pem <=> root.trusted_certificate_pem;
+                                    invalid-certificates <=> root.invalid_certificates;
                                     import-certificate => { root.import_mail_certificate(); }
                                 }
                             }

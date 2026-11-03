@@ -825,6 +825,19 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
         }
         .into(),
     );
+    crate::sidebar_model::set_unified_mailbox_enabled(settings.unified_mailbox);
+    app.set_unified_mailbox(settings.unified_mailbox);
+    app.set_mail_sidebar_width(settings.mail_sidebar_width.clamp(230, 480) as f32);
+    app.set_reading_pane_bottom_fraction(
+        settings.reading_pane_bottom_percent.clamp(15, 85) as f32 / 100.0,
+    );
+    app.set_reading_pane_position(
+        match settings.reading_pane_position.as_str() {
+            "bottom" => "bottom",
+            _ => "right",
+        }
+        .into(),
+    );
     app.set_workspace_list_pane_width(normalized_workspace_list_pane_width(
         settings.workspace_list_pane_width,
     ) as f32);

@@ -22,6 +22,26 @@ export global MailPorts {
     }
 }
 
+// "reject", "once" or "always". Keeps the selector in step with values set
+// later, such as a reset form.
+component InvalidCertificatesPicker inherits VerticalBox {
+    in-out property <string> value: "reject";
+    in property <bool> enabled: true;
+    padding: 0px;
+    function index() -> int {
+        return root.value == "once" ? 1 : root.value == "always" ? 2 : 0;
+    }
+    changed value => { box.current-index = root.index(); }
+    box := ComboBox {
+        height: 36px;
+        min-width: 0px;
+        enabled: root.enabled;
+        model: [@tr("Reject (recommended)"), @tr("Accept once"), @tr("Always accept")];
+        current-index: root.index();
+        selected(v) => { root.value = self.current-index == 1 ? "once" : self.current-index == 2 ? "always" : "reject"; }
+    }
+}
+
 // The same account-scoped transport settings are used during setup and edits.
 export component MailSecurityFields inherits VerticalBox {
     // "imap" or "pop3".
@@ -31,6 +51,8 @@ export component MailSecurityFields inherits VerticalBox {
     in-out property <string> incoming-port: "993";
     in-out property <string> smtp-port: "465";
     in-out property <string> certificate-pem;
+    // "reject", "once" (this attempt only) or "always".
+    in-out property <string> invalid-certificates: "reject";
     in property <bool> enabled: true;
     callback import-certificate();
     private property <bool> certificate-expanded: false;
@@ -132,6 +154,21 @@ export component MailSecurityFields inherits VerticalBox {
         TextEdit { height: 90px; enabled: root.enabled; text <=> root.certificate-pem; wrap: word-wrap; }
         Text { text: @tr("PEM certificate only. Do not paste a private key."); color: AppTheme.secondary; font-size: TypeScale.caption; wrap: word-wrap; height: self.preferred-height; }
         if root.certificate-pem != "" : Button { height: 36px; text: @tr("Remove certificate"); label-overflow: elide; enabled: root.enabled; clicked => { root.certificate-pem = ""; } }
+    }
+    if root.uses-tls : VerticalBox {
+        padding: 0px;
+        spacing: 4px;
+        Text { text: @tr("Invalid server certificates"); color: AppTheme.secondary; font-size: TypeScale.caption; }
+        InvalidCertificatesPicker {
+            value <=> root.invalid-certificates;
+            enabled: root.enabled;
+        }
+        if root.invalid-certificates != "reject" : Text {
+            text: root.invalid-certificates == "once"
+                ? @tr("The certificate is not checked while this account is added. Later connections check it again.")
+                : @tr("The certificate is never checked for this account, so anyone on the network could impersonate the server. Only use this with a server you trust, such as Proton Bridge on this computer.");
+            color: AppTheme.destructive; font-size: TypeScale.caption; wrap: word-wrap; height: self.preferred-height;
+        }
     }
     if root.uses-tls && root.certificate-pem != "" && !root.certificate-expanded : Text {
         text: @tr("Custom certificate added for this account."); color: AppTheme.secondary; font-size: TypeScale.caption; wrap: word-wrap; height: self.preferred-height;

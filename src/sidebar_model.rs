@@ -524,6 +524,8 @@ fn account_label_rows(
     rows
 }
 
+pub(super) use crate::mail_scope::set_unified_mailbox_enabled;
+
 /// Whether the sidebar leads with cross-account shortcuts. With one account
 /// they would only duplicate that account's own mailboxes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -536,7 +538,7 @@ impl SidebarLayout {
     /// Every connected account counts, including ones whose folders have not
     /// been discovered yet or that are currently offline.
     pub(super) fn for_account_count(count: usize) -> Self {
-        if count > 1 {
+        if count > 1 && crate::mail_scope::unified_mailbox_enabled() {
             Self::Unified
         } else {
             Self::SingleAccount

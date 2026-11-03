@@ -825,6 +825,77 @@ pub(super) fn register_settings_preference_callbacks(
     });
 
     let app_weak = app.as_weak();
+    let state_for_unified = Rc::clone(state);
+    let runtime_for_unified = Rc::clone(runtime);
+    app.on_save_unified_mailbox(move |enabled| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let core = state_for_unified.borrow().core.clone();
+        match core {
+            Some(core) => match runtime_for_unified.block_on(core.set_unified_mailbox(enabled)) {
+                Ok(()) => app.set_sync_status(UiMessage::plain("Unified mailbox preference saved.")),
+                Err(error) => app.set_sync_status(UiMessage::detail(
+                    "Could not save unified mailbox preference: {}",
+                    error,
+                )),
+            },
+            None => {}
+        }
+        crate::sidebar_model::set_unified_mailbox_enabled(enabled);
+        crate::sidebar_model::refresh_sidebar(&state_for_unified);
+        // Leave a unified scope the sidebar no longer offers.
+        if !enabled {
+            let next = {
+                let state = state_for_unified.borrow();
+                let next = state.scope.visible_for(&state.mail_accounts());
+                (next != state.scope).then_some(next)
+            };
+            if let Some(scope) = next {
+                app.invoke_select_scope(scope.to_string().into());
+            }
+        }
+    });
+
+    let state_for_sidebar = Rc::clone(state);
+    let runtime_for_sidebar = Rc::clone(runtime);
+    app.on_save_mail_sidebar_width(move |width| {
+        let core = state_for_sidebar.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_sidebar.block_on(core.set_mail_sidebar_width(width.round() as i64));
+        }
+    });
+
+    let state_for_split = Rc::clone(state);
+    let runtime_for_split = Rc::clone(runtime);
+    app.on_save_reading_pane_bottom_fraction(move |fraction| {
+        let percent = (fraction * 100.0).round() as i64;
+        let core = state_for_split.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_split.block_on(core.set_reading_pane_bottom_percent(percent));
+        }
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_pane = Rc::clone(state);
+    let runtime_for_pane = Rc::clone(runtime);
+    app.on_save_reading_pane_position(move |position| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let core = state_for_pane.borrow().core.clone();
+        if let Some(core) = core {
+            match runtime_for_pane.block_on(core.set_reading_pane_position(position.as_str())) {
+                Ok(()) => app.set_sync_status(UiMessage::plain("Reading pane position saved.")),
+                Err(error) => app.set_sync_status(UiMessage::detail(
+                    "Could not save reading pane position: {}",
+                    error,
+                )),
+            }
+        }
+    });
+
+    let app_weak = app.as_weak();
     let state_for_workspace_layout = Rc::clone(state);
     let runtime_for_workspace_layout = Rc::clone(runtime);
     app.on_save_workspace_layout(move |layout| {
