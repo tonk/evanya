@@ -23,6 +23,9 @@ keys are shared with Settings and take precedence over bundled keys; clearing a
 custom client ID restores the defaults when available. Each provider enables
 separately once its configuration is saved.
 
+To create your own Google app key and set it up, follow the step-by-step
+guide in [Your own Google app key for Gmail](google-oauth.md).
+
 ## Windows and macOS
 
 Windows previews are unsigned; macOS previews are ad-hoc signed and not
