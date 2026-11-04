@@ -895,6 +895,92 @@ fn resolve_single_mail_drop(
     Ok((target, destination))
 }
 
+/// Messages dragged onto a mailbox of another account, waiting for the
+/// choice between moving and copying them there.
+#[derive(Clone, Debug)]
+struct CrossAccountDrop {
+    thread_ids: Vec<i64>,
+    message_ids: Vec<i64>,
+    folder_id: i64,
+    /// The mailbox and its account, as the sidebar names them.
+    destination: String,
+}
+
+/// A drop of messages from other accounts onto an account's mailbox. `None`
+/// when the drop stays within one account; an error when it cannot be
+/// copied there.
+fn resolve_cross_account_drop(
+    state: &InboxState,
+    payload: &MailDragPayload,
+    target_scope: Scope,
+    target_account_id: i32,
+    target_folder_id: i32,
+) -> Option<Result<CrossAccountDrop, String>> {
+    if !matches!(target_scope, Scope::Folder(_) | Scope::Account { .. }) {
+        return None;
+    }
+    let target_account = i64::from(target_account_id);
+    let messages = payload
+        .items
+        .iter()
+        .filter_map(|item| {
+            state
+                .messages
+                .iter()
+                .find(|message| message.id == item.message_id)
+        })
+        .collect::<Vec<_>>();
+    if messages.is_empty()
+        || messages
+            .iter()
+            .all(|message| message.account_id == target_account)
+    {
+        return None;
+    }
+    if messages
+        .iter()
+        .any(|message| message.account_id == target_account)
+    {
+        return Some(Err(
+            "drag messages from one account at a time to another account".to_owned(),
+        ));
+    }
+    let mailbox = state.mailboxes.iter().find(|mailbox| {
+        !mailbox.is_account
+            && mailbox.account_id == target_account
+            && mailbox.scope == Some(target_scope)
+            && mailbox.folder_id == i64::from(target_folder_id)
+    });
+    let Some(mailbox) = mailbox.filter(|mailbox| mailbox.is_selectable && mailbox.folder_id >= 0)
+    else {
+        return Some(Err("this mailbox cannot receive copied mail".to_owned()));
+    };
+    if matches!(
+        target_scope,
+        Scope::Account {
+            mailbox: StandardMailbox::Drafts | StandardMailbox::Starred,
+            ..
+        }
+    ) {
+        return Some(Err("this mailbox cannot receive copied mail".to_owned()));
+    }
+    let mut thread_ids = Vec::new();
+    let mut message_ids = Vec::new();
+    for message in messages {
+        match MailTarget::of(message) {
+            Some(MailTarget::Thread(thread_id)) => thread_ids.push(thread_id),
+            Some(MailTarget::Message { id, .. }) => message_ids.push(id),
+            None => return Some(Err("message thread is unavailable".to_owned())),
+        }
+    }
+    Some(Ok(CrossAccountDrop {
+        thread_ids,
+        message_ids,
+        folder_id: mailbox.folder_id,
+        destination: format!("{} · {}", mailbox.label, mailbox.context),
+    }))
+}
+
 fn resolve_mail_drop(
     state: &InboxState,
     payload: &MailDragPayload,
@@ -2024,8 +2110,18 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             else {
                 return false;
             };
+            let state = state_for_mail_drop_check.borrow();
+            if let Some(cross) = resolve_cross_account_drop(
+                &state,
+                &payload,
+                target_scope,
+                target_account_id,
+                target_folder_id,
+            ) {
+                return cross.is_ok();
+            }
             resolve_mail_drop(
-                &state_for_mail_drop_check.borrow(),
+                &state,
                 &payload,
                 target_scope,
                 target_account_id,
@@ -2037,6 +2133,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let app_for_mail_drop = app.as_weak();
     let state_for_mail_drop = Rc::clone(&state);
     let runtime_for_mail_drop = Rc::clone(&runtime);
+    let pending_cross_drop: Rc<RefCell<Option<CrossAccountDrop>>> = Rc::default();
+    let pending_for_drop = Rc::clone(&pending_cross_drop);
     app.global::<MailDragApi>().on_drop_on_mailbox(
         move |data, target_scope, target_account_id, target_folder_id| {
             let Some(app) = app_for_mail_drop.upgrade() else {
@@ -2056,6 +2154,40 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 ));
                 return false;
             };
+            // Another account's mailbox: ask whether to move or copy.
+            let cross = resolve_cross_account_drop(
+                &state_for_mail_drop.borrow(),
+                &payload,
+                target_scope,
+                target_account_id,
+                target_folder_id,
+            );
+            match cross {
+                Some(Ok(drop)) => {
+                    let count = drop.thread_ids.len() + drop.message_ids.len();
+                    app.set_cross_account_drop_text(translated(
+                        &app,
+                        &UiMessage::arguments(
+                            "Move or copy {} to {}?",
+                            if count == 1 {
+                                translated(&app, &UiMessage::plain("1 message")).to_string()
+                            } else {
+                                translated(&app, &UiMessage::detail("{} messages", count))
+                                    .to_string()
+                            },
+                            &drop.destination,
+                        ),
+                    ));
+                    *pending_for_drop.borrow_mut() = Some(drop);
+                    app.set_cross_account_drop_open(true);
+                    return true;
+                }
+                Some(Err(error)) => {
+                    app.set_render_status(UiMessage::detail("Message action failed: {}", error));
+                    return false;
+                }
+                None => {}
+            }
             match perform_mail_drop(
                 &app,
                 &state_for_mail_drop,
@@ -2073,6 +2205,72 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             }
         },
     );
+
+    // The answer to "move or copy": the copy runs in the background, and
+    // the account's sync then shows the mail like any other.
+    let app_for_cross_drop = app.as_weak();
+    let state_for_cross_drop = Rc::clone(&state);
+    let runtime_for_cross_drop = Rc::clone(&runtime);
+    app.on_finish_cross_account_drop(move |choice| {
+        let Some(app) = app_for_cross_drop.upgrade() else {
+            return;
+        };
+        app.set_cross_account_drop_open(false);
+        let Some(drop) = pending_cross_drop.borrow_mut().take() else {
+            return;
+        };
+        let move_messages = match choice.as_str() {
+            "move" => true,
+            "copy" => false,
+            _ => return,
+        };
+        let Some(core) = state_for_cross_drop.borrow().core.clone() else {
+            return;
+        };
+        app.set_sync_status(if move_messages {
+            UiMessage::detail("Moving messages to {}…", &drop.destination)
+        } else {
+            UiMessage::detail("Copying messages to {}…", &drop.destination)
+        });
+        let app = app.as_weak();
+        runtime_for_cross_drop.spawn(async move {
+            let destination = drop.destination.clone();
+            let result = core
+                .copy_to_folder(
+                    drop.thread_ids,
+                    drop.message_ids,
+                    drop.folder_id,
+                    move_messages,
+                )
+                .await;
+            let message = match result {
+                Ok(report) if report.unavailable == 0 && report.refused.is_empty() => {
+                    let count = report.copied + report.present;
+                    if move_messages {
+                        UiMessage::arguments("Moved {} to {}.", count, destination)
+                    } else {
+                        UiMessage::arguments("Copied {} to {}.", count, destination)
+                    }
+                }
+                Ok(report) => {
+                    if let Some(reason) = report.refused.first() {
+                        tracing::warn!(%reason, "the server refused a copied message");
+                    }
+                    UiMessage::arguments(
+                        "{} copied; {} could not be read or were refused and stay where they were.",
+                        report.copied + report.present,
+                        report.unavailable + report.refused.len(),
+                    )
+                }
+                Err(error) => UiMessage::detail("Could not copy the messages: {}", error),
+            };
+            let _ = slint::invoke_from_event_loop(move || {
+                if let Some(app) = app.upgrade() {
+                    app.set_sync_status(message);
+                }
+            });
+        });
+    });
 
     let contact_state = Rc::new(RefCell::new(ContactDirectoryState::new(Vec::new(), false)));
     app.set_contacts(Rc::clone(&contact_state.borrow().rows).into());

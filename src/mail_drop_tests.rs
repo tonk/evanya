@@ -125,4 +125,27 @@ fn drops_resolve_by_scope_not_by_mailbox_name() {
         )
         .is_err()
     );
+
+    // Another account's folder: a copy or move there, by conversation.
+    let mut other = mailbox(Scope::Folder(40), 40, "Projects");
+    other.account_id = 2;
+    other.context = "Work".into();
+    state.mailboxes.push(other);
+    let payload = MailDragPayload {
+        items: vec![item.clone()],
+    };
+    let cross = resolve_cross_account_drop(&state, &payload, Scope::Folder(40), 2, 40)
+        .expect("a drop on another account")
+        .expect("a mailbox that receives copies");
+    assert_eq!(cross.thread_ids, [77]);
+    assert!(cross.message_ids.is_empty());
+    assert_eq!(cross.folder_id, 40);
+    assert_eq!(cross.destination, "Projects · Work");
+    // Within the account it stays an ordinary drop.
+    assert!(resolve_cross_account_drop(&state, &payload, Scope::Folder(12), 1, 12).is_none());
+    // A folder the sidebar does not know is no destination.
+    assert!(matches!(
+        resolve_cross_account_drop(&state, &payload, Scope::Folder(41), 2, 41),
+        Some(Err(_))
+    ));
 }

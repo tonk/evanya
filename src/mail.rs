@@ -1615,6 +1615,21 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    /// Copy conversations and messages into a mailbox of another account,
+    /// moving them to their own Trash afterwards when `move_messages`.
+    pub async fn copy_to_folder(
+        &self,
+        thread_ids: Vec<i64>,
+        message_ids: Vec<i64>,
+        folder_id: i64,
+        move_messages: bool,
+    ) -> Result<flectar_mail_core::mail_import::MailCopyReport, String> {
+        self.core
+            .copy_messages_to_folder(thread_ids, message_ids, folder_id, move_messages)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
     /// Name an account for display; an empty name restores the provider's.
     pub async fn set_account_short_name(
         &self,

@@ -635,6 +635,195 @@ impl crate::Core {
     }
 }
 
+/// What a copy of messages into another account's mailbox did.
+#[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MailCopyReport {
+    /// Messages uploaded to the mailbox.
+    pub copied: usize,
+    /// Messages the account already had, which were not uploaded again.
+    pub present: usize,
+    /// Messages whose original could not be read, such as one never
+    /// downloaded that the server no longer has.
+    pub unavailable: usize,
+    /// Messages the server refused, with its reasons.
+    pub refused: Vec<String>,
+    /// Messages moved to their own account's Trash after copying.
+    pub moved: usize,
+}
+
+/// How long a copy waits for the original of a message not downloaded yet.
+const ORIGINAL_WAIT: Duration = Duration::from_secs(60);
+
+impl crate::Core {
+    /// Copy messages into a mailbox, usually of another account, by
+    /// uploading their originals with their read and starred states. With
+    /// `move_messages`, each message that arrived (or was there already)
+    /// then goes to its own account's Trash, so nothing is lost when the
+    /// upload fails. Messages are uploaded one by one; one that fails does
+    /// not stop the others.
+    /// Conversations in `thread_ids` count with all their messages but drafts.
+    pub async fn copy_messages_to_folder(
+        &self,
+        thread_ids: Vec<i64>,
+        mut message_ids: Vec<i64>,
+        folder_id: i64,
+        move_messages: bool,
+    ) -> Result<MailCopyReport> {
+        if !thread_ids.is_empty() {
+            let in_threads = self
+                .db
+                .read(move |conn| {
+                    let mut ids = Vec::new();
+                    let mut statement = conn.prepare(
+                        "SELECT id FROM messages
+                         WHERE thread_id = ?1 AND is_draft = 0
+                         ORDER BY date, id",
+                    )?;
+                    for thread_id in &thread_ids {
+                        for id in statement.query_map([thread_id], |row| row.get::<_, i64>(0))? {
+                            ids.push(id?);
+                        }
+                    }
+                    Ok(ids)
+                })
+                .await?;
+            for id in in_threads {
+                if !message_ids.contains(&id) {
+                    message_ids.push(id);
+                }
+            }
+        }
+        let (folder, gmail_label) = self
+            .db
+            .read(move |conn| {
+                let folder = repo::folders::get(conn, folder_id)?
+                    .ok_or_else(|| CoreError::NotFound(format!("folder {folder_id}")))?;
+                let label =
+                    repo::gmail::provider_label_for_folder(conn, folder.account_id, folder_id)?;
+                Ok((folder, label))
+            })
+            .await?;
+        let account_id = folder.account_id;
+        let target = Target {
+            folder_id: folder.id,
+            path: folder.path,
+            jmap_id: folder.jmap_id,
+            gmail_label,
+        };
+        let config = self.folder_account_config(account_id).await?;
+        let mut remote = match self.account_protocol(account_id).await? {
+            MailProtocol::Imap => Remote::Imap {
+                session: None,
+                selected: None,
+                first_uids: HashMap::new(),
+            },
+            MailProtocol::Jmap => Remote::Jmap { client: None },
+            MailProtocol::Gmail => {
+                let uploader = sync::gmail::Uploader::new(self.sync_ctx(), config.clone())?;
+                uploader.refresh_labels().await?;
+                Remote::Gmail { uploader }
+            }
+            MailProtocol::Pop3 | MailProtocol::Local => {
+                return Err(CoreError::Other(
+                    "mail can only be copied to an IMAP, JMAP or Gmail account".into(),
+                ));
+            }
+        };
+
+        let mut report = MailCopyReport::default();
+        let mut done = Vec::new();
+        for message_id in message_ids {
+            let Some((row, raw)) = self.original_for_copy(message_id).await else {
+                report.unavailable += 1;
+                continue;
+            };
+            let incoming = Incoming {
+                folder: 0,
+                stored_at: None,
+                recorded: super::state::Recorded {
+                    read: Some(row.is_read),
+                    starred: row.is_starred,
+                    deleted: false,
+                },
+                parsed: sync::ingest::parse_or_text(&raw),
+                raw,
+                read: 0,
+            };
+            match self
+                .upload_message(&config, &mut remote, &incoming, &target)
+                .await
+            {
+                Ok(Outcome::Uploaded) => {
+                    report.copied += 1;
+                    done.push(message_id);
+                }
+                Ok(Outcome::Present) => {
+                    report.present += 1;
+                    done.push(message_id);
+                }
+                Ok(Outcome::Refused(reason)) => report.refused.push(reason),
+                Err(error) => report.refused.push(error.to_string()),
+            }
+        }
+        self.finish_upload(account_id, &mut remote).await?;
+
+        if move_messages && !done.is_empty() {
+            report.moved = done.len();
+            self.perform_action(crate::models::PerformActionArgs {
+                kind: crate::models::ActionKind::Trash,
+                target: crate::models::ActionTarget::Messages(done),
+                params: None,
+            })
+            .await?;
+        }
+        Ok(report)
+    }
+
+    /// A message's original, downloading it first when only its headers or
+    /// part of it are here.
+    async fn original_for_copy(
+        &self,
+        message_id: i64,
+    ) -> Option<(repo::messages::MessageRow, Vec<u8>)> {
+        let started = std::time::Instant::now();
+        let mut requested = false;
+        loop {
+            let row = self
+                .db
+                .read(move |conn| repo::messages::get_row(conn, message_id))
+                .await
+                .ok()
+                .flatten()?;
+            if let Some(path) = row.raw_path.clone() {
+                let raw = self
+                    .read_original(
+                        row.account_id,
+                        message_id,
+                        &path,
+                        crate::MAX_CACHED_MESSAGE_BYTES,
+                        "copied message",
+                    )
+                    .await
+                    .inspect_err(|error| {
+                        tracing::warn!(message_id, %error, "original of a copied message unreadable");
+                    })
+                    .ok()?;
+                return Some((row, raw));
+            }
+            if !requested {
+                self.request_body(row.account_id, message_id).await;
+                requested = true;
+            }
+            if started.elapsed() >= ORIGINAL_WAIT {
+                tracing::warn!(message_id, "original of a copied message never arrived");
+                return None;
+            }
+            tokio::time::sleep(Duration::from_millis(250)).await;
+        }
+    }
+}
+
 async fn gmail_upload(
     uploader: &sync::gmail::Uploader,
     message: &Incoming,

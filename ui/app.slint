@@ -378,6 +378,15 @@ export global I18n {
         if (key == "The account's mail is hidden; it keeps synchronizing.") { return @tr("The account's mail is hidden; it keeps synchronizing."); }
         if (key == "Could not save the account's mail visibility: {}") { return @tr("Could not save the account's mail visibility: {}", argument); }
         if (key == "Could not save the folder choice: {}") { return @tr("Could not save the folder choice: {}", argument); }
+        if (key == "Move or copy {} to {}?") { return @tr("Move or copy {} to {}?", argument, second-argument); }
+        if (key == "1 message") { return @tr("1 message"); }
+        if (key == "{} messages") { return @tr("{} messages", argument); }
+        if (key == "Moving messages to {}…") { return @tr("Moving messages to {}…", argument); }
+        if (key == "Copying messages to {}…") { return @tr("Copying messages to {}…", argument); }
+        if (key == "Moved {} to {}.") { return @tr("Moved {} to {}.", argument, second-argument); }
+        if (key == "Copied {} to {}.") { return @tr("Copied {} to {}.", argument, second-argument); }
+        if (key == "{} copied; {} could not be read or were refused and stay where they were.") { return @tr("{} copied; {} could not be read or were refused and stay where they were.", argument, second-argument); }
+        if (key == "Could not copy the messages: {}") { return @tr("Could not copy the messages: {}", argument); }
         if (key == "Calendar color saved.") { return @tr("Calendar color saved."); }
         if (key == "Add a language…") { return @tr("Add a language…"); }
         if (key == "Could not save the spelling settings: {}") { return @tr("Could not save the spelling settings: {}", argument); }
@@ -721,6 +730,11 @@ export component AppWindow inherits Window {
     callback open_compose();
     callback close_compose();
     callback switch_compose_format(bool);
+    // Messages dropped on another account's mailbox: the question, and the
+    // answer "move", "copy" or "cancel".
+    in-out property <bool> cross_account_drop_open: false;
+    in property <string> cross_account_drop_text: "";
+    callback finish_cross_account_drop(string);
     in property <[string]> compose_spell_suggestions: [];
     callback compose_spell_lookup() -> bool;
     callback compose_spell_replace(string);
@@ -1978,6 +1992,69 @@ export component AppWindow inherits Window {
             live-title: root.settings_open || root.active_view != "mail" ? ""
                 : root.has_selected && root.selected_subject != "" ? root.selected_subject
                 : root.selected_scope_title;
+        }
+
+        // Messages dropped on another account's mailbox.
+        if root.cross_account_drop_open : Rectangle {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: parent.height;
+            background: #00000066;
+            z: 9500;
+            TouchArea { clicked => { root.finish_cross_account_drop("cancel"); } }
+
+            Rectangle {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: min(440px, parent.width - 32px);
+                height: cross-drop-layout.preferred-height;
+                border-radius: 12px;
+                border-width: 1px;
+                border-color: root.border-subtle;
+                background: root.surface;
+                TouchArea { }
+
+                cross-drop-layout := VerticalLayout {
+                    padding: 22px;
+                    spacing: 12px;
+                    Text {
+                        text: @tr("Another account");
+                        color: root.title-color;
+                        font-size: TypeScale.subtitle;
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: root.cross_account_drop_text;
+                        color: root.body-text;
+                        font-size: TypeScale.body;
+                        wrap: word-wrap;
+                    }
+                    Text {
+                        text: @tr("Moving copies the messages there and then puts them in their own account's Trash. Copying leaves them where they are.");
+                        color: root.muted-text;
+                        font-size: TypeScale.caption;
+                        wrap: word-wrap;
+                    }
+                    HorizontalLayout {
+                        alignment: end;
+                        spacing: 8px;
+                        Button {
+                            text: @tr("Cancel");
+                            clicked => { root.finish_cross_account_drop("cancel"); }
+                        }
+                        Button {
+                            text: @tr("Copy");
+                            clicked => { root.finish_cross_account_drop("copy"); }
+                        }
+                        Button {
+                            text: @tr("Move");
+                            primary: true;
+                            clicked => { root.finish_cross_account_drop("move"); }
+                        }
+                    }
+                }
+            }
         }
 
         if root.calendar_editor_open : CalendarEventDialog {
