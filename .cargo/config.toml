@@ -5,7 +5,7 @@ target-dir = "target"
 # Compiling Slint's generated library and test harness together can exhaust
 # memory on a 16 GiB development host, including editor background checks.
 # Larger builders can opt into more parallelism with Cargo's -j option.
-jobs = 1
+jobs = 8
 
 # Slint's desktop guide recommends matching Linux's larger main-thread stack on
 # Windows. This prevents stack overflows in debug builds with deep UI trees.
