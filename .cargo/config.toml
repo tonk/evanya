@@ -2,9 +2,10 @@
 # one disposable build tree. Cargo resolves this relative path to <repo>/target.
 [build]
 target-dir = "target"
-# Compiling Slint's generated library and test harness together can exhaust
-# memory on a 16 GiB development host, including editor background checks.
-# Larger builders can opt into more parallelism with Cargo's -j option.
+# Eight parallel jobs keep builds reasonably fast. Compiling Slint's generated
+# library and test harness together needs a lot of memory, though: on a host
+# with 16 GiB or less, lower this (or pass Cargo's -j option, for example
+# `make JOBS=2`) if builds run out of memory.
 jobs = 8
 
 # Slint's desktop guide recommends matching Linux's larger main-thread stack on
