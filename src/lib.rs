@@ -65,6 +65,7 @@ mod settings_controller;
 mod sidebar_model;
 #[cfg(desktop)]
 mod single_instance;
+mod spellcheck;
 mod startup;
 mod startup_metrics;
 mod tabs;
@@ -1085,6 +1086,7 @@ fn normalized_language_preference(language: &str) -> &'static str {
         "es" => "es",
         "tr" => "tr",
         "ru" | "ru-RU" | "ru_RU" => "ru",
+        "nl" | "nl-NL" | "nl_NL" | "nl-BE" | "nl_BE" => "nl",
         "zh" | "zh-Hans" | "zh_Hans" => "zh_Hans",
         _ => "system",
     }
@@ -1103,6 +1105,9 @@ fn bundled_language_for_locale(locale: &str) -> Option<&'static str> {
     }
     if language.eq_ignore_ascii_case("ru") {
         return Some("ru");
+    }
+    if language.eq_ignore_ascii_case("nl") {
+        return Some("nl");
     }
     if !language.eq_ignore_ascii_case("zh") {
         return None;
@@ -1610,6 +1615,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         }
     };
 
+    spellcheck::set_data_dir(&platform.paths.data_dir);
     let renderer_preference_path = platform.paths.data_dir.join("renderer.json");
     let tabs_path = platform.paths.data_dir.join("tabs.json");
     let preferred_renderer = renderer_preferences::load(&renderer_preference_path);
@@ -2960,22 +2966,68 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         );
     });
 
-    let app_weak = app.as_weak();
+    // Where new events go, as last offered: (calendar id, account id, label).
+    let event_targets: Rc<RefCell<Vec<(i64, i64, String)>>> = Rc::default();
+    let last_event_target: Rc<Cell<Option<i64>>> = Rc::default();
+    let open_new_event = {
+        let app_weak = app.as_weak();
+        let calendar_for_editor = Rc::clone(&calendar_state);
+        let inbox_for_editor = Rc::clone(&state);
+        let editing_event_for_new = Rc::clone(&calendar_editing_event_id);
+        let targets_for_open = Rc::clone(&event_targets);
+        let last_target_for_open = Rc::clone(&last_event_target);
+        Rc::new(move |date: NaiveDate, minutes: u32| {
+            let Some(app) = app_weak.upgrade() else {
+                return;
+            };
+            let targets = calendar::event_targets(
+                &calendar_for_editor.borrow(),
+                &inbox_for_editor.borrow().connected_accounts,
+            );
+            // The calendar used last time, else the first default one.
+            let chosen = last_target_for_open
+                .get()
+                .and_then(|id| targets.iter().position(|target| target.0 == id))
+                .unwrap_or(0);
+            app.set_calendar_event_targets(ModelRc::new(VecModel::from(
+                targets
+                    .iter()
+                    .map(|target| slint::SharedString::from(target.2.as_str()))
+                    .collect::<Vec<_>>(),
+            )));
+            *targets_for_open.borrow_mut() = targets;
+            editing_event_for_new.set(None);
+            app.set_calendar_event_editing(false);
+            app.set_calendar_event_title("".into());
+            app.set_calendar_event_date(date.format("%Y-%m-%d").to_string().into());
+            app.set_calendar_event_time(
+                date_format::current()
+                    .time(minutes / 60, minutes % 60)
+                    .into(),
+            );
+            app.set_calendar_event_duration("60".into());
+            app.set_calendar_event_color(i32::try_from(chosen).unwrap_or_default());
+            app.set_calendar_event_location("".into());
+            app.set_calendar_event_description("".into());
+            app.set_calendar_editor_open(true);
+        })
+    };
+
     let calendar_for_editor = Rc::clone(&calendar_state);
-    let editing_event_for_new = Rc::clone(&calendar_editing_event_id);
+    let open_for_button = Rc::clone(&open_new_event);
     app.on_calendar_open_editor(move || {
-        let Some(app) = app_weak.upgrade() else {
-            return;
-        };
-        let calendar = calendar_for_editor.borrow();
-        editing_event_for_new.set(None);
-        app.set_calendar_event_editing(false);
-        app.set_calendar_event_title("".into());
-        app.set_calendar_event_date(calendar.selected_date.format("%Y-%m-%d").to_string().into());
-        app.set_calendar_event_time(date_format::current().time(9, 0).into());
-        app.set_calendar_event_duration("60".into());
-        app.set_calendar_event_color(0);
-        app.set_calendar_editor_open(true);
+        let date = calendar_for_editor.borrow().selected_date;
+        open_for_button(date, 9 * 60);
+    });
+
+    let open_for_grid = Rc::clone(&open_new_event);
+    app.on_calendar_new_event_at(move |date, minutes| {
+        if let Ok(date) = NaiveDate::parse_from_str(date.as_str(), "%Y-%m-%d") {
+            open_for_grid(
+                date,
+                u32::try_from(minutes).unwrap_or(9 * 60).min(24 * 60 - 1),
+            );
+        }
     });
 
     let app_weak = app.as_weak();
@@ -3004,7 +3056,23 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         let start = event.start_minutes.clamp(0, 24 * 60 - 1) as u32;
         app.set_calendar_event_time(date_format::current().time(start / 60, start % 60).into());
         app.set_calendar_event_duration(event.duration_minutes.to_string().into());
-        app.set_calendar_event_color(event.color_index);
+        // An event stays in its calendar; the field only names it.
+        let calendar_name = calendar_for_edit
+            .borrow()
+            .sources
+            .iter()
+            .find(|source| Some(source.id) == event.calendar_id)
+            .map(|source| source.name.clone())
+            .unwrap_or_default();
+        app.set_calendar_event_targets(ModelRc::new(VecModel::from(
+            (!calendar_name.is_empty())
+                .then(|| slint::SharedString::from(calendar_name))
+                .into_iter()
+                .collect::<Vec<_>>(),
+        )));
+        app.set_calendar_event_color(0);
+        app.set_calendar_event_location(event.location.clone().into());
+        app.set_calendar_event_description(event.description.clone().into());
         app.set_calendar_editor_open(true);
     });
 
@@ -3066,7 +3134,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let runtime_for_calendar_save = Rc::clone(&runtime);
     let inbox_for_calendar_save = Rc::clone(&state);
     let editing_event_for_save = Rc::clone(&calendar_editing_event_id);
-    app.on_calendar_save_event(move |title, date, time, duration, _color| {
+    let targets_for_save = Rc::clone(&event_targets);
+    let last_target_for_save = Rc::clone(&last_event_target);
+    app.on_calendar_save_event(move |title, date, time, duration, target| {
         let Some(app) = app_weak.upgrade() else {
             return;
         };
@@ -3115,13 +3185,18 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 .find(|event| i64::from(event.id) == event_id && event.is_local)
                 .cloned()
         });
+        let optional = |value: slint::SharedString| {
+            Some(value.trim().to_owned()).filter(|value| !value.is_empty())
+        };
+        let location = optional(app.get_calendar_event_location());
+        let description = optional(app.get_calendar_event_description());
         let result = if let Some(event) = editing_event {
             runtime_for_calendar_save
                 .block_on(core.update_event(UpdateEventArgs {
                     event_id: i64::from(event.id),
                     summary: title.trim().to_owned(),
-                    description: (!event.description.is_empty()).then_some(event.description),
-                    location: (!event.location.is_empty()).then_some(event.location),
+                    description,
+                    location,
                     join_url: (!event.join_url.is_empty()).then_some(event.join_url),
                     starts_at,
                     ends_at,
@@ -3131,19 +3206,23 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 }))
                 .map(|_| ())
         } else {
-            let account_id = inbox_for_calendar_save
-                .borrow()
-                .connected_accounts
-                .first()
-                .map(|account| account.id)
-                .unwrap_or(0);
+            // The chosen calendar and its account; without a writable
+            // calendar the event stays on this device.
+            let chosen = usize::try_from(target)
+                .ok()
+                .and_then(|index| targets_for_save.borrow().get(index).cloned());
+            last_target_for_save.set(chosen.as_ref().map(|target| target.0));
+            let (calendar_id, account_id) = chosen
+                .map_or((None, 0), |(calendar_id, account_id, _)| {
+                    (Some(calendar_id), account_id)
+                });
             runtime_for_calendar_save
                 .block_on(core.create_event(CreateEventArgs {
                     account_id,
-                    calendar_id: None,
+                    calendar_id,
                     summary: title.trim().to_owned(),
-                    description: None,
-                    location: None,
+                    description,
+                    location,
                     join_url: None,
                     starts_at,
                     ends_at,
@@ -6671,6 +6750,93 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         );
     });
 
+    // Spelling suggestions for the word at the caret, offered on right-click.
+    let spell_target: Rc<RefCell<Option<(std::ops::Range<usize>, String)>>> = Rc::default();
+    let app_weak = app.as_weak();
+    let document_for_spell = Rc::clone(&compose_document);
+    let target_for_lookup = Rc::clone(&spell_target);
+    app.on_compose_spell_lookup(move || {
+        let Some(app) = app_weak.upgrade() else {
+            return false;
+        };
+        let document = document_for_spell.borrow();
+        let caret = usize::try_from(document.selection().end).unwrap_or_default();
+        let Some((range, suggestions)) = spellcheck::lookup(document.text(), caret) else {
+            *target_for_lookup.borrow_mut() = None;
+            return false;
+        };
+        let word = document.text()[range.clone()].to_owned();
+        *target_for_lookup.borrow_mut() = Some((range, word));
+        app.set_compose_spell_suggestions(ModelRc::new(VecModel::from(
+            suggestions
+                .into_iter()
+                .map(slint::SharedString::from)
+                .collect::<Vec<_>>(),
+        )));
+        true
+    });
+
+    let app_weak = app.as_weak();
+    let document_for_spell_replace = Rc::clone(&compose_document);
+    let editor_for_spell_replace = Rc::clone(&compose_editor);
+    let target_for_replace = Rc::clone(&spell_target);
+    app.on_compose_spell_replace(move |replacement| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some((range, word)) = target_for_replace.borrow_mut().take() else {
+            return;
+        };
+        let mut document = document_for_spell_replace.borrow_mut();
+        // The text may have changed since the menu opened.
+        if document.text().get(range.clone()) != Some(word.as_str()) {
+            return;
+        }
+        document.update_selection(
+            i32::try_from(range.start).unwrap_or(i32::MAX),
+            i32::try_from(range.end).unwrap_or(i32::MAX),
+        );
+        let selection = document.insert_text(replacement.as_str());
+        apply_rich_compose(
+            &app,
+            &document,
+            selection,
+            &mut editor_for_spell_replace.borrow_mut(),
+        );
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_spell_word = Rc::clone(&state);
+    let runtime_for_spell_word = Rc::clone(&runtime);
+    let document_for_spell_word = Rc::clone(&compose_document);
+    let editor_for_spell_word = Rc::clone(&compose_editor);
+    let target_for_word = Rc::clone(&spell_target);
+    app.on_compose_spell_add_word(move || {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some((_, word)) = target_for_word.borrow_mut().take() else {
+            return;
+        };
+        spellcheck::add_personal_word(&word);
+        if let Some(core) = state_for_spell_word.borrow().core.clone() {
+            let saved = word.clone();
+            let _ = runtime_for_spell_word.block_on(core.update_settings(move |settings| {
+                if !settings.spellcheck_words.contains(&saved) {
+                    settings.spellcheck_words.push(saved);
+                }
+            }));
+        }
+        // Draw the body again without the mark.
+        let document = document_for_spell_word.borrow();
+        apply_rich_compose(
+            &app,
+            &document,
+            document.selection(),
+            &mut editor_for_spell_word.borrow_mut(),
+        );
+    });
+
     let app_weak = app.as_weak();
     let document_for_plain_text = Rc::clone(&compose_document);
     let editor_for_plain_text = Rc::clone(&compose_editor);
@@ -8662,6 +8828,8 @@ mod tests {
         assert_eq!(normalized_language_preference("zh_Hans"), "zh_Hans");
         assert_eq!(normalized_language_preference("zh-Hans"), "zh_Hans");
         assert_eq!(normalized_language_preference("zh"), "zh_Hans");
+        assert_eq!(normalized_language_preference("nl"), "nl");
+        assert_eq!(normalized_language_preference("nl_BE"), "nl");
         assert_eq!(normalized_language_preference("unknown"), "system");
     }
 
@@ -8675,6 +8843,8 @@ mod tests {
             ("ru-RU", Some("ru")),
             ("ru_UA", Some("ru")),
             ("RU-ru", Some("ru")),
+            ("nl_NL.UTF-8", Some("nl")),
+            ("nl-BE", Some("nl")),
             ("zh", Some("zh_Hans")),
             ("zh_CN.UTF-8", Some("zh_Hans")),
             ("zh_SG", Some("zh_Hans")),

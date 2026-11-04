@@ -418,6 +418,8 @@ export component FunctionalCalendarView inherits Rectangle {
     callback open-link(string);
     callback set-source-enabled(int, bool);
     callback set-source-color(int, string);
+    // A double click on the week grid: a new event that day, at that time.
+    callback new-event-at(string, int);
     callback toggle-agenda-filter(int, bool);
     callback clear-agenda-filters;
     callback edit-event(int);
@@ -767,8 +769,16 @@ export component FunctionalCalendarView inherits Rectangle {
                     width: hour-scroll.content-width;
                     height: hour-scroll.content-height;
 
-                    // Ctrl and the wheel zoom; the wheel alone scrolls.
+                    // Ctrl and the wheel zoom; the wheel alone scrolls. A double
+                    // click on an empty spot starts an event there.
                     TouchArea {
+                        double-clicked => {
+                            let day = floor((self.mouse-x - root.time-gutter) / root.column-width);
+                            if day >= 0 && day < root.week-days.length {
+                                let minutes = floor(self.mouse-y / root.hour-height * 2) * 30;
+                                root.new-event-at(root.week-days[day].iso-date, max(0, min(minutes, 23 * 60 + 30)));
+                            }
+                        }
                         scroll-event(event) => {
                             if !(event.modifiers.control || event.modifiers.meta) { return reject; }
                             root.set-zoom(event.delta-y > 0 ? root.zoom * 1.25 : root.zoom / 1.25);

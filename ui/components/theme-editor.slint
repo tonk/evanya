@@ -622,6 +622,7 @@ export component ThemeEditor inherits Rectangle {
             ThemePresetCard { horizontal-stretch: 1; name: @tr("Teal"); preview-primary: #006b7a; preview-page: AppTheme.dark ? #0b1519 : #edf5f7; preview-surface: AppTheme.dark ? #122026 : #fbfefe; preview-text: AppTheme.dark ? #e5f0f2 : #173039; selected: AppTheme.preset == "teal"; chosen => { root.choose-preset("teal"); } }
             ThemePresetCard { horizontal-stretch: 1; name: @tr("Green"); preview-primary: #2f6f44; preview-page: AppTheme.dark ? #101711 : #f1f5ef; preview-surface: AppTheme.dark ? #182019 : #fcfdfb; preview-text: AppTheme.dark ? #e9f0e6 : #213026; selected: AppTheme.preset == "green"; chosen => { root.choose-preset("green"); } }
             ThemePresetCard { horizontal-stretch: 1; name: @tr("Purple"); preview-primary: #78418a; preview-page: AppTheme.dark ? #171119 : #f6f1f7; preview-surface: AppTheme.dark ? #201722 : #fdfbfe; preview-text: AppTheme.dark ? #f1e8f3 : #332537; selected: AppTheme.preset == "purple"; chosen => { root.choose-preset("purple"); } }
+            ThemePresetCard { horizontal-stretch: 1; name: @tr("Black"); preview-primary: #0969da; preview-page: #000000; preview-surface: #000000; preview-text: #e6e6e6; selected: AppTheme.preset == "black"; chosen => { root.choose-preset("black"); } }
             ThemePresetCard { horizontal-stretch: 1; name: @tr("Custom"); preview-primary: root.current-primary; preview-page: root.current-page-bg; preview-surface: root.current-surface; preview-text: root.current-text; selected: AppTheme.preset == "custom"; chosen => { root.choose-preset("custom"); } }
         }
         if root.compact : VerticalBox {
@@ -642,9 +643,8 @@ export component ThemeEditor inherits Rectangle {
             HorizontalBox {
                 padding: 0px;
                 spacing: 8px;
-                Rectangle { horizontal-stretch: 1; }
+                ThemePresetCard { horizontal-stretch: 1; min-width: 0px; label-bottom-padding: 6px; name: @tr("Black"); preview-primary: #0969da; preview-page: #000000; preview-surface: #000000; preview-text: #e6e6e6; selected: AppTheme.preset == "black"; chosen => { root.choose-preset("black"); } }
                 ThemePresetCard { horizontal-stretch: 1; min-width: 0px; label-bottom-padding: 6px; name: @tr("Custom"); preview-primary: root.current-primary; preview-page: root.current-page-bg; preview-surface: root.current-surface; preview-text: root.current-text; selected: AppTheme.preset == "custom"; chosen => { root.choose-preset("custom"); } }
-                Rectangle { horizontal-stretch: 1; }
             }
         }
 

@@ -96,6 +96,14 @@ The Rust interface is [pdfium-render](https://github.com/ajrcarey/pdfium-render)
 [seccompiler](https://github.com/rust-vmm/seccompiler), under their Apache-2.0
 options. Rust package versions and source checksums are recorded in `Cargo.lock`.
 
+## Spell checking
+
+The composer checks spelling with the `spellbook` crate, copyright © the
+Helix editor contributors, used under the Mozilla Public License 2.0. Its
+source is <https://github.com/helix-editor/spellbook>. Flectar Mail does not
+bundle dictionaries: it reads the Hunspell dictionaries installed on the
+system or placed in its data directory, each under its own license.
+
 ## Lucide Icons
 
 The original SVG inputs in `ui/icons/lucide/sources` are sourced from

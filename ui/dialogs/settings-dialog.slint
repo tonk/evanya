@@ -7,7 +7,7 @@ import { MessageColors } from "../message-colors.slint";
 import { MailPorts, MailSecurityFields } from "../components/mail-security-fields.slint";
 import { OAuthBrowserHelp } from "../components/oauth-browser-help.slint";
 import { HorizontalBox, ScrollView, VerticalBox } from "std-widgets.slint";
-import { AccountRow, CalendarConnectionRow, MailProfileRow, ProfileMemberRow, StorageUsageRow, SubscriptionRow } from "../models.slint";
+import { AccountRow, CalendarConnectionRow, MailProfileRow, ProfileMemberRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow } from "../models.slint";
 import { AccountCalendars } from "../components/account-calendars.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
@@ -616,6 +616,13 @@ export component SettingsDialog inherits Rectangle {
     callback save_group_mail_by_date(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
+    callback save_spellcheck(string, string);
+    in property <bool> spellcheck_enabled: true;
+    in property <bool> spellcheck_automatic: true;
+    in property <[SpellLanguageRow]> spellcheck_languages: [];
+    in property <[SpellLanguageRow]> spellcheck_choices: [];
+    in property <[string]> spellcheck_choice_names: [];
+    in property <bool> spellcheck_dictionaries_found: true;
     callback save_mail_list_layout(string);
     callback choose_download_directory();
     callback clear_download_directory();
@@ -725,6 +732,7 @@ export component SettingsDialog inherits Rectangle {
         @tr("Turkish"),
         @tr("Simplified Chinese"),
         @tr("Russian"),
+        @tr("Dutch"),
     ];
     private property <[string]> time-format-options: [
         @tr("Automatic"),
@@ -739,7 +747,8 @@ export component SettingsDialog inherits Rectangle {
         : root.language_mode == "es" ? 2
         : root.language_mode == "tr" ? 3
         : root.language_mode == "zh_Hans" ? 4
-        : root.language_mode == "ru" ? 5 : 0;
+        : root.language_mode == "ru" ? 5
+        : root.language_mode == "nl" ? 6 : 0;
     private property <[string]> list-date-options: [
         @tr("Smart"),
         @tr("Date and time"),
@@ -826,7 +835,8 @@ export component SettingsDialog inherits Rectangle {
             : index == 2 ? "es"
             : index == 3 ? "tr"
             : index == 4 ? "zh_Hans"
-            : index == 5 ? "ru" : "system";
+            : index == 5 ? "ru"
+            : index == 6 ? "nl" : "system";
         root.save_language(root.language_mode);
     }
 
@@ -1417,6 +1427,69 @@ export component SettingsDialog inherits Rectangle {
                                         toggled(checked) => {
                                             root.compose_plain_text = checked;
                                             root.save_compose_plain_text(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Check spelling while writing");
+                                        description: root.spellcheck_dictionaries_found
+                                            ? @tr("Misspelled words get a red line. Right-click one for suggestions. A word is correct when any chosen language knows it.")
+                                            : @tr("No spelling dictionaries were found. Install Hunspell dictionaries, such as hunspell-nl and hunspell-en-us.");
+                                        checked: root.spellcheck_enabled;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => { root.save_spellcheck(checked ? "on" : "off", ""); }
+                                    }
+                                    if root.spellcheck_enabled && root.spellcheck_dictionaries_found : VerticalLayout {
+                                        spacing: 2px;
+                                        padding-left: 8px;
+                                        for language in root.spellcheck_languages : HorizontalLayout {
+                                            height: 32px;
+                                            spacing: 8px;
+                                            Text {
+                                                horizontal-stretch: 1;
+                                                text: language.name;
+                                                color: root.body-text;
+                                                font-size: TypeScale.body;
+                                                vertical-alignment: center;
+                                                overflow: elide;
+                                            }
+                                            IconButton {
+                                                width: 28px;
+                                                height: 28px;
+                                                icon: @image-url("../icons/lucide/outline/x.svg");
+                                                icon-size: 14px;
+                                                icon-color: root.muted-text;
+                                                ghost: true;
+                                                hover-background: AppTheme.muted-control-bg;
+                                                tooltip-text: @tr("Remove");
+                                                clicked => { root.save_spellcheck("remove", language.code); }
+                                            }
+                                        }
+                                        SettingsSelectRow {
+                                            compact: root.compact;
+                                            title: @tr("Spelling languages");
+                                            description: root.spellcheck_automatic
+                                                ? @tr("Following the interface language, with English.")
+                                                : @tr("Chosen by you.");
+                                            choices: root.spellcheck_choice_names;
+                                            selected-index: 0;
+                                            title-color: root.body-text;
+                                            description-color: root.faint-text;
+                                            selected(index, value) => {
+                                                if index > 0 {
+                                                    root.save_spellcheck("add", root.spellcheck_choices[index - 1].code);
+                                                    self.selected-index = 0;
+                                                }
+                                            }
+                                        }
+                                        if !root.spellcheck_automatic : HorizontalLayout {
+                                            alignment: start;
+                                            Button {
+                                                text: @tr("Follow the interface language");
+                                                clicked => { root.save_spellcheck("automatic", ""); }
+                                            }
                                         }
                                     }
                                     Rectangle { height: 1px; background: root.border-subtle; }

@@ -8,6 +8,44 @@
 use super::*;
 use flectar_mail_core::models::CustomTheme;
 
+/// Load the spelling dictionaries these settings ask for and show the
+/// choice in Settings.
+pub(crate) fn apply_spellcheck(app: &AppWindow, settings: &flectar_mail_core::models::Settings) {
+    let available = crate::spellcheck::available_languages();
+    let interface_language = if settings.language == "system" {
+        sys_locale::get_locale().unwrap_or_default()
+    } else {
+        settings.language.clone()
+    };
+    let languages = crate::spellcheck::effective_languages(
+        settings.spellcheck_enabled,
+        &settings.spellcheck_languages,
+        &interface_language,
+        &available,
+    );
+    crate::spellcheck::configure(&languages, &settings.spellcheck_words);
+    let row = |code: &String| SpellLanguageRow {
+        code: code.clone().into(),
+        name: crate::spellcheck::language_name(code).into(),
+    };
+    app.set_spellcheck_enabled(settings.spellcheck_enabled);
+    app.set_spellcheck_automatic(settings.spellcheck_languages.is_empty());
+    app.set_spellcheck_languages(ModelRc::new(VecModel::from(
+        languages.iter().map(row).collect::<Vec<_>>(),
+    )));
+    let choices = available
+        .iter()
+        .filter(|code| !languages.contains(code))
+        .map(row)
+        .collect::<Vec<_>>();
+    // The list opens on a prompt, so choosing any language is a change.
+    let mut names = vec![translated(app, &UiMessage::plain("Add a language…"))];
+    names.extend(choices.iter().map(|choice| choice.name.clone()));
+    app.set_spellcheck_choice_names(ModelRc::new(VecModel::from(names)));
+    app.set_spellcheck_choices(ModelRc::new(VecModel::from(choices)));
+    app.set_spellcheck_dictionaries_found(!available.is_empty());
+}
+
 fn apply_account_presentation_settings(
     app: &AppWindow,
     state: &Rc<RefCell<InboxState>>,
@@ -982,6 +1020,55 @@ pub(super) fn register_settings_preference_callbacks(
             if let Some(scope) = next {
                 app.invoke_select_scope(scope.to_string().into());
             }
+        }
+    });
+
+    // Spelling: switch it on or off, and choose the languages.
+    let app_weak = app.as_weak();
+    let state_for_spelling = Rc::clone(state);
+    let runtime_for_spelling = Rc::clone(runtime);
+    app.on_save_spellcheck(move |action, code| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = state_for_spelling.borrow().core.clone() else {
+            return;
+        };
+        // The languages shown are the ones in effect; a first change turns
+        // the automatic choice into an explicit list.
+        let shown = (0..app.get_spellcheck_languages().row_count())
+            .filter_map(|index| app.get_spellcheck_languages().row_data(index))
+            .map(|row| row.code.to_string())
+            .collect::<Vec<_>>();
+        let action = action.to_string();
+        let code = code.to_string();
+        let result =
+            runtime_for_spelling.block_on(core.update_settings(|settings| match action.as_str() {
+                "on" => settings.spellcheck_enabled = true,
+                "off" => settings.spellcheck_enabled = false,
+                "add" => {
+                    let mut languages = shown.clone();
+                    if !languages.contains(&code) {
+                        languages.push(code.clone());
+                    }
+                    settings.spellcheck_languages = languages;
+                }
+                "remove" => {
+                    settings.spellcheck_languages = shown
+                        .iter()
+                        .filter(|known| **known != code)
+                        .cloned()
+                        .collect();
+                }
+                "automatic" => settings.spellcheck_languages.clear(),
+                _ => {}
+            }));
+        match result.and(runtime_for_spelling.block_on(core.load_settings())) {
+            Ok(settings) => apply_spellcheck(&app, &settings),
+            Err(error) => app.set_sync_status(UiMessage::detail(
+                "Could not save the spelling settings: {}",
+                error,
+            )),
         }
     });
 

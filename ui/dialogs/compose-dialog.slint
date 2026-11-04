@@ -60,6 +60,10 @@ export component ComposeDialog inherits Rectangle {
     in property <string> compose_active_link_url: "";
     callback close_compose();
     callback switch_compose_format(bool);
+    in property <[string]> compose_spell_suggestions: [];
+    callback compose_spell_lookup() -> bool;
+    callback compose_spell_replace(string);
+    callback compose_spell_add_word();
     callback back-requested();
     callback save_compose(int, string, string, string, string, string, bool);
     callback pick_compose_attachments();
@@ -175,6 +179,10 @@ export component ComposeDialog inherits Rectangle {
         compact: root.compact;
         plain-text: root.compose_plain_text;
         switch-format(plain) => { root.switch_compose_format(plain); }
+        spell-suggestions: root.compose_spell_suggestions;
+        spell-lookup() => root.compose_spell_lookup();
+        spell-replace(word) => { root.compose_spell_replace(word); }
+        spell-add-word => { root.compose_spell_add_word(); }
         header-dragged(dx, dy) => { root.move-by(dx, dy); }
         header-reset => { root.placed = false; }
         attachment-picker-supported: root.attachment-picker-supported;

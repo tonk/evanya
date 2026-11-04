@@ -68,6 +68,11 @@ export component EmailComposer inherits Rectangle {
     callback close;
     callback switch-format(bool);
     callback header-dragged(length, length);
+    // Spelling: look up the word at the caret, and act on the menu.
+    in property <[string]> spell-suggestions: [];
+    callback spell-lookup() -> bool;
+    callback spell-replace(string);
+    callback spell-add-word();
     callback header-reset;
     callback back-requested;
     callback submit(bool);
@@ -469,14 +474,55 @@ export component EmailComposer inherits Rectangle {
                     }
                 }
 
-                editor-hit := TouchArea {
+                spell-context := ContextMenuArea {
                     x: 18px;
                     y: 14px;
                     width: root.editor-width;
                     height: max(root.editor-viewport-height, root.editor-content-height * 1px);
+
+                    Menu {
+                        for suggestion in root.spell-suggestions : MenuItem {
+                            title: suggestion;
+                            activated => {
+                                root.spell-replace(suggestion);
+                                body-input.set-selection-offsets(root.selection-start, root.selection-end);
+                                body-input.focus();
+                            }
+                        }
+                        if root.spell-suggestions.length == 0 : MenuItem {
+                            title: @tr("No suggestions");
+                            enabled: false;
+                        }
+                        MenuSeparator { }
+                        MenuItem {
+                            title: @tr("Add to dictionary");
+                            activated => {
+                                root.spell-add-word();
+                                body-input.focus();
+                            }
+                        }
+                    }
+
+                editor-hit := TouchArea {
+                    x: 0px;
+                    y: 0px;
+                    width: parent.width;
+                    height: parent.height;
                     mouse-cursor: text;
 
                     pointer-event(event) => {
+                        // A right-click puts the caret in the word, then offers
+                        // spelling suggestions when it is misspelled.
+                        if (event.button == PointerEventButton.right && event.kind == PointerEventKind.down) {
+                            body-input.focus();
+                            root.editor-pointer-event(editor-hit.mouse-x / 1px, editor-hit.mouse-y / 1px, "down", false, false, false, false);
+                            root.editor-pointer-event(editor-hit.mouse-x / 1px, editor-hit.mouse-y / 1px, "up", false, false, false, false);
+                            body-input.set-selection-offsets(root.selection-start, root.selection-end);
+                            if root.spell-lookup() {
+                                spell-context.show({ x: editor-hit.mouse-x, y: editor-hit.mouse-y });
+                            }
+                            return;
+                        }
                         if (event.button == PointerEventButton.left || event.kind == PointerEventKind.move || event.kind == PointerEventKind.cancel) {
                             if (event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
                                 body-input.focus();
@@ -493,6 +539,7 @@ export component EmailComposer inherits Rectangle {
                             body-input.set-selection-offsets(root.selection-start, root.selection-end);
                         }
                     }
+                }
                 }
 
                 Rectangle {

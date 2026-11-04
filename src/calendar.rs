@@ -211,6 +211,38 @@ fn palette_color(index: i32) -> slint::Color {
     slint::Color::from_argb_encoded(0xff00_0000 | CALENDAR_PALETTE[index.rem_euclid(4) as usize])
 }
 
+/// The calendars a new event can go to: enabled and writable, the default
+/// ones first. Each is its calendar id, account id and a label naming both.
+pub(crate) fn event_targets(
+    state: &LocalCalendarState,
+    accounts: &[flectar_mail_core::models::Account],
+) -> Vec<(i64, i64, String)> {
+    let mut sources = state
+        .sources
+        .iter()
+        .filter(|source| source.enabled && !source.read_only)
+        .collect::<Vec<_>>();
+    sources.sort_by_key(|source| !source.is_default);
+    sources
+        .into_iter()
+        .map(|source| {
+            let account = accounts
+                .iter()
+                .find(|account| account.id == source.account_id)
+                .map(|account| {
+                    crate::mail::account_name(account.id).unwrap_or_else(|| account.email.clone())
+                })
+                .unwrap_or_default();
+            let label = if account.is_empty() {
+                source.name.clone()
+            } else {
+                format!("{} · {account}", source.name)
+            };
+            (source.id, source.account_id, label)
+        })
+        .collect()
+}
+
 pub(crate) fn core_calendar_event(event: CalendarEvent) -> LocalCalendarEvent {
     let start = if event.all_day {
         Utc.timestamp_millis_opt(event.starts_at)

@@ -19,7 +19,7 @@ export { AppTheme, MotionSettings, ThemeUtilities } from "design-system.slint";
 import { AppTheme, LayoutMetrics } from "design-system.slint";
 import { Button } from "components/button.slint";
 import { LoadingSkeletonBlock } from "components/loading-skeleton.slint";
-import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow } from "models.slint";
+import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow } from "models.slint";
 export { EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
 export { MailListNavigation, MailNavigationTarget } from "models.slint";
 export { ThreadMessageRow, StorageUsageRow } from "models.slint";
@@ -379,6 +379,8 @@ export global I18n {
         if (key == "Could not save the account's mail visibility: {}") { return @tr("Could not save the account's mail visibility: {}", argument); }
         if (key == "Could not save the folder choice: {}") { return @tr("Could not save the folder choice: {}", argument); }
         if (key == "Calendar color saved.") { return @tr("Calendar color saved."); }
+        if (key == "Add a language…") { return @tr("Add a language…"); }
+        if (key == "Could not save the spelling settings: {}") { return @tr("Could not save the spelling settings: {}", argument); }
         if (key == "Account name saved.") { return @tr("Account name saved."); }
         if (key == "Account names require local mail data.") { return @tr("Account names require local mail data."); }
         if (key == "Could not save account name: {}") { return @tr("Could not save account name: {}", argument); }
@@ -672,6 +674,15 @@ export component AppWindow inherits Window {
     callback save_show_tabs(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
+    // Spelling: "on", "off", "add" or "remove" a language code, or
+    // "automatic" to follow the interface language again.
+    callback save_spellcheck(string, string);
+    in-out property <bool> spellcheck_enabled: true;
+    in property <bool> spellcheck_automatic: true;
+    in property <[SpellLanguageRow]> spellcheck_languages: [];
+    in property <[SpellLanguageRow]> spellcheck_choices: [];
+    in property <[string]> spellcheck_choice_names: [];
+    in property <bool> spellcheck_dictionaries_found: true;
     callback save_mail_list_layout(string);
     callback sort_mail_list(string);
     callback save_mail_columns(length, length);
@@ -710,6 +721,10 @@ export component AppWindow inherits Window {
     callback open_compose();
     callback close_compose();
     callback switch_compose_format(bool);
+    in property <[string]> compose_spell_suggestions: [];
+    callback compose_spell_lookup() -> bool;
+    callback compose_spell_replace(string);
+    callback compose_spell_add_word();
     callback save_compose(int, string, string, string, string, string, bool);
     callback pick_compose_attachments();
     callback remove_compose_attachment(int);
@@ -924,6 +939,12 @@ export component AppWindow inherits Window {
     in-out property <string> calendar_event_time: "09:00";
     in-out property <string> calendar_event_duration: "60";
     in-out property <int> calendar_event_color: 0;
+    // Writable calendars a new event can go to (their names), and details.
+    in property <[string]> calendar_event_targets: [];
+    in-out property <string> calendar_event_location: "";
+    in-out property <string> calendar_event_description: "";
+    // Create an event at a date (YYYY-MM-DD) and minute of the day, from the week grid.
+    callback calendar-new-event-at(string, int);
     in property <string> selected_scope: "Unified Inbox";
     in property <string> selected_scope_title: "Unified Inbox";
     in property <bool> trash_view: false;
@@ -1426,11 +1447,15 @@ export component AppWindow inherits Window {
         }
     }
 
-    changed theme-mode => {
-        Palette.color-scheme = root.theme-mode == "dark" ? ColorScheme.dark
+    // The black palette is dark by nature, whatever the mode says.
+    function apply-color-scheme() {
+        Palette.color-scheme = root.theme-mode == "dark" || AppTheme.preset == "black" ? ColorScheme.dark
             : root.theme-mode == "light" ? ColorScheme.light
             : ColorScheme.unknown;
     }
+    changed theme-mode => { root.apply-color-scheme(); }
+    private property <string> palette-preset: AppTheme.preset;
+    changed palette-preset => { root.apply-color-scheme(); }
 
     changed width => { root.sync-window-chrome(); }
     changed full-screen => { root.sync-window-chrome(); }
@@ -1782,6 +1807,7 @@ export component AppWindow inherits Window {
             clear-agenda-filters => { root.calendar-clear-agenda-filters(); }
             today => { root.calendar-today(); }
             new-event => { root.calendar-open-editor(); }
+            new-event-at(date, minutes) => { root.calendar-new-event-at(date, minutes); }
             edit-event(event-id) => { root.calendar-edit-event(event-id); }
             delete-event(event-id) => { root.calendar-delete-event(event-id); }
             open-link(url) => { root.open_email_link(url); }
@@ -1976,6 +2002,9 @@ export component AppWindow inherits Window {
             time-placeholder: root.time_format_sample;
             calendar_event_duration <=> root.calendar_event_duration;
             calendar_event_color <=> root.calendar_event_color;
+            calendar_event_targets: root.calendar_event_targets;
+            calendar_event_location <=> root.calendar_event_location;
+            calendar_event_description <=> root.calendar_event_description;
             calendar-save-event(title, date, time, duration, color) => {
                 root.calendar-save-event(title, date, time, duration, color);
             }
@@ -2042,6 +2071,13 @@ export component AppWindow inherits Window {
             group_mail_by_date <=> root.group_mail_by_date;
             conversation_view <=> root.conversation_view;
             compose_plain_text <=> root.compose_plain_text_default;
+            spellcheck_enabled: root.spellcheck_enabled;
+            spellcheck_automatic: root.spellcheck_automatic;
+            spellcheck_languages: root.spellcheck_languages;
+            spellcheck_choices: root.spellcheck_choices;
+            spellcheck_choice_names: root.spellcheck_choice_names;
+            spellcheck_dictionaries_found: root.spellcheck_dictionaries_found;
+            save_spellcheck(action, code) => { root.save_spellcheck(action, code); }
             mail_list_layout <=> root.mail_list_layout;
             show_account_markers <=> root.show_account_markers;
             workspace_layout <=> root.workspace_layout;
@@ -2248,6 +2284,10 @@ export component AppWindow inherits Window {
             stored-width <=> root.compose_panel_width;
             stored-height <=> root.compose_panel_height;
             switch_compose_format(plain) => { root.switch_compose_format(plain); }
+            compose_spell_suggestions: root.compose_spell_suggestions;
+            compose_spell_lookup() => root.compose_spell_lookup();
+            compose_spell_replace(word) => { root.compose_spell_replace(word); }
+            compose_spell_add_word => { root.compose_spell_add_word(); }
             compose_to <=> root.compose_to;
             compose_cc <=> root.compose_cc;
             compose_bcc <=> root.compose_bcc;

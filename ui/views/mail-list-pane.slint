@@ -384,7 +384,8 @@ export component MailListPane inherits FocusScope {
     // Table columns, measured from the start of a row. The subject takes
     // whatever the sender and date columns leave.
     private property <length> table-width: max(0px, mail-list-scroll.visible-width - LayoutMetrics.list-scrollbar-gutter);
-    private property <length> table-lead: 28px;
+    // Room for the selection box, or the unread dot in its place.
+    private property <length> table-lead: 34px;
     private property <length> table-gap: 12px;
     private property <length> sender-x: root.table-lead;
     private property <length> sender-width: max(80px, min(root.sender-column-width, root.table-width * 0.5));
@@ -1147,8 +1148,9 @@ export component MailListPane inherits FocusScope {
                                                 width: parent.width;
                                                 height: parent.height;
                                                 Rectangle {
-                                                    visible: mail-data.unread;
-                                                    x: 11px;
+                                                    // The selection box takes this place while it shows.
+                                                    visible: mail-data.unread && row-check.opacity == 0;
+                                                    x: 13px;
                                                     y: (parent.height - self.height) / 2;
                                                     width: 7px;
                                                     height: 7px;
@@ -1531,12 +1533,13 @@ export component MailListPane inherits FocusScope {
                                                 // Keep the control in the keyboard focus order even before hover.
                                                 opacity: mail-data.checked || root.selection-mode || (!root.compact && (row-hit.has-hover || self.focus-visible)) ? 1 : 0;
                                                 enabled: !root.compact || root.selection-mode || mail-data.checked;
-                                                x: root.show-avatars ? 14px : 0px;
-                                                y: root.show-avatars ? (root.dense ? 8px : 12px) : (parent.height - self.height) / 2;
-                                                width: root.show-avatars ? (root.dense ? 28px : 38px) : 32px;
-                                                height: root.show-avatars ? (root.dense ? 28px : 38px) : 32px;
+                                                // A table row keeps it in its first column, centered.
+                                                x: root.table-mode ? 4px : root.show-avatars ? 14px : 0px;
+                                                y: root.table-mode || !root.show-avatars ? (parent.height - self.height) / 2 : (root.dense ? 8px : 12px);
+                                                width: root.table-mode ? 26px : root.show-avatars ? (root.dense ? 28px : 38px) : 32px;
+                                                height: root.table-mode ? 26px : root.show-avatars ? (root.dense ? 28px : 38px) : 32px;
                                                 checked: mail-data.checked;
-                                                avatar-overlay: root.show-avatars;
+                                                avatar-overlay: root.show-avatars && !root.table-mode;
                                                 accessible-label: mail-data.checked
                                                     ? @tr("Deselect {}", mail-data.sender)
                                                     : @tr("Select {}", mail-data.sender);

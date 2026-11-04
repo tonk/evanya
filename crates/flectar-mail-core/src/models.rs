@@ -1881,7 +1881,8 @@ pub struct Settings {
     pub theme: String,
     #[serde(default)]
     pub message_appearance: MessageAppearance,
-    /// Named application palette: "default" | "teal" | "green" | "purple" | "custom".
+    /// Named application palette: "default" | "teal" | "green" | "purple" |
+    /// "black" | "custom".
     #[serde(default = "default_theme_preset")]
     pub theme_preset: String,
     #[serde(default)]
@@ -1926,6 +1927,16 @@ pub struct Settings {
     /// HTML. Holding Shift while opening the composer picks the other one.
     #[serde(default)]
     pub compose_plain_text: bool,
+    /// Check spelling while writing.
+    #[serde(default = "default_true")]
+    pub spellcheck_enabled: bool,
+    /// Dictionaries to check with, such as "nl" and "en_US". Empty follows
+    /// the interface language, with English.
+    #[serde(default)]
+    pub spellcheck_languages: Vec<String>,
+    /// Words added to the personal dictionary.
+    #[serde(default)]
+    pub spellcheck_words: Vec<String>,
     /// Mail list rows as "cards" (sender, subject and preview on separate
     /// lines) or as a "table" with resizable, sortable columns.
     #[serde(default = "default_mail_list_layout")]
@@ -2306,6 +2317,9 @@ impl Default for Settings {
             reading_pane_position: default_reading_pane_position(),
             reading_pane_bottom_percent: default_reading_pane_bottom_percent(),
             compose_plain_text: false,
+            spellcheck_enabled: true,
+            spellcheck_languages: Vec::new(),
+            spellcheck_words: Vec::new(),
             mail_list_layout: default_mail_list_layout(),
             mail_sort: default_mail_sort(),
             mail_table_sender_width: default_mail_table_sender_width(),

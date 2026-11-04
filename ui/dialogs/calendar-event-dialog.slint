@@ -1,6 +1,7 @@
 import { HorizontalBox } from "std-widgets.slint";
 import { Button } from "../components/button.slint";
 import { LineEdit } from "../components/controls.slint";
+import { SettingsSelect } from "../components/settings-components.slint";
 import { TypeScale } from "../typography.slint";
 
 export component CalendarEventDialog inherits Rectangle {
@@ -22,6 +23,10 @@ export component CalendarEventDialog inherits Rectangle {
     in property <string> time-placeholder: "13:30";
     in-out property <string> calendar_event_duration: "60";
     in-out property <int> calendar_event_color: 0;
+    // The calendars a new event can go to, and the chosen one.
+    in property <[string]> calendar_event_targets: [];
+    in-out property <string> calendar_event_location: "";
+    in-out property <string> calendar_event_description: "";
     callback calendar-save-event(string, string, string, string, int);
 
         Rectangle {
@@ -58,30 +63,20 @@ export component CalendarEventDialog inherits Rectangle {
                 duration-label := Text { x: 24px; y: date-field.y + 54px; width: (parent.width - 56px) / 2; height: max(18px, max(self.preferred-height, calendar-label.preferred-height)); wrap: word-wrap; text: @tr("DURATION (MINUTES)"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
                 duration-field := LineEdit { x: 24px; y: duration-label.y + duration-label.height + 4px; width: (parent.width - 56px) / 2; height: root.compact ? 44px : 38px; text <=> root.calendar_event_duration; placeholder-text: @tr("60"); input-type: InputType.number; }
                 calendar-label := Text { x: parent.width / 2 + 4px; y: duration-label.y; width: (parent.width - 56px) / 2; height: duration-label.height; wrap: word-wrap; text: @tr("CALENDAR"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
-                HorizontalBox {
+                calendar-field := SettingsSelect {
                     x: parent.width / 2 + 4px;
                     y: duration-field.y;
                     width: (parent.width - 56px) / 2;
                     height: root.compact ? 44px : 38px;
-                    spacing: 8px;
-                    for color in [0, 1, 2, 3] : Rectangle {
-                        width: max(30px, (parent.width - 24px) / 4);
-                        height: root.compact ? 44px : 36px;
-                        border-radius: 8px;
-                        border-width: root.calendar_event_color == color ? 2px : 0px;
-                        border-color: root.accent;
-                        background: root.control-bg;
-                        Rectangle { x: 10px; y: 10px; width: 16px; height: 16px; border-radius: 5px; background: color == 0 ? #3478f6 : color == 1 ? #8b5cf6 : color == 2 ? #e87924 : #26a269; }
-                        TouchArea {
-                            accessible-role: radio-button;
-                            accessible-label: color == 0 ? @tr("Blue calendar") : color == 1 ? @tr("Purple calendar") : color == 2 ? @tr("Orange calendar") : @tr("Green calendar");
-                            accessible-checked: root.calendar_event_color == color;
-                            clicked => { root.calendar_event_color = color; }
-                            mouse-cursor: pointer;
-                        }
-                    }
+                    enabled: !root.calendar_event_editing && root.calendar_event_targets.length > 1;
+                    choices: root.calendar_event_targets.length > 0 ? root.calendar_event_targets : [@tr("This device")];
+                    selected-index <=> root.calendar_event_color;
                 }
-                event-divider := Rectangle { x: 0px; y: root.compact ? root.height - 72px : duration-field.y + 64px; width: parent.width; height: 1px; background: root.border-subtle; }
+                location-label := Text { x: 24px; y: duration-field.y + 54px; width: parent.width - 48px; height: max(18px, self.preferred-height); text: @tr("LOCATION"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
+                location-field := LineEdit { x: 24px; y: location-label.y + location-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_location; placeholder-text: @tr("Optional"); }
+                description-label := Text { x: 24px; y: location-field.y + 54px; width: parent.width - 48px; height: max(18px, self.preferred-height); text: @tr("DESCRIPTION"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
+                description-field := LineEdit { x: 24px; y: description-label.y + description-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_description; placeholder-text: @tr("Optional"); }
+                event-divider := Rectangle { x: 0px; y: root.compact ? root.height - 72px : description-field.y + 64px; width: parent.width; height: 1px; background: root.border-subtle; }
                 Button { x: save-button.x - self.width - 8px; y: save-button.y; width: max(82px, self.content-width); height: root.compact ? 44px : 40px; text: @tr("Cancel"); clicked => { root.calendar_editor_open = false; } }
                 save-button := Button {
                     x: parent.width - self.width - 24px;

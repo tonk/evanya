@@ -820,6 +820,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_show_tabs(settings.show_tabs);
     app.set_conversation_view(settings.conversation_view);
     app.set_compose_plain_text_default(settings.compose_plain_text);
+    crate::settings_controller::apply_spellcheck(app, settings);
     app.set_calendar_zoom(settings.calendar_zoom.clamp(0.4, 4.0));
     app.set_mail_list_layout(
         if settings.mail_list_layout == "table" {
@@ -870,7 +871,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     let theme = app.global::<AppTheme>();
     theme.set_preset(
         match settings.theme_preset.as_str() {
-            "teal" | "green" | "purple" | "custom" => settings.theme_preset.as_str(),
+            "teal" | "green" | "purple" | "black" | "custom" => settings.theme_preset.as_str(),
             _ => "default",
         }
         .into(),

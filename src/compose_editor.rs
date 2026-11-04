@@ -10,7 +10,7 @@ use slint::{Color, Image, Rgba8Pixel, SharedPixelBuffer};
 use std::{
     cell::OnceCell,
     collections::BTreeMap,
-    ops::{Deref, DerefMut},
+    ops::{Deref, DerefMut, Range},
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -57,6 +57,8 @@ pub struct RenderedComposeEditor {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct LayoutKey {
     revision: u64,
+    /// Spelling marks change when dictionaries load or a word is added.
+    spell_epoch: u64,
     physical_width: u32,
     scale_bits: u32,
     text_color: u32,
@@ -423,6 +425,7 @@ impl CosmicComposeEditor {
         let physical_width = (logical_width.max(1.0) * scale_factor).ceil().max(1.0) as u32;
         let key = LayoutKey {
             revision: document.revision(),
+            spell_epoch: crate::spellcheck::epoch(),
             physical_width,
             scale_bits: scale_factor.to_bits(),
             text_color: style.text.as_argb_encoded(),
@@ -443,12 +446,22 @@ impl CosmicComposeEditor {
         let default_attrs = Attrs::new()
             .family(Family::Name(UI_FONT_FAMILY))
             .color(cosmic_color(style.text));
+        // While an input method composes, its text sits between document
+        // offsets; spelling marks wait until it is committed.
+        let misspelled = if preedit_text.is_empty() {
+            let caret = (selection.start == selection.end)
+                .then(|| valid_offset(document.text(), selection.end));
+            crate::spellcheck::misspelled(document.text(), caret)
+        } else {
+            Vec::new()
+        };
         let mut spans = rich_spans(
             document,
             preedit_offset,
             preedit_text,
             &default_attrs,
             cosmic_color(style.link),
+            &misspelled,
         );
         self.visual_text.clear();
         self.visual_text
@@ -715,6 +728,7 @@ fn rich_spans<'a>(
     preedit_text: &'a str,
     default_attrs: &Attrs<'static>,
     link_color: CosmicColor,
+    misspelled: &[Range<usize>],
 ) -> Vec<(&'a str, Attrs<'static>)> {
     let runs = document.style_runs();
     let mut spans = Vec::with_capacity(runs.len().saturating_add(2).max(1));
@@ -742,7 +756,13 @@ fn rich_spans<'a>(
             );
             inserted_preedit = true;
         } else {
-            push_span(&mut spans, &document.text()[run.range.clone()], attrs);
+            push_marked(
+                &mut spans,
+                document.text(),
+                run.range.clone(),
+                attrs,
+                misspelled,
+            );
         }
     }
     if !inserted_preedit {
@@ -752,6 +772,38 @@ fn rich_spans<'a>(
         spans.push(("", default_attrs.clone()));
     }
     spans
+}
+
+/// The red line under a misspelled word.
+const MISSPELLED_COLOR: CosmicColor = CosmicColor::rgba(0xd9, 0x30, 0x25, 0xff);
+
+/// Push `range` of `text`, underlining the misspelled words in it in red.
+fn push_marked<'a>(
+    spans: &mut Vec<(&'a str, Attrs<'static>)>,
+    text: &'a str,
+    range: Range<usize>,
+    attrs: Attrs<'static>,
+    misspelled: &[Range<usize>],
+) {
+    let mut at = range.start;
+    for word in misspelled
+        .iter()
+        .filter(|word| word.start < range.end && word.end > range.start)
+    {
+        let start = word.start.max(range.start);
+        let end = word.end.min(range.end);
+        push_span(spans, &text[at..start], attrs.clone());
+        push_span(
+            spans,
+            &text[start..end],
+            attrs
+                .clone()
+                .underline(UnderlineStyle::Single)
+                .underline_color(MISSPELLED_COLOR),
+        );
+        at = end;
+    }
+    push_span(spans, &text[at..range.end], attrs);
 }
 
 fn push_span<'a>(spans: &mut Vec<(&'a str, Attrs<'static>)>, text: &'a str, attrs: Attrs<'static>) {
@@ -1432,7 +1484,14 @@ mod tests {
         document.synchronize(&"é".repeat(512 * 1024), 2, 2);
         let preedit = String::from("世界");
         let attrs = Attrs::new().family(Family::Name(UI_FONT_FAMILY));
-        let spans = rich_spans(&document, 2, &preedit, &attrs, CosmicColor::rgb(0, 90, 180));
+        let spans = rich_spans(
+            &document,
+            2,
+            &preedit,
+            &attrs,
+            CosmicColor::rgb(0, 90, 180),
+            &[],
+        );
 
         assert_eq!(spans.len(), 3);
         assert_eq!(spans[0].0, "é");
@@ -1484,6 +1543,7 @@ mod tests {
             "",
             &default_attrs,
             CosmicColor::rgb(90, 150, 255),
+            &[],
         );
         assert_eq!(spans[0].1.text_decoration.underline, UnderlineStyle::Single);
         assert!(spans[0].1.text_decoration.strikethrough);
