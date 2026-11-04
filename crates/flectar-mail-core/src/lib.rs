@@ -2124,12 +2124,13 @@ impl Core {
             .ok_or_else(|| CoreError::NotFound("account".into()))?;
         // Only OAuth mailboxes reauth through the browser; password/IMAP
         // accounts recover by re-entering credentials in the account editor.
-        let consent_extra: &[&str] = match account.provider {
-            Provider::Microsoft => &[
+        let consent_extra: Vec<&str> = match account.provider {
+            Provider::Microsoft => vec![
                 oauth::providers::MS_ONLINE_MEETINGS_SCOPE,
                 oauth::providers::MS_CALENDARS_SCOPE,
             ],
-            Provider::Gmail => &[],
+            // Keep the calendar and contacts this account has connected.
+            Provider::Gmail => self.google_extra_scopes(account_id).await?,
             Provider::Generic => return Err(CoreError::Auth("not an oauth provider".into())),
         };
         credentials::check_available_async(self.credentials.clone()).await?;
@@ -2139,7 +2140,7 @@ impl Core {
             // active (which then fails the mailbox check).
             r = oauth::flow::authorize_with_broker(
                 account.provider,
-                consent_extra,
+                &consent_extra,
                 Some(&account.email),
                 self.oauth_redirects.clone(),
                 open_url,
@@ -6437,6 +6438,38 @@ impl Core {
         Ok(out)
     }
 
+    /// The extra Google scopes this account already uses: calendar and
+    /// contacts. Google replaces a grant with each new consent, so every
+    /// sign-in for the account asks for all of them again.
+    async fn google_extra_scopes(&self, account_id: i64) -> Result<Vec<&'static str>> {
+        let has_calendar = self
+            .calendar_db
+            .read(move |conn| {
+                Ok(repo::caldav::provider_connection(
+                    conn,
+                    account_id,
+                    CalendarConnectionKind::Google,
+                )?
+                .is_some())
+            })
+            .await?;
+        let has_contacts = self
+            .db
+            .read(move |conn| {
+                Ok(repo::carddav::get_config(conn, account_id)?
+                    .is_some_and(|config| carddav::google::is_google(&config.base_url)))
+            })
+            .await?;
+        let mut scopes = Vec::new();
+        if has_calendar {
+            scopes.push(oauth::providers::GOOGLE_CALENDAR_SCOPE);
+        }
+        if has_contacts {
+            scopes.push(oauth::providers::GOOGLE_CONTACTS_SCOPE);
+        }
+        Ok(scopes)
+    }
+
     /// Google calendar connection: re-run the OAuth consent with the
     /// calendar scope added (scopes are fixed at consent time, so the account
     /// must re-consent) and swap in the widened tokens, then discover.
@@ -6458,10 +6491,14 @@ impl Core {
 
         credentials::check_available_async(self.credentials.clone()).await?;
 
+        let mut scopes = self.google_extra_scopes(account_id).await?;
+        if !scopes.contains(&oauth::providers::GOOGLE_CALENDAR_SCOPE) {
+            scopes.push(oauth::providers::GOOGLE_CALENDAR_SCOPE);
+        }
         let outcome = tokio::select! {
             r = oauth::flow::authorize_with_broker(
                 Provider::Gmail,
-                &[oauth::providers::GOOGLE_CALENDAR_SCOPE],
+                &scopes,
                 Some(&account.email),
                 self.oauth_redirects.clone(),
                 open_url,
@@ -6496,20 +6533,9 @@ impl Core {
         }
         credentials::check_available_async(self.credentials.clone()).await?;
 
-        let has_calendar = self
-            .calendar_db
-            .read(move |conn| {
-                Ok(repo::caldav::provider_connection(
-                    conn,
-                    account_id,
-                    CalendarConnectionKind::Google,
-                )?
-                .is_some())
-            })
-            .await?;
-        let mut scopes = vec![oauth::providers::GOOGLE_CONTACTS_SCOPE];
-        if has_calendar {
-            scopes.push(oauth::providers::GOOGLE_CALENDAR_SCOPE);
+        let mut scopes = self.google_extra_scopes(account_id).await?;
+        if !scopes.contains(&oauth::providers::GOOGLE_CONTACTS_SCOPE) {
+            scopes.push(oauth::providers::GOOGLE_CONTACTS_SCOPE);
         }
         let outcome = tokio::select! {
             r = oauth::flow::authorize_with_broker(

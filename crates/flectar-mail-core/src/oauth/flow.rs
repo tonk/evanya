@@ -149,7 +149,9 @@ pub async fn authorize_with_broker(
         urlencode(&challenge),
     );
     if provider == Provider::Gmail {
-        auth_url.push_str("&access_type=offline&prompt=consent");
+        // Keep the scopes granted before, such as calendar and contacts,
+        // when the account signs in again for one of them.
+        auth_url.push_str("&access_type=offline&prompt=consent&include_granted_scopes=true");
     }
     if let Some(hint) = login_hint {
         auth_url.push_str(&format!("&login_hint={}", urlencode(hint)));
