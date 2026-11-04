@@ -345,11 +345,15 @@ pub(crate) fn list_style() -> ListDateStyle {
 /// A translated "5 min ago"; the catalog decides the plural forms.
 pub(crate) fn relative(unit: RelativeUnit, count: i64) -> String {
     let translated = CATALOG.with(|catalog| {
-        catalog.borrow().as_ref().and_then(slint::Weak::upgrade).map(|app| {
-            app.global::<I18n>()
-                .invoke_relative_time(unit.key().into(), count.clamp(0, i32::MAX as i64) as i32)
-                .to_string()
-        })
+        catalog
+            .borrow()
+            .as_ref()
+            .and_then(slint::Weak::upgrade)
+            .map(|app| {
+                app.global::<I18n>()
+                    .invoke_relative_time(unit.key().into(), count.clamp(0, i32::MAX as i64) as i32)
+                    .to_string()
+            })
     });
     translated.unwrap_or_else(|| unit.english(count))
 }
@@ -380,14 +384,15 @@ pub(crate) fn reload(app: &AppWindow) {
     CATALOG.with(|catalog| *catalog.borrow_mut() = Some(app.as_weak()));
     let style = ListDateStyle::parse(&app.get_list_date_format());
     let style_changed = LIST_STYLE.with(|current| current.replace(style) != style);
-    let changed = style_changed | CURRENT.with(|current| {
-        let mut current = current.borrow_mut();
-        let changed = **current != formats;
-        if changed {
-            *current = Rc::new(formats);
-        }
-        changed
-    });
+    let changed = style_changed
+        | CURRENT.with(|current| {
+            let mut current = current.borrow_mut();
+            let changed = **current != formats;
+            if changed {
+                *current = Rc::new(formats);
+            }
+            changed
+        });
     let listeners = LISTENERS.with(|listeners| listeners.borrow().clone());
     if changed && !listeners.is_empty() {
         slint::Timer::single_shot(Duration::ZERO, move || {

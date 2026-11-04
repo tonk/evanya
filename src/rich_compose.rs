@@ -1517,13 +1517,8 @@ mod tests {
         assert!(document.clear_formatting());
         assert_eq!(document.text(), text);
         assert!(!document.active_marks().bold);
-        assert!(
-            document
-                .style_runs()
-                .iter()
-                .all(|run| run.style.marks == 0
-                    && run.style.link.as_deref() != Some("https://other.example"))
-        );
+        assert!(document.style_runs().iter().all(|run| run.style.marks == 0
+            && run.style.link.as_deref() != Some("https://other.example")));
         assert!(!document.clear_formatting());
     }
 

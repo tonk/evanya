@@ -633,8 +633,7 @@ pub(crate) async fn load_startup_snapshot(
         core.load_local_mail(),
     );
 
-    let (accounts, scope, page) =
-        mail.unwrap_or_else(|_| (Vec::new(), Scope::UNIFIED_INBOX, None));
+    let (accounts, scope, page) = mail.unwrap_or_else(|_| (Vec::new(), Scope::UNIFIED_INBOX, None));
     metrics.emit(
         "startup_queries_loaded",
         serde_json::json!({
@@ -822,7 +821,12 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_conversation_view(settings.conversation_view);
     app.set_compose_plain_text_default(settings.compose_plain_text);
     app.set_mail_list_layout(
-        if settings.mail_list_layout == "table" { "table" } else { "cards" }.into(),
+        if settings.mail_list_layout == "table" {
+            "table"
+        } else {
+            "cards"
+        }
+        .into(),
     );
     let sort = crate::mail::parse_mail_sort(&settings.mail_sort);
     crate::mail::set_mail_sort(sort);
@@ -1170,7 +1174,9 @@ mod warm_start_tests {
         }
 
         // A unified selection that would disappear moves to the survivor.
-        state.borrow_mut().set_scope(Scope::Unified(crate::StandardMailbox::Sent));
+        state
+            .borrow_mut()
+            .set_scope(Scope::Unified(crate::StandardMailbox::Sent));
         assert!(state.borrow_mut().set_connected_accounts(vec![account()]));
         assert_eq!(
             state.borrow().scope,

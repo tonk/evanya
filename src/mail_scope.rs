@@ -44,7 +44,9 @@ impl StandardMailbox {
     }
 
     pub(crate) fn from_label(label: &str) -> Option<Self> {
-        Self::ALL.into_iter().find(|mailbox| mailbox.label() == label)
+        Self::ALL
+            .into_iter()
+            .find(|mailbox| mailbox.label() == label)
     }
 }
 
@@ -90,7 +92,10 @@ pub(crate) enum Scope {
     Important,
     /// Gmail-style split inbox, remaining half.
     Other,
-    Label { kind: LabelKind, id: i64 },
+    Label {
+        kind: LabelKind,
+        id: i64,
+    },
     /// A provider folder outside the standard mailboxes.
     Folder(i64),
     /// One standard mailbox of one account, whether or not the provider
@@ -185,7 +190,11 @@ impl fmt::Display for Scope {
             Self::Account {
                 account_id,
                 mailbox,
-            } => write!(formatter, "{ACCOUNT_PREFIX}{account_id}:{}", mailbox.label()),
+            } => write!(
+                formatter,
+                "{ACCOUNT_PREFIX}{account_id}:{}",
+                mailbox.label()
+            ),
         }
     }
 }
@@ -398,7 +407,11 @@ mod tests {
                 },
                 other => other,
             };
-            assert_eq!(scope.visible_for_with(&accounts, false), expected, "{scope}");
+            assert_eq!(
+                scope.visible_for_with(&accounts, false),
+                expected,
+                "{scope}"
+            );
             assert_eq!(scope.visible_for_with(&[], false), scope, "{scope}");
         }
     }

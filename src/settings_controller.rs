@@ -834,7 +834,9 @@ pub(super) fn register_settings_preference_callbacks(
         let core = state_for_unified.borrow().core.clone();
         match core {
             Some(core) => match runtime_for_unified.block_on(core.set_unified_mailbox(enabled)) {
-                Ok(()) => app.set_sync_status(UiMessage::plain("Unified mailbox preference saved.")),
+                Ok(()) => {
+                    app.set_sync_status(UiMessage::plain("Unified mailbox preference saved."))
+                }
                 Err(error) => app.set_sync_status(UiMessage::detail(
                     "Could not save unified mailbox preference: {}",
                     error,
@@ -860,7 +862,11 @@ pub(super) fn register_settings_preference_callbacks(
     let state_for_layout = Rc::clone(state);
     let runtime_for_layout = Rc::clone(runtime);
     app.on_save_mail_list_layout(move |layout| {
-        let layout = if layout.as_str() == "table" { "table" } else { "cards" };
+        let layout = if layout.as_str() == "table" {
+            "table"
+        } else {
+            "cards"
+        };
         let core = state_for_layout.borrow().core.clone();
         if let Some(core) = core {
             let _ = runtime_for_layout.block_on(
@@ -917,7 +923,9 @@ pub(super) fn register_settings_preference_callbacks(
             state.next_cursor = None;
             state.mail_groups.clear();
         }
-        if let Err(error) = refresh_from_source(&app, &state_for_sort, &runtime_for_sort, false, &[]) {
+        if let Err(error) =
+            refresh_from_source(&app, &state_for_sort, &runtime_for_sort, false, &[])
+        {
             app.set_render_status(UiMessage::detail("Mail refresh failed: {}", error));
         }
     });

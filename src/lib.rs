@@ -4,9 +4,9 @@ pub use flectar_mail_core;
 
 mod account_controller;
 mod account_mail_preferences;
-mod app_icon;
 #[cfg(test)]
 mod account_removal_tests;
+mod app_icon;
 mod attachment_controller;
 #[cfg(desktop)]
 mod autostart;
@@ -47,20 +47,20 @@ mod preview_controls;
 mod reader_clipboard;
 #[cfg(test)]
 mod reader_validation;
-#[cfg(test)]
-mod screenshot_email;
-#[cfg(test)]
-mod screenshot_frameless;
-#[cfg(test)]
-mod screenshot_fixture;
-#[cfg(test)]
-mod screenshot_traffic_lights;
 mod remote;
 mod renderer;
 mod renderer_input_controller;
 mod renderer_preferences;
 mod retained_model;
 mod rich_compose;
+#[cfg(test)]
+mod screenshot_email;
+#[cfg(test)]
+mod screenshot_fixture;
+#[cfg(test)]
+mod screenshot_frameless;
+#[cfg(test)]
+mod screenshot_traffic_lights;
 mod settings_controller;
 mod sidebar_model;
 #[cfg(desktop)]
@@ -869,7 +869,9 @@ fn resolve_single_mail_drop(
                 Some(StandardMailbox::Archive) => MailDropDestination::Folder(target.folder_id),
                 Some(StandardMailbox::Spam) => MailDropDestination::Action("spam"),
                 Some(StandardMailbox::Trash) => MailDropDestination::Action("trash"),
-                Some(StandardMailbox::Sent | StandardMailbox::Drafts | StandardMailbox::Starred) => {
+                Some(
+                    StandardMailbox::Sent | StandardMailbox::Drafts | StandardMailbox::Starred,
+                ) => {
                     return Err("this mailbox is not a drop destination".to_owned());
                 }
                 Some(StandardMailbox::Inbox) | None if target.folder_id >= 0 => {
@@ -1589,9 +1591,10 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             Ok(Acquired::Primary(primary)) => Some(primary),
             Ok(Acquired::Forwarded) => return Ok(()),
             Ok(Acquired::Unresponsive(error)) => {
-                return Err(
-                    format!("Flectar Mail is already running but did not respond: {error}").into(),
-                );
+                return Err(format!(
+                    "Flectar Mail is already running but did not respond: {error}"
+                )
+                .into());
             }
             Err(error) => {
                 eprintln!("could not coordinate with other Flectar Mail processes: {error}");
@@ -1644,10 +1647,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
 
     // Match resources/com.flectar.mail.desktop so Wayland compositors and XDG
     // window managers can associate the native window with the installed icon.
-    #[cfg(all(
-        unix,
-        not(any(mobile, target_os = "macos"))
-    ))]
+    #[cfg(all(unix, not(any(mobile, target_os = "macos"))))]
     slint::set_xdg_app_id("com.flectar.mail")?;
 
     // Register the deterministic emoji face before any initial text is measured.
@@ -2458,16 +2458,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let contact_load_generation_for_save = Rc::clone(&contact_load_generation);
     let contacts_loading_for_save = Rc::clone(&contacts_loading);
     app.on_save_contact(
-        move |id,
-              name,
-              company,
-              job_title,
-              website,
-              birthday,
-              address,
-              notes,
-              tags,
-              favorite| {
+        move |id, name, company, job_title, website, birthday, address, notes, tags, favorite| {
             let Some(app) = app_weak.upgrade() else {
                 return;
             };
@@ -2477,9 +2468,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 .iter()
                 .find(|contact| contact.id == i64::from(id))
                 .cloned();
-            let promoting_suggestion = previous
-                .as_ref()
-                .is_some_and(|contact| !contact.is_managed);
+            let promoting_suggestion = previous.as_ref().is_some_and(|contact| !contact.is_managed);
             let new_contact_accounts = contacts_for_save
                 .borrow()
                 .scope
@@ -4687,9 +4676,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     calendar
                         .sources
                         .retain(|source| source.account_id != account_id);
-                    calendar
-                        .accounts
-                        .retain(|account| account.id != account_id);
+                    calendar.accounts.retain(|account| account.id != account_id);
                 }
             }
             if let Some(snapshot) = update.accounts.filter(|snapshot| {
@@ -4762,7 +4749,11 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 app.set_smtp_host("".into());
                 app.set_smtp_port("465".into());
             }
-            if let Some(removal) = update.account_removal.as_mut().filter(|removal| removal.removed) {
+            if let Some(removal) = update
+                .account_removal
+                .as_mut()
+                .filter(|removal| removal.removed)
+            {
                 let current_page = {
                     let mut state = ui_task_state.borrow_mut();
                     if let Some(metadata) = removal.metadata.take().filter(|_| state.has_mail()) {
@@ -5152,7 +5143,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             return;
         };
         let Some(core) = state_for_sent_copy_policy.borrow().core.clone() else {
-            app.set_sync_status(UiMessage::plain("Sent copy settings require local mail data."));
+            app.set_sync_status(UiMessage::plain(
+                "Sent copy settings require local mail data.",
+            ));
             return;
         };
         let account_id = i64::from(account_id);
@@ -5161,9 +5154,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         let updates = ui_task_tx_for_sent_copy_policy.clone();
         runtime_for_sent_copy_policy.spawn(async move {
             let message = match core.set_account_sent_copy_policy(account_id, &value).await {
-                Ok(_) => {
-                    UiMessage::plain("Sent copy settings updated.")
-                }
+                Ok(_) => UiMessage::plain("Sent copy settings updated."),
                 Err(error) => UiMessage::detail("Could not update Sent copy settings: {}", error),
             };
             // Reload on both success and failure so the selector always shows
@@ -5526,7 +5517,10 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             let runtime = Rc::clone(&runtime_for_mail_group);
             let app_weak = app.as_weak();
             Timer::single_shot(Duration::from_millis(330), move || {
-                if state.borrow_mut().mail_groups.finish_transition(&key, generation)
+                if state
+                    .borrow_mut()
+                    .mail_groups
+                    .finish_transition(&key, generation)
                     && let Some(app) = app_weak.upgrade()
                 {
                     refresh_rows_only(&app, &state, &runtime);
@@ -5599,15 +5593,25 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let app_weak = app.as_weak();
     let state_for_empty_trash = Rc::clone(&state);
     app.on_empty_trash(move |requested_account_id| {
-        let Some(app) = app_weak.upgrade() else { return; };
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
         let request = {
             let state = state_for_empty_trash.borrow();
-            if !state.using_core { return; }
+            if !state.using_core {
+                return;
+            }
             // A negative id empties the trash currently shown.
             let account_id = match (requested_account_id, state.scope) {
                 (0, _) | (..0, Scope::Unified(StandardMailbox::Trash)) => None,
                 (1.., _) => Some(i64::from(requested_account_id)),
-                (_, Scope::Account { account_id, mailbox: StandardMailbox::Trash }) => Some(account_id),
+                (
+                    _,
+                    Scope::Account {
+                        account_id,
+                        mailbox: StandardMailbox::Trash,
+                    },
+                ) => Some(account_id),
                 _ => return,
             };
             // Every account's trash means every shown account's while a
@@ -5676,100 +5680,100 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let runtime_for_save_label = Rc::clone(&runtime);
     app.on_save_mail_label(
         move |label_id, owner_account_id, name, color, global, parent_label_id| {
-        let Some(app) = app_weak.upgrade() else {
-            return;
-        };
-        let (core, target, selected_account_id, parent_path) = {
-            let state = state_for_save_label.borrow();
-            let selected = state
-                .selected_id
-                .and_then(|id| state.messages.iter().find(|message| message.id == id));
-            (
-                state.core.clone(),
-                selected.and_then(MailTarget::of),
-                selected.map(|message| message.account_id),
-                if parent_label_id >= 0 {
-                    state
-                        .labels
-                        .iter()
-                        .find(|label| {
-                            label.id == i64::from(parent_label_id)
-                                && !label.is_auto
-                                && label.owner_account_id == Some(i64::from(owner_account_id))
-                        })
-                        .map(|label| label.name.clone())
-                        .ok_or_else(|| "the parent label no longer exists".to_owned())
-                        .map(Some)
-                } else {
-                    Ok(None)
-                },
-            )
-        };
-        let existing_id = (label_id >= 0).then_some(i64::from(label_id));
-        let color = format!(
-            "#{:02x}{:02x}{:02x}",
-            color.red(),
-            color.green(),
-            color.blue()
-        );
-        let result: Result<bool, String> = (|| {
-            let core = core.ok_or_else(|| "mail core is unavailable".to_owned())?;
-            let parent_path = parent_path?;
-            let leaf = name.trim();
-            if existing_id.is_none() && owner_account_id >= 0 && leaf.contains('/') {
-                return Err(
-                    "label names cannot contain '/'; create each nesting level separately"
-                        .to_owned(),
-                );
-            }
-            let full_name = if existing_id.is_none()
-                && let Some(parent_path) = parent_path
-            {
-                format!("{}/{leaf}", parent_path.trim_end_matches('/'))
-            } else {
-                leaf.to_owned()
+            let Some(app) = app_weak.upgrade() else {
+                return;
             };
-            let label = runtime_for_save_label.block_on(core.save_label(
-                existing_id,
-                &full_name,
-                color.as_str(),
-                if existing_id.is_none() && !global {
-                    Some(if owner_account_id >= 0 {
-                        i64::from(owner_account_id)
+            let (core, target, selected_account_id, parent_path) = {
+                let state = state_for_save_label.borrow();
+                let selected = state
+                    .selected_id
+                    .and_then(|id| state.messages.iter().find(|message| message.id == id));
+                (
+                    state.core.clone(),
+                    selected.and_then(MailTarget::of),
+                    selected.map(|message| message.account_id),
+                    if parent_label_id >= 0 {
+                        state
+                            .labels
+                            .iter()
+                            .find(|label| {
+                                label.id == i64::from(parent_label_id)
+                                    && !label.is_auto
+                                    && label.owner_account_id == Some(i64::from(owner_account_id))
+                            })
+                            .map(|label| label.name.clone())
+                            .ok_or_else(|| "the parent label no longer exists".to_owned())
+                            .map(Some)
                     } else {
-                        selected_account_id.ok_or_else(|| {
-                            "select a message before creating an account label".to_owned()
-                        })?
-                    })
+                        Ok(None)
+                    },
+                )
+            };
+            let existing_id = (label_id >= 0).then_some(i64::from(label_id));
+            let color = format!(
+                "#{:02x}{:02x}{:02x}",
+                color.red(),
+                color.green(),
+                color.blue()
+            );
+            let result: Result<bool, String> = (|| {
+                let core = core.ok_or_else(|| "mail core is unavailable".to_owned())?;
+                let parent_path = parent_path?;
+                let leaf = name.trim();
+                if existing_id.is_none() && owner_account_id >= 0 && leaf.contains('/') {
+                    return Err(
+                        "label names cannot contain '/'; create each nesting level separately"
+                            .to_owned(),
+                    );
+                }
+                let full_name = if existing_id.is_none()
+                    && let Some(parent_path) = parent_path
+                {
+                    format!("{}/{leaf}", parent_path.trim_end_matches('/'))
                 } else {
-                    None
-                },
-            ))?;
-            if existing_id.is_none() && owner_account_id < 0 {
-                let target = target.ok_or_else(|| "no message is selected".to_owned())?;
-                runtime_for_save_label
-                    .block_on(core.perform_label_action(target, label.id, true))?;
+                    leaf.to_owned()
+                };
+                let label = runtime_for_save_label.block_on(core.save_label(
+                    existing_id,
+                    &full_name,
+                    color.as_str(),
+                    if existing_id.is_none() && !global {
+                        Some(if owner_account_id >= 0 {
+                            i64::from(owner_account_id)
+                        } else {
+                            selected_account_id.ok_or_else(|| {
+                                "select a message before creating an account label".to_owned()
+                            })?
+                        })
+                    } else {
+                        None
+                    },
+                ))?;
+                if existing_id.is_none() && owner_account_id < 0 {
+                    let target = target.ok_or_else(|| "no message is selected".to_owned())?;
+                    runtime_for_save_label
+                        .block_on(core.perform_label_action(target, label.id, true))?;
+                }
+                refresh_from_source(
+                    &app,
+                    &state_for_save_label,
+                    &runtime_for_save_label,
+                    true,
+                    &[],
+                )?;
+                Ok(existing_id.is_some())
+            })();
+            match result {
+                Ok(true) => app.set_render_status(UiMessage::plain("Label updated.")),
+                Ok(false) if owner_account_id >= 0 => {
+                    app.set_render_status(UiMessage::plain("Label created."))
+                }
+                Ok(false) => app.set_render_status(UiMessage::plain("Label created and added.")),
+                Err(error) => {
+                    app.set_render_status(UiMessage::detail("Could not save label: {}", error))
+                }
             }
-            refresh_from_source(
-                &app,
-                &state_for_save_label,
-                &runtime_for_save_label,
-                true,
-                &[],
-            )?;
-            Ok(existing_id.is_some())
-        })();
-        match result {
-            Ok(true) => app.set_render_status(UiMessage::plain("Label updated.")),
-            Ok(false) if owner_account_id >= 0 => {
-                app.set_render_status(UiMessage::plain("Label created."))
-            }
-            Ok(false) => app.set_render_status(UiMessage::plain("Label created and added.")),
-            Err(error) => {
-                app.set_render_status(UiMessage::detail("Could not save label: {}", error))
-            }
-        }
-    },
+        },
     );
 
     let app_weak = app.as_weak();
@@ -8503,7 +8507,11 @@ mod tests {
         let filtered = filtered_messages(&messages, scope, "calendar", "All mail", None);
 
         assert_eq!(filtered.len(), 2);
-        assert!(filtered.iter().all(|email| email.sender == "Google Calendar"));
+        assert!(
+            filtered
+                .iter()
+                .all(|email| email.sender == "Google Calendar")
+        );
     }
 
     #[test]

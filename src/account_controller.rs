@@ -270,7 +270,12 @@ pub(super) fn apply_connected_accounts(
                     .trusted_certificate_pem
                     .clone()
                     .into(),
-                invalid_certificates: config.settings.connection.invalid_certificates.as_str().into(),
+                invalid_certificates: config
+                    .settings
+                    .connection
+                    .invalid_certificates
+                    .as_str()
+                    .into(),
                 incoming_host: config.incoming_host.clone().into(),
                 incoming_port: config.incoming_port.to_string().into(),
                 smtp_host: config.smtp_host.clone().into(),
