@@ -219,12 +219,14 @@ pub(super) fn apply_connected_accounts(
         .iter()
         .filter_map(|account| {
             let config = configs.get(&account.id)?;
-            let name = account
+            let provider_name = account
                 .display_name
                 .as_ref()
                 .filter(|name| !name.trim().is_empty())
-                .unwrap_or(&account.email)
-                .clone();
+                .unwrap_or(&account.email);
+            let name = presentation
+                .account_label(account.id, provider_name)
+                .to_owned();
             let avatar = avatars.get(&account.id);
             let calendars = account_calendars
                 .get(&account.id)
@@ -260,6 +262,7 @@ pub(super) fn apply_connected_accounts(
                 profile_color: presentation.marker_color(account.id),
                 has_profile: profile.is_some(),
                 has_account_color: presentation.has_account_color(account.id),
+                shown_in_mail: !crate::mail::mail_account_hidden(account.id),
                 username: config.username.clone().into(),
                 jmap_url: config.jmap_url.clone().into(),
                 incoming_security: config.settings.connection.incoming_security.as_str().into(),

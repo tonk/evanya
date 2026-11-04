@@ -296,6 +296,53 @@ fn with_local_mail(profile: Option<Arc<[i64]>>, local_mail: Option<i64>) -> Opti
 }
 
 /// Keep the accounts and folders the mail view shows with `profile`.
+/// Accounts hidden from the mail view, which keep synchronizing.
+fn hidden_accounts() -> &'static std::sync::RwLock<Vec<i64>> {
+    static HIDDEN: std::sync::OnceLock<std::sync::RwLock<Vec<i64>>> = std::sync::OnceLock::new();
+    HIDDEN.get_or_init(Default::default)
+}
+
+pub(crate) fn set_hidden_mail_accounts(accounts: &[i64]) {
+    *hidden_accounts()
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = accounts.to_vec();
+}
+
+pub(crate) fn mail_account_hidden(account_id: i64) -> bool {
+    hidden_accounts()
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .contains(&account_id)
+}
+
+/// The accounts the mail view lists: the profile's, or every account, less
+/// the hidden ones. Without hidden accounts the profile stays as it is.
+fn without_hidden_accounts(
+    profile: Option<Arc<[i64]>>,
+    accounts: &[Account],
+) -> Option<Arc<[i64]>> {
+    let hidden = hidden_accounts()
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .clone();
+    if hidden.is_empty() {
+        return profile;
+    }
+    let shown = match profile {
+        Some(profile) => profile
+            .iter()
+            .copied()
+            .filter(|id| !hidden.contains(id))
+            .collect::<Vec<_>>(),
+        None => accounts
+            .iter()
+            .map(|account| account.id)
+            .filter(|id| !hidden.contains(id))
+            .collect(),
+    };
+    Some(Arc::from(shown))
+}
+
 fn retain_profile_accounts(
     profile: Option<&[i64]>,
     accounts: &mut Vec<Account>,
@@ -490,6 +537,7 @@ impl CoreMailSource {
             .list_folders(None)
             .await
             .map_err(|error| error.to_string())?;
+        let profile = without_hidden_accounts(profile, &accounts);
         let local_mail = self.load_local_mail_account().await?;
         let profile = with_local_mail(profile, local_mail);
         let account_count = accounts.len();
@@ -527,6 +575,7 @@ impl CoreMailSource {
             .list_accounts()
             .await
             .map_err(|error| error.to_string())?;
+        let profile = without_hidden_accounts(profile, &accounts);
         let mut shown = accounts.clone();
         let local_mail = self.load_local_mail_account().await?;
         let profile = with_local_mail(profile, local_mail);
@@ -578,6 +627,7 @@ impl CoreMailSource {
             .list_folders(None)
             .await
             .map_err(|error| error.to_string())?;
+        let profile = without_hidden_accounts(profile, &accounts);
         let local_mail = self.load_local_mail_account().await?;
         let profile = with_local_mail(profile, local_mail);
         retain_profile_accounts(profile.as_deref(), &mut accounts, &mut folders);
@@ -1554,6 +1604,41 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    /// Name an account for display; an empty name restores the provider's.
+    pub async fn set_account_short_name(
+        &self,
+        account_id: i64,
+        name: &str,
+    ) -> Result<Settings, String> {
+        let name = name.trim().to_owned();
+        self.update_settings(|settings| {
+            if name.is_empty() {
+                settings.account_short_names.remove(&account_id.to_string());
+            } else {
+                settings
+                    .account_short_names
+                    .insert(account_id.to_string(), name);
+            }
+        })
+        .await?;
+        self.load_settings().await
+    }
+
+    pub async fn set_mail_account_hidden(
+        &self,
+        account_id: i64,
+        hidden: bool,
+    ) -> Result<Settings, String> {
+        self.update_settings(|settings| {
+            settings.hidden_mail_accounts.retain(|id| *id != account_id);
+            if hidden {
+                settings.hidden_mail_accounts.push(account_id);
+            }
+        })
+        .await?;
+        self.load_settings().await
+    }
+
     pub async fn set_account_color(
         &self,
         account_id: i64,
@@ -2061,6 +2146,19 @@ impl CoreMailSource {
     pub async fn remove_calendar_connection(&self, connection_id: i64) -> Result<(), String> {
         self.core
             .remove_calendar_connection(connection_id)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    /// Color a calendar with `#RRGGBB`; `None` restores the provider's color
+    /// on the next sync.
+    pub async fn set_calendar_color(
+        &self,
+        calendar_id: i64,
+        color: Option<String>,
+    ) -> Result<(), String> {
+        self.core
+            .set_calendar_color(calendar_id, color)
             .await
             .map_err(|error| error.to_string())
     }
@@ -3057,11 +3155,38 @@ fn readable_message_html(html: Option<&str>, text: Option<&str>, snippet: &str) 
 }
 
 fn account_label(account: &Account) -> String {
-    account
-        .display_name
-        .clone()
+    account_name(account.id)
+        .or_else(|| account.display_name.clone())
         .filter(|name| !name.trim().is_empty())
         .unwrap_or_else(|| account.email.clone())
+}
+
+/// Names the user gave accounts in Settings, by account id. They are shown
+/// instead of the provider's name and never sent as the sender's name.
+fn account_names() -> &'static std::sync::RwLock<std::collections::HashMap<i64, String>> {
+    static NAMES: std::sync::OnceLock<std::sync::RwLock<std::collections::HashMap<i64, String>>> =
+        std::sync::OnceLock::new();
+    NAMES.get_or_init(Default::default)
+}
+
+pub(crate) fn set_account_names(names: &std::collections::HashMap<String, String>) {
+    let names = names
+        .iter()
+        .filter(|(_, name)| !name.trim().is_empty())
+        .filter_map(|(id, name)| Some((id.parse().ok()?, name.trim().to_owned())))
+        .collect();
+    *account_names()
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) = names;
+}
+
+/// The name the user gave this account, if any.
+pub(crate) fn account_name(account_id: i64) -> Option<String> {
+    account_names()
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .get(&account_id)
+        .cloned()
 }
 
 fn avatar_initials(label: &str) -> String {

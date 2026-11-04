@@ -62,6 +62,12 @@ export component CalendarDetailsDialog inherits Rectangle {
     in property <string> description;
     in property <string> join-url;
     in property <bool> editable: false;
+    // For a calendar: its color, which the swatches below change.
+    in property <color> calendar-color;
+    in property <bool> has-own-color: false;
+    callback set-color(string);
+    private property <string> chosen-color: "";
+    changed open => { root.chosen-color = ""; }
     in property <color> accent;
     in property <color> accent-soft;
     in property <color> border;
@@ -174,6 +180,49 @@ export component CalendarDetailsDialog inherits Rectangle {
                 spacing: 8px;
                 alignment: start;
 
+                if root.kind == "calendar" : VerticalBox {
+                    padding: 0px;
+                    spacing: 6px;
+                    Text { text: @tr("COLOR"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        alignment: start;
+                        for swatch in [
+                            { hex: "#3478f6", value: #3478f6 },
+                            { hex: "#039be5", value: #039be5 },
+                            { hex: "#33b679", value: #33b679 },
+                            { hex: "#0b8043", value: #0b8043 },
+                            { hex: "#f6bf26", value: #f6bf26 },
+                            { hex: "#e87924", value: #e87924 },
+                            { hex: "#d50000", value: #d50000 },
+                            { hex: "#e67c73", value: #e67c73 },
+                            { hex: "#8b5cf6", value: #8b5cf6 },
+                            { hex: "#8e24aa", value: #8e24aa },
+                            { hex: "#795548", value: #795548 },
+                            { hex: "#616161", value: #616161 }
+                        ] : Rectangle {
+                            width: 26px;
+                            height: 26px;
+                            border-radius: 13px;
+                            background: swatch.value;
+                            border-width: root.chosen-color == swatch.hex
+                                || (root.chosen-color == "" && root.has-own-color && root.calendar-color == swatch.value) ? 3px : 0px;
+                            border-color: root.title-color;
+                            accessible-role: button;
+                            accessible-label: @tr("Color {}", swatch.hex);
+                            accessible-action-default => { root.chosen-color = swatch.hex; root.set-color(swatch.hex); }
+                            TouchArea {
+                                mouse-cursor: pointer;
+                                clicked => { root.chosen-color = swatch.hex; root.set-color(swatch.hex); }
+                            }
+                        }
+                    }
+                    Button {
+                        width: max(150px, self.content-width);
+                        text: @tr("Provider color");
+                        clicked => { root.chosen-color = "-"; root.set-color(""); }
+                    }
+                }
                 DetailField { label: @tr("WHEN"); value: root.date-time; label-color: root.muted-text; value-color: root.title-color; }
                 DetailField { label: @tr("CALENDAR"); value: root.calendar; label-color: root.muted-text; value-color: root.title-color; }
                 DetailField { label: @tr("ACCOUNT"); value: root.account; label-color: root.muted-text; value-color: root.title-color; }

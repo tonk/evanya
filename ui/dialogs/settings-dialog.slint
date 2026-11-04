@@ -24,7 +24,7 @@ import { AccountProfilePicker, ProfileColorChoice, ProfileMemberChoice, ProfileP
 import { RuntimeColorPicker, ThemeEditor } from "../components/theme-editor.slint";
 import { TypeScale } from "../typography.slint";
 import { AppTheme, LayoutMetrics, SettingsIconPalette, ServiceIconPalette } from "../design-system.slint";
-import { CompactPageHeader, WorkspaceSidebarSurface } from "../components/workspace-layout.slint";
+import { CompactPageHeader, WorkspacePaneResizeHandle, WorkspaceSidebarSurface } from "../components/workspace-layout.slint";
 import { TabSwitcherButton } from "../components/tab-overview.slint";
 import { LocalMailUi } from "../local-mail.slint";
 import { Numbers } from "../numbers.slint";
@@ -36,12 +36,36 @@ component AccountActions inherits HorizontalLayout {
     in property <bool> edit-enabled;
     in property <bool> remove-enabled;
     in property <bool> sync-enabled;
+    in property <bool> can-move-up: false;
+    in property <bool> can-move-down: false;
     callback edit();
     callback remove();
     callback sync();
-    width: 108px;
+    callback move-up();
+    callback move-down();
+    width: 184px;
     height: 32px;
     spacing: 6px;
+    IconButton {
+        icon: @image-url("../icons/lucide/outline/chevron-up.svg");
+        icon-color: AppTheme.secondary;
+        ghost: true;
+        hover-background: AppTheme.muted-control-bg;
+        interactive: root.can-move-up;
+        opacity: root.can-move-up ? 1 : 0.35;
+        tooltip-text: @tr("Move up");
+        clicked => { root.move-up(); }
+    }
+    IconButton {
+        icon: @image-url("../icons/lucide/outline/chevron-down.svg");
+        icon-color: AppTheme.secondary;
+        ghost: true;
+        hover-background: AppTheme.muted-control-bg;
+        interactive: root.can-move-down;
+        opacity: root.can-move-down ? 1 : 0.35;
+        tooltip-text: @tr("Move down");
+        clicked => { root.move-down(); }
+    }
     IconButton {
         icon: root.reconnect ? @image-url("../icons/lucide/outline/sync.svg") : @image-url("../icons/lucide/outline/pencil.svg");
         icon-color: AppTheme.secondary;
@@ -632,6 +656,13 @@ export component SettingsDialog inherits Rectangle {
     pure callback make_account_transfer(string) -> data-transfer;
     pure callback read_account_transfer(data-transfer) -> string;
     callback reorder_account(string, int, bool);
+    callback rename_account(int, string);
+    callback set_account_shown_in_mail(int, bool);
+    // The account whose name is being edited in place, and the draft.
+    private property <int> renaming-account-id: -1;
+    // The navigation's width, for as long as the app runs.
+    private property <length> settings-nav-width: LayoutMetrics.sidebar-width;
+    private property <string> rename-draft;
     callback save_account_mail_history(int, string);
     callback save_account_sent_copy_policy(int, string);
     callback save_account_keep_on_server(int, string);
@@ -1034,9 +1065,9 @@ export component SettingsDialog inherits Rectangle {
                 padding: 0px;
                 spacing: 0px;
 
-                WorkspaceSidebarSurface {
+                settings-nav := WorkspaceSidebarSurface {
                     visible: !root.compact;
-                    width: root.compact ? 0px : LayoutMetrics.sidebar-width;
+                    width: root.compact ? 0px : root.settings-nav-width.clamp(LayoutMetrics.sidebar-width, 400px);
                     height: parent.height;
                     surface-color: root.sidebar-bg;
                     divider-color: root.border-subtle;
@@ -1059,6 +1090,16 @@ export component SettingsDialog inherits Rectangle {
                         if root.settings-section-visible("About") : SettingsNavItem { text: @tr("About"); icon: @image-url("../icons/lucide/filled/info.svg"); icon-color: root.settings-icon-color("About"); selected: root.settings_tab == "About"; accent: root.accent; accent-soft: root.accent-soft; body-text: root.body-text; muted-text: root.muted-text; clicked => { root.settings_tab = "About"; } }
                         Rectangle { vertical-stretch: 1; }
                     }
+                }
+                if !root.compact : WorkspacePaneResizeHandle {
+                    leading-width: settings-nav.width;
+                    minimum-leading-width: LayoutMetrics.sidebar-width;
+                    maximum-leading-width: 400px;
+                    divider-color: root.border-subtle;
+                    active-color: root.accent;
+                    accessibility-label: @tr("Settings sidebar width");
+                    resizing(width) => { root.settings-nav-width = width; }
+                    resize-finished(width) => { root.settings-nav-width = width; }
                 }
 
                 Rectangle {
@@ -2105,7 +2146,63 @@ export component SettingsDialog inherits Rectangle {
                                             horizontal-stretch: 1;
                                             min-width: root.compact ? 0px : 120px;
                                             spacing: 2px;
-                                            account-name := Text { height: max(19px, self.preferred-height); text: account.name; color: root.heading; font-size: TypeScale.body-large; font-weight: 700; overflow: elide; }
+                                            // The name, with a pencil to rename the account in place.
+                                            account-name := Rectangle {
+                                                height: root.renaming-account-id == account.id ? 32px : max(19px, account-name-text.preferred-height);
+                                                account-name-text := Text {
+                                                    visible: root.renaming-account-id != account.id;
+                                                    x: 0px;
+                                                    width: min(self.preferred-width, parent.width - 26px);
+                                                    height: parent.height;
+                                                    text: account.name;
+                                                    color: root.heading;
+                                                    font-size: TypeScale.body-large;
+                                                    font-weight: 700;
+                                                    overflow: elide;
+                                                    vertical-alignment: center;
+                                                }
+                                                if root.renaming-account-id != account.id : IconButton {
+                                                    x: account-name-text.width + 4px;
+                                                    y: (parent.height - self.height) / 2;
+                                                    width: 22px;
+                                                    height: 22px;
+                                                    icon: @image-url("../icons/lucide/outline/pencil.svg");
+                                                    icon-size: 14px;
+                                                    icon-color: root.muted-text;
+                                                    ghost: true;
+                                                    hover-background: AppTheme.muted-control-bg;
+                                                    tooltip-text: @tr("Rename");
+                                                    clicked => {
+                                                        root.rename-draft = account.name == account.email ? "" : account.name;
+                                                        root.renaming-account-id = account.id;
+                                                    }
+                                                }
+                                                if root.renaming-account-id == account.id : HorizontalLayout {
+                                                    spacing: 6px;
+                                                    rename-input := LineEdit {
+                                                        horizontal-stretch: 1;
+                                                        text <=> root.rename-draft;
+                                                        placeholder-text: account.email;
+                                                        accepted(value) => {
+                                                            root.rename_account(account.id, value);
+                                                            root.renaming-account-id = -1;
+                                                        }
+                                                        init => { self.focus(); }
+                                                    }
+                                                    Button {
+                                                        text: @tr("Save");
+                                                        primary: true;
+                                                        clicked => {
+                                                            root.rename_account(account.id, root.rename-draft);
+                                                            root.renaming-account-id = -1;
+                                                        }
+                                                    }
+                                                    Button {
+                                                        text: @tr("Cancel");
+                                                        clicked => { root.renaming-account-id = -1; }
+                                                    }
+                                                }
+                                            }
                                             account-email := Text { height: max(16px, self.preferred-height); text: account.email; color: root.secondary-text; font-size: TypeScale.caption; overflow: elide; }
                                             account-state := Text { height: max(16px, self.preferred-height); text: account.status == "offline" ? @tr("Offline · retrying automatically") : account.status == "needs_reauth" ? @tr("Sign-in required") : account.status == "syncing" ? @tr("Syncing…") : account.status == "idle" ? (account.mail_protocol == "gmail" ? @tr("Connected · Gmail") : account.mail_protocol == "jmap" ? @tr("Connected · JMAP") : account.mail_protocol == "pop3" ? (drop-target.unencrypted ? @tr("Connected without encryption · POP3 + SMTP") : @tr("Connected · POP3 + SMTP")) : drop-target.unencrypted ? @tr("Connected without encryption · IMAP + SMTP") : @tr("Connected · IMAP + SMTP")) : @tr("Account status: {}", account.status); color: account.status == "needs_reauth" ? #c0392b : account.status == "idle" && drop-target.unencrypted ? AppTheme.destructive : root.faint-text; font-size: TypeScale.caption; overflow: elide; }
                                         }
@@ -2118,7 +2215,28 @@ export component SettingsDialog inherits Rectangle {
                                             edit => { root.edit-account(account); }
                                             remove => { root.confirm-account-removal(account); }
                                             sync => { root.sync_account(account.id); }
-                                            width: 108px;
+                                            can-move-up: account-index > 0 && !root.account_setup_in_progress;
+                                            can-move-down: account-index < root.connected_accounts.length - 1 && !root.account_setup_in_progress;
+                                            move-up => { root.reorder_account(account.drag_key, root.connected_accounts[account-index - 1].id, false); }
+                                            move-down => { root.reorder_account(account.drag_key, root.connected_accounts[account-index + 1].id, true); }
+                                            width: 184px;
+                                        }
+                                        // Hide an account used only for calendars and contacts
+                                        // from the mail view.
+                                        HorizontalBox {
+                                            width: max(92px, self.preferred-width);
+                                            height: 30px;
+                                            padding-top: 0px;
+                                            padding-bottom: 0px;
+                                            spacing: 8px;
+                                            cross-axis-alignment: center;
+                                            Text { text: @tr("Mail"); color: root.body-text; font-size: TypeScale.caption; vertical-alignment: center; }
+                                            Rectangle { horizontal-stretch: 1; }
+                                            Switch {
+                                                checked: account.shown_in_mail;
+                                                control-label: @tr("Show this account's mail");
+                                                toggled => { root.set_account_shown_in_mail(account.id, self.checked); }
+                                            }
                                         }
                                         // The switch row shares the buttons' 30px band and grows
                                         // to fit its label.

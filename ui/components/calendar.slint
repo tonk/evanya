@@ -7,13 +7,14 @@ import { ConfirmationDialog } from "confirmation-dialog.slint";
 import { HorizontalBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
 import { TypeScale } from "../typography.slint";
 import { LayoutMetrics } from "../design-system.slint";
-import { CollapsibleWorkspaceSidebar, CompactPageHeader, WorkspaceMiniHeading } from "workspace-layout.slint";
+import { CollapsibleWorkspaceSidebar, CompactPageHeader, WorkspaceMiniHeading, WorkspacePaneResizeHandle } from "workspace-layout.slint";
 import { CalendarAgenda, CalendarAgendaFilter } from "calendar-agenda.slint";
 import { CalendarAgendaRow, CalendarAgendaFilterRow } from "../models.slint";
 import { ScrollFade } from "scroll-fade.slint";
 import { WindowControlsClearance } from "../window-chrome.slint";
 import { TabSwitcherButton } from "tab-overview.slint";
 import { TabsUi } from "tabs-ui.slint";
+import { Shortcuts } from "../shortcuts.slint";
 
 export component CalendarEvent inherits Rectangle {
     in property <string> title;
@@ -308,8 +309,8 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
                         height: 14px;
                         border-radius: 4px;
                         border-width: calendar.enabled ? 0px : 2px;
-                        border-color: root.calendar-color(calendar.color-index);
-                        background: calendar.enabled ? root.calendar-color(calendar.color-index) : transparent;
+                        border-color: calendar.swatch;
+                        background: calendar.enabled ? calendar.swatch : transparent;
                     }
 
                     toggle-hit := TouchArea {
@@ -366,6 +367,11 @@ export component FunctionalCalendarView inherits Rectangle {
     in property <bool> active: true;
     in property <bool> compact: false;
     in-out property <bool> sidebar-collapsed: false;
+    // Shared with the other workspaces' sidebars; dragging its edge changes it.
+    in-out property <length> sidebar-width: LayoutMetrics.sidebar-width;
+    callback sidebar-width-committed(length);
+    private property <length> sidebar-maximum-width: max(LayoutMetrics.sidebar-width, min(480px, root.width * 0.4));
+    private property <length> effective-sidebar-width: root.sidebar-width.clamp(LayoutMetrics.sidebar-width, root.sidebar-maximum-width);
     in property <bool> dark-mode: false;
     in property <[CalendarDay]> month-days: [];
     in property <[CalendarWeekDay]> week-days: [];
@@ -385,7 +391,11 @@ export component FunctionalCalendarView inherits Rectangle {
     in property <string> selected-date-label;
     in property <bool> selected-date-has-events: false;
     // The week view's ruler labels for 08:00 through 18:00.
-    in property <[string]> hour-labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+    // One label per hour of the day, from 00:00.
+    in property <[string]> hour-labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+    // The week view's zoom: 1 fits 08:00 to 18:00 in the window.
+    in-out property <float> zoom: 1;
+    callback zoom-changed(float);
     in property <string> view-mode: "week";
     in property <color> background-color;
     in property <color> sidebar-color;
@@ -407,6 +417,7 @@ export component FunctionalCalendarView inherits Rectangle {
     callback new-event;
     callback open-link(string);
     callback set-source-enabled(int, bool);
+    callback set-source-color(int, string);
     callback toggle-agenda-filter(int, bool);
     callback clear-agenda-filters;
     callback edit-event(int);
@@ -414,6 +425,9 @@ export component FunctionalCalendarView inherits Rectangle {
 
     private property <bool> detail-open: false;
     private property <string> detail-kind: "event";
+    private property <int> detail-source-id: -1;
+    private property <color> detail-source-color;
+    private property <bool> detail-source-has-color: false;
     private property <string> detail-title: "";
     private property <string> detail-subtitle: "";
     private property <string> detail-provider: "local";
@@ -436,6 +450,9 @@ export component FunctionalCalendarView inherits Rectangle {
 
     function show-source(source: CalendarSourceRow) {
         root.detail-kind = "calendar";
+        root.detail-source-id = source.id;
+        root.detail-source-color = source.swatch;
+        root.detail-source-has-color = source.color != "";
         root.detail-title = source.name != "" ? source.name : @tr("Calendar");
         root.detail-subtitle = source.account-name != "" ? source.account-name : source.email;
         root.detail-provider = source.provider;
@@ -491,7 +508,28 @@ export component FunctionalCalendarView inherits Rectangle {
     // All-day events show one caption line that grows with the platform font.
     private property <length> all-day-height: max(30px, all-day-line.preferred-height + 12px);
     private property <length> grid-top: 112px + root.all-day-height;
-    private property <length> hour-height: max(36px, (root.height - root.grid-top) / 10);
+    private property <length> fitted-hour-height: max(36px, (root.height - root.grid-top) / 10);
+    private property <length> hour-height: max(16px, root.fitted-hour-height * root.zoom);
+
+    // The week grid's scroll position, and the hour it keeps at the top
+    // while zooming, so the view stays put.
+    private property <length> week-scroll-y: 0px;
+    private property <float> zoom-anchor-hour: 8;
+    private property <int> zoom-revision: 0;
+
+    // An event's fill: its calendar's color, faint over the surface.
+    pure function event-fill(c: color) -> color {
+        return c.with-alpha(root.dark-mode ? 0.26 : 0.13);
+    }
+
+    public function set-zoom(zoom: float) {
+        let next = max(0.4, min(4, zoom));
+        if next == root.zoom { return; }
+        root.zoom-anchor-hour = -root.week-scroll-y / root.hour-height;
+        root.zoom = next;
+        root.zoom-revision += 1;
+        root.zoom-changed(next);
+    }
     background: root.background-color;
 
     local-label-width := Text { visible: false; text: @tr("LOCAL"); font-size: TypeScale.caption; }
@@ -505,6 +543,7 @@ export component FunctionalCalendarView inherits Rectangle {
         x: 0px;
         y: 0px;
         height: parent.height;
+        expanded-width: root.effective-sidebar-width;
         collapsed <=> root.sidebar-collapsed;
         days: root.month-days;
         sources: root.sources;
@@ -524,6 +563,23 @@ export component FunctionalCalendarView inherits Rectangle {
         new-event => { root.new-event(); }
         source-clicked(source) => { root.show-source(source); }
         source-toggled(calendar-id, enabled) => { root.set-source-enabled(calendar-id, enabled); }
+    }
+
+    if !root.compact && !root.sidebar-collapsed : WorkspacePaneResizeHandle {
+        x: calendar-sidebar.current-width - 1px;
+        y: 0px;
+        height: parent.height;
+        leading-width: root.effective-sidebar-width;
+        minimum-leading-width: LayoutMetrics.sidebar-width;
+        maximum-leading-width: root.sidebar-maximum-width;
+        divider-color: root.subtle-border-color;
+        active-color: root.accent-color;
+        accessibility-label: @tr("Calendar sidebar width");
+        resizing(width) => { root.sidebar-width = width; }
+        resize-finished(width) => {
+            root.sidebar-width = width;
+            root.sidebar-width-committed(width);
+        }
     }
     Rectangle {
         visible: !root.compact;
@@ -573,6 +629,43 @@ export component FunctionalCalendarView inherits Rectangle {
                     tooltip-text: @tr("New event");
                     accessible-id: "calendar-new-event-desktop";
                     clicked => { root.new-event(); }
+                }
+                ToolbarIconButton {
+                    visible: root.view-mode == "week";
+                    width: self.visible ? LayoutMetrics.desktop-icon-button-size : 0px;
+                    icon: @image-url("../icons/lucide/outline/zoom-out.svg");
+                    icon-color: root.secondary-color;
+                    hover-background: root.control-hover-color;
+                    interactive: root.zoom > 0.4;
+                    tooltip-text: @tr("Zoom out");
+                    clicked => { root.set-zoom(root.zoom / 1.25); }
+                }
+                zoom-label := TouchArea {
+                    visible: root.view-mode == "week";
+                    width: self.visible ? max(44px, zoom-label-text.preferred-width + 8px) : 0px;
+                    height: LayoutMetrics.desktop-icon-button-size;
+                    mouse-cursor: pointer;
+                    accessible-role: button;
+                    accessible-label: @tr("Reset zoom");
+                    accessible-action-default => { root.set-zoom(1); }
+                    clicked => { root.set-zoom(1); }
+                    zoom-label-text := Text {
+                        text: round(root.zoom * 100) + "%";
+                        color: root.secondary-color;
+                        font-size: TypeScale.caption;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                }
+                ToolbarIconButton {
+                    visible: root.view-mode == "week";
+                    width: self.visible ? LayoutMetrics.desktop-icon-button-size : 0px;
+                    icon: @image-url("../icons/lucide/outline/zoom-in.svg");
+                    icon-color: root.secondary-color;
+                    hover-background: root.control-hover-color;
+                    interactive: root.zoom < 4;
+                    tooltip-text: @tr("Zoom in");
+                    clicked => { root.set-zoom(root.zoom * 1.25); }
                 }
                 ToolbarIconButton { icon: @image-url("../icons/lucide/outline/chevron-left.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Previous period"); clicked => { root.navigate("period", -1); } }
                 ToolbarIconButton { icon: @image-url("../icons/lucide/outline/chevron-right.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Next period"); clicked => { root.navigate("period", 1); } }
@@ -640,45 +733,81 @@ export component FunctionalCalendarView inherits Rectangle {
                     title: event.title;
                     detail: event.detail;
                     compact: true;
-                    fill-color: event.color-index == 0 ? (root.dark-mode ? #1b2e46 : #e9f3ff) : event.color-index == 1 ? (root.dark-mode ? #31234b : #f2eaff) : (root.dark-mode ? #352518 : #fff1df);
-                    event-border-color: event.color-index == 0 ? #3478f6 : event.color-index == 1 ? #8b5cf6 : #e87924;
+                    fill-color: root.event-fill(event.color);
+                    event-border-color: event.color;
                     title-color: root.title-color;
                     detail-color: root.secondary-color;
                     clicked => { root.show-event(event); }
                 }
             }
             Rectangle { y: 47px + root.all-day-height; width: parent.width; height: 1px; background: root.ui-border-color; }
-            hour-grid := Rectangle {
+            // The whole day scrolls; zoom sets how tall an hour is.
+            week-keys := FocusScope {
+            x: 0px;
+            y: 48px + root.all-day-height;
+            width: parent.width;
+            height: parent.height - self.y;
+            focus-on-click: true;
+            hour-scroll := Flickable {
                 x: 0px;
-                y: 48px + root.all-day-height;
+                y: 0px;
                 width: parent.width;
-                height: parent.height - self.y;
-                clip: true;
-                for hour[index] in root.hour-labels : Rectangle {
-                    y: index * root.hour-height;
-                    width: parent.width;
-                    height: 1px;
-                    background: root.subtle-border-color;
-                    // Labels center on their line but stay inside the grid.
-                    Text { x: 10px; y: min(max(-self.height / 2, -parent.y), hour-grid.height - parent.y - self.height); width: root.time-gutter - 20px; height: max(16px, self.preferred-height); text: hour; color: root.muted-color; font-size: TypeScale.caption; horizontal-alignment: right; vertical-alignment: center; }
+                height: parent.height;
+                content-width: self.width;
+                content-height: 24 * root.hour-height;
+                init => { self.content-y = -min(8 * root.hour-height, max(0px, self.content-height - self.height)); }
+                changed content-y => { root.week-scroll-y = self.content-y; }
+                private property <int> zoom-revision: root.zoom-revision;
+                changed zoom-revision => {
+                    self.content-y = -min(max(0px, root.zoom-anchor-hour * root.hour-height),
+                        max(0px, self.content-height - self.height));
                 }
-                for marker in [0, 1, 2, 3, 4, 5, 6, 7] : Rectangle { x: root.time-gutter + marker * root.column-width; width: 1px; height: parent.height; background: root.subtle-border-color; }
-                for event in root.events : CalendarEvent {
-                    visible: !event.all-day;
-                    x: root.time-gutter + event.day-index * root.column-width + 5px;
-                    y: (event.start-minutes - 480) / 60 * root.hour-height;
-                    width: root.column-width - 10px;
-                    // A timed event ends in its own day column. Synced events can
-                    // span weeks, past what the software renderer can paint (#35).
-                    height: max(44px, min(event.duration-minutes, 1440 - event.start-minutes) / 60 * root.hour-height);
-                    title: event.title;
-                    detail: event.detail;
-                    fill-color: event.color-index == 0 ? (root.dark-mode ? #1b2e46 : #e9f3ff) : event.color-index == 1 ? (root.dark-mode ? #31234b : #f2eaff) : event.color-index == 2 ? (root.dark-mode ? #352518 : #fff1df) : (root.dark-mode ? #173528 : #e7f8ef);
-                    event-border-color: event.color-index == 0 ? #3478f6 : event.color-index == 1 ? #8b5cf6 : event.color-index == 2 ? #e87924 : #26a269;
-                    title-color: root.title-color;
-                    detail-color: root.secondary-color;
-                    clicked => { root.show-event(event); }
+
+                hour-grid := Rectangle {
+                    width: hour-scroll.content-width;
+                    height: hour-scroll.content-height;
+
+                    // Ctrl and the wheel zoom; the wheel alone scrolls.
+                    TouchArea {
+                        scroll-event(event) => {
+                            if !(event.modifiers.control || event.modifiers.meta) { return reject; }
+                            root.set-zoom(event.delta-y > 0 ? root.zoom * 1.25 : root.zoom / 1.25);
+                            accept
+                        }
+                    }
+
+                    for hour[index] in root.hour-labels : Rectangle {
+                        y: index * root.hour-height;
+                        width: parent.width;
+                        height: 1px;
+                        background: root.subtle-border-color;
+                        // Labels center on their line; the first stays inside the grid.
+                        Text { x: 10px; y: index == 0 ? 2px : -self.height / 2; width: root.time-gutter - 20px; height: max(16px, self.preferred-height); text: hour; color: root.muted-color; font-size: TypeScale.caption; horizontal-alignment: right; vertical-alignment: center; }
+                    }
+                    for marker in [0, 1, 2, 3, 4, 5, 6, 7] : Rectangle { x: root.time-gutter + marker * root.column-width; width: 1px; height: parent.height; background: root.subtle-border-color; }
+                    for event in root.events : CalendarEvent {
+                        visible: !event.all-day;
+                        x: root.time-gutter + event.day-index * root.column-width + 5px;
+                        y: event.start-minutes / 60 * root.hour-height;
+                        width: root.column-width - 10px;
+                        // A timed event ends in its own day column. Synced events can
+                        // span weeks, past what the software renderer can paint (#35).
+                        height: max(min(44px, 24 * root.hour-height - self.y), min(event.duration-minutes, 1440 - event.start-minutes) / 60 * root.hour-height);
+                        title: event.title;
+                        detail: event.detail;
+                        fill-color: root.event-fill(event.color);
+                        event-border-color: event.color;
+                        title-color: root.title-color;
+                        detail-color: root.secondary-color;
+                        clicked => { root.show-event(event); }
+                    }
                 }
+            }
+
+            KeyBinding { keys: Shortcuts.zoom-in; enabled: root.active; activated => { root.set-zoom(root.zoom * 1.25); } }
+            KeyBinding { keys: Shortcuts.zoom-in-alternate; enabled: root.active; activated => { root.set-zoom(root.zoom * 1.25); } }
+            KeyBinding { keys: Shortcuts.zoom-out; enabled: root.active; activated => { root.set-zoom(root.zoom / 1.25); } }
+            KeyBinding { keys: Shortcuts.zoom-reset; enabled: root.active; activated => { root.set-zoom(1); } }
             }
         }
 
@@ -718,7 +847,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 width: parent.width / 7 - 14px;
                 height: max(20px, chip-title.preferred-height);
                 border-radius: 4px;
-                background: event.color-index == 0 ? (root.dark-mode ? #1b2e46 : #e9f3ff) : event.color-index == 1 ? (root.dark-mode ? #31234b : #f2eaff) : event.color-index == 2 ? (root.dark-mode ? #352518 : #fff1df) : (root.dark-mode ? #173528 : #e7f8ef);
+                background: root.event-fill(event.color);
                 chip-title := Text { x: 6px; width: parent.width - 10px; height: parent.height; text: event.title; color: root.body-color; font-size: TypeScale.caption; font-weight: 600; overflow: elide; vertical-alignment: center; }
                 TouchArea {
                     accessible-role: button;
@@ -857,8 +986,8 @@ export component FunctionalCalendarView inherits Rectangle {
                     height: event.iso-date == root.selected-date ? agenda-detail.y + agenda-detail.height + 10px : 0px;
                     border-radius: 9px;
                     border-width: 1px;
-                    border-color: event.color-index == 0 ? #3478f6 : event.color-index == 1 ? #8b5cf6 : event.color-index == 2 ? #e87924 : #26a269;
-                    background: event.color-index == 0 ? (root.dark-mode ? #1b2e46 : #e9f3ff) : event.color-index == 1 ? (root.dark-mode ? #31234b : #f2eaff) : event.color-index == 2 ? (root.dark-mode ? #352518 : #fff1df) : (root.dark-mode ? #173528 : #e7f8ef);
+                    border-color: event.color;
+                    background: root.event-fill(event.color);
                     Rectangle { x: 0px; width: 4px; height: parent.height; border-radius: 2px; background: parent.border-color; }
                     agenda-title := Text { x: 14px; y: 8px; width: parent.width - 28px; height: max(24px, self.preferred-height); text: event.title; color: root.title-color; font-size: TypeScale.body-large; font-weight: 700; overflow: elide; vertical-alignment: center; }
                     agenda-detail := Text { x: 14px; y: agenda-title.y + agenda-title.height + 2px; width: parent.width - 28px; height: max(20px, self.preferred-height); text: event.detail; color: root.secondary-color; font-size: TypeScale.secondary; overflow: elide; vertical-alignment: center; }
@@ -906,6 +1035,9 @@ export component FunctionalCalendarView inherits Rectangle {
         open <=> root.detail-open;
         compact: root.compact;
         kind: root.detail-kind;
+        calendar-color: root.detail-source-color;
+        has-own-color: root.detail-source-has-color;
+        set-color(value) => { root.set-source-color(root.detail-source-id, value); }
         title: root.detail-title;
         subtitle: root.detail-subtitle;
         provider: root.detail-provider;

@@ -2383,6 +2383,7 @@ impl Core {
                 let account_key = account_id.to_string();
                 settings.account_colors.remove(&account_key);
                 settings.account_short_names.remove(&account_key);
+                settings.hidden_mail_accounts.retain(|id| *id != account_id);
                 settings.account_themes.remove(&account_key);
                 settings.signature_defaults.remove(&account_key);
                 settings

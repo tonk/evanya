@@ -1965,6 +1965,9 @@ pub struct Settings {
     /// First day shown in calendar week and month views: "sunday" | "monday".
     #[serde(default = "default_calendar_week_start")]
     pub calendar_week_start: String,
+    /// The calendar week view's zoom; 1 fits 08:00 to 18:00 in the window.
+    #[serde(default = "default_calendar_zoom")]
+    pub calendar_zoom: f32,
     pub undo_send_seconds: i64,
     #[serde(default)]
     pub load_remote_images: bool,
@@ -2128,6 +2131,10 @@ pub struct Settings {
     /// Missing = display name, else the address local part.
     #[serde(default)]
     pub account_short_names: std::collections::HashMap<String, String>,
+    /// Accounts left out of the mail view, such as one used only for its
+    /// calendar and contacts. Their mail still synchronizes.
+    #[serde(default)]
+    pub hidden_mail_accounts: Vec<i64>,
     /// Optional local groups such as Personal and Work. An account may belong
     /// to at most one profile; provider state is never affected.
     #[serde(default)]
@@ -2210,6 +2217,9 @@ fn default_mail_sidebar_width() -> i64 {
 }
 fn default_reading_pane_bottom_percent() -> i64 {
     40
+}
+fn default_calendar_zoom() -> f32 {
+    1.0
 }
 fn default_mail_list_layout() -> String {
     "cards".into()
@@ -2302,6 +2312,7 @@ impl Default for Settings {
             language: "system".into(),
             time_format: TimeFormat::default(),
             list_date_format: default_list_date_format(),
+            calendar_zoom: default_calendar_zoom(),
             calendar_week_start: default_calendar_week_start(),
             undo_send_seconds: 10,
             load_remote_images: false,
@@ -2350,6 +2361,7 @@ impl Default for Settings {
             account_themes: std::collections::HashMap::new(),
             show_account_badges: false,
             account_colors: std::collections::HashMap::new(),
+            hidden_mail_accounts: Vec::new(),
             account_short_names: std::collections::HashMap::new(),
             mail_profiles: Vec::new(),
             active_mail_profile: None,

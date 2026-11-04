@@ -273,6 +273,8 @@ export struct AccountRow {
     carddav_status: string,
     carddav_url: string,
     carddav_username: string,
+    // False for an account hidden from the mail view.
+    shown_in_mail: bool,
 }
 
 export struct EmailLink {
@@ -340,6 +342,8 @@ export struct CalendarEventRow {
     start_minutes: int,
     duration_minutes: int,
     color_index: int,
+    // The calendar's color, as chosen by the user or the provider.
+    color: color,
     all_day: bool,
     provider: string,
     account: string,
@@ -376,6 +380,7 @@ export struct CalendarAgendaFilterRow {
     name: string,
     account: string,
     color_index: int,
+    color: color,
     checked: bool,
 }
 
@@ -392,6 +397,8 @@ export struct CalendarSourceRow {
     provider: string,
     color: string,
     color_index: int,
+    // `color` as shown: the stored one, or a palette color without one.
+    swatch: color,
     read_only: bool,
     enabled: bool,
     is_default: bool,

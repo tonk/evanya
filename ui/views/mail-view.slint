@@ -27,6 +27,9 @@ export component MailView inherits FocusScope {
     // "right": the message reads beside the list; "bottom": below it.
     in property <string> reading-pane-position: "right";
     private property <bool> reading-pane-bottom: root.reading-pane-position == "bottom";
+    // A desktop window keeps the list above the message even when it is
+    // narrow or uses the minimal layout; only phones switch between them.
+    in property <bool> desktop-host: true;
     // Share of the pane the list takes when the message sits below it; the
     // divider changes it and the choice is saved.
     in-out property <float> bottom-list-fraction: 0.4;
@@ -117,7 +120,8 @@ export component MailView inherits FocusScope {
     private property <bool> focus-search-after-page-change: false;
     out property <bool> list-focus-visible: root.single-pane
         ? compact-list-pane.keyboard-focus-visible : desktop-list-pane.keyboard-focus-visible;
-    private property <bool> single-pane: root.compact || root.layout-mode == "minimal";
+    private property <bool> single-pane: (root.compact || root.layout-mode == "minimal")
+        && !(root.reading-pane-bottom && root.desktop-host);
     // The shown list's offset, saved with the tab when it is left.
     private property <length> list-scroll-offset: -(root.single-pane ? compact-list-pane.scroll-y : desktop-list-pane.scroll-y);
     changed list-scroll-offset => { TabsUi.list-offset = root.list-scroll-offset; }
@@ -643,6 +647,23 @@ export component MailView inherits FocusScope {
                 manage-accounts => {
                     root.settings_tab = "Accounts";
                     root.settings_open = true;
+                }
+            }
+
+            if root.active_view == "mail" && root.single-pane && !root.compact && !root.mail_sidebar_collapsed : WorkspacePaneResizeHandle {
+                x: root.desktop-sidebar-width - 1px;
+                y: 0px;
+                height: parent.height;
+                leading-width: root.effective-sidebar-width;
+                minimum-leading-width: LayoutMetrics.sidebar-width;
+                maximum-leading-width: root.sidebar-maximum-width;
+                divider-color: root.border;
+                active-color: root.accent;
+                accessibility-label: @tr("Folder list width");
+                resizing(width) => { root.sidebar-width = width; }
+                resize-finished(width) => {
+                    root.sidebar-width = width;
+                    root.sidebar-width-committed(width);
                 }
             }
 

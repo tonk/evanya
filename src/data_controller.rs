@@ -533,6 +533,12 @@ pub(super) fn restore_account_backup(
             {
                 settings.calendar_week_start = week_start.to_owned();
             }
+            if let Some(zoom) = preferences
+                .get("calendarZoom")
+                .and_then(|value| value.as_f64())
+            {
+                settings.calendar_zoom = (zoom as f32).clamp(0.4, 4.0);
+            }
             if let Some(enabled) = preferences
                 .get("loadRemoteImages")
                 .and_then(|value| value.as_bool())
@@ -1396,6 +1402,7 @@ pub(super) fn register_data_management_callbacks(
                     "timeFormat": settings.time_format,
                     "listDateFormat": settings.list_date_format,
                     "calendarWeekStart": settings.calendar_week_start,
+                    "calendarZoom": settings.calendar_zoom,
                     "loadRemoteImages": settings.load_remote_images,
                     "markReadOnOpen": settings.mark_read_on_open,
                     "collectOutgoingContacts": settings.collect_outgoing_contacts,
@@ -1721,6 +1728,7 @@ pub(super) fn register_data_management_callbacks(
                     app.set_compose_plain_text_default(false);
                     app.set_list_date_format("smart".into());
                     app.set_mail_list_layout("cards".into());
+                    app.set_calendar_zoom(1.0);
                     crate::mail::set_mail_sort(Default::default());
                     app.set_mail_sort("date-desc".into());
                     app.set_mail_sender_column_width(220.0);

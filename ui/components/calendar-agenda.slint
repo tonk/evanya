@@ -93,8 +93,8 @@ export component CalendarAgendaFilter inherits Rectangle {
                                 height: 18px;
                                 border-radius: 4px;
                                 border-width: 1px;
-                                border-color: CalendarAgendaStyle.color(filter.color-index);
-                                background: filter.checked ? CalendarAgendaStyle.color(filter.color-index) : transparent;
+                                border-color: filter.color;
+                                background: filter.checked ? filter.color : transparent;
                                 Image { visible: filter.checked; x: 3px; y: 3px; width: 12px; height: 12px; source: @image-url("../icons/lucide/outline/check.svg"); colorize: white; }
                             }
                             filter-name := Text { x: 36px; y: filter.account == "" ? max(14px, (52px - self.height) / 2) : 6px; width: parent.width - 44px; height: max(24px, self.preferred-height); text: filter.name; color: AppTheme.heading; font-size: TypeScale.body; overflow: elide; vertical-alignment: center; }
@@ -226,7 +226,7 @@ export component CalendarAgenda inherits Rectangle {
                         agenda-start := Text { text: row.time-label; color: AppTheme.body; font-size: TypeScale.secondary; font-weight: 600; overflow: elide; }
                         agenda-end := Text { text: row.end-label; color: AppTheme.muted; font-size: TypeScale.caption; }
                     }
-                    Rectangle { width: 3px; height: 36px; border-radius: 2px; background: CalendarAgendaStyle.color(row.event.color-index); opacity: agenda-row.cancelled ? 0.5 : 1; }
+                    Rectangle { width: 3px; height: 36px; border-radius: 2px; background: row.event.color; opacity: agenda-row.cancelled ? 0.5 : 1; }
                     VerticalBox {
                         horizontal-stretch: 1;
                         padding: 0px;
@@ -239,13 +239,13 @@ export component CalendarAgenda inherits Rectangle {
                         width: min(160px, max(80px, agenda-list.visible-width / 5));
                         height: 26px;
                         border-radius: 6px;
-                        background: CalendarAgendaStyle.color(row.event.color-index).with-alpha(AppTheme.dark ? 0.16 : 0.08);
+                        background: row.event.color.with-alpha(AppTheme.dark ? 0.16 : 0.08);
                         HorizontalBox {
                             padding-left: 8px;
                             padding-right: 8px;
                             spacing: 6px;
                             cross-axis-alignment: center;
-                            Image { width: 12px; height: 12px; source: @image-url("../icons/lucide/outline/calendar.svg"); colorize: CalendarAgendaStyle.color(row.event.color-index); }
+                            Image { width: 12px; height: 12px; source: @image-url("../icons/lucide/outline/calendar.svg"); colorize: row.event.color; }
                             Text { text: row.event.calendar != "" ? row.event.calendar : @tr("Local calendar"); color: AppTheme.body; font-size: TypeScale.caption; overflow: elide; horizontal-stretch: 1; }
                         }
                     }

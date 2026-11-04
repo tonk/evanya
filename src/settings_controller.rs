@@ -786,6 +786,79 @@ pub(super) fn register_settings_preference_callbacks(
     });
 
     let app_weak = app.as_weak();
+    let state_for_rename = Rc::clone(state);
+    let runtime_for_rename = Rc::clone(runtime);
+    app.on_rename_account(move |account_id, name| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = state_for_rename.borrow().core.clone() else {
+            app.set_sync_status(UiMessage::plain("Account names require local mail data."));
+            return;
+        };
+        match runtime_for_rename
+            .block_on(core.set_account_short_name(i64::from(account_id), name.as_str()))
+        {
+            Ok(settings) => {
+                apply_account_presentation_settings(
+                    &app,
+                    &state_for_rename,
+                    &runtime_for_rename,
+                    &settings,
+                );
+                // The sidebar's account headings come with the mailbox list.
+                let _ =
+                    refresh_from_source(&app, &state_for_rename, &runtime_for_rename, true, &[]);
+                app.set_sync_status(UiMessage::plain("Account name saved."));
+            }
+            Err(error) => {
+                app.set_sync_status(UiMessage::detail("Could not save account name: {}", error))
+            }
+        }
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_hidden = Rc::clone(state);
+    let runtime_for_hidden = Rc::clone(runtime);
+    app.on_set_account_shown_in_mail(move |account_id, shown| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = state_for_hidden.borrow().core.clone() else {
+            app.set_sync_status(UiMessage::plain("Account names require local mail data."));
+            return;
+        };
+        match runtime_for_hidden
+            .block_on(core.set_mail_account_hidden(i64::from(account_id), !shown))
+        {
+            Ok(settings) => {
+                apply_account_presentation_settings(
+                    &app,
+                    &state_for_hidden,
+                    &runtime_for_hidden,
+                    &settings,
+                );
+                {
+                    let mut state = state_for_hidden.borrow_mut();
+                    state.page = 1;
+                    state.next_cursor = None;
+                }
+                let _ =
+                    refresh_from_source(&app, &state_for_hidden, &runtime_for_hidden, false, &[]);
+                app.set_sync_status(if shown {
+                    UiMessage::plain("The account's mail is shown again.")
+                } else {
+                    UiMessage::plain("The account's mail is hidden; it keeps synchronizing.")
+                });
+            }
+            Err(error) => app.set_sync_status(UiMessage::detail(
+                "Could not save the account's mail visibility: {}",
+                error,
+            )),
+        }
+    });
+
+    let app_weak = app.as_weak();
     let state_for_marker_visibility = Rc::clone(state);
     let runtime_for_marker_visibility = Rc::clone(runtime);
     app.on_save_account_markers_visibility(move |enabled| {
@@ -871,6 +944,17 @@ pub(super) fn register_settings_preference_callbacks(
         if let Some(core) = core {
             let _ = runtime_for_layout.block_on(
                 core.update_settings(|settings| settings.mail_list_layout = layout.to_owned()),
+            );
+        }
+    });
+
+    let state_for_zoom = Rc::clone(state);
+    let runtime_for_zoom = Rc::clone(runtime);
+    app.on_save_calendar_zoom(move |zoom| {
+        let core = state_for_zoom.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_zoom.block_on(
+                core.update_settings(|settings| settings.calendar_zoom = zoom.clamp(0.4, 4.0)),
             );
         }
     });

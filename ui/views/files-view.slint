@@ -166,6 +166,11 @@ export component FilesView inherits Rectangle {
     in-out property <length> list-pane-width: LayoutMetrics.list-pane-width;
     callback list-pane-width-committed(length);
     in property <[AccountRow]> account-model;
+    // Shared with the other workspaces' sidebars; dragging its edge changes it.
+    in-out property <length> sidebar-width: LayoutMetrics.sidebar-width;
+    callback sidebar-width-committed(length);
+    private property <length> sidebar-maximum-width: max(LayoutMetrics.sidebar-width, min(480px, root.available-width * 0.4));
+    private property <length> effective-sidebar-width: root.sidebar-width.clamp(LayoutMetrics.sidebar-width, root.sidebar-maximum-width);
     in-out property <bool> sidebar-collapsed: false;
     in-out property <bool> navigation-open <=> FilesUi.navigation-open;
     private property <bool> single-surface: root.compact || root.layout-mode == "minimal";
@@ -276,11 +281,25 @@ export component FilesView inherits Rectangle {
         workspace-sidebar := CollapsibleWorkspaceSidebar {
             visible: !root.compact;
             collapsed: root.compact || root.sidebar-collapsed;
+            expanded-width: root.effective-sidebar-width;
             if !root.compact && !root.sidebar-collapsed : FilesNavigation {
                 width: parent.width; height: parent.height;
                 account-model: root.account-model;
                 navigate(action, value, scope) => { root.navigate(action, value, scope); }
                 setup => { root.setup = !root.setup; FilesUi.preview-open = false; FilesUi.command("release-preview", "", ""); }
+            }
+        }
+        if !root.compact && !root.sidebar-collapsed : WorkspacePaneResizeHandle {
+            leading-width: root.effective-sidebar-width;
+            minimum-leading-width: LayoutMetrics.sidebar-width;
+            maximum-leading-width: root.sidebar-maximum-width;
+            divider-color: AppTheme.border;
+            active-color: AppTheme.accent;
+            accessibility-label: @tr("Files sidebar width");
+            resizing(width) => { root.sidebar-width = width; }
+            resize-finished(width) => {
+                root.sidebar-width = width;
+                root.sidebar-width-committed(width);
             }
         }
         Rectangle {

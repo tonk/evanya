@@ -505,6 +505,8 @@ struct AccountPresentationSettings {
 
 impl AccountPresentationSettings {
     fn from_settings(settings: &Settings) -> Self {
+        mail::set_account_names(&settings.account_short_names);
+        mail::set_hidden_mail_accounts(&settings.hidden_mail_accounts);
         Self {
             profiles: settings.mail_profiles.clone(),
             active_profile: settings.active_mail_profile.clone(),
@@ -1691,6 +1693,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     // the system picker on mobile. The document entry points (compose
     // attachments, account backups, database snapshots) stay available.
     app.set_document_apis_supported(true);
+    app.set_desktop_host(cfg!(desktop));
     // A sign-in launch stays in the tray only when the user keeps the app
     // there and a tray can actually show it; otherwise the window opens.
     #[cfg(desktop)]
@@ -2884,6 +2887,37 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     &runtime_for_source_toggle,
                     &mut calendar,
                     &inbox_for_source_toggle.borrow().connected_accounts,
+                );
+                apply_calendar(&app, &calendar, today);
+            }
+            Err(error) => {
+                app.set_sync_status(UiMessage::detail("Calendar update failed: {}", error))
+            }
+        }
+    });
+
+    let app_weak = app.as_weak();
+    let calendar_for_color = Rc::clone(&calendar_state);
+    let inbox_for_color = Rc::clone(&state);
+    let runtime_for_color = Rc::clone(&runtime);
+    app.on_calendar_set_source_color(move |calendar_id, color| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = inbox_for_color.borrow().core.clone() else {
+            return;
+        };
+        let color = Some(color.trim().to_owned()).filter(|color| !color.is_empty());
+        match runtime_for_color.block_on(core.set_calendar_color(i64::from(calendar_id), color)) {
+            Ok(()) => {
+                app.set_sync_status(UiMessage::plain("Calendar color saved."));
+                let today = Local::now().date_naive();
+                let mut calendar = calendar_for_color.borrow_mut();
+                let _ = refresh_calendar_events(
+                    &core,
+                    &runtime_for_color,
+                    &mut calendar,
+                    &inbox_for_color.borrow().connected_accounts,
                 );
                 apply_calendar(&app, &calendar, today);
             }

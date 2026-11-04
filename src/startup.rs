@@ -365,11 +365,10 @@ pub(crate) fn apply_warm_start_snapshot(
         .accounts
         .iter()
         .filter_map(|account| {
-            let name = account
-                .display_name
-                .as_ref()
+            let name = crate::mail::account_name(account.id)
+                .or_else(|| account.display_name.clone())
                 .filter(|name| !name.trim().is_empty())
-                .unwrap_or(&account.email);
+                .unwrap_or_else(|| account.email.clone());
             Some(AccountRow {
                 id: i32::try_from(account.id).ok()?,
                 drag_key: account.id.to_string().into(),
@@ -379,7 +378,8 @@ pub(crate) fn apply_warm_start_snapshot(
                 mail_protocol: account.mail_protocol.as_str().into(),
                 status: account.sync_state.as_str().into(),
                 sync_error: account.sync_error.as_deref().unwrap_or_default().into(),
-                initials: avatar_initials(name).into(),
+                initials: avatar_initials(&name).into(),
+                shown_in_mail: !crate::mail::mail_account_hidden(account.id),
                 ..Default::default()
             })
         })
@@ -820,6 +820,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_show_tabs(settings.show_tabs);
     app.set_conversation_view(settings.conversation_view);
     app.set_compose_plain_text_default(settings.compose_plain_text);
+    app.set_calendar_zoom(settings.calendar_zoom.clamp(0.4, 4.0));
     app.set_mail_list_layout(
         if settings.mail_list_layout == "table" {
             "table"

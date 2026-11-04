@@ -78,6 +78,11 @@ export component ContactsView inherits Rectangle {
     in property <string> interaction-label: "";
     private property <bool> delete-confirming: false;
     in-out property <bool> detail-page-visible: false;
+    // Shared with the other workspaces' sidebars; dragging its edge changes it.
+    in-out property <length> sidebar-width: LayoutMetrics.sidebar-width;
+    callback sidebar-width-committed(length);
+    private property <length> sidebar-maximum-width: max(LayoutMetrics.sidebar-width, min(480px, root.available-width * 0.4));
+    private property <length> effective-sidebar-width: root.sidebar-width.clamp(LayoutMetrics.sidebar-width, root.sidebar-maximum-width);
     in-out property <bool> sidebar-collapsed: false;
     private property <bool> single-surface: root.compact || root.layout-mode == "minimal";
     private property <length> list-pane-maximum-width: max(
@@ -161,6 +166,7 @@ export component ContactsView inherits Rectangle {
         workspace-sidebar := CollapsibleWorkspaceSidebar {
             visible: !root.compact;
             collapsed: root.compact || root.sidebar-collapsed;
+            expanded-width: root.effective-sidebar-width;
             surface-color: root.sidebar-bg;
             divider-color: root.border;
 
@@ -290,6 +296,20 @@ export component ContactsView inherits Rectangle {
                         visible-height: contact-nav-scroll.visible-height;
                     }
                 }
+            }
+        }
+
+        if !root.compact && !root.sidebar-collapsed : WorkspacePaneResizeHandle {
+            leading-width: root.effective-sidebar-width;
+            minimum-leading-width: LayoutMetrics.sidebar-width;
+            maximum-leading-width: root.sidebar-maximum-width;
+            divider-color: root.border;
+            active-color: root.accent;
+            accessibility-label: @tr("Contact sidebar width");
+            resizing(width) => { root.sidebar-width = width; }
+            resize-finished(width) => {
+                root.sidebar-width = width;
+                root.sidebar-width-committed(width);
             }
         }
 

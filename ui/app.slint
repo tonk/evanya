@@ -374,6 +374,13 @@ export global I18n {
         if (key == "Reading pane position saved.") { return @tr("Reading pane position saved."); }
         if (key == "Date display preference saved.") { return @tr("Date display preference saved."); }
         if (key == "Could not save date display preference: {}") { return @tr("Could not save date display preference: {}", argument); }
+        if (key == "The account's mail is shown again.") { return @tr("The account's mail is shown again."); }
+        if (key == "The account's mail is hidden; it keeps synchronizing.") { return @tr("The account's mail is hidden; it keeps synchronizing."); }
+        if (key == "Could not save the account's mail visibility: {}") { return @tr("Could not save the account's mail visibility: {}", argument); }
+        if (key == "Calendar color saved.") { return @tr("Calendar color saved."); }
+        if (key == "Account name saved.") { return @tr("Account name saved."); }
+        if (key == "Account names require local mail data.") { return @tr("Account names require local mail data."); }
+        if (key == "Could not save account name: {}") { return @tr("Could not save account name: {}", argument); }
         if (key == "Message format preference saved.") { return @tr("Message format preference saved."); }
         if (key == "Could not save message format preference: {}") { return @tr("Could not save message format preference: {}", argument); }
         if (key == "Could not save reading pane position: {}") { return @tr("Could not save reading pane position: {}", argument); }
@@ -730,6 +737,8 @@ export component AppWindow inherits Window {
     pure callback read_account_transfer(data-transfer) -> string;
     pure callback settings-search-matches(string, string) -> bool;
     callback reorder_account(string, int, bool);
+    callback rename_account(int, string);
+    callback set_account_shown_in_mail(int, bool);
     callback save_account_mail_history(int, string);
     callback save_account_sent_copy_policy(int, string);
     callback save_account_keep_on_server(int, string);
@@ -761,6 +770,9 @@ export component AppWindow inherits Window {
     callback calendar-select-date(string);
     callback calendar-set-view(string);
     callback calendar-set-source-enabled(int, bool);
+    callback save_calendar_zoom(float);
+    // A calendar's color as #RRGGBB; empty restores the provider's color.
+    callback calendar-set-source-color(int, string);
     callback calendar-toggle-agenda-filter(int, bool);
     callback calendar-clear-agenda-filters();
     callback calendar-today();
@@ -893,7 +905,9 @@ export component AppWindow inherits Window {
     in property <string> calendar_week_label: "";
     in property <string> calendar_selected_date: "";
     in property <string> calendar_selected_date_label: "";
-    in property <[string]> calendar_hour_labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+    in property <[string]> calendar_hour_labels: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+    // The week view's zoom, saved when it changes.
+    in-out property <float> calendar_zoom: 1;
     in property <bool> calendar_selected_date_has_events: false;
     in-out property <bool> calendar_sidebar_collapsed: false;
     in-out property <string> calendar_view_mode: "week";
@@ -1178,6 +1192,8 @@ export component AppWindow inherits Window {
     // provide one, do not expose the desktop file:// printing fallback.
     in property <bool> print_supported: true;
     in property <bool> document_apis_supported: true;
+    // False on phones and tablets, which always show one mail pane at a time.
+    in property <bool> desktop_host: true;
     in property <string> app-version: "";
 
     // Neutral, low-chrome surfaces keep the message content visually primary.
@@ -1540,6 +1556,7 @@ export component AppWindow inherits Window {
             compact: root.compact-layout;
             layout-mode: root.workspace_layout;
             reading-pane-position: root.reading_pane_position;
+            desktop-host: root.desktop_host;
             mail-table: root.mail_list_layout == "table";
             mail-sort: root.mail_sort;
             sender-column-width <=> root.mail_sender_column_width;
@@ -1707,6 +1724,8 @@ export component AppWindow inherits Window {
 
         FunctionalCalendarView {
             active: root.active_view == "calendar";
+            sidebar-width <=> root.mail_sidebar_width;
+            sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
             x: 0px;
             y: 0px;
             width: parent.width;
@@ -1731,6 +1750,8 @@ export component AppWindow inherits Window {
             selected-date: root.calendar_selected_date;
             selected-date-label: root.calendar_selected_date_label;
             hour-labels: root.calendar_hour_labels;
+            zoom <=> root.calendar_zoom;
+            zoom-changed(zoom) => { root.save_calendar_zoom(zoom); }
             selected-date-has-events: root.calendar_selected_date_has_events;
             view-mode: root.calendar_view_mode;
             background-color: root.page-bg;
@@ -1750,6 +1771,7 @@ export component AppWindow inherits Window {
             select-date(date) => { root.calendar-select-date(date); }
             set-view(mode) => { root.calendar-set-view(mode); }
             set-source-enabled(calendar-id, enabled) => { root.calendar-set-source-enabled(calendar-id, enabled); }
+            set-source-color(calendar-id, color) => { root.calendar-set-source-color(calendar-id, color); }
             toggle-agenda-filter(id, checked) => { root.calendar-toggle-agenda-filter(id, checked); }
             clear-agenda-filters => { root.calendar-clear-agenda-filters(); }
             today => { root.calendar-today(); }
@@ -1768,6 +1790,8 @@ export component AppWindow inherits Window {
 
         ContactsView {
             detail-page-visible <=> root.contacts-detail-visible;
+            sidebar-width <=> root.mail_sidebar_width;
+            sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
             active: root.active_view == "contacts";
             x: 0px;
             y: 0px;
@@ -1869,6 +1893,8 @@ export component AppWindow inherits Window {
             available-height: parent.height;
             files-view := FilesView {
                 active: root.active_view == "files";
+                sidebar-width <=> root.mail_sidebar_width;
+                sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
                 width: parent.width;
                 height: parent.height;
                 available-width: parent.width;
@@ -2158,6 +2184,8 @@ export component AppWindow inherits Window {
             read_account_transfer(value) => root.read_account_transfer(value);
             settings-search-matches(haystack, query) => root.settings-search-matches(haystack, query);
             reorder_account(source, target, after) => { root.reorder_account(source, target, after); }
+            rename_account(id, name) => { root.rename_account(id, name); }
+            set_account_shown_in_mail(id, shown) => { root.set_account_shown_in_mail(id, shown); }
             save_account_mail_history(account-id, value) => { root.save_account_mail_history(account-id, value); }
             save_account_sent_copy_policy(account-id, value) => { root.save_account_sent_copy_policy(account-id, value); }
             save_account_keep_on_server(account-id, value) => { root.save_account_keep_on_server(account-id, value); }

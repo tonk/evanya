@@ -194,6 +194,23 @@ fn calendar_color_index(color: &str, fallback_id: i64) -> i32 {
         .unwrap_or_default()
 }
 
+/// The palette colors for calendars without a color of their own.
+const CALENDAR_PALETTE: [u32; 4] = [0x3478f6, 0x8b5cf6, 0xe87924, 0x26a269];
+
+/// A calendar's color for display: its own `#RRGGBB`, else a palette color.
+pub(crate) fn calendar_color(color: &str, fallback_id: i64) -> slint::Color {
+    let rgb = color
+        .strip_prefix('#')
+        .filter(|hex| hex.len() >= 6)
+        .and_then(|hex| u32::from_str_radix(&hex[..6], 16).ok())
+        .unwrap_or(CALENDAR_PALETTE[fallback_id.rem_euclid(4) as usize]);
+    slint::Color::from_argb_encoded(0xff00_0000 | rgb)
+}
+
+fn palette_color(index: i32) -> slint::Color {
+    slint::Color::from_argb_encoded(0xff00_0000 | CALENDAR_PALETTE[index.rem_euclid(4) as usize])
+}
+
 pub(crate) fn core_calendar_event(event: CalendarEvent) -> LocalCalendarEvent {
     let start = if event.all_day {
         Utc.timestamp_millis_opt(event.starts_at)
@@ -557,6 +574,7 @@ pub(crate) fn apply_agenda(
                     .unwrap_or_default()
                     .into(),
                 color_index: calendar_color_index(&source.color, source.id),
+                color: calendar_color(&source.color, source.id),
                 checked: !state.agenda_hidden.contains(&source.id),
             }),
     );
@@ -641,6 +659,9 @@ fn event_row(
         color_index: source
             .map(|source| calendar_color_index(&source.color, source.id))
             .unwrap_or(event.color_index),
+        color: source
+            .map(|source| calendar_color(&source.color, source.id))
+            .unwrap_or_else(|| palette_color(event.color_index)),
         all_day: event.all_day,
         provider: source
             .map(|source| source.provider)
@@ -747,6 +768,7 @@ pub(crate) fn apply_calendar(app: &AppWindow, state: &LocalCalendarState, today:
                 provider: source.provider.into(),
                 color: source.color.clone().into(),
                 color_index: calendar_color_index(&source.color, source.id),
+                swatch: calendar_color(&source.color, source.id),
                 read_only: source.read_only,
                 enabled: source.enabled,
                 is_default: source.is_default,
@@ -796,7 +818,7 @@ pub(crate) fn apply_calendar(app: &AppWindow, state: &LocalCalendarState, today:
 /// change, since a new model recreates every ruler row.
 fn apply_hour_labels(app: &AppWindow, formats: &DateFormats) {
     use slint::Model;
-    let labels = (8..=18)
+    let labels = (0..24)
         .map(|hour| SharedString::from(formats.hour(hour)))
         .collect::<Vec<_>>();
     if !app
