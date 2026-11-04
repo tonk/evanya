@@ -530,3 +530,12 @@ export global MailAttachments {
     in-out property <int> revision: 0;
     callback command(string, string);
 }
+
+// One folder or label in an account's "Show in sidebar" list.
+export struct SubscriptionRow {
+    kind: string,
+    id: int,
+    name: string,
+    depth: int,
+    subscribed: bool,
+}

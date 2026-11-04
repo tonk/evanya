@@ -818,6 +818,59 @@ pub(super) fn register_settings_preference_callbacks(
     });
 
     let app_weak = app.as_weak();
+    let state_for_subscriptions = Rc::clone(state);
+    app.on_open_folder_subscriptions(move |account_id| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let rows = crate::sidebar_model::subscription_rows(
+            &state_for_subscriptions.borrow(),
+            i64::from(account_id),
+        );
+        app.set_folder_subscription_rows(ModelRc::new(VecModel::from(rows)));
+        app.set_folder_subscription_account(account_id);
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_subscribe = Rc::clone(state);
+    let runtime_for_subscribe = Rc::clone(runtime);
+    app.on_set_mailbox_subscribed(move |kind, id, subscribed| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = state_for_subscribe.borrow().core.clone() else {
+            return;
+        };
+        match runtime_for_subscribe.block_on(core.set_mailbox_subscribed(
+            kind.as_str(),
+            i64::from(id),
+            subscribed,
+        )) {
+            Ok(settings) => {
+                apply_account_presentation_settings(
+                    &app,
+                    &state_for_subscribe,
+                    &runtime_for_subscribe,
+                    &settings,
+                );
+                crate::sidebar_model::refresh_sidebar(&state_for_subscribe);
+                let account_id = app.get_folder_subscription_account();
+                if account_id >= 0 {
+                    let rows = crate::sidebar_model::subscription_rows(
+                        &state_for_subscribe.borrow(),
+                        i64::from(account_id),
+                    );
+                    app.set_folder_subscription_rows(ModelRc::new(VecModel::from(rows)));
+                }
+            }
+            Err(error) => app.set_sync_status(UiMessage::detail(
+                "Could not save the folder choice: {}",
+                error,
+            )),
+        }
+    });
+
+    let app_weak = app.as_weak();
     let state_for_hidden = Rc::clone(state);
     let runtime_for_hidden = Rc::clone(runtime);
     app.on_set_account_shown_in_mail(move |account_id, shown| {

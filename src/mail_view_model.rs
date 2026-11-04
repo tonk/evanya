@@ -1901,6 +1901,7 @@ mod tests {
             show_markers: true,
             account_colors: HashMap::new(),
             account_short_names: HashMap::from([("1".into(), "Client".into())]),
+            ..Default::default()
         };
 
         let rows = make_rows(

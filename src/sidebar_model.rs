@@ -257,10 +257,18 @@ pub(super) fn refresh_sidebar_with_motion(state: &Rc<RefCell<InboxState>>, anima
     let query = state.folder_filter.trim();
     let filtering = !query.is_empty();
     let no_collapsed_folders = HashSet::new();
-    let mailboxes = make_mailbox_rows(
+    let subscribed_mailboxes = subscribed_mailboxes(
         &state.mailboxes,
-        &state.profile_avatar_images,
+        &state.account_presentation.unsubscribed_folders,
+    );
+    let subscribed_labels = subscribed_labels(
         &state.labels,
+        &state.account_presentation.unsubscribed_labels,
+    );
+    let mailboxes = make_mailbox_rows(
+        &subscribed_mailboxes,
+        &state.profile_avatar_images,
+        &subscribed_labels,
         if filtering {
             &no_collapsed_folders
         } else {
@@ -272,7 +280,7 @@ pub(super) fn refresh_sidebar_with_motion(state: &Rc<RefCell<InboxState>>, anima
         .filter(|mailbox| mailbox.is_account)
         .map(|mailbox| (mailbox.account_id, mailbox.label.clone()))
         .collect::<HashMap<_, _>>();
-    let mut labels = make_label_rows(&state.labels, None, "");
+    let mut labels = make_label_rows(&subscribed_labels, None, "");
     for label in &mut labels {
         if let Some(name) = account_names.get(&label.account_id) {
             label.account_name = name.clone();
@@ -311,6 +319,117 @@ pub(super) fn refresh_sidebar_with_motion(state: &Rc<RefCell<InboxState>>, anima
     let animation = Rc::clone(&state.sidebar_animation);
     drop(state);
     animation.reconcile(&model, rows, animate);
+}
+
+/// An account's folders, then its labels, for choosing which the sidebar
+/// shows. Standard mailboxes always show and are not listed.
+pub(super) fn subscription_rows(state: &InboxState, account_id: i64) -> Vec<SubscriptionRow> {
+    let presentation = &state.account_presentation;
+    let mut rows = state
+        .mailboxes
+        .iter()
+        .filter(|mailbox| {
+            mailbox.account_id == account_id
+                && !mailbox.is_account
+                && !mailbox.is_standard
+                && mailbox.folder_id >= 0
+        })
+        .filter_map(|mailbox| {
+            Some(SubscriptionRow {
+                kind: "folder".into(),
+                id: i32::try_from(mailbox.folder_id).ok()?,
+                name: mailbox.label.clone().into(),
+                depth: i32::try_from(mailbox.depth).unwrap_or_default(),
+                subscribed: !presentation
+                    .unsubscribed_folders
+                    .contains(&mailbox.folder_id),
+            })
+        })
+        .collect::<Vec<_>>();
+    let mut labels = state
+        .labels
+        .iter()
+        .filter(|label| label.owner_account_id == Some(account_id) && !label.is_auto)
+        .collect::<Vec<_>>();
+    labels.sort_by_cached_key(|label| (label.name.to_lowercase(), label.id));
+    rows.extend(labels.into_iter().filter_map(|label| {
+        Some(SubscriptionRow {
+            kind: "label".into(),
+            id: i32::try_from(label.id).ok()?,
+            name: label
+                .name
+                .rsplit_once('/')
+                .map_or(label.name.as_str(), |(_, leaf)| leaf)
+                .into(),
+            depth: i32::try_from(label.name.matches('/').count()).unwrap_or_default(),
+            subscribed: !presentation.unsubscribed_labels.contains(&label.id),
+        })
+    }));
+    rows
+}
+
+/// The mailboxes the sidebar lists: all but the unsubscribed folders and
+/// everything inside them. Standard mailboxes always stay.
+pub(super) fn subscribed_mailboxes(
+    mailboxes: &[crate::mail::MailboxEntry],
+    unsubscribed: &HashSet<i64>,
+) -> Vec<crate::mail::MailboxEntry> {
+    if unsubscribed.is_empty() {
+        return mailboxes.to_vec();
+    }
+    let mut left_out = HashSet::new();
+    let mut shown = Vec::with_capacity(mailboxes.len());
+    // Parents come before their children, so one pass finds every subtree.
+    for mailbox in mailboxes {
+        if mailbox.folder_id >= 0
+            && !mailbox.is_account
+            && !mailbox.is_standard
+            && (unsubscribed.contains(&mailbox.folder_id)
+                || left_out.contains(&mailbox.parent_folder_id))
+        {
+            left_out.insert(mailbox.folder_id);
+            continue;
+        }
+        shown.push(mailbox.clone());
+    }
+    // A folder whose children are all left out no longer opens.
+    let parents = shown
+        .iter()
+        .map(|mailbox| mailbox.parent_folder_id)
+        .filter(|parent| *parent >= 0)
+        .collect::<HashSet<_>>();
+    for mailbox in &mut shown {
+        if mailbox.has_children && mailbox.folder_id >= 0 {
+            mailbox.has_children = parents.contains(&mailbox.folder_id);
+        }
+    }
+    shown
+}
+
+/// The labels the sidebar lists: all but the unsubscribed account labels and
+/// the labels nested in them.
+pub(super) fn subscribed_labels(
+    labels: &[flectar_mail_core::models::Label],
+    unsubscribed: &HashSet<i64>,
+) -> Vec<flectar_mail_core::models::Label> {
+    if unsubscribed.is_empty() {
+        return labels.to_vec();
+    }
+    let left_out = labels
+        .iter()
+        .filter(|label| unsubscribed.contains(&label.id))
+        .map(|label| (label.owner_account_id, format!("{}/", label.name)))
+        .collect::<Vec<_>>();
+    labels
+        .iter()
+        .filter(|label| {
+            !unsubscribed.contains(&label.id)
+                && !left_out.iter().any(|(owner, prefix)| {
+                    *owner == label.owner_account_id && label.name.starts_with(prefix.as_str())
+                })
+        })
+        .cloned()
+        .collect()
 }
 
 fn make_filtered_sidebar_rows(
@@ -450,11 +569,13 @@ fn account_label_rows(
 ) -> Vec<SidebarRow> {
     use SidebarRowKind as Kind;
 
-    let account_labels = labels
+    let mut account_labels = labels
         .iter()
         .filter(|label| label.account_id == account_id)
         .cloned()
         .collect::<Vec<_>>();
+    // Alphabetical at every level, ignoring case, like the account's folders.
+    account_labels.sort_by_cached_key(|label| (label.name.to_lowercase(), label.id));
     if !nested {
         return account_labels
             .into_iter()
@@ -1100,6 +1221,113 @@ mod tests {
     }
 
     #[test]
+    fn unsubscribed_folders_and_labels_leave_the_sidebar_with_their_children() {
+        let entry =
+            |folder_id, parent_folder_id, is_standard, has_children| crate::mail::MailboxEntry {
+                account_id: 1,
+                folder_id,
+                parent_folder_id,
+                depth: 0,
+                has_children,
+                is_standard,
+                is_selectable: true,
+                can_create_children: false,
+                can_rename: false,
+                can_delete: false,
+                label: format!("{folder_id}"),
+                scope: None,
+                context: String::new(),
+                detail: String::new(),
+                avatar: String::new(),
+                is_account: false,
+                count: String::new(),
+            };
+        let mailboxes = vec![
+            entry(1, -1, true, true),   // Inbox
+            entry(2, 1, false, false),  // Inbox/Lists
+            entry(3, -1, false, true),  // Projects
+            entry(4, 3, false, true),   // Projects/2026
+            entry(5, 4, false, false),  // Projects/2026/Q1
+            entry(6, -1, false, false), // Receipts
+        ];
+        let shown = subscribed_mailboxes(&mailboxes, &HashSet::from([3, 2, 1]));
+        assert_eq!(
+            shown
+                .iter()
+                .map(|mailbox| mailbox.folder_id)
+                .collect::<Vec<_>>(),
+            [1, 6]
+        );
+        // Inbox lost its only child, so it no longer opens.
+        assert!(!shown[0].has_children);
+
+        let label = |id, name: &str, owner| flectar_mail_core::models::Label {
+            id,
+            name: name.into(),
+            color: String::new(),
+            keyword: String::new(),
+            position: 0,
+            owner_account_id: owner,
+            is_auto: false,
+        };
+        let labels = vec![
+            label(1, "Clienten", Some(1)),
+            label(2, "Clienten/ECB", Some(1)),
+            label(3, "Clienten", Some(2)),
+            label(4, "Planning", Some(1)),
+        ];
+        let shown = subscribed_labels(&labels, &HashSet::from([1]));
+        assert_eq!(
+            shown.iter().map(|label| label.id).collect::<Vec<_>>(),
+            [3, 4]
+        );
+    }
+
+    #[test]
+    fn account_labels_sort_alphabetically_at_every_level() {
+        let label = |id, name: &str| MailLabelRow {
+            id,
+            account_id: 1,
+            name: name.into(),
+            display_name: name.into(),
+            ..Default::default()
+        };
+        let labels = vec![
+            label(1, "planning"),
+            label(2, "Clienten/Vito"),
+            label(3, "AT_Intern"),
+            label(4, "Clienten"),
+            label(5, "Clienten/ECB"),
+            label(6, "Planning/KPN"),
+        ];
+        let rows = make_sidebar_rows(
+            SidebarLayout::SingleAccount,
+            accounts(1, 0),
+            vec![],
+            labels,
+            &HashSet::from([1]),
+            &HashSet::new(),
+            None,
+        );
+        let names = rows
+            .iter()
+            .filter(|row| row.kind == Kind::AccountLabel)
+            .map(|row| row.label.name.to_string())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            names,
+            [
+                "AT_Intern",
+                "Clienten",
+                "Clienten/ECB",
+                "Clienten/Vito",
+                "planning",
+                "Planning/KPN"
+            ]
+        );
+    }
+
+    #[test]
     fn gmail_labels_form_a_collapsible_tree_without_inventing_parents() {
         let label = |id, name: &str| MailLabelRow {
             id,
@@ -1138,10 +1366,10 @@ mod tests {
         assert_eq!(
             visible,
             [
+                (4, "Orphan/Child".into(), 0, false),
                 (1, "Projects".into(), 0, true),
                 (2, "Launch".into(), 1, true),
                 (3, "Design".into(), 2, false),
-                (4, "Orphan/Child".into(), 0, false),
             ]
         );
 
@@ -1160,7 +1388,7 @@ mod tests {
                 .filter(|row| row.kind == Kind::AccountLabel)
                 .map(|row| row.label.id)
                 .collect::<Vec<_>>(),
-            [1, 4]
+            [4, 1]
         );
         assert!(
             !collapsed

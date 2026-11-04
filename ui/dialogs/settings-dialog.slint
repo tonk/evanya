@@ -7,7 +7,7 @@ import { MessageColors } from "../message-colors.slint";
 import { MailPorts, MailSecurityFields } from "../components/mail-security-fields.slint";
 import { OAuthBrowserHelp } from "../components/oauth-browser-help.slint";
 import { HorizontalBox, ScrollView, VerticalBox } from "std-widgets.slint";
-import { AccountRow, CalendarConnectionRow, MailProfileRow, ProfileMemberRow, StorageUsageRow } from "../models.slint";
+import { AccountRow, CalendarConnectionRow, MailProfileRow, ProfileMemberRow, StorageUsageRow, SubscriptionRow } from "../models.slint";
 import { AccountCalendars } from "../components/account-calendars.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
@@ -658,6 +658,10 @@ export component SettingsDialog inherits Rectangle {
     callback reorder_account(string, int, bool);
     callback rename_account(int, string);
     callback set_account_shown_in_mail(int, bool);
+    in-out property <int> folder_subscription_account: -1;
+    in property <[SubscriptionRow]> folder_subscription_rows: [];
+    callback open_folder_subscriptions(int);
+    callback set_mailbox_subscribed(string, int, bool);
     // The account whose name is being edited in place, and the draft.
     private property <int> renaming-account-id: -1;
     // The navigation's width, for as long as the app runs.
@@ -2221,6 +2225,13 @@ export component SettingsDialog inherits Rectangle {
                                             move-down => { root.reorder_account(account.drag_key, root.connected_accounts[account-index + 1].id, true); }
                                             width: 184px;
                                         }
+                                        Button {
+                                            width: max(80px, self.content-width);
+                                            height: 30px;
+                                            text: @tr("Folders");
+                                            enabled: account.shown_in_mail;
+                                            clicked => { root.open_folder_subscriptions(account.id); }
+                                        }
                                         // Hide an account used only for calendars and contacts
                                         // from the mail view.
                                         HorizontalBox {
@@ -3445,6 +3456,83 @@ export component SettingsDialog inherits Rectangle {
                     root.open-new-profile(account-id);
                 }
                 close => { root.close-account-profile-picker(); }
+            }
+        }
+
+        // Which of an account's folders and labels the sidebar shows.
+        if root.folder_subscription_account >= 0 : Rectangle {
+            width: parent.width;
+            height: parent.height;
+            background: #00000066;
+            TouchArea { clicked => { root.folder_subscription_account = -1; } }
+
+            Rectangle {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: min(460px, parent.width - 32px);
+                height: min(600px, parent.height - 48px);
+                border-radius: 12px;
+                border-width: 1px;
+                border-color: root.border-subtle;
+                background: root.surface;
+                clip: true;
+                TouchArea { }
+
+                VerticalBox {
+                    padding: 20px;
+                    spacing: 10px;
+                    Text { text: @tr("Folders in the sidebar"); color: root.title-color; font-size: TypeScale.subtitle; font-weight: 700; }
+                    Text {
+                        text: @tr("Switch off the folders and labels you don't want to see. They keep synchronizing and stay searchable. Inbox, Sent and the other standard mailboxes always show.");
+                        color: root.secondary-text;
+                        font-size: TypeScale.caption;
+                        wrap: word-wrap;
+                    }
+                    if root.folder_subscription_rows.length == 0 : Text {
+                        text: @tr("This account has no folders or labels of its own.");
+                        color: root.faint-text;
+                        font-size: TypeScale.body;
+                    }
+                    ScrollView {
+                        vertical-stretch: 1;
+                        VerticalLayout {
+                            for entry[index] in root.folder_subscription_rows : Rectangle {
+                                height: 36px;
+                                Rectangle {
+                                    visible: index > 0 && entry.kind != root.folder_subscription_rows[index - 1].kind;
+                                    y: 0px;
+                                    height: 1px;
+                                    background: root.border-subtle;
+                                }
+                                Text {
+                                    x: 4px + entry.depth * 18px;
+                                    width: parent.width - self.x - 56px;
+                                    height: parent.height;
+                                    text: entry.name;
+                                    color: entry.subscribed ? root.body-text : root.faint-text;
+                                    font-size: TypeScale.body;
+                                    overflow: elide;
+                                    vertical-alignment: center;
+                                }
+                                Switch {
+                                    x: parent.width - self.width - 8px;
+                                    y: (parent.height - self.height) / 2;
+                                    checked: entry.subscribed;
+                                    control-label: entry.name;
+                                    toggled => { root.set_mailbox_subscribed(entry.kind, entry.id, self.checked); }
+                                }
+                            }
+                        }
+                    }
+                    HorizontalLayout {
+                        alignment: end;
+                        Button {
+                            text: @tr("Done");
+                            primary: true;
+                            clicked => { root.folder_subscription_account = -1; }
+                        }
+                    }
+                }
             }
         }
 

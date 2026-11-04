@@ -2135,6 +2135,12 @@ pub struct Settings {
     /// calendar and contacts. Their mail still synchronizes.
     #[serde(default)]
     pub hidden_mail_accounts: Vec<i64>,
+    /// Folders and account labels left out of the sidebar ("unsubscribed"),
+    /// by local id. Their mail still synchronizes and can be searched.
+    #[serde(default)]
+    pub unsubscribed_folders: Vec<i64>,
+    #[serde(default)]
+    pub unsubscribed_labels: Vec<i64>,
     /// Optional local groups such as Personal and Work. An account may belong
     /// to at most one profile; provider state is never affected.
     #[serde(default)]
@@ -2361,6 +2367,8 @@ impl Default for Settings {
             account_themes: std::collections::HashMap::new(),
             show_account_badges: false,
             account_colors: std::collections::HashMap::new(),
+            unsubscribed_folders: Vec::new(),
+            unsubscribed_labels: Vec::new(),
             hidden_mail_accounts: Vec::new(),
             account_short_names: std::collections::HashMap::new(),
             mail_profiles: Vec::new(),

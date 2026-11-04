@@ -19,7 +19,7 @@ export { AppTheme, MotionSettings, ThemeUtilities } from "design-system.slint";
 import { AppTheme, LayoutMetrics } from "design-system.slint";
 import { Button } from "components/button.slint";
 import { LoadingSkeletonBlock } from "components/loading-skeleton.slint";
-import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, StorageUsageRow, ThreadMessageRow } from "models.slint";
+import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow } from "models.slint";
 export { EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
 export { MailListNavigation, MailNavigationTarget } from "models.slint";
 export { ThreadMessageRow, StorageUsageRow } from "models.slint";
@@ -377,6 +377,7 @@ export global I18n {
         if (key == "The account's mail is shown again.") { return @tr("The account's mail is shown again."); }
         if (key == "The account's mail is hidden; it keeps synchronizing.") { return @tr("The account's mail is hidden; it keeps synchronizing."); }
         if (key == "Could not save the account's mail visibility: {}") { return @tr("Could not save the account's mail visibility: {}", argument); }
+        if (key == "Could not save the folder choice: {}") { return @tr("Could not save the folder choice: {}", argument); }
         if (key == "Calendar color saved.") { return @tr("Calendar color saved."); }
         if (key == "Account name saved.") { return @tr("Account name saved."); }
         if (key == "Account names require local mail data.") { return @tr("Account names require local mail data."); }
@@ -739,6 +740,11 @@ export component AppWindow inherits Window {
     callback reorder_account(string, int, bool);
     callback rename_account(int, string);
     callback set_account_shown_in_mail(int, bool);
+    // The account whose folders are being chosen (-1 when closed), and them.
+    in-out property <int> folder_subscription_account: -1;
+    in property <[SubscriptionRow]> folder_subscription_rows: [];
+    callback open_folder_subscriptions(int);
+    callback set_mailbox_subscribed(string, int, bool);
     callback save_account_mail_history(int, string);
     callback save_account_sent_copy_policy(int, string);
     callback save_account_keep_on_server(int, string);
@@ -2186,6 +2192,10 @@ export component AppWindow inherits Window {
             reorder_account(source, target, after) => { root.reorder_account(source, target, after); }
             rename_account(id, name) => { root.rename_account(id, name); }
             set_account_shown_in_mail(id, shown) => { root.set_account_shown_in_mail(id, shown); }
+            folder_subscription_account <=> root.folder_subscription_account;
+            folder_subscription_rows: root.folder_subscription_rows;
+            open_folder_subscriptions(id) => { root.open_folder_subscriptions(id); }
+            set_mailbox_subscribed(kind, id, subscribed) => { root.set_mailbox_subscribed(kind, id, subscribed); }
             save_account_mail_history(account-id, value) => { root.save_account_mail_history(account-id, value); }
             save_account_sent_copy_policy(account-id, value) => { root.save_account_sent_copy_policy(account-id, value); }
             save_account_keep_on_server(account-id, value) => { root.save_account_keep_on_server(account-id, value); }

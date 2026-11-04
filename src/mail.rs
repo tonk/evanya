@@ -325,10 +325,18 @@ fn without_hidden_accounts(
         .read()
         .unwrap_or_else(std::sync::PoisonError::into_inner)
         .clone();
+    without_accounts(profile, accounts, &hidden)
+}
+
+fn without_accounts(
+    profile: Option<Arc<[i64]>>,
+    accounts: &[Account],
+    hidden: &[i64],
+) -> Option<Arc<[i64]>> {
     if hidden.is_empty() {
         return profile;
     }
-    let shown = match profile {
+    let mut shown = match profile {
         Some(profile) => profile
             .iter()
             .copied()
@@ -340,6 +348,9 @@ fn without_hidden_accounts(
             .filter(|id| !hidden.contains(id))
             .collect(),
     };
+    // Profiles are searched by id, whatever order the accounts are in.
+    shown.sort_unstable();
+    shown.dedup();
     Some(Arc::from(shown))
 }
 
@@ -1618,6 +1629,30 @@ impl CoreMailSource {
                 settings
                     .account_short_names
                     .insert(account_id.to_string(), name);
+            }
+        })
+        .await?;
+        self.load_settings().await
+    }
+
+    /// Show a folder (`kind` "folder") or account label ("label") in the
+    /// sidebar, or leave it out.
+    pub async fn set_mailbox_subscribed(
+        &self,
+        kind: &str,
+        id: i64,
+        subscribed: bool,
+    ) -> Result<Settings, String> {
+        let folder = kind == "folder";
+        self.update_settings(|settings| {
+            let list = if folder {
+                &mut settings.unsubscribed_folders
+            } else {
+                &mut settings.unsubscribed_labels
+            };
+            list.retain(|known| *known != id);
+            if !subscribed {
+                list.push(id);
             }
         })
         .await?;
@@ -3363,9 +3398,9 @@ pub fn fixtures() -> Vec<EmailFixture> {
 mod tests {
     use super::{
         ComposeMessage, MailTarget, compose_args, display_thread_subject, mailbox_entries,
-        markdown_to_html, markdown_to_plain_text, message_summary_to_message,
+        markdown_to_html, markdown_to_plain_text, message_summary_to_message, profile_shows,
         readable_message_html, resolve_scope, summary_to_message, validated_startup_scope,
-        with_local_mail,
+        with_local_mail, without_accounts,
     };
     use crate::mail_scope::{LabelKind, Scope, StandardMailbox};
     use flectar_mail_core::models::{
@@ -3970,6 +4005,21 @@ mod tests {
             validated_startup_scope(Scope::Folder(21), &[], &folders, None, &[]),
             Scope::UNIFIED_INBOX
         );
+    }
+
+    #[test]
+    fn hiding_an_account_keeps_reordered_accounts_visible() {
+        let account = |id| Account {
+            id,
+            ..test_account()
+        };
+        // Accounts in a user-chosen order, not by id.
+        let accounts = [account(4), account(5), account(2), account(3)];
+        let profile = without_accounts(None, &accounts, &[3]);
+        for id in [2, 4, 5] {
+            assert!(profile_shows(profile.as_deref(), id), "account {id}");
+        }
+        assert!(!profile_shows(profile.as_deref(), 3));
     }
 
     #[test]

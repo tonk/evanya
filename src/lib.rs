@@ -501,6 +501,9 @@ struct AccountPresentationSettings {
     show_markers: bool,
     account_colors: HashMap<String, String>,
     account_short_names: HashMap<String, String>,
+    /// Folders and labels the sidebar leaves out.
+    unsubscribed_folders: HashSet<i64>,
+    unsubscribed_labels: HashSet<i64>,
 }
 
 impl AccountPresentationSettings {
@@ -513,6 +516,8 @@ impl AccountPresentationSettings {
             show_markers: settings.show_account_badges,
             account_colors: settings.account_colors.clone(),
             account_short_names: settings.account_short_names.clone(),
+            unsubscribed_folders: settings.unsubscribed_folders.iter().copied().collect(),
+            unsubscribed_labels: settings.unsubscribed_labels.iter().copied().collect(),
         }
     }
 
