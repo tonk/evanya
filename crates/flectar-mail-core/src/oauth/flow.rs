@@ -21,6 +21,18 @@ pub struct OAuthOutcome {
     pub refresh_token: Option<String>,
     pub client_id: String,
     pub client_secret: Option<String>,
+    /// The scopes the provider granted, when it says. Google lets the user
+    /// untick some on its consent screen.
+    pub granted_scopes: Option<Vec<String>>,
+}
+
+impl OAuthOutcome {
+    /// Whether `scope` was granted, as far as the provider reported.
+    pub fn granted(&self, scope: &str) -> bool {
+        self.granted_scopes
+            .as_ref()
+            .is_none_or(|scopes| scopes.iter().any(|granted| granted == scope))
+    }
 }
 
 fn random_string(len: usize) -> String {
@@ -41,6 +53,9 @@ struct ExchangeResponse {
     refresh_token: Option<String>,
     #[serde(default)]
     id_token: Option<String>,
+    /// Space-separated granted scopes.
+    #[serde(default)]
+    scope: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -123,6 +138,7 @@ pub async fn authorize_with_broker(
             ),
             client_id,
             client_secret: None,
+            granted_scopes: None,
         });
     }
 
@@ -263,6 +279,9 @@ pub async fn authorize_with_broker(
         refresh_token: tok.refresh_token,
         client_id,
         client_secret,
+        granted_scopes: tok
+            .scope
+            .map(|scope| scope.split_whitespace().map(str::to_owned).collect()),
     })
 }
 
@@ -347,6 +366,29 @@ fn urlencode(s: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn granted_scopes_tell_an_unticked_permission_apart() {
+        let outcome = |granted: Option<&str>| OAuthOutcome {
+            email: String::new(),
+            display_name: None,
+            avatar_url: None,
+            access_token: String::new(),
+            expires_in: None,
+            refresh_token: None,
+            client_id: String::new(),
+            client_secret: None,
+            granted_scopes: granted
+                .map(|scope| scope.split_whitespace().map(str::to_owned).collect()),
+        };
+        let contacts = crate::oauth::providers::GOOGLE_CONTACTS_SCOPE;
+        let without = outcome(Some("https://mail.google.com/ openid email"));
+        assert!(!without.granted(contacts));
+        let with = outcome(Some(&format!("https://mail.google.com/ {contacts}")));
+        assert!(with.granted(contacts));
+        // A provider that does not say is taken at its word.
+        assert!(outcome(None).granted(contacts));
+    }
 
     #[test]
     fn google_identity_rejects_untrusted_picture_hosts() {

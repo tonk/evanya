@@ -192,6 +192,7 @@ async fn fetch(token: &str, sync_token: Option<&str>) -> Result<Changes> {
                 && body.contains("insufficient")
                 && body.contains("scope"))
         {
+            tracing::warn!(%status, body = %body.chars().take(500).collect::<String>(), "Google contacts need a new sign-in");
             return Err(CoreError::NeedsReauth);
         }
         if !status.is_success() {

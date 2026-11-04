@@ -6507,6 +6507,11 @@ impl Core {
                 return Err(CoreError::Auth("sign-in cancelled".into()));
             }
         };
+        if !outcome.granted(oauth::providers::GOOGLE_CALENDAR_SCOPE) {
+            return Err(CoreError::Auth(
+                "Google did not grant access to the calendar; sign in again and tick the calendar box on Google's consent screen".into(),
+            ));
+        }
         self.store_sign_in(&account, outcome).await?;
 
         self.attach_google_calendar(account_id).await
@@ -6549,6 +6554,11 @@ impl Core {
                 return Err(CoreError::Auth("sign-in cancelled".into()));
             }
         };
+        if !outcome.granted(oauth::providers::GOOGLE_CONTACTS_SCOPE) {
+            return Err(CoreError::Auth(
+                "Google did not grant access to your contacts; sign in again and tick the contacts box on Google's consent screen".into(),
+            ));
+        }
         self.store_sign_in(&account, outcome).await?;
 
         let username = account.email.clone();

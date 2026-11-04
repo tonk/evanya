@@ -2338,10 +2338,17 @@ export component SettingsDialog inherits Rectangle {
                                         if !root.compact : Button {
                                             width: max(98px, self.content-width);
                                             height: 30px;
-                                            text: account.carddav_connected ? (account.carddav_status == "" ? @tr("Manage") : @tr("Fix CardDAV")) : account.provider == "gmail" ? @tr("Google contacts") : @tr("CardDAV");
-                                            enabled: !(account.provider == "gmail" && !account.carddav_connected) || (!root.oauth_in_progress && !root.oauth_settings_saving);
+                                            // Google contacts that lost their access sign in again
+                                            // directly; Google asks for the contacts permission.
+                                            private property <bool> google-contacts-reauth: account.provider == "gmail"
+                                                && account.carddav_connected && account.carddav_status == "needs_reauth";
+                                            text: self.google-contacts-reauth ? @tr("Reconnect contacts")
+                                                : account.carddav_connected ? (account.carddav_status == "" ? @tr("Manage") : @tr("Fix CardDAV"))
+                                                : account.provider == "gmail" ? @tr("Google contacts") : @tr("CardDAV");
+                                            primary: self.google-contacts-reauth;
+                                            enabled: !(account.provider == "gmail" && (!account.carddav_connected || self.google-contacts-reauth)) || (!root.oauth_in_progress && !root.oauth_settings_saving);
                                             clicked => {
-                                                if (account.provider == "gmail" && !account.carddav_connected) {
+                                                if (account.provider == "gmail" && (!account.carddav_connected || self.google-contacts-reauth)) {
                                                     root.connect_google_contacts(account.id);
                                                     return;
                                                 }
