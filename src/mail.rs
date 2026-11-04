@@ -708,7 +708,7 @@ impl CoreMailSource {
                             accounts.to_vec(),
                             resolved.label_id,
                             resolved.folder_id,
-                            (cursor, limit),
+                            (cursor, limit, mail_sort()),
                         )
                         .await
                 }
@@ -720,7 +720,7 @@ impl CoreMailSource {
                             resolved.account_id,
                             resolved.label_id,
                             resolved.folder_id,
-                            (cursor, limit),
+                            (cursor, limit, mail_sort()),
                         )
                         .await
                 }
@@ -792,7 +792,11 @@ impl CoreMailSource {
                 Some(MailCursor::Message(cursor)) => Some(cursor),
                 Some(_) => return Err("this cursor belongs to another list".into()),
             };
-            let page = flectar_mail_core::MessagePageRequest { cursor, limit };
+            let page = flectar_mail_core::MessagePageRequest {
+                cursor,
+                limit,
+                sort: mail_sort(),
+            };
             let page = match profile_accounts {
                 Some(accounts) => {
                     self.core
@@ -1406,6 +1410,37 @@ impl CoreMailSource {
     pub async fn set_unified_mailbox(&self, enabled: bool) -> Result<(), String> {
         let mut settings = self.load_settings().await?;
         settings.unified_mailbox = enabled;
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    /// Load the settings, change them, and save them.
+    pub async fn update_settings(
+        &self,
+        edit: impl FnOnce(&mut flectar_mail_core::models::Settings),
+    ) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        edit(&mut settings);
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    pub async fn set_list_date_format(&self, format: &str) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        settings.list_date_format = normalized_list_date_format(format).to_owned();
+        self.core
+            .set_settings(settings)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
+    pub async fn set_compose_plain_text(&self, enabled: bool) -> Result<(), String> {
+        let mut settings = self.load_settings().await?;
+        settings.compose_plain_text = enabled;
         self.core
             .set_settings(settings)
             .await
@@ -4297,3 +4332,72 @@ mod account_removal_snapshot_tests {
         assert!(after.accounts.is_empty());
     }
 }
+
+/// A stored list date format, or "smart" for anything unknown.
+pub(crate) fn normalized_list_date_format(format: &str) -> &'static str {
+    match format {
+        "datetime" => "datetime",
+        "relative" => "relative",
+        "iso" => "iso",
+        _ => "smart",
+    }
+}
+
+/// The mail list's column order, shared by every page load and refresh so
+/// pages continue one another. Searches keep their own order.
+static MAIL_SORT: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(1);
+
+pub(crate) fn mail_sort() -> flectar_mail_core::models::MailSort {
+    use flectar_mail_core::models::{MailSort, MailSortKey};
+    let value = MAIL_SORT.load(std::sync::atomic::Ordering::Relaxed);
+    MailSort {
+        key: match value >> 1 {
+            1 => MailSortKey::Sender,
+            2 => MailSortKey::Subject,
+            _ => MailSortKey::Date,
+        },
+        descending: value & 1 == 1,
+    }
+}
+
+pub(crate) fn set_mail_sort(sort: flectar_mail_core::models::MailSort) {
+    use flectar_mail_core::models::MailSortKey;
+    let key = match sort.key {
+        MailSortKey::Date => 0,
+        MailSortKey::Sender => 1,
+        MailSortKey::Subject => 2,
+    };
+    MAIL_SORT.store(
+        (key << 1) | u8::from(sort.descending),
+        std::sync::atomic::Ordering::Relaxed,
+    );
+}
+
+/// The stored form of a sort, such as "date-desc" or "sender-asc".
+pub(crate) fn parse_mail_sort(value: &str) -> flectar_mail_core::models::MailSort {
+    use flectar_mail_core::models::{MailSort, MailSortKey};
+    let (key, direction) = value.split_once('-').unwrap_or((value, "desc"));
+    let key = match key {
+        "sender" => MailSortKey::Sender,
+        "subject" => MailSortKey::Subject,
+        _ => return MailSort {
+            key: MailSortKey::Date,
+            descending: direction != "asc",
+        },
+    };
+    MailSort {
+        key,
+        descending: direction == "desc",
+    }
+}
+
+pub(crate) fn mail_sort_key(sort: flectar_mail_core::models::MailSort) -> String {
+    use flectar_mail_core::models::MailSortKey;
+    let key = match sort.key {
+        MailSortKey::Date => "date",
+        MailSortKey::Sender => "sender",
+        MailSortKey::Subject => "subject",
+    };
+    format!("{key}-{}", if sort.descending { "desc" } else { "asc" })
+}
+

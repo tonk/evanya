@@ -1150,6 +1150,40 @@ pub struct ThreadDetail {
     pub messages: Vec<MessageDetail>,
 }
 
+/// What the mail list is ordered by.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum MailSortKey {
+    #[default]
+    Date,
+    Sender,
+    Subject,
+}
+
+/// The mail list's order. Newest first is the default timeline.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MailSort {
+    pub key: MailSortKey,
+    pub descending: bool,
+}
+
+impl Default for MailSort {
+    fn default() -> Self {
+        Self {
+            key: MailSortKey::Date,
+            descending: true,
+        }
+    }
+}
+
+impl MailSort {
+    /// Newest first, which pages by date instead of by position.
+    pub fn is_timeline(self) -> bool {
+        self == Self::default()
+    }
+}
+
 /// Stable keyset cursor for the descending thread timeline. Timestamps alone
 /// are not unique, so the thread id is the deterministic tie-breaker.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -1157,6 +1191,10 @@ pub struct ThreadDetail {
 pub struct ThreadCursor {
     pub last_message_at: i64,
     pub thread_id: i64,
+    /// Rows already listed, for orders other than newest first; those
+    /// page by position instead of by the last row's date.
+    #[serde(default)]
+    pub offset: i64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -1189,6 +1227,10 @@ pub struct SearchPage {
 pub struct MessageCursor {
     pub date: i64,
     pub message_id: i64,
+    /// Rows already listed, for orders other than newest first; those
+    /// page by position instead of by the last row's date.
+    #[serde(default)]
+    pub offset: i64,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -1880,6 +1922,23 @@ pub struct Settings {
     /// reading pane sits at the bottom (15 to 85).
     #[serde(default = "default_reading_pane_bottom_percent")]
     pub reading_pane_bottom_percent: i64,
+    /// Start new messages, replies and forwards as plain text instead of
+    /// HTML. Holding Shift while opening the composer picks the other one.
+    #[serde(default)]
+    pub compose_plain_text: bool,
+    /// Mail list rows as "cards" (sender, subject and preview on separate
+    /// lines) or as a "table" with resizable, sortable columns.
+    #[serde(default = "default_mail_list_layout")]
+    pub mail_list_layout: String,
+    /// The mail list's order, such as "date-desc" or "sender-asc".
+    #[serde(default = "default_mail_sort")]
+    pub mail_sort: String,
+    /// Logical-pixel widths of the table's sender and date columns; the
+    /// subject column takes the rest.
+    #[serde(default = "default_mail_table_sender_width")]
+    pub mail_table_sender_width: i64,
+    #[serde(default = "default_mail_table_date_width")]
+    pub mail_table_date_width: i64,
     /// Shared logical-pixel width of the mail, contacts, and files list pane.
     /// The established layout width remains the default and hard minimum.
     #[serde(default = "default_workspace_list_pane_width")]
@@ -1899,6 +1958,10 @@ pub struct Settings {
     pub language: String,
     #[serde(default)]
     pub time_format: TimeFormat,
+    /// How the mail list shows when a message arrived: "smart" (the time
+    /// today, else the date), "datetime", "relative", or "iso".
+    #[serde(default = "default_list_date_format")]
+    pub list_date_format: String,
     /// First day shown in calendar week and month views: "sunday" | "monday".
     #[serde(default = "default_calendar_week_start")]
     pub calendar_week_start: String,
@@ -2148,6 +2211,21 @@ fn default_mail_sidebar_width() -> i64 {
 fn default_reading_pane_bottom_percent() -> i64 {
     40
 }
+fn default_mail_list_layout() -> String {
+    "cards".into()
+}
+fn default_mail_sort() -> String {
+    "date-desc".into()
+}
+fn default_mail_table_sender_width() -> i64 {
+    220
+}
+fn default_mail_table_date_width() -> i64 {
+    130
+}
+fn default_list_date_format() -> String {
+    "smart".into()
+}
 fn default_reading_pane_position() -> String {
     "right".into()
 }
@@ -2211,6 +2289,11 @@ impl Default for Settings {
             unified_mailbox: true,
             reading_pane_position: default_reading_pane_position(),
             reading_pane_bottom_percent: default_reading_pane_bottom_percent(),
+            compose_plain_text: false,
+            mail_list_layout: default_mail_list_layout(),
+            mail_sort: default_mail_sort(),
+            mail_table_sender_width: default_mail_table_sender_width(),
+            mail_table_date_width: default_mail_table_date_width(),
             mail_sidebar_width: default_mail_sidebar_width(),
             workspace_list_pane_width: default_workspace_list_pane_width(),
             window_frame: default_window_frame(),
@@ -2218,6 +2301,7 @@ impl Default for Settings {
             app_icon: AppIcon::default(),
             language: "system".into(),
             time_format: TimeFormat::default(),
+            list_date_format: default_list_date_format(),
             calendar_week_start: default_calendar_week_start(),
             undo_send_seconds: 10,
             load_remote_images: false,
@@ -2638,6 +2722,7 @@ mod tests {
     fn mailbox_layout_preferences_default_and_deserialize() {
         let defaults = Settings::default();
         assert!(defaults.unified_mailbox);
+        assert!(!defaults.compose_plain_text);
         assert_eq!(defaults.reading_pane_position, "right");
         assert_eq!(defaults.reading_pane_bottom_percent, 40);
         assert_eq!(defaults.mail_sidebar_width, 230);
@@ -2652,6 +2737,10 @@ mod tests {
         }
         let old: Settings = serde_json::from_value(json.clone()).unwrap();
         assert!(old.unified_mailbox);
+        assert!(!old.compose_plain_text);
+        assert_eq!(old.list_date_format, "smart");
+        assert_eq!(old.mail_list_layout, "cards");
+        assert_eq!(old.mail_sort, "date-desc");
         assert_eq!(old.reading_pane_position, "right");
         json["unifiedMailbox"] = false.into();
         json["readingPanePosition"] = "bottom".into();

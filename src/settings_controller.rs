@@ -857,6 +857,113 @@ pub(super) fn register_settings_preference_callbacks(
         }
     });
 
+    let state_for_layout = Rc::clone(state);
+    let runtime_for_layout = Rc::clone(runtime);
+    app.on_save_mail_list_layout(move |layout| {
+        let layout = if layout.as_str() == "table" { "table" } else { "cards" };
+        let core = state_for_layout.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_layout.block_on(
+                core.update_settings(|settings| settings.mail_list_layout = layout.to_owned()),
+            );
+        }
+    });
+
+    let state_for_columns = Rc::clone(state);
+    let runtime_for_columns = Rc::clone(runtime);
+    app.on_save_mail_columns(move |sender, date| {
+        let core = state_for_columns.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_columns.block_on(core.update_settings(|settings| {
+                settings.mail_table_sender_width = (sender.round() as i64).clamp(80, 2000);
+                settings.mail_table_date_width = (date.round() as i64).clamp(60, 260);
+            }));
+        }
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_sort = Rc::clone(state);
+    let runtime_for_sort = Rc::clone(runtime);
+    app.on_sort_mail_list(move |key| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let current = crate::mail::mail_sort();
+        let requested = crate::mail::parse_mail_sort(&format!("{key}-asc"));
+        // A second click on the same column turns its order around; a new
+        // column starts newest first for dates and A to Z for text.
+        let sort = if requested.key == current.key {
+            flectar_mail_core::models::MailSort {
+                descending: !current.descending,
+                ..current
+            }
+        } else {
+            flectar_mail_core::models::MailSort {
+                descending: requested.key == flectar_mail_core::models::MailSortKey::Date,
+                ..requested
+            }
+        };
+        let stored = crate::mail::mail_sort_key(sort);
+        crate::mail::set_mail_sort(sort);
+        app.set_mail_sort(stored.clone().into());
+        let core = state_for_sort.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_sort
+                .block_on(core.update_settings(|settings| settings.mail_sort = stored));
+        }
+        {
+            let mut state = state_for_sort.borrow_mut();
+            state.page = 1;
+            state.next_cursor = None;
+            state.mail_groups.clear();
+        }
+        if let Err(error) = refresh_from_source(&app, &state_for_sort, &runtime_for_sort, false, &[]) {
+            app.set_render_status(UiMessage::detail("Mail refresh failed: {}", error));
+        }
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_list_dates = Rc::clone(state);
+    let runtime_for_list_dates = Rc::clone(runtime);
+    app.on_save_list_date_format(move |format| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let format = crate::mail::normalized_list_date_format(format.as_str());
+        app.set_list_date_format(format.into());
+        date_format::reload(&app);
+        let core = state_for_list_dates.borrow().core.clone();
+        if let Some(core) = core {
+            match runtime_for_list_dates.block_on(core.set_list_date_format(format)) {
+                Ok(()) => app.set_sync_status(UiMessage::plain("Date display preference saved.")),
+                Err(error) => app.set_sync_status(UiMessage::detail(
+                    "Could not save date display preference: {}",
+                    error,
+                )),
+            }
+        }
+    });
+
+    let app_weak = app.as_weak();
+    let state_for_plain_text = Rc::clone(state);
+    let runtime_for_plain_text = Rc::clone(runtime);
+    app.on_save_compose_plain_text(move |enabled| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        app.set_compose_plain_text_default(enabled);
+        let core = state_for_plain_text.borrow().core.clone();
+        if let Some(core) = core {
+            match runtime_for_plain_text.block_on(core.set_compose_plain_text(enabled)) {
+                Ok(()) => app.set_sync_status(UiMessage::plain("Message format preference saved.")),
+                Err(error) => app.set_sync_status(UiMessage::detail(
+                    "Could not save message format preference: {}",
+                    error,
+                )),
+            }
+        }
+    });
+
     let state_for_sidebar = Rc::clone(state);
     let runtime_for_sidebar = Rc::clone(runtime);
     app.on_save_mail_sidebar_width(move |width| {

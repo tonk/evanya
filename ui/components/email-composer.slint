@@ -16,6 +16,8 @@ export component EmailComposer inherits Rectangle {
     in property <bool> attachment-picker-supported: true;
     in property <bool> open: false;
     in property <string> mode: "new";
+    // Plain text messages have no formatting controls and no HTML part.
+    in property <bool> plain-text: false;
     in-out property <string> to;
     in-out property <string> cc;
     in-out property <string> bcc;
@@ -64,6 +66,9 @@ export component EmailComposer inherits Rectangle {
     out property <string> editor-preedit-text: body-input.preedit-text;
 
     callback close;
+    callback switch-format(bool);
+    callback header-dragged(length, length);
+    callback header-reset;
     callback back-requested;
     callback submit(bool);
     callback pick-attachments;
@@ -99,6 +104,9 @@ export component EmailComposer inherits Rectangle {
     private property <bool> can-send: !root.sending && root.selected-account-id > 0 && root.to != "" && root.body != "" && AccountMailPreferences.composer-preferences-ready;
 
     function apply-format(kind: string) {
+        if (root.plain-text) {
+            return;
+        }
         if (kind == "link") {
             if (body-input.anchor-position-byte-offset == body-input.cursor-position_byte_offset) {
                 return;
@@ -219,6 +227,8 @@ export component EmailComposer inherits Rectangle {
             subtle-border-color: root.subtle-border-color;
             title-color: root.title-color;
             request-close => { root.request-close(); }
+            dragged(dx, dy) => { root.header-dragged(dx, dy); }
+            reset-placement => { root.header-reset(); }
         }
 
         ComposerFromRow {
@@ -314,6 +324,12 @@ export component EmailComposer inherits Rectangle {
             code-active: root.code-active;
             link-active: root.active-link-url != "";
             can-link: root.selection-start != root.selection-end;
+            plain-text: root.plain-text;
+            switch-format(plain) => {
+                root.switch-format(plain);
+                body-input.set-selection-offsets(root.selection-start, root.selection-end);
+                body-input.focus();
+            }
             apply-format(kind) => { root.apply-format(kind); }
             open-templates => { root.templates-open = true; }
             undo => {

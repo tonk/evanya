@@ -81,6 +81,7 @@ fn background_removal_keeps_the_reader_and_visible_selection_in_sync() {
         Some(MailCursor::Thread(ThreadCursor {
             last_message_at: make_message(id).date_ms,
             thread_id: i64::from(id),
+            offset: 0,
         }))
     };
     let cases = [

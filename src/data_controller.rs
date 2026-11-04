@@ -426,6 +426,35 @@ pub(super) fn restore_account_backup(
             {
                 settings.conversation_view = enabled;
             }
+            if let Some(layout) = preferences
+                .get("mailListLayout")
+                .and_then(|value| value.as_str())
+            {
+                settings.mail_list_layout =
+                    if layout == "table" { "table" } else { "cards" }.to_owned();
+            }
+            if let Some(sort) = preferences.get("mailSort").and_then(|value| value.as_str()) {
+                settings.mail_sort =
+                    crate::mail::mail_sort_key(crate::mail::parse_mail_sort(sort));
+            }
+            if let Some(width) = preferences
+                .get("mailTableSenderWidth")
+                .and_then(|value| value.as_i64())
+            {
+                settings.mail_table_sender_width = width.clamp(80, 2000);
+            }
+            if let Some(width) = preferences
+                .get("mailTableDateWidth")
+                .and_then(|value| value.as_i64())
+            {
+                settings.mail_table_date_width = width.clamp(60, 260);
+            }
+            if let Some(enabled) = preferences
+                .get("composePlainText")
+                .and_then(|value| value.as_bool())
+            {
+                settings.compose_plain_text = enabled;
+            }
             if let Some(frame) = preferences
                 .get("windowFrame")
                 .and_then(|value| value.as_str())
@@ -490,6 +519,13 @@ pub(super) fn restore_account_backup(
                 .and_then(flectar_mail_core::models::TimeFormat::parse)
             {
                 settings.time_format = format;
+            }
+            if let Some(format) = preferences
+                .get("listDateFormat")
+                .and_then(|value| value.as_str())
+            {
+                settings.list_date_format =
+                    crate::mail::normalized_list_date_format(format).to_owned();
             }
             if let Some(week_start) = preferences
                 .get("calendarWeekStart")
@@ -649,6 +685,9 @@ pub(super) fn restore_account_backup(
 
     let (restore, settings, accounts, configs) = result?;
     app.set_time_format(settings.time_format.as_str().into());
+    app.set_list_date_format(
+        crate::mail::normalized_list_date_format(&settings.list_date_format).into(),
+    );
     apply_language(app, &settings.language);
     state.borrow_mut().account_presentation = AccountPresentationSettings::from_settings(&settings);
     // Imported profiles can change which accounts the mail view shows.
@@ -1341,6 +1380,11 @@ pub(super) fn register_data_management_callbacks(
                     "showAvatars": settings.show_avatars,
                     "showTabs": settings.show_tabs,
                     "conversationView": settings.conversation_view,
+                    "composePlainText": settings.compose_plain_text,
+                    "mailListLayout": settings.mail_list_layout,
+                    "mailSort": settings.mail_sort,
+                    "mailTableSenderWidth": settings.mail_table_sender_width,
+                    "mailTableDateWidth": settings.mail_table_date_width,
                     "workspaceLayout": settings.workspace_layout,
                     "unifiedMailbox": settings.unified_mailbox,
                     "readingPanePosition": settings.reading_pane_position,
@@ -1351,6 +1395,7 @@ pub(super) fn register_data_management_callbacks(
                     "appIcon": settings.app_icon,
                     "language": settings.language,
                     "timeFormat": settings.time_format,
+                    "listDateFormat": settings.list_date_format,
                     "calendarWeekStart": settings.calendar_week_start,
                     "loadRemoteImages": settings.load_remote_images,
                     "markReadOnOpen": settings.mark_read_on_open,
@@ -1673,6 +1718,14 @@ pub(super) fn register_data_management_callbacks(
                     app.set_workspace_layout("default".into());
                     crate::sidebar_model::set_unified_mailbox_enabled(true);
                     app.set_unified_mailbox(true);
+                    app.set_compose_plain_text_default(false);
+                    app.set_list_date_format("smart".into());
+                    app.set_mail_list_layout("cards".into());
+                    crate::mail::set_mail_sort(Default::default());
+                    app.set_mail_sort("date-desc".into());
+                    app.set_mail_sender_column_width(220.0);
+                    app.set_mail_date_column_width(130.0);
+                    date_format::reload(&app);
                     app.set_reading_pane_position("right".into());
                     app.set_reading_pane_bottom_fraction(0.4);
                     app.set_mail_sidebar_width(230.0);

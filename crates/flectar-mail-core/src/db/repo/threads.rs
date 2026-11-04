@@ -286,6 +286,42 @@ pub struct ListArgs {
     pub folder_id: Option<i64>,
     pub cursor: Option<ThreadCursor>,
     pub limit: i64,
+    /// Newest first unless the list is ordered by another column.
+    pub sort: MailSort,
+}
+
+/// `ORDER BY` terms and the rows to skip for an order other than the
+/// timeline. Text sorts ignore case; the id keeps equal rows in one order.
+fn sort_order(sort: MailSort, messages: bool) -> String {
+    let direction = if sort.descending { "DESC" } else { "ASC" };
+    let (key, id) = if messages {
+        let key = match sort.key {
+            MailSortKey::Date => "m.date",
+            MailSortKey::Sender => {
+                "COALESCE(NULLIF(TRIM(m.from_name), ''), m.from_addr, '') COLLATE NOCASE"
+            }
+            MailSortKey::Subject => {
+                "(COALESCE(m.local_subject_prefix, '') || m.subject) COLLATE NOCASE"
+            }
+        };
+        (key, "m.id")
+    } else {
+        let key = match sort.key {
+            MailSortKey::Date => "t.last_message_at",
+            // The row names its most recent sender first.
+            MailSortKey::Sender => {
+                "COALESCE(NULLIF(TRIM(json_extract(t.participants_json, '$[0].name')), ''),
+                          json_extract(t.participants_json, '$[0].email'), '') COLLATE NOCASE"
+            }
+            MailSortKey::Subject => {
+                "(SELECT COALESCE(sm.local_subject_prefix, '') || sm.subject
+                    FROM messages sm WHERE sm.thread_id = t.id
+                    ORDER BY sm.date DESC LIMIT 1) COLLATE NOCASE"
+            }
+        };
+        (key, "t.id")
+    };
+    format!("ORDER BY {key} {direction}, {id} {direction}")
 }
 
 /// Important/Other follows the newest incoming message. Requiring every
@@ -469,6 +505,7 @@ fn build_filter(
     }
     if include_cursor
         && !messages
+        && args.sort.is_timeline()
         && let Some(cur) = args.cursor
     {
         bind.push(Box::new(cur.last_message_at));
@@ -499,9 +536,11 @@ pub fn list(conn: &Connection, args: &ListArgs) -> Result<ThreadPage> {
 
     let next_cursor = if threads.len() as i64 > args.limit {
         threads.truncate(args.limit as usize);
+        let offset = args.cursor.map_or(0, |cursor| cursor.offset) + args.limit;
         threads.last().map(|thread| ThreadCursor {
             last_message_at: thread.last_message_at,
             thread_id: thread.id,
+            offset,
         })
     } else {
         None
@@ -514,10 +553,17 @@ pub fn list(conn: &Connection, args: &ListArgs) -> Result<ThreadPage> {
 
 fn list_sql(args: &ListArgs) -> (String, Vec<Box<dyn rusqlite::types::ToSql>>) {
     let (where_sql, bind) = build_filter(args, MailGrouping::Conversations, true);
+    let offset = if args.sort.is_timeline() {
+        String::new()
+    } else {
+        let offset = args.cursor.map_or(0, |cursor| cursor.offset).max(0);
+        format!(" OFFSET {offset}")
+    };
     (
         format!(
             "{SUMMARY_SELECT} {where_sql}
-             ORDER BY t.last_message_at DESC, t.id DESC LIMIT {}",
+             {} LIMIT {}{offset}",
+            sort_order(args.sort, false),
             args.limit + 1
         ),
         bind,
@@ -648,9 +694,11 @@ pub fn list_messages(
         .collect::<rusqlite::Result<Vec<_>>>()?;
     let next_cursor = if messages.len() as i64 > args.limit {
         messages.truncate(args.limit as usize);
+        let offset = cursor.map_or(0, |cursor| cursor.offset) + args.limit;
         messages.last().map(|message| MessageCursor {
             date: message.date,
             message_id: message.id,
+            offset,
         })
     } else {
         None
@@ -666,7 +714,11 @@ fn list_messages_sql(
     cursor: Option<MessageCursor>,
 ) -> (String, Vec<Box<dyn rusqlite::types::ToSql>>) {
     let (mut where_sql, mut bind) = build_filter(args, MailGrouping::Messages, false);
-    if let Some(cursor) = cursor {
+    let mut offset = String::new();
+    if !args.sort.is_timeline() {
+        let rows = cursor.map_or(0, |cursor| cursor.offset).max(0);
+        offset = format!(" OFFSET {rows}");
+    } else if let Some(cursor) = cursor {
         bind.push(Box::new(cursor.date));
         let date_parameter = bind.len();
         bind.push(Box::new(cursor.message_id));
@@ -681,7 +733,8 @@ fn list_messages_sql(
     (
         format!(
             "{MESSAGE_SUMMARY_SELECT} {where_sql}
-             ORDER BY m.date DESC, m.id DESC LIMIT {}",
+             {} LIMIT {}{offset}",
+            sort_order(args.sort, true),
             args.limit + 1
         ),
         bind,
@@ -897,6 +950,7 @@ mod tests {
             folder_id: Some(1),
             cursor: None,
             limit: 2,
+            sort: Default::default(),
         };
         let page = list(&conn, &args).unwrap();
 
@@ -945,6 +999,7 @@ mod tests {
                 folder_id: None,
                 cursor: None,
                 limit: 50,
+                sort: Default::default(),
             };
             let mut ids = list(&conn, &args)
                 .unwrap()
@@ -980,6 +1035,7 @@ mod tests {
                 folder_id: None,
                 cursor: None,
                 limit: 2,
+                sort: Default::default(),
             },
         )
         .unwrap();
@@ -993,6 +1049,7 @@ mod tests {
                 folder_id: None,
                 cursor: first.next_cursor,
                 limit: 2,
+                sort: Default::default(),
             },
         )
         .unwrap();
@@ -1023,8 +1080,10 @@ mod tests {
             cursor: Some(ThreadCursor {
                 last_message_at: i64::MAX,
                 thread_id: i64::MAX,
+                offset: 0,
             }),
             limit: 2,
+            sort: Default::default(),
         };
         let plan = list_query_plan(&conn, &args).unwrap();
         assert!(
@@ -1070,6 +1129,7 @@ mod tests {
             folder_id: None,
             cursor: None,
             limit: 50,
+            sort: Default::default(),
         }
     }
 
@@ -1162,6 +1222,80 @@ mod tests {
             .messages
             .remove(0);
         assert_eq!(row.labels, [7]);
+    }
+
+    #[test]
+    fn column_sorts_page_through_every_row_in_order() {
+        let conn = crate::db::testutil::conn();
+        crate::db::testutil::seed_account(&conn);
+        let mut threads = Vec::new();
+        let mut messages = Vec::new();
+        for (from, subject) in [
+            ("zed@example.com", "banana"),
+            ("amy@example.com", "Apple"),
+            ("Bob@example.com", "cherry"),
+        ] {
+            let (thread, message) = crate::db::testutil::seed_message(&conn, from, subject, false);
+            recompute(&conn, thread).unwrap();
+            threads.push(thread);
+            messages.push(message);
+        }
+        let sorted = |key, descending| ListArgs {
+            limit: 2,
+            sort: MailSort { key, descending },
+            ..scope(View::Inbox)
+        };
+
+        // Conversations: two pages, case-insensitive, by offset.
+        let args = sorted(MailSortKey::Subject, false);
+        let first = list(&conn, &args).unwrap();
+        let second = list(
+            &conn,
+            &ListArgs {
+                cursor: first.next_cursor,
+                ..args
+            },
+        )
+        .unwrap();
+        let ids = first
+            .threads
+            .iter()
+            .chain(&second.threads)
+            .map(|thread| thread.id)
+            .collect::<Vec<_>>();
+        assert_eq!(ids, [threads[1], threads[0], threads[2]]);
+        assert!(second.next_cursor.is_none());
+
+        let args = sorted(MailSortKey::Sender, true);
+        let first = list(&conn, &args).unwrap();
+        let second = list(
+            &conn,
+            &ListArgs {
+                cursor: first.next_cursor,
+                ..args
+            },
+        )
+        .unwrap();
+        let ids = first
+            .threads
+            .iter()
+            .chain(&second.threads)
+            .map(|thread| thread.id)
+            .collect::<Vec<_>>();
+        assert_eq!(ids, [threads[0], threads[2], threads[1]]);
+
+        // Single messages page the same way.
+        let args = sorted(MailSortKey::Sender, false);
+        let first = list_messages(&conn, &args, None).unwrap();
+        let second = list_messages(&conn, &args, first.next_cursor).unwrap();
+        let ids = first
+            .messages
+            .iter()
+            .chain(&second.messages)
+            .map(|message| message.id)
+            .collect::<Vec<_>>();
+        assert_eq!(ids, [messages[1], messages[2], messages[0]]);
+        assert!(second.next_cursor.is_none());
     }
 
     #[test]

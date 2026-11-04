@@ -73,6 +73,9 @@ export global I18n {
     pure callback new-contact-entry() -> string;
     pure callback no-connected-account() -> string;
     pure callback interaction-count(int) -> string;
+    // Mail list times such as "5 min ago"; the unit is now, minutes, hours,
+    // days, or weeks.
+    pure callback relative-time(string, int) -> string;
     pure callback last-contacted(string) -> string;
     pure callback loading-local-data() -> string;
     pure callback local-data-ready() -> string;
@@ -179,6 +182,13 @@ export global I18n {
     no-connected-account() => { return @tr("No connected account"); }
     interaction-count(count) => {
         return @tr("{n} interaction" | "{n} interactions" % count);
+    }
+    relative-time(unit, count) => {
+        if (unit == "minutes") { return @tr("{n} min ago" | "{n} min ago" % count); }
+        if (unit == "hours") { return @tr("{n} h ago" | "{n} h ago" % count); }
+        if (unit == "days") { return @tr("{n} day ago" | "{n} days ago" % count); }
+        if (unit == "weeks") { return @tr("{n} week ago" | "{n} weeks ago" % count); }
+        return @tr("Just now");
     }
     last-contacted(date) => { return @tr("Last contacted {}", date); }
     loading-local-data() => { return @tr("Loading local data…"); }
@@ -362,6 +372,10 @@ export global I18n {
         if (key == "Unified mailbox preference saved.") { return @tr("Unified mailbox preference saved."); }
         if (key == "Could not save unified mailbox preference: {}") { return @tr("Could not save unified mailbox preference: {}", argument); }
         if (key == "Reading pane position saved.") { return @tr("Reading pane position saved."); }
+        if (key == "Date display preference saved.") { return @tr("Date display preference saved."); }
+        if (key == "Could not save date display preference: {}") { return @tr("Could not save date display preference: {}", argument); }
+        if (key == "Message format preference saved.") { return @tr("Message format preference saved."); }
+        if (key == "Could not save message format preference: {}") { return @tr("Could not save message format preference: {}", argument); }
         if (key == "Could not save reading pane position: {}") { return @tr("Could not save reading pane position: {}", argument); }
         if (key == "Authorize contacts access in your browser.") { return @tr("Authorize contacts access in your browser."); }
         if (key == "Google contacts connected and initial sync started.") { return @tr("Google contacts connected and initial sync started."); }
@@ -649,6 +663,10 @@ export component AppWindow inherits Window {
     callback save_avatar_visibility(bool);
     callback save_show_tabs(bool);
     callback save_conversation_view(bool);
+    callback save_compose_plain_text(bool);
+    callback save_mail_list_layout(string);
+    callback sort_mail_list(string);
+    callback save_mail_columns(length, length);
     callback save_group_mail_by_date(bool);
     callback choose_download_directory();
     callback clear_download_directory();
@@ -672,6 +690,7 @@ export component AppWindow inherits Window {
     callback save_workspace_list_pane_width(length);
     callback save_language(string);
     callback save_time_format(string);
+    callback save_list_date_format(string);
     callback save_sidebar_icon_style(bool);
     callback save_notification_settings(bool, bool, string);
     callback save_sync_interval(int);
@@ -682,6 +701,7 @@ export component AppWindow inherits Window {
     callback set_launch_at_login(bool);
     callback open_compose();
     callback close_compose();
+    callback switch_compose_format(bool);
     callback save_compose(int, string, string, string, string, string, bool);
     callback pick_compose_attachments();
     callback remove_compose_attachment(int);
@@ -1017,6 +1037,13 @@ export component AppWindow inherits Window {
     in-out property <string> language_mode: "system";
     // "automatic" follows the regional clock; "12h" and "24h" fix it.
     in-out property <string> time_format: "automatic";
+    // How the mail list shows dates: smart, datetime, relative, or iso.
+    in-out property <string> list_date_format: "smart";
+    // "cards" or "table"; the table's order and column widths.
+    in-out property <string> mail_list_layout: "cards";
+    in-out property <string> mail_sort: "date-desc";
+    in-out property <length> mail_sender_column_width: 220px;
+    in-out property <length> mail_date_column_width: 130px;
     in property <string> time_format_sample: "13:30";
     in-out property <bool> monochrome_sidebar_icons: false;
     in-out property <bool> notifications_enabled: true;
@@ -1039,6 +1066,16 @@ export component AppWindow inherits Window {
     in property <bool> remote-images-blocked: false;
     in-out property <bool> compose_open: false;
     in property <string> compose_mode: "new";
+    // Saved format preference, and the format of the open composer.
+    in-out property <bool> compose_plain_text_default: false;
+    in-out property <bool> compose_plain_text: false;
+    // Where the desktop composer was moved and resized to during this
+    // session; it opens centered at its default size until then.
+    in-out property <bool> compose_placed: false;
+    in-out property <length> compose_panel_x;
+    in-out property <length> compose_panel_y;
+    in-out property <length> compose_panel_width;
+    in-out property <length> compose_panel_height;
     in-out property <string> compose_to: "";
     in-out property <string> compose_cc: "";
     in-out property <string> compose_bcc: "";
@@ -1503,6 +1540,12 @@ export component AppWindow inherits Window {
             compact: root.compact-layout;
             layout-mode: root.workspace_layout;
             reading-pane-position: root.reading_pane_position;
+            mail-table: root.mail_list_layout == "table";
+            mail-sort: root.mail_sort;
+            sender-column-width <=> root.mail_sender_column_width;
+            date-column-width <=> root.mail_date_column_width;
+            sort-mail(key) => { root.sort_mail_list(key); }
+            mail-columns-committed => { root.save_mail_columns(root.mail_sender_column_width, root.mail_date_column_width); }
             bottom-list-fraction <=> root.reading_pane_bottom_fraction;
             sidebar-width <=> root.mail_sidebar_width;
             sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
@@ -1966,12 +2009,15 @@ export component AppWindow inherits Window {
             show_tabs <=> root.show_tabs;
             group_mail_by_date <=> root.group_mail_by_date;
             conversation_view <=> root.conversation_view;
+            compose_plain_text <=> root.compose_plain_text_default;
+            mail_list_layout <=> root.mail_list_layout;
             show_account_markers <=> root.show_account_markers;
             workspace_layout <=> root.workspace_layout;
             unified_mailbox <=> root.unified_mailbox;
             reading_pane_position <=> root.reading_pane_position;
             language_mode <=> root.language_mode;
             time_format <=> root.time_format;
+            list_date_format <=> root.list_date_format;
             time_format_sample: root.time_format_sample;
             monochrome_sidebar_icons <=> root.monochrome_sidebar_icons;
             notifications_enabled <=> root.notifications_enabled;
@@ -2077,6 +2123,7 @@ export component AppWindow inherits Window {
             save_reading_pane_position(position) => { root.save_reading_pane_position(position); }
             save_language(language) => { root.save_language(language); }
             save_time_format(format) => { root.save_time_format(format); }
+            save_list_date_format(format) => { root.save_list_date_format(format); }
             save_sidebar_icon_style(monochrome) => { root.save_sidebar_icon_style(monochrome); }
             save_notification_settings(enabled, sound-enabled, scope) => {
                 root.save_notification_settings(enabled, sound-enabled, scope);
@@ -2085,6 +2132,8 @@ export component AppWindow inherits Window {
             save_mark_read_on_open(enabled) => { root.save_mark_read_on_open(enabled); }
             save_group_mail_by_date(enabled) => { root.save_group_mail_by_date(enabled); }
             save_conversation_view(enabled) => { root.save_conversation_view(enabled); }
+            save_compose_plain_text(enabled) => { root.save_compose_plain_text(enabled); }
+            save_mail_list_layout(layout) => { root.save_mail_list_layout(layout); }
             save_contact_discovery_settings(outgoing, incoming, all-accounts, suggest) => {
                 root.save_contact_discovery_settings(outgoing, incoming, all-accounts, suggest);
             }
@@ -2154,6 +2203,13 @@ export component AppWindow inherits Window {
             title-color: root.title-color;
             compose_open <=> root.compose_open;
             compose_mode: root.compose_mode;
+            compose_plain_text: root.compose_plain_text;
+            placed <=> root.compose_placed;
+            stored-x <=> root.compose_panel_x;
+            stored-y <=> root.compose_panel_y;
+            stored-width <=> root.compose_panel_width;
+            stored-height <=> root.compose_panel_height;
+            switch_compose_format(plain) => { root.switch_compose_format(plain); }
             compose_to <=> root.compose_to;
             compose_cc <=> root.compose_cc;
             compose_bcc <=> root.compose_bcc;

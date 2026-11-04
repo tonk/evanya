@@ -6131,6 +6131,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             }
             *intent_for_open.borrow_mut() = ComposeIntent::default();
             app.set_compose_mode("new".into());
+            app.set_compose_plain_text(opening_plain_text(&app));
             app.global::<AccountMailPreferences>()
                 .invoke_composer_reset();
             app.global::<AccountMailPreferences>()
@@ -6189,6 +6190,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             app.set_render_status(UiMessage::plain("Choose a message first."));
             return;
         };
+        // Read Shift before loading the message, while it is still held.
+        let plain_text = opening_plain_text(&app);
 
         if action.as_str() == "edit_draft" {
             if row.folder != "Drafts" && row.label != "DRAFT" {
@@ -6287,6 +6290,12 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 draft_id: draft.draft_id,
             };
             app.set_compose_mode("draft".into());
+            // A draft saved as plain text has no HTML part; keep its format.
+            app.set_compose_plain_text(if draft.body_text.trim().is_empty() {
+                plain_text
+            } else {
+                draft.body_html.is_none()
+            });
             app.global::<AccountMailPreferences>()
                 .invoke_composer_reset();
             app.global::<AccountMailPreferences>()
@@ -6379,6 +6388,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         }
         *intent_for_message_compose.borrow_mut() = prepared.intent;
         app.set_compose_mode(action);
+        app.set_compose_plain_text(plain_text);
         app.global::<AccountMailPreferences>()
             .invoke_composer_reset();
         app.global::<AccountMailPreferences>()
@@ -6581,6 +6591,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         let Some(app) = app_weak.upgrade() else {
             return;
         };
+        if app.get_compose_plain_text() {
+            return;
+        }
         let mut document = document_for_format.borrow_mut();
         let selection = document.format(kind.as_str(), body.as_str(), anchor, cursor);
         apply_rich_compose(
@@ -6598,6 +6611,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         let Some(app) = app_weak.upgrade() else {
             return;
         };
+        if app.get_compose_plain_text() {
+            return;
+        }
         let mut document = document_for_link.borrow_mut();
         let selection = document.set_link(url.as_str(), body.as_str(), anchor, cursor);
         apply_rich_compose(
@@ -6606,6 +6622,29 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             selection,
             &mut editor_for_link.borrow_mut(),
         );
+    });
+
+    let app_weak = app.as_weak();
+    let document_for_plain_text = Rc::clone(&compose_document);
+    let editor_for_plain_text = Rc::clone(&compose_editor);
+    app.on_switch_compose_format(move |plain_text| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        app.set_compose_plain_text(plain_text);
+        if !plain_text {
+            return;
+        }
+        let mut document = document_for_plain_text.borrow_mut();
+        if document.clear_formatting() {
+            let selection = document.selection();
+            apply_rich_compose(
+                &app,
+                &document,
+                selection,
+                &mut editor_for_plain_text.borrow_mut(),
+            );
+        }
     });
 
     let app_weak = app.as_weak();
@@ -6828,7 +6867,10 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             if document.text() != body.as_str() {
                 document.synchronize(body.as_str(), body.len() as i32, body.len() as i32);
             }
-            document.body_html()
+            // Plain text mail is sent without an HTML alternative.
+            (!app.get_compose_plain_text())
+                .then(|| document.body_html())
+                .flatten()
         };
         let intent = intent_for_save.borrow().clone();
         let sender_email = app

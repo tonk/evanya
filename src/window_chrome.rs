@@ -147,6 +147,22 @@ pub(crate) fn register(app: &AppWindow, runtime: &tokio::runtime::Runtime) {
     register_desktop_events(app);
 }
 
+/// Whether Shift is held in the main window, from the platform's modifier
+/// events. Opening the composer with Shift switches its message format.
+#[cfg(desktop)]
+static SHIFT_HELD: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+pub(crate) fn shift_held() -> bool {
+    #[cfg(desktop)]
+    {
+        SHIFT_HELD.load(std::sync::atomic::Ordering::Relaxed)
+    }
+    #[cfg(not(desktop))]
+    {
+        false
+    }
+}
+
 #[cfg(desktop)]
 fn register_desktop_events(app: &AppWindow) {
     let chrome = app.global::<WindowChrome>();
@@ -168,7 +184,13 @@ fn register_desktop_events(app: &AppWindow) {
             return EventResult::Propagate;
         };
         match event {
-            winit::event::WindowEvent::ModifiersChanged(state) => modifiers.set(state.state()),
+            winit::event::WindowEvent::ModifiersChanged(state) => {
+                modifiers.set(state.state());
+                SHIFT_HELD.store(
+                    state.state().shift_key(),
+                    std::sync::atomic::Ordering::Relaxed,
+                );
+            }
             // Tab shortcuts work wherever focus is, as in a browser, except in
             // the composer and the calendar editor, which keep their keys.
             winit::event::WindowEvent::KeyboardInput { event, .. }
@@ -184,6 +206,10 @@ fn register_desktop_events(app: &AppWindow) {
                 }
             }
             winit::event::WindowEvent::Focused(focused) => {
+                // A key released in another window never reaches this one.
+                if !*focused {
+                    SHIFT_HELD.store(false, std::sync::atomic::Ordering::Relaxed);
+                }
                 let chrome = app.global::<WindowChrome>();
                 chrome.set_active(*focused);
                 #[cfg(linux_desktop)]

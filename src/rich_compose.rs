@@ -141,6 +141,35 @@ impl RichComposeDocument {
         self.revision
     }
 
+    /// Drop bold, italic, and other marks and every link the writer added,
+    /// for a message sent as plain text. Recognized web addresses keep their
+    /// automatic link, which plain text shows the same way. Returns whether
+    /// anything changed.
+    pub fn clear_formatting(&mut self) -> bool {
+        let mut changed = self.typing_style != CharacterStyle::default();
+        self.typing_style = CharacterStyle::default();
+        self.typing_override = None;
+        for run in &mut self.styles {
+            let plain = if run.style.link_is_auto {
+                CharacterStyle {
+                    marks: 0,
+                    ..run.style.clone()
+                }
+            } else {
+                CharacterStyle::default()
+            };
+            if run.style != plain {
+                run.style = plain;
+                changed = true;
+            }
+        }
+        if changed {
+            self.merge_styles();
+            self.bump_revision();
+        }
+        changed
+    }
+
     pub(crate) fn style_runs(&self) -> &[ComposeStyleRun] {
         &self.styles
     }
@@ -1476,6 +1505,26 @@ mod tests {
             Some("<div><strong>Hello</strong> world</div>")
         );
         assert!(document.active_marks().bold);
+    }
+
+    #[test]
+    fn clearing_formatting_keeps_text_and_automatic_links() {
+        let text = "Hello world https://example.com";
+        let mut document = RichComposeDocument::default();
+        document.synchronize(text, 0, 5);
+        document.format("bold", text, 0, 5);
+        document.set_link("https://other.example", text, 6, 11);
+        assert!(document.clear_formatting());
+        assert_eq!(document.text(), text);
+        assert!(!document.active_marks().bold);
+        assert!(
+            document
+                .style_runs()
+                .iter()
+                .all(|run| run.style.marks == 0
+                    && run.style.link.as_deref() != Some("https://other.example"))
+        );
+        assert!(!document.clear_formatting());
     }
 
     #[test]

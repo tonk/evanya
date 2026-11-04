@@ -111,6 +111,7 @@ fn account_removal_clears_deleted_models_and_preserves_surviving_selection() {
         state.next_cursor = Some(MailCursor::Thread(ThreadCursor {
             last_message_at: 1,
             thread_id: 1,
+            offset: 0,
         }));
         state.page = 3;
         let first_id = state.messages[0].id;

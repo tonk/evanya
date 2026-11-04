@@ -17,12 +17,26 @@ export component ComposerHeader inherits Rectangle {
     in property <color> subtle-border-color;
     in property <color> title-color;
     callback request-close();
+    // The desktop composer moves with its header; a double click puts it
+    // back in the middle at its default size.
+    callback dragged(length, length);
+    callback reset-placement();
 
             height: 52px;
             background: root.raised-color;
 
             // The full-window compact composer can sit under the window controls.
             header-clearance := WindowControlsClearance { width: parent.width; height: parent.height; }
+
+            if !root.compact : TouchArea {
+                mouse-cursor: self.pressed ? grabbing : grab;
+                moved => {
+                    if (self.pressed) {
+                        root.dragged(self.mouse-x - self.pressed-x, self.mouse-y - self.pressed-y);
+                    }
+                }
+                double-clicked => { root.reset-placement(); }
+            }
 
             Rectangle {
                 x: 0px;

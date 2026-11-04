@@ -123,6 +123,7 @@ async fn hundred_k_messages_stay_instant() {
                 folder_id: None,
                 cursor: None,
                 limit: 50,
+                sort: Default::default(),
             },
         )
     })
@@ -143,6 +144,7 @@ async fn hundred_k_messages_stay_instant() {
                     folder_id: None,
                     cursor: None,
                     limit: 50,
+                    sort: Default::default(),
                 },
             )
         })
@@ -165,6 +167,7 @@ async fn hundred_k_messages_stay_instant() {
                     folder_id: None,
                     cursor: None,
                     limit: 1,
+                    sort: Default::default(),
                 },
             )
         })
@@ -205,8 +208,10 @@ async fn hundred_k_messages_stay_instant() {
                         cursor: Some(ThreadCursor {
                             last_message_at: cursor - 500_000_000,
                             thread_id: i64::MAX,
+                            offset: 0,
                         }),
                         limit: 50,
+                        sort: Default::default(),
                     },
                 )
             }

@@ -284,7 +284,7 @@ pub(super) fn select_message(
         let Some(date_ms) = state.messages.iter().find(|row| row.id == id).map(|row| row.date_ms) else {
             return Ok(());
         };
-        if state.query.trim().is_empty() && app.get_group_mail_by_date() {
+        if state.query.trim().is_empty() && date_groups_shown(app) {
             state.mail_groups.reveal(&mail_group_key(date_ms, Local::now()));
         }
         // A restored tab's open message belongs to its own conversation.
@@ -487,7 +487,7 @@ pub(super) fn render_current(
             visible,
             &projected_rows,
             &state.mail_groups,
-            query.trim().is_empty() && app.get_group_mail_by_date(),
+            query.trim().is_empty() && date_groups_shown(app),
             Local::now(),
         );
         let (previous_email_id, next_email_id) = adjacent_message_ids(visible, selected_id);
@@ -1025,10 +1025,52 @@ fn spelled(code: &str) -> String {
     code.chars().map(String::from).collect::<Vec<_>>().join(" ")
 }
 
+/// Date sections follow the newest-first timeline; another column order
+/// lists the rows without them.
+pub(super) fn date_groups_shown(app: &AppWindow) -> bool {
+    app.get_group_mail_by_date() && mail::mail_sort().is_timeline()
+}
+
 /// The time or date beside a mail list row. Yesterday's mail shows its time
 /// too, since the list's date sections name the day.
 fn mail_list_time(date_ms: i64, now: &chrono::DateTime<Local>) -> String {
-    message_time_label(date_ms, now, false)
+    list_time_in_style(date_format::list_style(), date_ms, now)
+}
+
+/// The list's time text in one of the date styles the settings offer.
+fn list_time_in_style(
+    style: date_format::ListDateStyle,
+    date_ms: i64,
+    now: &chrono::DateTime<Local>,
+) -> String {
+    use date_format::{ListDateStyle, RelativeUnit};
+    let Some(date) = chrono::DateTime::<chrono::Utc>::from_timestamp_millis(date_ms)
+        .filter(|_| date_ms > 0)
+        .map(|date| date.with_timezone(&Local))
+    else {
+        return String::new();
+    };
+    match style {
+        ListDateStyle::Smart => message_time_label(date_ms, now, false),
+        ListDateStyle::DateTime => {
+            date_format::current().date_time(DateStyle::Short, date.naive_local())
+        }
+        ListDateStyle::Iso => date.format("%Y-%m-%d %H:%M").to_string(),
+        ListDateStyle::Relative => {
+            // Clock skew can date a message slightly in the future.
+            let minutes = now.signed_duration_since(date).num_minutes().max(0);
+            let (unit, count) = match minutes {
+                0 => (RelativeUnit::Now, 0),
+                1..60 => (RelativeUnit::Minutes, minutes),
+                60..1440 => (RelativeUnit::Hours, minutes / 60),
+                1440..10080 => (RelativeUnit::Days, minutes / 1440),
+                10080..40320 => (RelativeUnit::Weeks, minutes / 10080),
+                // Past four weeks a date says more than "9 weeks ago".
+                _ => return message_time_label(date_ms, now, false),
+            };
+            date_format::relative(unit, count)
+        }
+    }
 }
 
 /// The time or date in a conversation's message headers.
@@ -1183,7 +1225,7 @@ pub(super) fn refresh_rows_only(
             visible,
             &projected_rows,
             &state.mail_groups,
-            state.query.trim().is_empty() && app.get_group_mail_by_date(),
+            state.query.trim().is_empty() && date_groups_shown(app),
             Local::now(),
         );
         (
@@ -1636,6 +1678,40 @@ mod tests {
     use super::*;
 
     #[test]
+    fn list_date_styles_format_the_same_moment() {
+        use date_format::ListDateStyle;
+        let at = |day, hour, minute| {
+            let naive = chrono::NaiveDate::from_ymd_opt(2026, 1, day)
+                .unwrap()
+                .and_hms_opt(hour, minute, 0)
+                .unwrap();
+            Local.from_local_datetime(&naive).single().unwrap()
+        };
+        let now = at(20, 12, 0);
+        let earlier = at(20, 9, 5).timestamp_millis();
+        assert_eq!(
+            list_time_in_style(ListDateStyle::Iso, earlier, &now),
+            "2026-01-20 09:05"
+        );
+        let date_time = list_time_in_style(ListDateStyle::DateTime, earlier, &now);
+        assert!(date_time.starts_with("Jan 20, 2026"), "{date_time}");
+        assert!(date_time.ends_with("09:05"), "{date_time}");
+        let relative = |date: chrono::DateTime<Local>| {
+            list_time_in_style(ListDateStyle::Relative, date.timestamp_millis(), &now)
+        };
+        assert_eq!(relative(at(20, 11, 59)), "1 min ago");
+        assert_eq!(relative(at(20, 12, 0)), "Just now");
+        assert_eq!(relative(at(20, 9, 5)), "2 h ago");
+        assert_eq!(relative(at(17, 12, 0)), "3 days ago");
+        assert_eq!(relative(at(6, 12, 0)), "2 weeks ago");
+        assert_eq!(relative(at(1, 12, 0)), "2 weeks ago");
+        assert_eq!(
+            list_time_in_style(ListDateStyle::Smart, earlier, &now),
+            mail_list_time(earlier, &now)
+        );
+    }
+
+    #[test]
     fn message_times_show_the_clock_for_recent_mail_and_dates_for_older_mail() {
         let at_noon = |year, month, day| {
             let naive = chrono::NaiveDate::from_ymd_opt(year, month, day)
@@ -1868,6 +1944,7 @@ mod tests {
             Some(MailCursor::Thread(ThreadCursor {
                 last_message_at: 0,
                 thread_id: 23,
+                offset: 0,
             })),
             &[],
         );
@@ -1967,6 +2044,7 @@ mod tests {
             Some(MailCursor::Thread(ThreadCursor {
                 last_message_at: 0,
                 thread_id: 150,
+                offset: 0,
             })),
             &[],
         );
@@ -1988,6 +2066,7 @@ mod tests {
             Some(MailCursor::Thread(ThreadCursor {
                 last_message_at: 0,
                 thread_id: 51,
+                offset: 0,
             })),
             &[],
         );
@@ -2011,6 +2090,7 @@ mod tests {
             Some(MailCursor::Thread(ThreadCursor {
                 last_message_at: 0,
                 thread_id: PAGE_SIZE as i64 - 6,
+                offset: 0,
             })),
             &[],
         );
@@ -2042,6 +2122,7 @@ mod tests {
             Some(MailCursor::Thread(ThreadCursor {
                 last_message_at: 0,
                 thread_id: 23,
+                offset: 0,
             })),
             &[40],
         );
@@ -2067,6 +2148,7 @@ mod tests {
             Some(MailCursor::Thread(ThreadCursor {
                 last_message_at: 0,
                 thread_id: 23,
+                offset: 0,
             })),
             &[10],
         );

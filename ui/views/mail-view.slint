@@ -36,6 +36,13 @@ export component MailView inherits FocusScope {
     in-out property <length> list-pane-width: LayoutMetrics.list-pane-width;
     callback list-pane-width-committed(length);
     in property <bool> show-avatars: true;
+    // Mail list as a table with sortable, resizable columns.
+    in property <bool> mail-table: false;
+    in property <string> mail-sort: "date-desc";
+    in-out property <length> sender-column-width: 220px;
+    in-out property <length> date-column-width: 130px;
+    callback sort-mail(string);
+    callback mail-columns-committed();
     in property <bool> loading: false;
     in property <[EmailRow]> emails: [];
     in property <[MailListEntry]> list_entries: [];
@@ -387,6 +394,12 @@ export component MailView inherits FocusScope {
                 emails: root.emails;
                 list_entries: root.list_entries;
                 group_mail_by_date: root.group_mail_by_date;
+                table: root.mail-table;
+                sort-key: root.mail-sort;
+                sender-column-width <=> root.sender-column-width;
+                date-column-width <=> root.date-column-width;
+                sort-by(key) => { root.sort-mail(key); }
+                columns-committed => { root.mail-columns-committed(); }
                 selected_scope: root.selected_scope;
                 scope_title: root.selected_scope_title;
                 trash_view: root.trash_view;
@@ -653,6 +666,12 @@ export component MailView inherits FocusScope {
                 emails: root.emails;
                 list_entries: root.list_entries;
                 group_mail_by_date: root.group_mail_by_date;
+                table: root.mail-table;
+                sort-key: root.mail-sort;
+                sender-column-width <=> root.sender-column-width;
+                date-column-width <=> root.date-column-width;
+                sort-by(key) => { root.sort-mail(key); }
+                columns-committed => { root.mail-columns-committed(); }
                 selected_scope: root.selected_scope;
                 scope_title: root.selected_scope_title;
                 trash_view: root.trash_view;

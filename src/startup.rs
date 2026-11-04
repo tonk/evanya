@@ -783,6 +783,9 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
         .set_preference(settings.message_appearance.as_str().into());
     refresh_oauth_availability(app);
     app.set_time_format(settings.time_format.as_str().into());
+    app.set_list_date_format(
+        crate::mail::normalized_list_date_format(&settings.list_date_format).into(),
+    );
     crate::apply_language(app, &settings.language);
     app.set_custom_oauth_configured(
         !settings.google_client_id.trim().is_empty() || !settings.ms_client_id.trim().is_empty(),
@@ -817,6 +820,15 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_group_mail_by_date(settings.group_mail_by_date);
     app.set_show_tabs(settings.show_tabs);
     app.set_conversation_view(settings.conversation_view);
+    app.set_compose_plain_text_default(settings.compose_plain_text);
+    app.set_mail_list_layout(
+        if settings.mail_list_layout == "table" { "table" } else { "cards" }.into(),
+    );
+    let sort = crate::mail::parse_mail_sort(&settings.mail_sort);
+    crate::mail::set_mail_sort(sort);
+    app.set_mail_sort(crate::mail::mail_sort_key(sort).into());
+    app.set_mail_sender_column_width(settings.mail_table_sender_width.clamp(80, 2000) as f32);
+    app.set_mail_date_column_width(settings.mail_table_date_width.clamp(60, 260) as f32);
     app.set_show_account_markers(settings.show_account_badges);
     app.set_workspace_layout(
         match settings.workspace_layout.as_str() {
@@ -1268,6 +1280,7 @@ mod warm_start_tests {
             next_cursor: Some(WarmStartCursor::Message(MessageCursor {
                 date: 123,
                 message_id: 9,
+                offset: 0,
             })),
             accounts: &accounts,
             profile_accounts: Some(&[7]),
@@ -1292,6 +1305,7 @@ mod warm_start_tests {
             Some(WarmStartCursor::Message(MessageCursor {
                 date: 123,
                 message_id: 9,
+                offset: 0,
             }))
         );
         assert_eq!(restored.profile_accounts, Some(vec![7]));

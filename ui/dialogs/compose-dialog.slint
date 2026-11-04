@@ -22,6 +22,14 @@ export component ComposeDialog inherits Rectangle {
     in property <color> title-color;
     in-out property <bool> compose_open: false;
     in property <string> compose_mode: "new";
+    in property <bool> compose_plain_text: false;
+    // The panel's place and size once the writer moved or resized it. The
+    // owner keeps them, so the next composer opens where this one was.
+    in-out property <bool> placed: false;
+    in-out property <length> stored-x;
+    in-out property <length> stored-y;
+    in-out property <length> stored-width;
+    in-out property <length> stored-height;
     in-out property <string> compose_to: "";
     in-out property <string> compose_cc: "";
     in-out property <string> compose_bcc: "";
@@ -51,6 +59,7 @@ export component ComposeDialog inherits Rectangle {
     in property <bool> compose_code_active: false;
     in property <string> compose_active_link_url: "";
     callback close_compose();
+    callback switch_compose_format(bool);
     callback back-requested();
     callback save_compose(int, string, string, string, string, string, bool);
     callback pick_compose_attachments();
@@ -93,13 +102,81 @@ export component ComposeDialog inherits Rectangle {
 
     // The desktop panel stays below integrated window controls.
     private property <length> controls-inset: WindowChrome.controls-visible ? WindowChrome.band-height : 0px;
+    private property <length> area-height: root.height - root.controls-inset;
+
+    // Desktop geometry: centered at the default size until the writer drags
+    // the header or an edge, then wherever they put it. Bindings keep the
+    // panel inside the window when the window itself gets smaller.
+    private property <length> min-panel-width: min(480px, root.width);
+    private property <length> min-panel-height: min(360px, root.area-height);
+    private property <length> panel-width: root.placed
+        ? max(root.min-panel-width, min(root.stored-width, root.width))
+        : min(820px, root.width - 64px);
+    private property <length> panel-height: root.placed
+        ? max(root.min-panel-height, min(root.stored-height, root.area-height))
+        : min(700px, root.area-height - 64px);
+    private property <length> panel-x: root.placed
+        ? max(0px, min(root.stored-x, root.width - root.panel-width))
+        : (root.width - root.panel-width) / 2;
+    private property <length> panel-y: root.placed
+        ? max(root.controls-inset, min(root.stored-y, root.height - root.panel-height))
+        : root.controls-inset + (root.area-height - root.panel-height) / 2;
+    // Resize grips reach a little into the panel and further outside it.
+    private property <length> grip-in: 3px;
+    private property <length> grip-out: 7px;
+
+    // Start from what is on screen, so the first drag does not jump and a
+    // panel squeezed by a smaller window continues from its visible size.
+    function place() {
+        root.stored-x = root.panel-x;
+        root.stored-y = root.panel-y;
+        root.stored-width = root.panel-width;
+        root.stored-height = root.panel-height;
+        root.placed = true;
+    }
+
+    function move-by(dx: length, dy: length) {
+        root.place();
+        root.stored-x = max(0px, min(root.panel-x + dx, root.width - root.panel-width));
+        root.stored-y = max(root.controls-inset, min(root.panel-y + dy, root.height - root.panel-height));
+    }
+
+    function resize-left(dx: length) {
+        root.place();
+        let right = root.panel-x + root.panel-width;
+        let width = max(root.min-panel-width, min(root.panel-width - dx, right));
+        root.stored-width = width;
+        root.stored-x = right - width;
+    }
+
+    function resize-right(dx: length) {
+        root.place();
+        root.stored-width = max(root.min-panel-width, min(root.panel-width + dx, root.width - root.panel-x));
+    }
+
+    function resize-top(dy: length) {
+        root.place();
+        let bottom = root.panel-y + root.panel-height;
+        let height = max(root.min-panel-height, min(root.panel-height - dy, bottom - root.controls-inset));
+        root.stored-height = height;
+        root.stored-y = bottom - height;
+    }
+
+    function resize-bottom(dy: length) {
+        root.place();
+        root.stored-height = max(root.min-panel-height, min(root.panel-height + dy, root.height - root.panel-y));
+    }
 
     composer := EmailComposer {
-        x: root.compact ? 0px : (parent.width - self.width) / 2;
-        y: root.compact ? 0px : root.controls-inset + (parent.height - root.controls-inset - self.height) / 2;
-        width: root.compact ? parent.width : min(820px, parent.width - 64px);
-        height: root.compact ? parent.height : min(700px, parent.height - root.controls-inset - 64px);
+        x: root.compact ? 0px : root.panel-x;
+        y: root.compact ? 0px : root.panel-y;
+        width: root.compact ? parent.width : root.panel-width;
+        height: root.compact ? parent.height : root.panel-height;
         compact: root.compact;
+        plain-text: root.compose_plain_text;
+        switch-format(plain) => { root.switch_compose_format(plain); }
+        header-dragged(dx, dy) => { root.move-by(dx, dy); }
+        header-reset => { root.placed = false; }
         attachment-picker-supported: root.attachment-picker-supported;
         open: root.compose_open;
         mode: root.compose_mode;
@@ -179,5 +256,109 @@ export component ComposeDialog inherits Rectangle {
         use-template(id) => root.use_email_template(id);
         save-template(id, name, shortcut, subject, body) => root.save_email_template(id, name, shortcut, subject, body);
         delete-template(id) => root.delete_email_template(id);
+    }
+
+    // Edges and corners resize the desktop panel. Each grip straddles the
+    // border, mostly outside it, so it is easy to hit without covering the
+    // panel's own controls or the editor's scroll bar.
+    if !root.compact : TouchArea {
+        x: root.panel-x - root.grip-out;
+        y: root.panel-y;
+        width: (root.grip-in + root.grip-out);
+        height: root.panel-height;
+        mouse-cursor: ew-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-left(self.mouse-x - self.pressed-x);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x + root.panel-width - root.grip-in;
+        y: root.panel-y;
+        width: (root.grip-in + root.grip-out);
+        height: root.panel-height;
+        mouse-cursor: ew-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-right(self.mouse-x - self.pressed-x);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x;
+        y: root.panel-y - root.grip-out;
+        width: root.panel-width;
+        height: (root.grip-in + root.grip-out);
+        mouse-cursor: ns-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-top(self.mouse-y - self.pressed-y);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x;
+        y: root.panel-y + root.panel-height - root.grip-in;
+        width: root.panel-width;
+        height: (root.grip-in + root.grip-out);
+        mouse-cursor: ns-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-bottom(self.mouse-y - self.pressed-y);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x - root.grip-out;
+        y: root.panel-y - root.grip-out;
+        width: root.grip-out + root.grip-in * 4;
+        height: root.grip-out + root.grip-in * 4;
+        mouse-cursor: nwse-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-left(self.mouse-x - self.pressed-x);
+                root.resize-top(self.mouse-y - self.pressed-y);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x + root.panel-width - root.grip-in * 4;
+        y: root.panel-y - root.grip-out;
+        width: root.grip-out + root.grip-in * 4;
+        height: root.grip-out + root.grip-in * 4;
+        mouse-cursor: nesw-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-right(self.mouse-x - self.pressed-x);
+                root.resize-top(self.mouse-y - self.pressed-y);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x - root.grip-out;
+        y: root.panel-y + root.panel-height - root.grip-in * 4;
+        width: root.grip-out + root.grip-in * 4;
+        height: root.grip-out + root.grip-in * 4;
+        mouse-cursor: nesw-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-left(self.mouse-x - self.pressed-x);
+                root.resize-bottom(self.mouse-y - self.pressed-y);
+            }
+        }
+    }
+    if !root.compact : TouchArea {
+        x: root.panel-x + root.panel-width - root.grip-in * 4;
+        y: root.panel-y + root.panel-height - root.grip-in * 4;
+        width: root.grip-out + root.grip-in * 4;
+        height: root.grip-out + root.grip-in * 4;
+        mouse-cursor: nwse-resize;
+        moved => {
+            if (self.pressed) {
+                root.resize-right(self.mouse-x - self.pressed-x);
+                root.resize-bottom(self.mouse-y - self.pressed-y);
+            }
+        }
     }
 }

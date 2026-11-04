@@ -482,12 +482,15 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> show_tabs: true;
     in-out property <bool> group_mail_by_date: true;
     in-out property <bool> conversation_view: true;
+    in-out property <bool> compose_plain_text: false;
+    in-out property <string> mail_list_layout: "cards";
     in-out property <bool> show_account_markers: false;
     in-out property <string> workspace_layout: "default";
     in-out property <bool> unified_mailbox: true;
     in-out property <string> reading_pane_position: "right";
     in-out property <string> language_mode: "system";
     in-out property <string> time_format: "automatic";
+    in-out property <string> list_date_format: "smart";
     in property <string> time_format_sample: "13:30";
     in-out property <bool> monochrome_sidebar_icons: false;
     in-out property <bool> notifications_enabled: true;
@@ -588,6 +591,8 @@ export component SettingsDialog inherits Rectangle {
     callback save_show_tabs(bool);
     callback save_group_mail_by_date(bool);
     callback save_conversation_view(bool);
+    callback save_compose_plain_text(bool);
+    callback save_mail_list_layout(string);
     callback choose_download_directory();
     callback clear_download_directory();
     // Save a profile's name and color, and make the checked accounts of
@@ -605,6 +610,7 @@ export component SettingsDialog inherits Rectangle {
     callback save_reading_pane_position(string);
     callback save_language(string);
     callback save_time_format(string);
+    callback save_list_date_format(string);
     callback save_sidebar_icon_style(bool);
     callback save_notification_settings(bool, bool, string);
     callback save_sync_interval(int);
@@ -699,6 +705,16 @@ export component SettingsDialog inherits Rectangle {
         : root.language_mode == "tr" ? 3
         : root.language_mode == "zh_Hans" ? 4
         : root.language_mode == "ru" ? 5 : 0;
+    private property <[string]> list-date-options: [
+        @tr("Smart"),
+        @tr("Date and time"),
+        @tr("Relative"),
+        @tr("ISO 8601"),
+    ];
+    private property <[string]> list-date-values: ["smart", "datetime", "relative", "iso"];
+    private property <int> list-date-index: root.list_date_format == "datetime" ? 1
+        : root.list_date_format == "relative" ? 2
+        : root.list_date_format == "iso" ? 3 : 0;
     private property <int> time-format-index: root.time_format == "12h" ? 1
         : root.time_format == "24h" ? 2 : 0;
 
@@ -1230,6 +1246,19 @@ export component SettingsDialog inherits Rectangle {
                                             root.save_reading_pane_position(root.reading_pane_position);
                                         }
                                     }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Message list as a table");
+                                        description: @tr("One line per message, with columns you can drag to resize and click to sort.");
+                                        checked: root.mail_list_layout == "table";
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.mail_list_layout = checked ? "table" : "cards";
+                                            root.save_mail_list_layout(root.mail_list_layout);
+                                        }
+                                    }
                                 }
                             }
 
@@ -1266,6 +1295,23 @@ export component SettingsDialog inherits Rectangle {
                                         title-color: root.body-text;
                                         description-color: root.faint-text;
                                         selected(index, value) => { root.select-time-format(index); }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSelectRow {
+                                        compact: root.compact;
+                                        title: @tr("Dates in the message list");
+                                        description: root.list_date_format == "datetime" ? @tr("Always the date and the time.")
+                                            : root.list_date_format == "relative" ? @tr("How long ago, such as \"5 min ago\", for the last four weeks.")
+                                            : root.list_date_format == "iso" ? @tr("Year, month and day, such as 2026-11-04 14:32.")
+                                            : @tr("The time for today and yesterday, otherwise the date.");
+                                        choices: root.list-date-options;
+                                        selected-index: root.list-date-index;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        selected(index, value) => {
+                                            root.list_date_format = root.list-date-values[index];
+                                            root.save_list_date_format(root.list_date_format);
+                                        }
                                     }
                                 }
                             }
@@ -1313,6 +1359,19 @@ export component SettingsDialog inherits Rectangle {
                                         toggled(checked) => {
                                             root.conversation_view = checked;
                                             root.save_conversation_view(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Write messages in plain text");
+                                        description: @tr("Send new messages, replies and forwards without formatting. Hold Shift while choosing New message, Reply or Forward to use the other format.");
+                                        checked: root.compose_plain_text;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.compose_plain_text = checked;
+                                            root.save_compose_plain_text(checked);
                                         }
                                     }
                                     Rectangle { height: 1px; background: root.border-subtle; }

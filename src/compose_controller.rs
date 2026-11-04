@@ -157,6 +157,12 @@ pub(super) fn prepare_message_compose(
     })
 }
 
+/// The format a new composer starts in: the saved preference, or the other
+/// one while Shift is held as New message, Reply, or Forward is chosen.
+pub(super) fn opening_plain_text(app: &AppWindow) -> bool {
+    app.get_compose_plain_text_default() != crate::window_chrome::shift_held()
+}
+
 pub(super) fn compose_addresses(addresses: &[flectar_mail_core::models::Address]) -> String {
     join_addresses(addresses)
 }

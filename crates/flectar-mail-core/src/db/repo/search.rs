@@ -721,6 +721,7 @@ fn chronological_message_page_for_query(
                 position: MessageCursor {
                     date: *date,
                     message_id: *message_id,
+                    offset: 0,
                 },
                 relaxed,
             })

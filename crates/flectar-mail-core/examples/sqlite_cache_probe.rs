@@ -392,6 +392,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 folder_id: None,
                 cursor: None,
                 limit: 50,
+                sort: Default::default(),
             };
             Ok(json!({
                 "inbox_badge": repo::counts::inbox_badge_query_plan(conn)?,
@@ -409,6 +410,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             folder_id: None,
             cursor: None,
             limit: 50,
+            sort: Default::default(),
         };
         let started = Instant::now();
         let badges = db

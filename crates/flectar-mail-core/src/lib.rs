@@ -626,11 +626,26 @@ mod calendar_oauth_scope_tests {
 pub struct ThreadPageRequest {
     pub cursor: Option<ThreadCursor>,
     pub limit: i64,
+    pub sort: models::MailSort,
 }
 
 impl From<(Option<ThreadCursor>, i64)> for ThreadPageRequest {
     fn from((cursor, limit): (Option<ThreadCursor>, i64)) -> Self {
-        Self { cursor, limit }
+        Self {
+            cursor,
+            limit,
+            sort: models::MailSort::default(),
+        }
+    }
+}
+
+impl From<(Option<ThreadCursor>, i64, models::MailSort)> for ThreadPageRequest {
+    fn from((cursor, limit, sort): (Option<ThreadCursor>, i64, models::MailSort)) -> Self {
+        Self {
+            cursor,
+            limit,
+            sort,
+        }
     }
 }
 
@@ -638,6 +653,7 @@ impl From<(Option<ThreadCursor>, i64)> for ThreadPageRequest {
 pub struct MessagePageRequest {
     pub cursor: Option<MessageCursor>,
     pub limit: i64,
+    pub sort: models::MailSort,
 }
 
 #[derive(Clone)]
@@ -3006,7 +3022,11 @@ impl Core {
         folder_id: Option<i64>,
         page: ThreadPageRequest,
     ) -> Result<ThreadPage> {
-        let ThreadPageRequest { cursor, limit } = page;
+        let ThreadPageRequest {
+            cursor,
+            limit,
+            sort,
+        } = page;
         let tab = self.tab_filter(split_id, label_id).await?;
         self.db
             .read(move |conn| {
@@ -3020,6 +3040,7 @@ impl Core {
                         folder_id,
                         cursor,
                         limit: limit.clamp(1, 200),
+                        sort,
                     },
                 )
             })
@@ -3075,7 +3096,11 @@ impl Core {
         folder_id: Option<i64>,
         page: MessagePageRequest,
     ) -> Result<MessagePage> {
-        let MessagePageRequest { cursor, limit } = page;
+        let MessagePageRequest {
+            cursor,
+            limit,
+            sort,
+        } = page;
         let tab = self.tab_filter(split_id, label_id).await?;
         self.db
             .read(move |conn| {
@@ -3089,6 +3114,7 @@ impl Core {
                         folder_id,
                         cursor: None,
                         limit: limit.clamp(1, 200),
+                        sort,
                     },
                     cursor,
                 )
@@ -3182,6 +3208,7 @@ impl Core {
                         folder_id,
                         cursor: None,
                         limit: 1,
+                        sort: Default::default(),
                     },
                 )
             })

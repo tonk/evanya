@@ -278,11 +278,90 @@ fn push_number(text: &mut String, value: i32, width: usize) {
     let _ = write!(text, "{value:0width$}");
 }
 
+/// How the mail list shows when a message arrived.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) enum ListDateStyle {
+    /// The time today and yesterday, the day and month this year, and the
+    /// full date before that.
+    #[default]
+    Smart,
+    /// Always the date and the time.
+    DateTime,
+    /// How long ago, such as "5 min ago", for the last weeks.
+    Relative,
+    /// Year-month-day and a 24-hour time, such as "2026-11-04 14:32".
+    Iso,
+}
+
+impl ListDateStyle {
+    pub(crate) fn parse(value: &str) -> Self {
+        match value {
+            "datetime" => Self::DateTime,
+            "relative" => Self::Relative,
+            "iso" => Self::Iso,
+            _ => Self::Smart,
+        }
+    }
+}
+
+/// Units of a relative time, as the catalog names them.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum RelativeUnit {
+    Now,
+    Minutes,
+    Hours,
+    Days,
+    Weeks,
+}
+
+impl RelativeUnit {
+    fn key(self) -> &'static str {
+        match self {
+            Self::Now => "now",
+            Self::Minutes => "minutes",
+            Self::Hours => "hours",
+            Self::Days => "days",
+            Self::Weeks => "weeks",
+        }
+    }
+
+    fn english(self, count: i64) -> String {
+        let plural = if count == 1 { "" } else { "s" };
+        match self {
+            Self::Now => "Just now".to_owned(),
+            Self::Minutes => format!("{count} min ago"),
+            Self::Hours => format!("{count} h ago"),
+            Self::Days => format!("{count} day{plural} ago"),
+            Self::Weeks => format!("{count} week{plural} ago"),
+        }
+    }
+}
+
+/// The mail list's date style.
+pub(crate) fn list_style() -> ListDateStyle {
+    LIST_STYLE.with(std::cell::Cell::get)
+}
+
+/// A translated "5 min ago"; the catalog decides the plural forms.
+pub(crate) fn relative(unit: RelativeUnit, count: i64) -> String {
+    let translated = CATALOG.with(|catalog| {
+        catalog.borrow().as_ref().and_then(slint::Weak::upgrade).map(|app| {
+            app.global::<I18n>()
+                .invoke_relative_time(unit.key().into(), count.clamp(0, i32::MAX as i64) as i32)
+                .to_string()
+        })
+    });
+    translated.unwrap_or_else(|| unit.english(count))
+}
+
 thread_local! {
     // The UI thread formats every date, so each thread keeps its own formats
     // and tests running in parallel threads stay independent.
     static CURRENT: RefCell<Rc<DateFormats>> =
         RefCell::new(Rc::new(DateFormats::english(HourCycle::TwentyFour)));
+    static LIST_STYLE: std::cell::Cell<ListDateStyle> =
+        const { std::cell::Cell::new(ListDateStyle::Smart) };
+    static CATALOG: RefCell<Option<slint::Weak<AppWindow>>> = const { RefCell::new(None) };
     static LISTENERS: RefCell<Vec<Rc<dyn Fn()>>> = const { RefCell::new(Vec::new()) };
 }
 
@@ -298,7 +377,10 @@ pub(crate) fn reload(app: &AppWindow) {
     let preference = TimeFormat::parse(&app.get_time_format()).unwrap_or_default();
     let formats = DateFormats::load(&app.global::<I18n>(), HourCycle::for_preference(preference));
     app.set_time_format_sample(formats.time(13, 30).into());
-    let changed = CURRENT.with(|current| {
+    CATALOG.with(|catalog| *catalog.borrow_mut() = Some(app.as_weak()));
+    let style = ListDateStyle::parse(&app.get_list_date_format());
+    let style_changed = LIST_STYLE.with(|current| current.replace(style) != style);
+    let changed = style_changed | CURRENT.with(|current| {
         let mut current = current.borrow_mut();
         let changed = **current != formats;
         if changed {

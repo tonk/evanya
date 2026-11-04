@@ -2,6 +2,7 @@ import { HorizontalBox, ScrollView } from "std-widgets.slint";
 import { ComposeAttachment } from "../models.slint";
 import { Button } from "button.slint";
 import { IconButton } from "controls.slint";
+import { ModeButton } from "composer-controls.slint";
 import { TypeScale } from "../typography.slint";
 import { LayoutMetrics } from "../design-system.slint";
 
@@ -21,7 +22,9 @@ export component ComposerToolbar inherits Rectangle {
     in property <bool> code-active: false;
     in property <bool> link-active: false;
     in property <bool> can-link: false;
+    in property <bool> plain-text: false;
     callback apply-format(string);
+    callback switch-format(bool);
     callback open-templates();
     callback undo();
     callback redo();
@@ -48,24 +51,47 @@ export component ComposerToolbar inherits Rectangle {
             height: 32px;
             spacing: 2px;
 
-            IconButton { icon: root.bold-active ? @image-url("../icons/lucide/filled/bold.svg") : @image-url("../icons/lucide/outline/bold.svg"); icon-color: root.bold-active ? root.accent-color : root.secondary-color; active: root.bold-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Bold · Ctrl+B"); clicked => { root.apply-format("bold"); } }
-            IconButton { icon: root.italic-active ? @image-url("../icons/lucide/filled/italic.svg") : @image-url("../icons/lucide/outline/italic.svg"); icon-color: root.italic-active ? root.accent-color : root.secondary-color; active: root.italic-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Italic · Ctrl+I"); clicked => { root.apply-format("italic"); } }
-            IconButton { icon: root.underline-active ? @image-url("../icons/lucide/filled/typography.svg") : @image-url("../icons/lucide/outline/typography.svg"); icon-color: root.underline-active ? root.accent-color : root.secondary-color; active: root.underline-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Underline · Ctrl+U"); clicked => { root.apply-format("underline"); } }
-            IconButton { icon: root.strike-active ? @image-url("../icons/lucide/filled/strikethrough.svg") : @image-url("../icons/lucide/outline/strikethrough.svg"); icon-color: root.strike-active ? root.accent-color : root.secondary-color; active: root.strike-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Strikethrough"); clicked => { root.apply-format("strike"); } }
+            if !root.plain-text : IconButton { icon: root.bold-active ? @image-url("../icons/lucide/filled/bold.svg") : @image-url("../icons/lucide/outline/bold.svg"); icon-color: root.bold-active ? root.accent-color : root.secondary-color; active: root.bold-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Bold · Ctrl+B"); clicked => { root.apply-format("bold"); } }
+            if !root.plain-text : IconButton { icon: root.italic-active ? @image-url("../icons/lucide/filled/italic.svg") : @image-url("../icons/lucide/outline/italic.svg"); icon-color: root.italic-active ? root.accent-color : root.secondary-color; active: root.italic-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Italic · Ctrl+I"); clicked => { root.apply-format("italic"); } }
+            if !root.plain-text : IconButton { icon: root.underline-active ? @image-url("../icons/lucide/filled/typography.svg") : @image-url("../icons/lucide/outline/typography.svg"); icon-color: root.underline-active ? root.accent-color : root.secondary-color; active: root.underline-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Underline · Ctrl+U"); clicked => { root.apply-format("underline"); } }
+            if !root.plain-text : IconButton { icon: root.strike-active ? @image-url("../icons/lucide/filled/strikethrough.svg") : @image-url("../icons/lucide/outline/strikethrough.svg"); icon-color: root.strike-active ? root.accent-color : root.secondary-color; active: root.strike-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Strikethrough"); clicked => { root.apply-format("strike"); } }
 
-            Rectangle { width: 1px; height: 18px; background: root.subtle-border-color; }
+            if !root.plain-text : Rectangle { width: 1px; height: 18px; background: root.subtle-border-color; }
 
-            IconButton { icon: @image-url("../icons/lucide/outline/list-unordered.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Bulleted list"); clicked => { root.apply-format("bullet"); } }
-            IconButton { icon: @image-url("../icons/lucide/outline/list-ordered.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Numbered list"); clicked => { root.apply-format("number"); } }
-            IconButton { icon: @image-url("../icons/lucide/outline/quote.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Quote"); clicked => { root.apply-format("quote"); } }
-            IconButton { icon: root.code-active ? @image-url("../icons/lucide/filled/code.svg") : @image-url("../icons/lucide/outline/code.svg"); icon-color: root.code-active ? root.accent-color : root.secondary-color; active: root.code-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Inline code"); clicked => { root.apply-format("code"); } }
-            IconButton { icon: root.link-active ? @image-url("../icons/lucide/filled/link.svg") : @image-url("../icons/lucide/outline/link.svg"); icon-color: root.link-active ? root.accent-color : root.secondary-color; active: root.link-active; active-background: root.accent-background; interactive: root.can-link; hover-background: root.control-hover-color; tooltip-text: root.can-link ? @tr("Add or edit link") : @tr("Select text to add a link"); clicked => { root.apply-format("link"); } }
+            if !root.plain-text : IconButton { icon: @image-url("../icons/lucide/outline/list-unordered.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Bulleted list"); clicked => { root.apply-format("bullet"); } }
+            if !root.plain-text : IconButton { icon: @image-url("../icons/lucide/outline/list-ordered.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Numbered list"); clicked => { root.apply-format("number"); } }
+            if !root.plain-text : IconButton { icon: @image-url("../icons/lucide/outline/quote.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Quote"); clicked => { root.apply-format("quote"); } }
+            if !root.plain-text : IconButton { icon: root.code-active ? @image-url("../icons/lucide/filled/code.svg") : @image-url("../icons/lucide/outline/code.svg"); icon-color: root.code-active ? root.accent-color : root.secondary-color; active: root.code-active; hover-background: root.control-hover-color; active-background: root.accent-background; tooltip-text: @tr("Inline code"); clicked => { root.apply-format("code"); } }
+            if !root.plain-text : IconButton { icon: root.link-active ? @image-url("../icons/lucide/filled/link.svg") : @image-url("../icons/lucide/outline/link.svg"); icon-color: root.link-active ? root.accent-color : root.secondary-color; active: root.link-active; active-background: root.accent-background; interactive: root.can-link; hover-background: root.control-hover-color; tooltip-text: root.can-link ? @tr("Add or edit link") : @tr("Select text to add a link"); clicked => { root.apply-format("link"); } }
 
-            Rectangle { width: 1px; height: 18px; background: root.subtle-border-color; }
+            if !root.plain-text : Rectangle { width: 1px; height: 18px; background: root.subtle-border-color; }
 
             IconButton { icon: @image-url("../icons/lucide/outline/book.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Email templates"); clicked => { root.open-templates(); } }
 
             Rectangle { horizontal-stretch: 1; }
+
+            ModeButton {
+                width: max(58px, self.label-width + 16px);
+                text: @tr("HTML");
+                selected: !root.plain-text;
+                text-color: root.secondary-color;
+                selected-text-color: root.accent-color;
+                hover-color: root.control-hover-color;
+                selected-background: root.accent-background;
+                clicked => { if (root.plain-text) { root.switch-format(false); } }
+            }
+            ModeButton {
+                width: max(58px, self.label-width + 16px);
+                text: @tr("Plain text");
+                selected: root.plain-text;
+                text-color: root.secondary-color;
+                selected-text-color: root.accent-color;
+                hover-color: root.control-hover-color;
+                selected-background: root.accent-background;
+                clicked => { if (!root.plain-text) { root.switch-format(true); } }
+            }
+
+            Rectangle { width: 1px; height: 18px; background: root.subtle-border-color; }
 
             IconButton { icon: @image-url("../icons/lucide/outline/undo.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Undo · Ctrl+Z"); clicked => { root.undo(); } }
             IconButton { icon: @image-url("../icons/lucide/outline/redo.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Redo · Ctrl+Shift+Z"); clicked => { root.redo(); } }

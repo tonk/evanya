@@ -26,6 +26,7 @@ async fn page(
                 folder_id: None,
                 cursor,
                 limit: 25,
+                sort: Default::default(),
             },
         )
     })
@@ -44,6 +45,7 @@ async fn count(db: &Db, account_id: Option<i64>) -> Result<usize> {
                 folder_id: None,
                 cursor: None,
                 limit: 25,
+                sort: Default::default(),
             },
         )
     })
@@ -103,6 +105,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                     Ok(ThreadCursor {
                         last_message_at: row.get(0)?,
                         thread_id: row.get(1)?,
+                        offset: 0,
                     })
                 },
             )
@@ -121,6 +124,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                     folder_id: None,
                     cursor: Some(deep_cursor),
                     limit: 25,
+                    sort: Default::default(),
                 },
             )
         })
