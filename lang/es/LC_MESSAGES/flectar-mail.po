@@ -6069,8 +6069,8 @@ msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr "Evanya se basa en Flectar Mail, de Flectar y su comunidad."
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
-msgid "Flectar Mail logo"
-msgstr "Logotipo de Flectar Mail"
+msgid "Evanya logo"
+msgstr "Logotipo de Evanya"
 
 #: ui/dialogs/settings-dialog.slint:2939
 msgid "A native mail client for a calm, private inbox."

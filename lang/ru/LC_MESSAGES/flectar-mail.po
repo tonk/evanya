@@ -6060,8 +6060,8 @@ msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr "Evanya основана на Flectar Mail от Flectar и его сообщества."
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
-msgid "Flectar Mail logo"
-msgstr "Логотип Flectar Mail"
+msgid "Evanya logo"
+msgstr "Логотип Evanya"
 
 #: ui/dialogs/settings-dialog.slint:2939
 msgid "A native mail client for a calm, private inbox."

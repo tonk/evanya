@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="resources/app-icon/flectar-mail-masked.png" width="88" alt="Flectar Mail logo">
+  <img src="resources/app-icon/flectar-mail-masked.png" width="88" alt="Evanya logo">
   <h1 align="center">
     Evanya
   </h1>

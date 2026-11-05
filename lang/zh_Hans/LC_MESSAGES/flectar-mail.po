@@ -5778,8 +5778,8 @@ msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr "Evanya 基于 Flectar 及其社区开发的 Flectar Mail。"
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
-msgid "Flectar Mail logo"
-msgstr "Flectar Mail 标志"
+msgid "Evanya logo"
+msgstr "Evanya 标志"
 
 #: ui/dialogs/settings-dialog.slint:2939
 msgid "A native mail client for a calm, private inbox."

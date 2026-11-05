@@ -5903,8 +5903,8 @@ msgstr ""
 "Evanya, Flectar ve topluluğu tarafından geliştirilen Flectar Mail'e dayanır."
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
-msgid "Flectar Mail logo"
-msgstr "Flectar Mail logosu"
+msgid "Evanya logo"
+msgstr "Evanya logosu"
 
 #: ui/dialogs/settings-dialog.slint:2939
 msgid "A native mail client for a calm, private inbox."

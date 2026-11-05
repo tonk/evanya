@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: flectar-mail 0.1.0\n"
-"POT-Creation-Date: 2026-11-05 10:31+0000\n"
+"POT-Creation-Date: 2026-11-05 10:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5912,7 +5912,7 @@ msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
-msgid "Flectar Mail logo"
+msgid "Evanya logo"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2939

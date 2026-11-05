@@ -6800,8 +6800,8 @@ msgstr "Evanya est basé sur Flectar Mail, de Flectar et sa communauté."
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
 #, fuzzy
-msgid "Flectar Mail logo"
-msgstr "Logo de Flectar Mail"
+msgid "Evanya logo"
+msgstr "Logo de Evanya"
 
 #: ui/dialogs/settings-dialog.slint:2939
 #, fuzzy

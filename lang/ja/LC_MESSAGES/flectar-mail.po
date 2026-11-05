@@ -5738,7 +5738,7 @@ msgstr ""
 "Evanya は Flectar とそのコミュニティによる Flectar Mail をもとにしています。"
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
-msgid "Flectar Mail logo"
+msgid "Evanya logo"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2939
