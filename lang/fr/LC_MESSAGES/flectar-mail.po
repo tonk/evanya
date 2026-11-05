@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: flectar-mail 0.1.0\n"
-"POT-Creation-Date: 2026-11-05 08:37+0000\n"
+"POT-Creation-Date: 2026-11-05 09:30+0000\n"
 "PO-Revision-Date: 2026-10-14 08:37+0000\n"
 "Last-Translator: Cyril Hansen <cyril.hansen@gmail.com>\n"
 "Language-Team: French <https://translate.flectar.com/projects/flectar-mail/"
@@ -1835,7 +1835,7 @@ msgstr "Impossible d’ouvrir l’éditeur de message : {}"
 msgid "Add an account to send mail."
 msgstr ""
 
-#: ui/app.slint:559 ui/components/sidebar.slint:514
+#: ui/app.slint:559 ui/components/sidebar.slint:519
 msgid "On this device"
 msgstr ""
 
@@ -3929,67 +3929,67 @@ msgstr "Effacer le filtre des dossiers"
 msgid "Add account"
 msgstr "Ajouter un compte"
 
-#: ui/components/sidebar.slint:282
+#: ui/components/sidebar.slint:286
 #, fuzzy
 msgid "ALL ACCOUNTS"
 msgstr "TOUS LES COMPTES"
 
-#: ui/components/sidebar.slint:291
+#: ui/components/sidebar.slint:295
 #, fuzzy
 msgid "All Inboxes"
 msgstr "Toutes les boîtes de réception"
 
-#: ui/components/sidebar.slint:307
+#: ui/components/sidebar.slint:311
 #, fuzzy
 msgid "Inbox"
 msgstr "Boîte de réception"
 
-#: ui/components/sidebar.slint:369
+#: ui/components/sidebar.slint:373
 #, fuzzy
 msgid "Categories"
 msgstr "Catégories"
 
-#: ui/components/sidebar.slint:387
+#: ui/components/sidebar.slint:391
 msgid "Important"
 msgstr "Important"
 
-#: ui/components/sidebar.slint:407 ui/dialogs/settings-dialog.slint:295
+#: ui/components/sidebar.slint:411 ui/dialogs/settings-dialog.slint:295
 #, fuzzy
 msgid "Other"
 msgstr "Autre"
 
-#: ui/components/sidebar.slint:450 ui/components/sidebar.slint:609
+#: ui/components/sidebar.slint:454 ui/components/sidebar.slint:614
 #, fuzzy
 msgid "Labels"
 msgstr "Étiquettes"
 
-#: ui/components/sidebar.slint:469
+#: ui/components/sidebar.slint:473
 #, fuzzy
 msgid "Global label {}"
 msgstr "Étiquette globale {}"
 
-#: ui/components/sidebar.slint:501 ui/views/contacts-view.slint:227
+#: ui/components/sidebar.slint:505 ui/views/contacts-view.slint:227
 #, fuzzy
 msgid "ACCOUNTS"
 msgstr "COMPTES"
 
-#: ui/components/sidebar.slint:629
+#: ui/components/sidebar.slint:634
 #, fuzzy
 msgid "{} label, {} account"
 msgstr "{} étiquette, {} compte"
 
-#: ui/components/sidebar.slint:671 ui/dialogs/folder-dialog.slint:27
+#: ui/components/sidebar.slint:676 ui/dialogs/folder-dialog.slint:27
 #: ui/views/files-view.slint:373 ui/views/files-view.slint:597
 #, fuzzy
 msgid "New folder"
 msgstr "Nouveau dossier"
 
-#: ui/components/sidebar.slint:688 ui/dialogs/folder-dialog.slint:26
+#: ui/components/sidebar.slint:693 ui/dialogs/folder-dialog.slint:26
 #, fuzzy
 msgid "New label"
 msgstr "Nouvelle étiquette"
 
-#: ui/components/sidebar.slint:708
+#: ui/components/sidebar.slint:713
 #, fuzzy
 msgid "No folders found"
 msgstr "Aucun dossier trouvé"

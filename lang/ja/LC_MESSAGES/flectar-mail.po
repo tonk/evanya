@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: flectar-mail 0.1.0\n"
-"POT-Creation-Date: 2026-11-05 08:37+0000\n"
+"POT-Creation-Date: 2026-11-05 09:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -1603,7 +1603,7 @@ msgstr ""
 msgid "Add an account to send mail."
 msgstr ""
 
-#: ui/app.slint:559 ui/components/sidebar.slint:514
+#: ui/app.slint:559 ui/components/sidebar.slint:519
 msgid "On this device"
 msgstr ""
 
@@ -3307,56 +3307,56 @@ msgstr ""
 msgid "Add account"
 msgstr ""
 
-#: ui/components/sidebar.slint:282
+#: ui/components/sidebar.slint:286
 msgid "ALL ACCOUNTS"
 msgstr ""
 
-#: ui/components/sidebar.slint:291
+#: ui/components/sidebar.slint:295
 msgid "All Inboxes"
 msgstr ""
 
-#: ui/components/sidebar.slint:307
+#: ui/components/sidebar.slint:311
 msgid "Inbox"
 msgstr ""
 
-#: ui/components/sidebar.slint:369
+#: ui/components/sidebar.slint:373
 msgid "Categories"
 msgstr ""
 
-#: ui/components/sidebar.slint:387
+#: ui/components/sidebar.slint:391
 msgid "Important"
 msgstr ""
 
-#: ui/components/sidebar.slint:407 ui/dialogs/settings-dialog.slint:295
+#: ui/components/sidebar.slint:411 ui/dialogs/settings-dialog.slint:295
 msgid "Other"
 msgstr ""
 
-#: ui/components/sidebar.slint:450 ui/components/sidebar.slint:609
+#: ui/components/sidebar.slint:454 ui/components/sidebar.slint:614
 msgid "Labels"
 msgstr ""
 
-#: ui/components/sidebar.slint:469
+#: ui/components/sidebar.slint:473
 msgid "Global label {}"
 msgstr ""
 
-#: ui/components/sidebar.slint:501 ui/views/contacts-view.slint:227
+#: ui/components/sidebar.slint:505 ui/views/contacts-view.slint:227
 msgid "ACCOUNTS"
 msgstr ""
 
-#: ui/components/sidebar.slint:629
+#: ui/components/sidebar.slint:634
 msgid "{} label, {} account"
 msgstr ""
 
-#: ui/components/sidebar.slint:671 ui/dialogs/folder-dialog.slint:27
+#: ui/components/sidebar.slint:676 ui/dialogs/folder-dialog.slint:27
 #: ui/views/files-view.slint:373 ui/views/files-view.slint:597
 msgid "New folder"
 msgstr ""
 
-#: ui/components/sidebar.slint:688 ui/dialogs/folder-dialog.slint:26
+#: ui/components/sidebar.slint:693 ui/dialogs/folder-dialog.slint:26
 msgid "New label"
 msgstr ""
 
-#: ui/components/sidebar.slint:708
+#: ui/components/sidebar.slint:713
 msgid "No folders found"
 msgstr ""
 

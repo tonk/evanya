@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: flectar-mail 0.1.0\n"
-"POT-Creation-Date: 2026-11-05 08:37+0000\n"
+"POT-Creation-Date: 2026-11-05 09:30+0000\n"
 "PO-Revision-Date: 2026-10-15 02:03+0000\n"
 "Last-Translator: Taivas Jumala <taivas_jumala@yafoss.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://"
@@ -1605,7 +1605,7 @@ msgstr "无法打开邮件编辑器：{}"
 msgid "Add an account to send mail."
 msgstr ""
 
-#: ui/app.slint:559 ui/components/sidebar.slint:514
+#: ui/app.slint:559 ui/components/sidebar.slint:519
 msgid "On this device"
 msgstr ""
 
@@ -3334,56 +3334,56 @@ msgstr "清除文件夹筛选"
 msgid "Add account"
 msgstr "添加账户"
 
-#: ui/components/sidebar.slint:282
+#: ui/components/sidebar.slint:286
 msgid "ALL ACCOUNTS"
 msgstr "全部账户"
 
-#: ui/components/sidebar.slint:291
+#: ui/components/sidebar.slint:295
 msgid "All Inboxes"
 msgstr "所有收件箱"
 
-#: ui/components/sidebar.slint:307
+#: ui/components/sidebar.slint:311
 msgid "Inbox"
 msgstr "收件箱"
 
-#: ui/components/sidebar.slint:369
+#: ui/components/sidebar.slint:373
 msgid "Categories"
 msgstr "分类"
 
-#: ui/components/sidebar.slint:387
+#: ui/components/sidebar.slint:391
 msgid "Important"
 msgstr "重要"
 
-#: ui/components/sidebar.slint:407 ui/dialogs/settings-dialog.slint:295
+#: ui/components/sidebar.slint:411 ui/dialogs/settings-dialog.slint:295
 msgid "Other"
 msgstr "其他"
 
-#: ui/components/sidebar.slint:450 ui/components/sidebar.slint:609
+#: ui/components/sidebar.slint:454 ui/components/sidebar.slint:614
 msgid "Labels"
 msgstr "标签"
 
-#: ui/components/sidebar.slint:469
+#: ui/components/sidebar.slint:473
 msgid "Global label {}"
 msgstr "全局标签 {}"
 
-#: ui/components/sidebar.slint:501 ui/views/contacts-view.slint:227
+#: ui/components/sidebar.slint:505 ui/views/contacts-view.slint:227
 msgid "ACCOUNTS"
 msgstr "账户"
 
-#: ui/components/sidebar.slint:629
+#: ui/components/sidebar.slint:634
 msgid "{} label, {} account"
 msgstr "{} 标签，{} 账户"
 
-#: ui/components/sidebar.slint:671 ui/dialogs/folder-dialog.slint:27
+#: ui/components/sidebar.slint:676 ui/dialogs/folder-dialog.slint:27
 #: ui/views/files-view.slint:373 ui/views/files-view.slint:597
 msgid "New folder"
 msgstr "新建文件夹"
 
-#: ui/components/sidebar.slint:688 ui/dialogs/folder-dialog.slint:26
+#: ui/components/sidebar.slint:693 ui/dialogs/folder-dialog.slint:26
 msgid "New label"
 msgstr "新建标签"
 
-#: ui/components/sidebar.slint:708
+#: ui/components/sidebar.slint:713
 msgid "No folders found"
 msgstr "未找到文件夹"
 
