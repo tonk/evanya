@@ -18,25 +18,66 @@ const DIR_NAME: &str = "evanya";
 #[cfg(desktop)]
 const LEGACY_DIR_NAME: &str = "flectar-mail";
 
-/// `root/name`, moving the directory of an earlier name there first. When the
-/// move fails the earlier directory is used as it is, so existing mail,
-/// accounts and settings are never left behind.
+/// `root/name`, moving the directory of an earlier name there first, and the
+/// directory moved away from when this call moved it. When the move fails the
+/// earlier directory is used as it is, so existing mail, accounts and
+/// settings are never left behind.
 #[cfg(desktop)]
-fn renamed_dir(root: &std::path::Path, legacy: &str, name: &str) -> PathBuf {
+fn moved_dir(root: &std::path::Path, legacy: &str, name: &str) -> (PathBuf, Option<PathBuf>) {
     let current = root.join(name);
     let earlier = root.join(legacy);
     if current.exists() || !earlier.is_dir() {
-        return current;
+        return (current, None);
     }
     match std::fs::rename(&earlier, &current) {
         Ok(()) => {
             tracing::info!(from = %earlier.display(), to = %current.display(), "moved the app directory to its new name");
-            current
+            (current, Some(earlier))
         }
         Err(error) => {
             tracing::warn!(%error, directory = %earlier.display(), "could not rename the app directory; using it as it is");
-            earlier
+            (earlier, None)
         }
+    }
+}
+
+/// The mail store keeps absolute paths to raw messages and downloaded
+/// attachments. After a directory moved, point them at its new location.
+#[cfg(desktop)]
+fn repoint_stored_paths(db_file: &std::path::Path, moves: &[(PathBuf, PathBuf)]) {
+    if moves.is_empty() || !db_file.is_file() {
+        return;
+    }
+    let result = (|| -> rusqlite::Result<()> {
+        let mut conn = rusqlite::Connection::open(db_file)?;
+        conn.busy_timeout(std::time::Duration::from_secs(5))?;
+        let tx = conn.transaction()?;
+        for (earlier, current) in moves {
+            let (Some(earlier), Some(current)) = (earlier.to_str(), current.to_str()) else {
+                continue;
+            };
+            let (earlier, current) = (format!("{earlier}/"), format!("{current}/"));
+            for (table, column) in [("messages", "raw_path"), ("attachments", "file_path")] {
+                let exists: bool = tx.query_row(
+                    "SELECT EXISTS(SELECT 1 FROM pragma_table_info(?1) WHERE name = ?2)",
+                    [table, column],
+                    |row| row.get(0),
+                )?;
+                if exists {
+                    tx.execute(
+                        &format!(
+                            "UPDATE {table} SET {column} = ?2 || substr({column}, length(?1) + 1) \
+                             WHERE substr({column}, 1, length(?1)) = ?1"
+                        ),
+                        [&earlier, &current],
+                    )?;
+                }
+            }
+        }
+        tx.commit()
+    })();
+    if let Err(error) = result {
+        tracing::warn!(%error, "could not point stored mail paths at the renamed directories");
     }
 }
 
@@ -56,10 +97,18 @@ impl Paths {
                 "the operating system has no application cache directory".into(),
             )
         })?;
-        Ok(Self::new(
-            renamed_dir(&data_root, LEGACY_DIR_NAME, DIR_NAME),
-            renamed_dir(&cache_root, LEGACY_DIR_NAME, DIR_NAME),
-        ))
+        let (data_dir, data_moved) = moved_dir(&data_root, LEGACY_DIR_NAME, DIR_NAME);
+        let (cache_dir, cache_moved) = moved_dir(&cache_root, LEGACY_DIR_NAME, DIR_NAME);
+        let paths = Self::new(data_dir, cache_dir);
+        let moves = [
+            data_moved.map(|earlier| (earlier, paths.data_dir.clone())),
+            cache_moved.map(|earlier| (earlier, paths.cache_dir.clone())),
+        ];
+        repoint_stored_paths(
+            &paths.db_file(),
+            &moves.into_iter().flatten().collect::<Vec<_>>(),
+        );
+        Ok(paths)
     }
 
     pub fn new(data_dir: PathBuf, cache_dir: PathBuf) -> Self {
@@ -201,7 +250,53 @@ mod tests {
 
 #[cfg(all(test, desktop))]
 mod rename_tests {
-    use super::renamed_dir;
+    use super::{moved_dir, repoint_stored_paths};
+
+    fn renamed_dir(root: &std::path::Path, legacy: &str, name: &str) -> std::path::PathBuf {
+        moved_dir(root, legacy, name).0
+    }
+
+    #[test]
+    fn stored_paths_follow_the_moved_directories() {
+        let root = tempfile::tempdir().unwrap();
+        let db = root.path().join("mail.db");
+        let conn = rusqlite::Connection::open(&db).unwrap();
+        conn.execute_batch(
+            "CREATE TABLE messages (raw_path TEXT);
+             CREATE TABLE attachments (file_path TEXT);
+             INSERT INTO messages VALUES ('/d/old/mail/1.eml'), ('/d/older/2.eml'), (NULL);
+             INSERT INTO attachments VALUES ('/c/old/attachments/a.png');",
+        )
+        .unwrap();
+        drop(conn);
+        repoint_stored_paths(
+            &db,
+            &[
+                ("/d/old".into(), "/d/new".into()),
+                ("/c/old".into(), "/c/new".into()),
+            ],
+        );
+        let conn = rusqlite::Connection::open(&db).unwrap();
+        let raw: Vec<Option<String>> = conn
+            .prepare("SELECT raw_path FROM messages ORDER BY rowid")
+            .unwrap()
+            .query_map([], |row| row.get(0))
+            .unwrap()
+            .collect::<Result<_, _>>()
+            .unwrap();
+        assert_eq!(
+            raw,
+            [
+                Some("/d/new/mail/1.eml".into()),
+                Some("/d/older/2.eml".into()),
+                None
+            ]
+        );
+        let file: String = conn
+            .query_row("SELECT file_path FROM attachments", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(file, "/c/new/attachments/a.png");
+    }
 
     #[test]
     fn the_earlier_directory_moves_once_and_is_never_lost() {
