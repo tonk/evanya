@@ -1,6 +1,6 @@
 # Lucide icons
 
-Flectar Mail uses Lucide outlines and custom filled variants. SVGs are generated
+Evanya uses Lucide outlines and custom filled variants. SVGs are generated
 using the unmodified `lucide-static` 1.46.0 assets in `sources/` and custom recipes.
 Source hashes and outline mappings are recorded in `sources.json`; filled
 mappings are defined in `solid_recipes.py`. Licensing is included in [LICENSE](LICENSE).
@@ -42,7 +42,7 @@ adjustments. Changes to upstream geometry require updating the pinned hashes and
 reviewing the affected recipes. Generated SVGs are checked into the repository;
 normal application builds do not require Python or network access for icons.
 
-Custom alternatives use the `-flectar` suffix, such as `filled/inbox-flectar.svg`,
+Custom alternatives use the `-evanya` suffix, such as `filled/inbox-evanya.svg`,
 and are generated from `solid_recipes.py` alongside the Lucide variants.
 
 ## Generation

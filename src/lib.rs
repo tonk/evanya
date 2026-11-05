@@ -1,6 +1,6 @@
 // The application implementation is one compilation unit, exposed to the
 // thin desktop and mobile platform launchers.
-pub use flectar_mail_core;
+pub use evanya_core;
 
 mod account_controller;
 mod account_mail_preferences;
@@ -94,18 +94,18 @@ use contacts::{
 };
 use data_controller::register_data_management_callbacks;
 use date_format::DateStyle;
-use favicon::{
-    FaviconImage, FaviconImages, FaviconLoader, ProfileAvatarImages, ProfileAvatarLoader,
-    physical_pixel_side,
-};
-use flectar_mail_core::config::Paths;
+use evanya_core::config::Paths;
 #[cfg(test)]
-use flectar_mail_core::models::ThreadCursor;
-use flectar_mail_core::models::{
+use evanya_core::models::ThreadCursor;
+use evanya_core::models::{
     Account, AccountConfig, AddPasswordAccountArgs, CalendarConnection, CardDavConnection,
     ConnectionSecurity, ContactRecord, ContactRecordCursor, ContactRecordPage, CreateEventArgs,
     DraftAttachmentIn, Label, MailConnectionSettings, MailGrouping, MailProfile, MailProtocol,
     Provider, Settings, Snippet, UpdateEventArgs,
+};
+use favicon::{
+    FaviconImage, FaviconImages, FaviconLoader, ProfileAvatarImages, ProfileAvatarLoader,
+    physical_pixel_side,
 };
 #[cfg(test)]
 use mail::fixture_messages;
@@ -674,7 +674,7 @@ struct InboxState {
     account_configs: Vec<AccountConfig>,
     /// Mail imported into folders on this device, which belongs to no
     /// account.
-    local_mail: Option<flectar_mail_core::models::LocalMail>,
+    local_mail: Option<evanya_core::models::LocalMail>,
     /// Counts reloads of `local_mail`, so an earlier one never lands after a
     /// later one.
     local_mail_reloads: u64,
@@ -1431,13 +1431,13 @@ pub struct PlatformContext {
     pub external_urls: ExternalUrlOpener,
     pub paths: Paths,
     pub documents: Arc<dyn documents::DocumentProvider>,
-    pub credentials: flectar_mail_core::accounts::credentials::CredentialStoreHandle,
-    pub oauth_redirects: flectar_mail_core::oauth::redirect::OAuthRedirectBrokerHandle,
+    pub credentials: evanya_core::accounts::credentials::CredentialStoreHandle,
+    pub oauth_redirects: evanya_core::oauth::redirect::OAuthRedirectBrokerHandle,
 }
 
 impl PlatformContext {
     #[cfg(desktop)]
-    pub fn desktop() -> Result<Self, flectar_mail_core::error::CoreError> {
+    pub fn desktop() -> Result<Self, evanya_core::error::CoreError> {
         let paths = Paths::default_dirs()?;
         let credentials = desktop_credential_store(&paths);
         Ok(Self {
@@ -1446,7 +1446,7 @@ impl PlatformContext {
             documents: documents::default_provider(),
             credentials,
             oauth_redirects: Arc::new(
-                flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default(),
+                evanya_core::oauth::redirect::LoopbackRedirectBroker::default(),
             ),
         })
     }
@@ -1457,8 +1457,8 @@ impl PlatformContext {
         data_root: PathBuf,
         cache_dir: PathBuf,
         documents: Arc<dyn documents::DocumentProvider>,
-        credentials: flectar_mail_core::accounts::credentials::CredentialStoreHandle,
-        oauth_redirects: flectar_mail_core::oauth::redirect::OAuthRedirectBrokerHandle,
+        credentials: evanya_core::accounts::credentials::CredentialStoreHandle,
+        oauth_redirects: evanya_core::oauth::redirect::OAuthRedirectBrokerHandle,
     ) -> Self {
         Self {
             paths: Paths::new(data_root.join("data"), cache_dir),
@@ -1473,7 +1473,7 @@ impl PlatformContext {
 #[cfg(desktop)]
 fn desktop_credential_store(
     paths: &Paths,
-) -> flectar_mail_core::accounts::credentials::CredentialStoreHandle {
+) -> evanya_core::accounts::credentials::CredentialStoreHandle {
     #[cfg(all(linux_desktop, debug_assertions))]
     if isolated_container_without_secret_service() {
         let path = paths.data_dir.join("credentials-v1.json");
@@ -1482,12 +1482,12 @@ fn desktop_credential_store(
             "credential: no D-Bus session in development container; using debug-only plaintext storage"
         );
         return Arc::new(
-            flectar_mail_core::accounts::credentials::DevelopmentFileCredentialStore::new(path),
+            evanya_core::accounts::credentials::DevelopmentFileCredentialStore::new(path),
         );
     }
     #[cfg(not(all(linux_desktop, debug_assertions)))]
     let _ = paths;
-    Arc::new(flectar_mail_core::accounts::credentials::SystemCredentialStore)
+    Arc::new(evanya_core::accounts::credentials::SystemCredentialStore)
 }
 
 #[cfg(all(linux_desktop, debug_assertions))]
@@ -1558,8 +1558,8 @@ fn startup_diagnostics(paths: &Paths, diagnostic_id: &str, error: &str) -> Strin
 fn spawn_startup_load(
     runtime: &tokio::runtime::Runtime,
     paths: Paths,
-    credentials: flectar_mail_core::accounts::credentials::CredentialStoreHandle,
-    oauth_redirects: flectar_mail_core::oauth::redirect::OAuthRedirectBrokerHandle,
+    credentials: evanya_core::accounts::credentials::CredentialStoreHandle,
+    oauth_redirects: evanya_core::oauth::redirect::OAuthRedirectBrokerHandle,
     startup_tx: UiSender<StartupUpdate>,
     metrics: StartupMetrics,
 ) {
@@ -1574,7 +1574,7 @@ fn spawn_startup_load(
             }
         }
         // Rows saved in the other grouping would be replaced at once.
-        let grouping = flectar_mail_core::startup_presentation(&paths).grouping;
+        let grouping = evanya_core::startup_presentation(&paths).grouping;
         let warm = load_warm_start_snapshot(&paths.warm_start_file())
             .await
             .filter(|snapshot| snapshot.grouping == grouping);
@@ -1656,9 +1656,9 @@ pub fn run_desktop(platform: PlatformContext) -> Result<(), Box<dyn std::error::
 pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> {
     let startup_metrics = StartupMetrics::from_environment();
     let benchmark_tray = startup_metrics.enabled()
-        && std::env::var_os("FLECTAR_BENCHMARK_TRAY_INTERVAL_MS").is_some();
+        && std::env::var_os("EVANYA_BENCHMARK_TRAY_INTERVAL_MS").is_some();
     let benchmark_disable_background =
-        std::env::var("FLECTAR_BENCHMARK_DISABLE_SYNC").as_deref() == Ok("1");
+        std::env::var("EVANYA_BENCHMARK_DISABLE_SYNC").as_deref() == Ok("1");
     normalize_appimage_environment();
 
     // Created before the backend: claiming the profile uses its reactor, and
@@ -1707,7 +1707,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let preferred_renderer = renderer_preferences::load(&renderer_preference_path);
     let requested_renderer = renderer_preferences::requested(preferred_renderer);
     eprintln!(
-        "FLECTAR_RENDERER {}",
+        "EVANYA_RENDERER {}",
         serde_json::json!({
             "event": "requested", "pid": std::process::id(),
             "preferred": preferred_renderer.key(), "requested": requested_renderer.key(),
@@ -1717,7 +1717,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     // Read before the backend is selected: native frame attributes are fixed
     // when the window is created. This is the same zero-wait lookup used for
     // the rest of the first frame's presentation state.
-    let startup_presentation = flectar_mail_core::startup_presentation(&platform.paths);
+    let startup_presentation = evanya_core::startup_presentation(&platform.paths);
     let window_frame = startup_presentation.window_frame.as_deref().map_or_else(
         window_chrome::WindowFrame::default,
         window_chrome::WindowFrame::parse,
@@ -1732,7 +1732,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let (use_wgpu, cpu_renderer) = (false, platform::select_renderer()?);
 
     eprintln!(
-        "FLECTAR_RENDERER {}",
+        "EVANYA_RENDERER {}",
         serde_json::json!({
             "event": "selected", "pid": std::process::id(),
             "preferred": preferred_renderer.key(), "requested": requested_renderer.key(),
@@ -1858,22 +1858,22 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         eprintln!("email images unavailable: {error}");
     }
     #[cfg(desktop)]
-    if let Some(value) = std::env::var_os("FLECTAR_PREVIEW_SIZE") {
+    if let Some(value) = std::env::var_os("EVANYA_PREVIEW_SIZE") {
         match value.to_str().map(parse_preview_window_size) {
             Some(Ok(size)) => app.window().set_size(size),
-            Some(Err(error)) => eprintln!("ignoring FLECTAR_PREVIEW_SIZE: {error}"),
-            None => eprintln!("ignoring FLECTAR_PREVIEW_SIZE: value is not valid UTF-8"),
+            Some(Err(error)) => eprintln!("ignoring EVANYA_PREVIEW_SIZE: {error}"),
+            None => eprintln!("ignoring EVANYA_PREVIEW_SIZE: value is not valid UTF-8"),
         }
     }
     app.set_compose_from_label(app.global::<I18n>().invoke_no_connected_account());
     app.set_remote_images_available(cfg!(feature = "remote-content"));
     app.set_remote_images_enabled(false);
-    app.set_google_oauth_bundled(
-        flectar_mail_core::oauth::providers::has_bundled_credentials(Provider::Gmail),
-    );
-    app.set_microsoft_oauth_bundled(
-        flectar_mail_core::oauth::providers::has_bundled_credentials(Provider::Microsoft),
-    );
+    app.set_google_oauth_bundled(evanya_core::oauth::providers::has_bundled_credentials(
+        Provider::Gmail,
+    ));
+    app.set_microsoft_oauth_bundled(evanya_core::oauth::providers::has_bundled_credentials(
+        Provider::Microsoft,
+    ));
     // A start in the tray needs its icon now; a visible start registers it
     // once full settings are applied, after the first frame.
     if start_hidden {
@@ -1922,13 +1922,13 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     let info = device.adapter_info();
                     if let Err(error) = initialized {
                         email_renderer_for_notifier.borrow_mut().teardown_gpu();
-                        eprintln!("FLECTAR_RENDERER {}", serde_json::json!({
+                        eprintln!("EVANYA_RENDERER {}", serde_json::json!({
                             "event": "email_gpu_init_fallback", "slint": "femtovg-wgpu",
                             "blitz": "vello-cpu", "error": error.clone(),
                         }));
                         email_gpu_unavailable = Some(error);
                     }
-                    eprintln!("FLECTAR_RENDERER {}", serde_json::json!({
+                    eprintln!("EVANYA_RENDERER {}", serde_json::json!({
                         "event": "gpu_ready", "wgpu_version": 30,
                         "backend": format!("{:?}", info.backend), "adapter": info.name,
                         "device_type": format!("{:?}", info.device_type),
@@ -2020,7 +2020,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     }
                     Ok(None) => {}
                     Err(gpu_error) => {
-                        eprintln!("FLECTAR_RENDERER {}", serde_json::json!({
+                        eprintln!("EVANYA_RENDERER {}", serde_json::json!({
                             "event": "email_render_fallback", "slint": "femtovg-wgpu",
                             "blitz": "vello-cpu", "error": gpu_error,
                         }));
@@ -2572,7 +2572,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         apply_contact_rows(&app, &contacts_for_new);
     });
 
-    app.on_usable_contact_email(|email| flectar_mail_core::carddav::vcard::usable_email(&email));
+    app.on_usable_contact_email(|email| evanya_core::carddav::vcard::usable_email(&email));
     let values_app = app.as_weak();
     app.on_add_contact_value(move |kind| {
         let Some(app) = values_app.upgrade() else {
@@ -3997,7 +3997,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                         apply_local_mail(
                             &app,
                             &mail_metadata_state,
-                            local_mail.map(|account_id| flectar_mail_core::models::LocalMail {
+                            local_mail.map(|account_id| evanya_core::models::LocalMail {
                                 account_id,
                                 messages: 0,
                                 bytes: 0,
@@ -6222,9 +6222,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let compose_session = Rc::new(Cell::new(0u64));
     let compose_document = Rc::new(RefCell::new(RichComposeDocument::default()));
     let compose_editor = Rc::new(RefCell::new(LazyComposeEditor::default()));
-    let compose_contacts = Rc::new(RefCell::new(
-        Vec::<flectar_mail_core::models::Address>::new(),
-    ));
+    let compose_contacts = Rc::new(RefCell::new(Vec::<evanya_core::models::Address>::new()));
     let compose_intent = Rc::new(RefCell::new(ComposeIntent::default()));
     let compose_send_action = Rc::new(Cell::new(None::<i64>));
     let (compose_send_raw_tx, compose_send_rx) = bounded_ui_channel::<ComposeSendUpdate>();
@@ -7618,7 +7616,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 smtp_port,
                 connection: MailConnectionSettings {
                     trusted_certificate_pem: app.get_trusted_certificate_pem().to_string(),
-                    invalid_certificates: flectar_mail_core::models::InvalidCertificates::parse(
+                    invalid_certificates: evanya_core::models::InvalidCertificates::parse(
                         app.get_invalid_certificates().as_str(),
                     ),
                     smtp_username: app.get_account_smtp_username().trim().to_owned(),
@@ -7700,7 +7698,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             return;
         };
         startup::refresh_oauth_availability(&app);
-        if flectar_mail_core::oauth::providers::resolve_credentials(provider).is_err() {
+        if evanya_core::oauth::providers::resolve_credentials(provider).is_err() {
             app.set_sync_status(UiMessage::plain(
                 "Add app keys in Sign-in settings to enable this provider.",
             ));
@@ -9009,7 +9007,7 @@ mod tests {
 
     #[test]
     fn selecting_a_contact_replaces_the_active_token() {
-        let contact = flectar_mail_core::models::Address {
+        let contact = evanya_core::models::Address {
             name: Some("Maya Chen".to_owned()),
             email: "maya@example.com".to_owned(),
         };

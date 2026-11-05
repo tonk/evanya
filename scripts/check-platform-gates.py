@@ -14,13 +14,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-SCANNED = ["build.rs", "src", "tests", "examples", "crates/flectar-mail-core"]
+SCANNED = ["build.rs", "src", "tests", "examples", "crates/evanya-core"]
 
 # The platform layer is where operating systems are named on purpose.
 PLATFORM_LAYER = [
     "build.rs",
     "src/platform",
-    "crates/flectar-mail-core/build.rs",
+    "crates/evanya-core/build.rs",
 ]
 
 MOBILE_OS = re.compile(r'target_os\s*=\s*"(android|ios)"|target_env\s*=\s*"ohos"')

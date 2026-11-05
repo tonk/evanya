@@ -28,6 +28,6 @@ pub(crate) fn email_font_dir() -> Option<&'static std::path::Path> {
 
 /// Build the platform context for the process launcher in src/desktop.rs.
 #[cfg(desktop)]
-pub fn launch_context() -> Result<crate::PlatformContext, flectar_mail_core::error::CoreError> {
+pub fn launch_context() -> Result<crate::PlatformContext, evanya_core::error::CoreError> {
     crate::PlatformContext::desktop()
 }

@@ -409,9 +409,9 @@ pub(super) fn subscribed_mailboxes(
 /// The labels the sidebar lists: all but the unsubscribed account labels and
 /// the labels nested in them.
 pub(super) fn subscribed_labels(
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
     unsubscribed: &HashSet<i64>,
-) -> Vec<flectar_mail_core::models::Label> {
+) -> Vec<evanya_core::models::Label> {
     if unsubscribed.is_empty() {
         return labels.to_vec();
     }
@@ -1261,7 +1261,7 @@ mod tests {
         // Inbox lost its only child, so it no longer opens.
         assert!(!shown[0].has_children);
 
-        let label = |id, name: &str, owner| flectar_mail_core::models::Label {
+        let label = |id, name: &str, owner| evanya_core::models::Label {
             id,
             name: name.into(),
             color: String::new(),
@@ -1867,7 +1867,7 @@ mod interaction_tests {
                 let mut pixels =
                     vec![slint::Rgb8Pixel::default(); (size.width * size.height) as usize];
                 renderer.render(&mut pixels, size.width as usize);
-                if let Some(directory) = std::env::var_os("FLECTAR_SIDEBAR_TEST_SCREENSHOTS") {
+                if let Some(directory) = std::env::var_os("EVANYA_SIDEBAR_TEST_SCREENSHOTS") {
                     let directory = PathBuf::from(directory);
                     std::fs::create_dir_all(&directory).unwrap();
                     let bytes: Vec<u8> = pixels.iter().flat_map(|p| [p.r, p.g, p.b]).collect();

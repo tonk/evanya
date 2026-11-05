@@ -2,7 +2,7 @@
 # Build an OHOS hap for this repo: Rust cdylib -> ArkTS shell abc -> staging -> sign.
 #
 # APP=demo (default) builds the Slint backend demo; APP=mail builds the
-# flectar-mail shell (both share the ArkTS project; the XComponent page
+# evanya shell (both share the ArkTS project; the XComponent page
 # template selects the native library).
 #
 # Signing modes:
@@ -49,15 +49,15 @@ log "version: $VERSION_NAME ($VERSION_CODE)"
 APP="${APP:-demo}"
 case "$APP" in
     demo) CRATE="slint-ohos-demo"; LIB="slint_ohos_demo" ;;
-    mail) CRATE="flectar-mail-ohos"; LIB="flectar_mail_ohos" ;;
+    mail) CRATE="evanya-ohos"; LIB="evanya_ohos" ;;
     *) die "APP must be demo or mail (got: $APP)" ;;
 esac
 # The demo must not install over the real mail app. Keep the mail bundle stable
 # for store uploads and signing profiles; BUNDLE still overrides either value.
 if [ "$APP" = demo ]; then
-    BUNDLE="${BUNDLE:-com.flectar.demo}"
+    BUNDLE="${BUNDLE:-com.evanya.demo}"
 else
-    BUNDLE="${BUNDLE:-com.flectar.mail}"
+    BUNDLE="${BUNDLE:-com.evanya.mail}"
 fi
 log "bundle: $BUNDLE"
 UNSIGNED="$BUILD_DIR/$LIB-unsigned.hap"

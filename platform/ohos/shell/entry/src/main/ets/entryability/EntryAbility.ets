@@ -3,20 +3,20 @@ import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-const TAG = 'FlectarOhos';
+const TAG = 'EvanyaOhos';
 
 export default class EntryAbility extends UIAbility {
   onBackground(): void {
     // The page releases any preview resources when this event arrives; using
     // the ability lifecycle covers background paths that onPageHide misses.
-    this.context.eventHub.emit('flectarBackground');
+    this.context.eventHub.emit('evanyaBackground');
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {
     // The ArkUI page watches this AppStorage value and reports the new
     // light/dark preference to Slint.
     AppStorage.setOrCreate(
-      'flectarColorMode',
+      'evanyaColorMode',
       newConfig.colorMode ?? ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
   }
 

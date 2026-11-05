@@ -5,7 +5,7 @@
 //! works with [`Scope`], so a selection never depends on display names and
 //! every consumer handles every kind of mailbox exhaustively.
 
-use flectar_mail_core::models::Account;
+use evanya_core::models::Account;
 use std::{fmt, str::FromStr};
 
 /// Mailboxes every account presents, in sidebar order.
@@ -285,7 +285,7 @@ impl<'de> serde::Deserialize<'de> for Scope {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use flectar_mail_core::models::{AuthKind, MailProtocol, Provider};
+    use evanya_core::models::{AuthKind, MailProtocol, Provider};
 
     fn account(id: i64) -> Account {
         Account {

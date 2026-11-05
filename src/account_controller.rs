@@ -293,7 +293,7 @@ pub(super) fn apply_connected_accounts(
                     .unwrap_or(-1),
                 calendar_connections: calendar_connection_rows(calendars),
                 provider_calendar_connected: calendars.iter().any(|connection| {
-                    connection.kind != flectar_mail_core::models::CalendarConnectionKind::Generic
+                    connection.kind != evanya_core::models::CalendarConnectionKind::Generic
                 }),
                 provider_calendar_error: calendar_errors
                     .get(&account.id)
@@ -402,7 +402,7 @@ pub(super) fn refresh_connected_accounts(app: &AppWindow, state: &Rc<RefCell<Inb
 pub(super) fn apply_local_mail(
     app: &AppWindow,
     state: &Rc<RefCell<InboxState>>,
-    local_mail: Option<flectar_mail_core::models::LocalMail>,
+    local_mail: Option<evanya_core::models::LocalMail>,
 ) {
     state.borrow_mut().local_mail = local_mail;
     refresh_connected_accounts(app, state);
@@ -423,7 +423,7 @@ pub(super) fn refresh_local_mail(
         state.local_mail_reloads += 1;
         (core, state.local_mail_reloads)
     };
-    let load: documents::DocumentFuture<Option<flectar_mail_core::models::LocalMail>> =
+    let load: documents::DocumentFuture<Option<evanya_core::models::LocalMail>> =
         Box::pin(async move { core.load_local_mail().await });
     let app = app.as_weak();
     let state = Rc::clone(state);
@@ -787,7 +787,7 @@ mod mail_transport_suggestion_tests {
             display_name: None,
             avatar_url: None,
             provider: Provider::Generic,
-            auth_kind: flectar_mail_core::models::AuthKind::Password,
+            auth_kind: evanya_core::models::AuthKind::Password,
             mail_protocol: MailProtocol::Imap,
             username: email.into(),
             jmap_url: String::new(),
@@ -796,7 +796,7 @@ mod mail_transport_suggestion_tests {
             incoming_port: 993,
             smtp_host: smtp_host.into(),
             smtp_port: 465,
-            settings: flectar_mail_core::models::AccountSettings::new(MailConnectionSettings::new(
+            settings: evanya_core::models::AccountSettings::new(MailConnectionSettings::new(
                 ConnectionSecurity::Tls,
                 ConnectionSecurity::Tls,
             )),

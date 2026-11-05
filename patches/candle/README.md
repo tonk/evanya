@@ -23,7 +23,7 @@ Run `python3 scripts/verify-candle.py` to reconstruct and compare every file.
 Run the archive regression tests with:
 
 ```sh
-cargo test -p flectar-mail-core --locked --features local-embeddings --test embedding_archives
+cargo test -p evanya-core --locked --features local-embeddings --test embedding_archives
 ```
 
 Android does not enable local embeddings and has no Candle or ZIP dependency.

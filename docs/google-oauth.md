@@ -147,8 +147,8 @@ Evanya. Keys saved in the app and keys built into the app take
 precedence over these.
 
 ```sh
-export FLECTAR_MAIL_GOOGLE_CLIENT_ID="1234567890-abc.apps.googleusercontent.com"
-export FLECTAR_MAIL_GOOGLE_CLIENT_SECRET="GOCSPX-..."
+export EVANYA_GOOGLE_CLIENT_ID="1234567890-abc.apps.googleusercontent.com"
+export EVANYA_GOOGLE_CLIENT_SECRET="GOCSPX-..."
 evanya
 ```
 
@@ -160,8 +160,8 @@ in the environment of the build, or put them in a `.env` file in the root
 of the repository:
 
 ```sh
-FLECTAR_GOOGLE_DESKTOP_CLIENT_ID="1234567890-abc.apps.googleusercontent.com"
-FLECTAR_GOOGLE_DESKTOP_CLIENT_SECRET="GOCSPX-..."
+EVANYA_GOOGLE_DESKTOP_CLIENT_ID="1234567890-abc.apps.googleusercontent.com"
+EVANYA_GOOGLE_DESKTOP_CLIENT_SECRET="GOCSPX-..."
 ```
 
 Then build as usual, for example with `make release`. Anyone who has the

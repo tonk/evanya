@@ -26,7 +26,7 @@ thread_local! {
 define_class!(
     #[unsafe(super(NSObject))]
     #[thread_kind = MainThreadOnly]
-    #[name = "FlectarMailReopenHandler"]
+    #[name = "EvanyaReopenHandler"]
     struct ReopenHandler;
 
     impl ReopenHandler {

@@ -1,6 +1,6 @@
 Google Sans Flex
 
-Flectar Mail embeds the unmodified Google Sans Flex variable font from:
+Evanya embeds the unmodified Google Sans Flex variable font from:
 https://fonts.google.com/specimen/Google+Sans+Flex
 
 SHA-256:

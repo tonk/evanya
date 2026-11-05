@@ -1,6 +1,6 @@
 use crate::favicon::domain_from_address;
 use crate::mail_scope::{LabelKind, Scope, StandardMailbox};
-use flectar_mail_core::{
+use evanya_core::{
     Core,
     config::Paths,
     events::CoreEvent,
@@ -70,7 +70,7 @@ pub struct MailMessage {
     pub starred: bool,
     pub has_attachments: bool,
     pub message_count: i64,
-    pub attachments: Vec<flectar_mail_core::models::AttachmentMeta>,
+    pub attachments: Vec<evanya_core::models::AttachmentMeta>,
     pub has_replied: bool,
     pub is_outgoing: bool,
     pub labels: Vec<i64>,
@@ -88,7 +88,7 @@ pub struct MailMessage {
     pub account_uses_labels: bool,
     /// The conversation's first file and how many files it holds, for the
     /// list; `attachments` holds the open message's files.
-    pub first_attachment: Option<flectar_mail_core::models::AttachmentMeta>,
+    pub first_attachment: Option<evanya_core::models::AttachmentMeta>,
     pub attachment_total: i64,
 }
 
@@ -180,7 +180,7 @@ pub struct ComposeSource {
     pub message_id: i64,
     pub account_id: i64,
     pub account_email: String,
-    pub sender_identities: Vec<flectar_mail_core::models::SenderIdentity>,
+    pub sender_identities: Vec<evanya_core::models::SenderIdentity>,
     pub default_sender_email: String,
     pub from: Address,
     pub to: Vec<Address>,
@@ -384,7 +384,7 @@ pub fn display_preview(preview: &str) -> String {
 
 /// Thin native host adapter over the existing offline-first mail core.
 /// Authentication, synchronization, persistence, folder discovery, draft
-/// saving, and sending remain owned by flectar-mail-core rather than being
+/// saving, and sending remain owned by evanya-core rather than being
 /// copied
 /// into the Slint application.
 #[derive(Clone)]
@@ -471,9 +471,7 @@ impl CoreMailSource {
             .clone()
     }
 
-    pub async fn load_local_mail(
-        &self,
-    ) -> Result<Option<flectar_mail_core::models::LocalMail>, String> {
+    pub async fn load_local_mail(&self) -> Result<Option<evanya_core::models::LocalMail>, String> {
         self.core
             .local_mail()
             .await
@@ -507,8 +505,8 @@ impl CoreMailSource {
     }
     pub async fn start(
         paths: Paths,
-        credentials: flectar_mail_core::accounts::credentials::CredentialStoreHandle,
-        oauth_redirects: flectar_mail_core::oauth::redirect::OAuthRedirectBrokerHandle,
+        credentials: evanya_core::accounts::credentials::CredentialStoreHandle,
+        oauth_redirects: evanya_core::oauth::redirect::OAuthRedirectBrokerHandle,
     ) -> Result<Self, String> {
         let core = Core::start_mail_ui_with_platform(paths, credentials, oauth_redirects)
             .await
@@ -853,7 +851,7 @@ impl CoreMailSource {
                 Some(MailCursor::Message(cursor)) => Some(cursor),
                 Some(_) => return Err("this cursor belongs to another list".into()),
             };
-            let page = flectar_mail_core::MessagePageRequest {
+            let page = evanya_core::MessagePageRequest {
                 cursor,
                 limit,
                 sort: mail_sort(),
@@ -1048,7 +1046,7 @@ impl CoreMailSource {
     async fn reply_account(
         &self,
         accounts: &[Account],
-        message: &flectar_mail_core::models::MessageDetail,
+        message: &evanya_core::models::MessageDetail,
     ) -> Result<Account, String> {
         for account in accounts {
             let identities = self
@@ -1178,8 +1176,8 @@ impl CoreMailSource {
 
     pub async fn import_accounts(
         &self,
-        drafts: Vec<flectar_mail_core::migration::AccountDraft>,
-    ) -> Result<flectar_mail_core::migration::AccountImportReport, String> {
+        drafts: Vec<evanya_core::migration::AccountDraft>,
+    ) -> Result<evanya_core::migration::AccountImportReport, String> {
         self.core
             .import_accounts(drafts)
             .await
@@ -1188,10 +1186,10 @@ impl CoreMailSource {
 
     pub async fn import_mail(
         &self,
-        request: flectar_mail_core::mail_import::MailImportRequest,
-        progress: tokio::sync::watch::Sender<flectar_mail_core::mail_import::MailImportProgress>,
+        request: evanya_core::mail_import::MailImportRequest,
+        progress: tokio::sync::watch::Sender<evanya_core::mail_import::MailImportProgress>,
         stop: Arc<std::sync::atomic::AtomicBool>,
-    ) -> Result<flectar_mail_core::mail_import::MailImportReport, String> {
+    ) -> Result<evanya_core::mail_import::MailImportReport, String> {
         self.core
             .import_mail(request, progress, stop)
             .await
@@ -1215,7 +1213,7 @@ impl CoreMailSource {
     pub async fn create_database_snapshot(
         &self,
         destination: std::path::PathBuf,
-    ) -> Result<flectar_mail_core::DatabaseSnapshotManifest, String> {
+    ) -> Result<evanya_core::DatabaseSnapshotManifest, String> {
         self.core
             .create_database_snapshot(destination)
             .await
@@ -1226,7 +1224,7 @@ impl CoreMailSource {
         &self,
         account_id: i64,
         destination: std::path::PathBuf,
-    ) -> Result<flectar_mail_core::models::MailExport, String> {
+    ) -> Result<evanya_core::models::MailExport, String> {
         self.core
             .export_account_mail(account_id, destination)
             .await
@@ -1285,7 +1283,7 @@ impl CoreMailSource {
         account_id: i64,
         value: &str,
     ) -> Result<(), String> {
-        let keep = flectar_mail_core::models::KeepOnServer::from_storage(value)
+        let keep = evanya_core::models::KeepOnServer::from_storage(value)
             .ok_or_else(|| format!("unsupported choice for mail on the server: {value}"))?;
         self.core
             .set_account_keep_on_server(account_id, keep)
@@ -1298,7 +1296,7 @@ impl CoreMailSource {
         account_id: i64,
         value: &str,
     ) -> Result<(), String> {
-        let policy = flectar_mail_core::models::SentCopyPolicy::from_storage(value)
+        let policy = evanya_core::models::SentCopyPolicy::from_storage(value)
             .ok_or_else(|| format!("unsupported Sent copy policy: {value}"))?;
         self.core
             .set_account_sent_copy_policy(account_id, policy)
@@ -1382,7 +1380,7 @@ impl CoreMailSource {
     }
 
     pub async fn set_message_appearance(&self, preference: &str) -> Result<(), String> {
-        let preference = flectar_mail_core::models::MessageAppearance::parse(preference)
+        let preference = evanya_core::models::MessageAppearance::parse(preference)
             .ok_or("Unknown message appearance")?;
         let mut settings = self.load_settings().await?;
         settings.message_appearance = preference;
@@ -1410,10 +1408,7 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
-    pub async fn set_app_icon(
-        &self,
-        icon: flectar_mail_core::models::AppIcon,
-    ) -> Result<(), String> {
+    pub async fn set_app_icon(&self, icon: evanya_core::models::AppIcon) -> Result<(), String> {
         let mut settings = self.load_settings().await?;
         settings.app_icon = icon;
         self.core
@@ -1467,7 +1462,7 @@ impl CoreMailSource {
 
     pub async fn set_time_format(
         &self,
-        format: flectar_mail_core::models::TimeFormat,
+        format: evanya_core::models::TimeFormat,
     ) -> Result<(), String> {
         self.core
             .set_time_format(format)
@@ -1487,7 +1482,7 @@ impl CoreMailSource {
     /// Load the settings, change them, and save them.
     pub async fn update_settings(
         &self,
-        edit: impl FnOnce(&mut flectar_mail_core::models::Settings),
+        edit: impl FnOnce(&mut evanya_core::models::Settings),
     ) -> Result<(), String> {
         let mut settings = self.load_settings().await?;
         edit(&mut settings);
@@ -1623,7 +1618,7 @@ impl CoreMailSource {
         message_ids: Vec<i64>,
         folder_id: i64,
         move_messages: bool,
-    ) -> Result<flectar_mail_core::mail_import::MailCopyReport, String> {
+    ) -> Result<evanya_core::mail_import::MailCopyReport, String> {
         self.core
             .copy_messages_to_folder(thread_ids, message_ids, folder_id, move_messages)
             .await
@@ -1848,8 +1843,8 @@ impl CoreMailSource {
 
     pub async fn save_contact(
         &self,
-        contact: flectar_mail_core::models::ContactRecord,
-    ) -> Result<flectar_mail_core::models::ContactRecord, String> {
+        contact: evanya_core::models::ContactRecord,
+    ) -> Result<evanya_core::models::ContactRecord, String> {
         self.core
             .save_contact(contact)
             .await
@@ -2087,7 +2082,7 @@ impl CoreMailSource {
 
     pub async fn update_event(
         &self,
-        args: flectar_mail_core::models::UpdateEventArgs,
+        args: evanya_core::models::UpdateEventArgs,
     ) -> Result<CalendarEvent, String> {
         self.core
             .update_event(args)
@@ -2112,7 +2107,7 @@ impl CoreMailSource {
     pub async fn load_calendars(
         &self,
         account_id: Option<i64>,
-    ) -> Result<Vec<flectar_mail_core::models::Calendar>, String> {
+    ) -> Result<Vec<evanya_core::models::Calendar>, String> {
         self.core
             .list_calendars(account_id)
             .await
@@ -2232,7 +2227,7 @@ impl CoreMailSource {
         &self,
         google: Option<(String, String)>,
         microsoft: Option<String>,
-    ) -> Result<flectar_mail_core::models::Settings, String> {
+    ) -> Result<evanya_core::models::Settings, String> {
         self.core
             .set_oauth_apps(google, microsoft)
             .await
@@ -3317,7 +3312,7 @@ fn markdown_options() -> Options {
 fn markdown_to_html(markdown: &str) -> String {
     let mut fragment = String::new();
     html::push_html(&mut fragment, Parser::new_ext(markdown, markdown_options()));
-    let fragment = flectar_mail_core::mime::sanitize_html(&fragment);
+    let fragment = evanya_core::mime::sanitize_html(&fragment);
     format!(
         "<html><body style=\"margin:0;padding:0;font-family:Arial,sans-serif;font-size:14px;line-height:1.55;color:#202124\">{fragment}</body></html>"
     )
@@ -3400,7 +3395,7 @@ pub fn fixtures() -> Vec<EmailFixture> {
         // Renderer tests need an HTML document; screenshots render the shared
         // demo-email.html instead. Build test HTML from the same rows.
         email.html = markdown_to_html(&format!(
-            "# {}\n\n{}\n\n[Open message](https://{}) · [Flectar Mail](https://flectar.com)",
+            "# {}\n\n{}\n\n[Open message](https://{}) · [Evanya](https://flectar.com)",
             email.subject,
             email.preview,
             domain_from_address(&email.address).unwrap_or_default()
@@ -3418,7 +3413,7 @@ mod tests {
         with_local_mail, without_accounts,
     };
     use crate::mail_scope::{LabelKind, Scope, StandardMailbox};
-    use flectar_mail_core::models::{
+    use evanya_core::models::{
         Account, ActionTarget, Address, AuthKind, FolderInfo, Label, MailProtocol, MessageSummary,
         Provider, ThreadSummary, View,
     };
@@ -3677,7 +3672,7 @@ mod tests {
             snoozed_until: None,
             labels: Vec::new(),
             verification_code: Some("482913".into()),
-            first_attachment: Some(flectar_mail_core::models::AttachmentMeta {
+            first_attachment: Some(evanya_core::models::AttachmentMeta {
                 id: 7,
                 filename: Some("Launch plan.pdf".into()),
                 mime_type: Some("application/pdf".into()),
@@ -4202,7 +4197,7 @@ mod tests {
 #[cfg(test)]
 mod search_pagination_adapter_tests {
     use super::*;
-    use flectar_mail_core::accounts::credentials::DevelopmentFileCredentialStore;
+    use evanya_core::accounts::credentials::DevelopmentFileCredentialStore;
 
     #[tokio::test]
     async fn search_and_inbox_pages_keep_their_own_cursors() {
@@ -4212,7 +4207,7 @@ mod search_pagination_adapter_tests {
             Arc::new(DevelopmentFileCredentialStore::new(
                 dir.path().join("credentials.json"),
             )),
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
         )
         .await
         .unwrap();
@@ -4240,7 +4235,7 @@ mod search_pagination_adapter_tests {
                          VALUES (?1,1,?1,1,?1,'Needle paging','sender@example.test',?1,1,'cached')",
                         [id],
                     )?;
-                    flectar_mail_core::db::repo::search::index_message(conn, id)?;
+                    evanya_core::db::repo::search::index_message(conn, id)?;
                 }
                 Ok(())
             })
@@ -4279,7 +4274,7 @@ mod search_pagination_adapter_tests {
             Arc::new(DevelopmentFileCredentialStore::new(
                 dir.path().join("credentials.json"),
             )),
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
         )
         .await
         .unwrap();
@@ -4311,7 +4306,7 @@ mod search_pagination_adapter_tests {
                          VALUES (?2,?1,?2,?1,?2,'Needle','sender@example.test',?2,0,'cached')",
                         [account, id],
                     )?;
-                    flectar_mail_core::db::repo::search::index_message(conn, id)?;
+                    evanya_core::db::repo::search::index_message(conn, id)?;
                 }
                 Ok(())
             })
@@ -4423,10 +4418,10 @@ mod search_pagination_adapter_tests {
 #[cfg(test)]
 mod account_removal_snapshot_tests {
     use super::*;
-    use flectar_mail_core::accounts::credentials::{
+    use evanya_core::accounts::credentials::{
         CredentialStore, DevelopmentFileCredentialStore, Slot,
     };
-    use flectar_mail_core::error::{CoreError, Result as CoreResult};
+    use evanya_core::error::{CoreError, Result as CoreResult};
     use std::sync::atomic::{AtomicBool, Ordering};
 
     struct FailingCredentials {
@@ -4469,7 +4464,7 @@ mod account_removal_snapshot_tests {
         let source = CoreMailSource::start(
             Paths::for_tests(dir.path()),
             store.clone(),
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
         )
         .await
         .unwrap();
@@ -4515,7 +4510,7 @@ mod account_removal_snapshot_tests {
             Arc::new(DevelopmentFileCredentialStore::new(
                 dir.path().join("credentials.json"),
             )),
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
         )
         .await
         .unwrap();
@@ -4549,8 +4544,8 @@ pub(crate) fn normalized_list_date_format(format: &str) -> &'static str {
 /// pages continue one another. Searches keep their own order.
 static MAIL_SORT: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(1);
 
-pub(crate) fn mail_sort() -> flectar_mail_core::models::MailSort {
-    use flectar_mail_core::models::{MailSort, MailSortKey};
+pub(crate) fn mail_sort() -> evanya_core::models::MailSort {
+    use evanya_core::models::{MailSort, MailSortKey};
     let value = MAIL_SORT.load(std::sync::atomic::Ordering::Relaxed);
     MailSort {
         key: match value >> 1 {
@@ -4562,8 +4557,8 @@ pub(crate) fn mail_sort() -> flectar_mail_core::models::MailSort {
     }
 }
 
-pub(crate) fn set_mail_sort(sort: flectar_mail_core::models::MailSort) {
-    use flectar_mail_core::models::MailSortKey;
+pub(crate) fn set_mail_sort(sort: evanya_core::models::MailSort) {
+    use evanya_core::models::MailSortKey;
     let key = match sort.key {
         MailSortKey::Date => 0,
         MailSortKey::Sender => 1,
@@ -4576,8 +4571,8 @@ pub(crate) fn set_mail_sort(sort: flectar_mail_core::models::MailSort) {
 }
 
 /// The stored form of a sort, such as "date-desc" or "sender-asc".
-pub(crate) fn parse_mail_sort(value: &str) -> flectar_mail_core::models::MailSort {
-    use flectar_mail_core::models::{MailSort, MailSortKey};
+pub(crate) fn parse_mail_sort(value: &str) -> evanya_core::models::MailSort {
+    use evanya_core::models::{MailSort, MailSortKey};
     let (key, direction) = value.split_once('-').unwrap_or((value, "desc"));
     let key = match key {
         "sender" => MailSortKey::Sender,
@@ -4595,8 +4590,8 @@ pub(crate) fn parse_mail_sort(value: &str) -> flectar_mail_core::models::MailSor
     }
 }
 
-pub(crate) fn mail_sort_key(sort: flectar_mail_core::models::MailSort) -> String {
-    use flectar_mail_core::models::MailSortKey;
+pub(crate) fn mail_sort_key(sort: evanya_core::models::MailSort) -> String {
+    use evanya_core::models::MailSortKey;
     let key = match sort.key {
         MailSortKey::Date => "date",
         MailSortKey::Sender => "sender",

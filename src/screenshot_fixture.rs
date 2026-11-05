@@ -317,8 +317,8 @@ impl FixtureValue for SidebarRowKind {
 }
 
 fn apply(app: &AppWindow) {
-    let path = std::env::var_os("FLECTAR_SCREENSHOT_DATA")
-        .expect("run scripts/generate-screenshots.sh to prepare FLECTAR_SCREENSHOT_DATA");
+    let path = std::env::var_os("EVANYA_SCREENSHOT_DATA")
+        .expect("run scripts/generate-screenshots.sh to prepare EVANYA_SCREENSHOT_DATA");
     let data: Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
     app.set_startup_ready(FixtureValue::read(&data["startup_ready"]));
     app.set_startup_hydrated(FixtureValue::read(&data["startup_hydrated"]));

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Measure Flectar Mail startup milestones and idle Linux process resources.
+"""Measure Evanya startup milestones and idle Linux process resources.
 
 The application emits structured startup events only while this harness sets
-FLECTAR_STARTUP_METRICS. Each run uses an isolated copy of the supplied local
+EVANYA_STARTUP_METRICS. Each run uses an isolated copy of the supplied local
 profile, disables provider sync, waits for a real rendered core-ready frame,
 then samples /proc after a configurable idle interval.
 """
@@ -27,8 +27,8 @@ from pathlib import Path
 from typing import Any
 
 
-METRIC_PREFIX = "FLECTAR_STARTUP_METRIC "
-RENDERER_PREFIX = "FLECTAR_RENDERER "
+METRIC_PREFIX = "EVANYA_STARTUP_METRIC "
+RENDERER_PREFIX = "EVANYA_RENDERER "
 RESOURCE_KEYS = (
     "Rss",
     "Pss",
@@ -254,22 +254,22 @@ def run_once(
     round_number: int,
     include_mappings: bool = False,
 ) -> dict[str, Any]:
-    with tempfile.TemporaryDirectory(prefix="flectar-startup-benchmark-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="evanya-startup-benchmark-") as temporary:
         root = Path(temporary)
         data_home = root / "data-home"
         cache_home = root / "cache-home"
-        copy_profile(profile_data, data_home / "flectar-mail")
-        copy_profile(profile_cache, cache_home / "flectar-mail")
+        copy_profile(profile_data, data_home / "evanya")
+        copy_profile(profile_cache, cache_home / "evanya")
 
         environment = os.environ.copy()
         environment.update(
             {
                 "XDG_DATA_HOME": str(data_home),
                 "XDG_CACHE_HOME": str(cache_home),
-                "FLECTAR_STARTUP_METRICS": "1",
-                "FLECTAR_RENDERER": "cpu",
-                "FLECTAR_BENCHMARK_DISABLE_SYNC": "1",
-                "FLECTAR_BENCHMARK_EXIT_AFTER_MS": str(
+                "EVANYA_STARTUP_METRICS": "1",
+                "EVANYA_RENDERER": "cpu",
+                "EVANYA_BENCHMARK_DISABLE_SYNC": "1",
+                "EVANYA_BENCHMARK_EXIT_AFTER_MS": str(
                     int((settle_seconds + idle_seconds) * 1000) + 1500
                 ),
             }
@@ -396,12 +396,12 @@ def main() -> None:
     parser.add_argument(
         "--profile-data-dir",
         type=Path,
-        help="Optional flectar-mail data directory copied into every isolated run.",
+        help="Optional evanya data directory copied into every isolated run.",
     )
     parser.add_argument(
         "--profile-cache-dir",
         type=Path,
-        help="Optional flectar-mail cache directory containing the warm projection.",
+        help="Optional evanya cache directory containing the warm projection.",
     )
     parser.add_argument("--rounds", type=int, default=5)
     parser.add_argument(

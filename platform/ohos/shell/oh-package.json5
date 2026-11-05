@@ -1,8 +1,8 @@
 {
   modelVersion: '6.0.2',
-  name: 'flectar_mail',
+  name: 'evanya',
   version: '1.0.0',
-  description: 'Flectar Mail for OpenHarmony',
+  description: 'Evanya for OpenHarmony',
   main: '',
   author: '',
   license: 'AGPL-3.0-only',

@@ -52,11 +52,11 @@ export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$toolchain/aarch64-linux-andro
 
 # Local development may generate its own key; these APKs are never published.
 data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
-keystore_dir="$data_home/flectar-mail/android"
-keystore="${FLECTAR_ANDROID_TEST_KEYSTORE:-$keystore_dir/test-signing.keystore}"
+keystore_dir="$data_home/evanya/android"
+keystore="${EVANYA_ANDROID_TEST_KEYSTORE:-$keystore_dir/test-signing.keystore}"
 mkdir -p "$keystore_dir"
 
-if [[ -n "${FLECTAR_ANDROID_TEST_KEYSTORE:-}" && ! -f "$keystore" ]]; then
+if [[ -n "${EVANYA_ANDROID_TEST_KEYSTORE:-}" && ! -f "$keystore" ]]; then
   printf 'Configured Android test keystore does not exist: %s\n' "$keystore" >&2
   exit 1
 fi
@@ -69,7 +69,7 @@ if [[ ! -f "$keystore" ]]; then
     -storepass android \
     -alias androiddebugkey \
     -keypass android \
-    -dname 'CN=Flectar Mail Test,O=Android,C=US' \
+    -dname 'CN=Evanya Test,O=Android,C=US' \
     -keyalg RSA \
     -keysize 2048 \
     -validity 10000
@@ -85,17 +85,17 @@ cargo build \
   --release \
   --lib
 
-native_lib="$target_dir/aarch64-linux-android/release/libflectar_mail_android.so"
+native_lib="$target_dir/aarch64-linux-android/release/libevanya_android.so"
 jni_dir="$target_dir/android/gradle-jni/arm64-v8a"
 mkdir -p "$jni_dir"
-cp "$native_lib" "$jni_dir/libflectar_mail_android.so"
+cp "$native_lib" "$jni_dir/libevanya_android.so"
 python3 "$project_dir/scripts/stage-pdfium.py" android-arm64 "$jni_dir" \
   --cache "$target_dir/pdfium-downloads"
 
-export FLECTAR_ANDROID_KEYSTORE="$keystore"
-export FLECTAR_ANDROID_KEYSTORE_PASSWORD=android
-export FLECTAR_ANDROID_KEY_ALIAS=androiddebugkey
-export FLECTAR_ANDROID_KEY_PASSWORD=android
+export EVANYA_ANDROID_KEYSTORE="$keystore"
+export EVANYA_ANDROID_KEYSTORE_PASSWORD=android
+export EVANYA_ANDROID_KEY_ALIAS=androiddebugkey
+export EVANYA_ANDROID_KEY_PASSWORD=android
 "$gradle_command" \
   --no-daemon \
   --project-cache-dir "$target_dir/android/gradle-cache" \
@@ -105,5 +105,5 @@ export FLECTAR_ANDROID_KEY_PASSWORD=android
 gradle_apk="$target_dir/android/gradle/app/outputs/apk/release/app-release.apk"
 artifact_dir="$target_dir/android/release/apk"
 mkdir -p "$artifact_dir"
-cp "$gradle_apk" "$artifact_dir/flectar-mail.apk"
-printf 'Built Google-AuthorizationClient Android package %s\n' "$artifact_dir/flectar-mail.apk"
+cp "$gradle_apk" "$artifact_dir/evanya.apk"
+printf 'Built Google-AuthorizationClient Android package %s\n' "$artifact_dir/evanya.apk"

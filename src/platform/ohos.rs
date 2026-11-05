@@ -2,7 +2,7 @@
 //! XComponent Slint backend live in that host tree; this module only holds
 //! what the shared application needs at runtime.
 
-use flectar_mail_core::models::AppIcon;
+use evanya_core::models::AppIcon;
 use std::{path::PathBuf, sync::OnceLock};
 
 static PDFIUM_LIBRARY: OnceLock<PathBuf> = OnceLock::new();

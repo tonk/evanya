@@ -2284,7 +2284,7 @@ mod tests {
             display_name: None,
             avatar_url: None,
             provider: Provider::Generic,
-            auth_kind: flectar_mail_core::models::AuthKind::Password,
+            auth_kind: evanya_core::models::AuthKind::Password,
             mail_protocol: MailProtocol::Imap,
             sync_state: "idle".into(),
             sync_error: None,

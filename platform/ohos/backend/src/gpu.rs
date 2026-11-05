@@ -1,7 +1,7 @@
 //! Experimental GPU renderer (femtovg on wgpu via EGL) for the XComponent
 //! surface.
 //!
-//! Attempted by default; `FLECTAR_OHOS_SOFTWARE=1` opts out on local runs (the
+//! Attempted by default; `EVANYA_OHOS_SOFTWARE=1` opts out on local runs (the
 //! device build has no environment), and a failed surface attach falls back to
 //! the software renderer. Construction is "suspended" (no surface, no GL
 //! context): the renderer attaches to the `OHNativeWindow` when the surface
@@ -66,7 +66,7 @@ impl HasDisplayHandle for SurfaceHandle {
 /// falls back to the software renderer automatically when the surface cannot
 /// be attached.
 pub fn requested() -> bool {
-    if std::env::var_os("FLECTAR_OHOS_SOFTWARE").is_some_and(|value| !value.is_empty()) {
+    if std::env::var_os("EVANYA_OHOS_SOFTWARE").is_some_and(|value| !value.is_empty()) {
         return false;
     }
     true

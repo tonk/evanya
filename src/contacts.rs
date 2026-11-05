@@ -6,9 +6,7 @@ use crate::{
     paged_visible_count,
 };
 use chrono::{Local, TimeZone};
-use flectar_mail_core::models::{
-    ContactRecord, ContactRecordCursor, ContactRecordPage, ContactSync,
-};
+use evanya_core::models::{ContactRecord, ContactRecordCursor, ContactRecordPage, ContactSync};
 use slint::{ComponentHandle, Model, VecModel};
 use std::{
     cell::RefCell,
@@ -352,11 +350,11 @@ pub(crate) fn clear_contact_form(app: &AppWindow) {
 
 pub(crate) fn contact_values(
     model: slint::ModelRc<crate::ContactValueRow>,
-) -> Vec<flectar_mail_core::models::ContactValue> {
+) -> Vec<evanya_core::models::ContactValue> {
     model
         .iter()
         .filter(|r| !r.value.trim().is_empty())
-        .map(|r| flectar_mail_core::models::ContactValue {
+        .map(|r| evanya_core::models::ContactValue {
             key: r.key.to_string(),
             value: r.value.trim().to_owned(),
             label: r.label.trim().to_owned(),
@@ -370,11 +368,11 @@ pub(crate) fn contact_values(
 }
 
 fn editable_values(
-    values: &[flectar_mail_core::models::ContactValue],
+    values: &[evanya_core::models::ContactValue],
     primary: &str,
-) -> Vec<flectar_mail_core::models::ContactValue> {
+) -> Vec<evanya_core::models::ContactValue> {
     if values.is_empty() && !primary.is_empty() {
-        vec![flectar_mail_core::models::ContactValue {
+        vec![evanya_core::models::ContactValue {
             value: primary.into(),
             preference: 100,
             ..Default::default()
@@ -398,7 +396,7 @@ fn contact_sync_state(sync: &ContactSync) -> (crate::ContactSyncState, &str) {
 }
 
 fn apply_contact_form(app: &AppWindow, contact: &ContactRecord) {
-    let rows = |values: &[flectar_mail_core::models::ContactValue], primary: &str| {
+    let rows = |values: &[evanya_core::models::ContactValue], primary: &str| {
         let mut rows = values
             .iter()
             .map(|v| crate::ContactValueRow {

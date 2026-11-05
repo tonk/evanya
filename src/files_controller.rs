@@ -4,7 +4,7 @@ use crate::date_format::{self, DateFormats, DateStyle};
 use crate::document_preview::{Preview, preview};
 use crate::documents::safe_name;
 use crate::{AppWindow, FileRow, FilesUi, InboxState, OperationRow};
-use flectar_mail_core::files::{
+use evanya_core::files::{
     self, FileClient,
     service::{
         Entry, FilesService as Directory, Output as ServiceOutput, Preview as ServicePreview,
@@ -83,9 +83,7 @@ pub(crate) fn register(
     let weak = app.as_weak();
     let inbox = Rc::clone(state);
     let handle = runtime.handle().clone();
-    let worker = Rc::new(RefCell::new(
-        None::<(Arc<flectar_mail_core::Core>, SyncWorker)>,
-    ));
+    let worker = Rc::new(RefCell::new(None::<(Arc<evanya_core::Core>, SyncWorker)>));
     let preview_pending = Arc::new(std::sync::atomic::AtomicBool::new(false));
     let pending = Rc::new(RefCell::new(None::<tokio::task::AbortHandle>));
     let generation = Arc::new(std::sync::atomic::AtomicU64::new(0));

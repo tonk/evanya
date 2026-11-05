@@ -23,7 +23,7 @@ operating-system name. OpenHarmony is one of the `mobile` platforms:
 - This tree is the only place that may name OpenHarmony: the host builds a
   [`PlatformContext`](../README.md) (app-private paths, a document provider, a
   credential store and an OAuth redirect broker) and calls
-  `flectar_mail::run`.
+  `evanya::run`.
 
 `scripts/check-platform-gates.py` (run in `quality.yml`) rejects operating
 system names outside `src/platform/` and the build scripts, so new call sites
@@ -34,7 +34,7 @@ must use the aliases.
 | Path | What it is |
 |------|------------|
 | `backend/` | `slint-ohos-backend`: Slint `Platform`/`WindowAdapter` for a single XComponent window. femtovg/wgpu renderer (EGL/GLES) with the software renderer as fallback, input translation, IME hooks, clipboard, system fonts. |
-| `mail/` | `flectar-mail-ohos` cdylib: NAPI module that builds the `PlatformContext` (app-private paths, `DocumentProvider` over the ArkTS pickers, Asset Store credential store, loopback OAuth broker), starts the application, and exposes the ArkTS bridge (file pickers, clipboard, IME text, external links). |
+| `mail/` | `evanya-ohos` cdylib: NAPI module that builds the `PlatformContext` (app-private paths, `DocumentProvider` over the ArkTS pickers, Asset Store credential store, loopback OAuth broker), starts the application, and exposes the ArkTS bridge (file pickers, clipboard, IME text, external links). |
 | `demo/` | `slint-ohos-demo`: minimal cdylib used as a smoke target for backend changes. |
 | `shell/` | DevEco shell project (ArkTS). `page-templates/Index.mail.ets` is the real app page and `page-templates/Index.demo.ets` the demo page; `build-hap.sh` copies the selected template to `shell/entry/src/main/ets/pages/Index.ets`. |
 | `scripts/env.sh` | Environment: SDK paths, `hdc`, `hap-sign-tool`, `LD_LIBRARY_PATH` for lld. Source it before any `cargo` command in this workspace. |
@@ -71,12 +71,12 @@ environment variables understood by `scripts/env.sh`.
 . platform/ohos/scripts/env.sh
 APP=mail PROFILE=release CARGO_BUILD_JOBS=4 sh platform/ohos/scripts/build-hap.sh
 
-hdc file send platform/ohos/build/flectar_mail_ohos-signed.hap /data/local/tmp/flectar.hap
-hdc shell "bm install -r -d -p /data/local/tmp/flectar.hap"
-hdc shell "aa start -a EntryAbility -b com.flectar.mail"
+hdc file send platform/ohos/build/evanya_ohos-signed.hap /data/local/tmp/evanya.hap
+hdc shell "bm install -r -d -p /data/local/tmp/evanya.hap"
+hdc shell "aa start -a EntryAbility -b com.evanya.mail"
 ```
 
-The bundle name defaults to `com.flectar.mail`. The hap version follows the
+The bundle name defaults to `com.evanya.mail`. The hap version follows the
 workspace `Cargo.toml`: `versionName` is the crate version and `versionCode`
 follows the Android sequence from `scripts/android-version-code.py` (alpha <
 beta < rc < release < the next patch), so store uploads stay monotonic
@@ -87,8 +87,8 @@ Release builds are signed with the AGC material through `hap-sign-tool`:
 
 ```sh
 RELEASE_SIGN=1 \
-RELEASE_P12=release.p12 RELEASE_CERT=com.flectar.mail.cer \
-RELEASE_PROFILE=FlectarMailProfileRelease.p7b \
+RELEASE_P12=release.p12 RELEASE_CERT=com.evanya.mail.cer \
+RELEASE_PROFILE=EvanyaProfileRelease.p7b \
 RELEASE_KEY_ALIAS=releasekey RELEASE_KEY_PWD=... RELEASE_STORE_PWD=... \
 APP=mail PROFILE=release sh platform/ohos/scripts/build-hap.sh
 ```
@@ -112,7 +112,7 @@ The platform is tier 3: it is built by a manually dispatched workflow
 and hvigor are not anonymously downloadable, so the build job targets a
 self-hosted runner with the prerequisites above. Dispatch runs build unsigned
 (`SKIP_SIGN=1`); `sign: true` switches to `RELEASE_SIGN=1`, which consumes the
-`FLECTAR_OHOS_*` repository secrets through `hap-sign-tool` and never touches
+`EVANYA_OHOS_*` repository secrets through `hap-sign-tool` and never touches
 the pull request context.
 
 ## Why the hap is re-packed by hand
@@ -138,12 +138,12 @@ handled (and asserted) in the script, do not "simplify" them away:
 
 ## Runtime notes
 
-- **Logs**: `hdc shell "hilog -T slint-ohos,flectar-mail"` for the backend and
+- **Logs**: `hdc shell "hilog -T slint-ohos,evanya"` for the backend and
   application, `-T JSAPP` for the ArkTS console.
 - **GPU rendering**: the femtovg/wgpu path (EGL/GLES) is attempted by default
   and falls back to the software renderer automatically — before the surface
   exists, after a failed attach, and permanently once an attach failed. Local
-  runs can opt out with `FLECTAR_OHOS_SOFTWARE=1`; the device build has no
+  runs can opt out with `EVANYA_OHOS_SOFTWARE=1`; the device build has no
   environment, so the fallback is the safety net. The wgpu GL-backend
   subtleties (why `Backends::GL` must be requested explicitly) are documented
   in `backend/src/gpu.rs`.

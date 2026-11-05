@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="Logotipo de Flectar Mail">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="Logotipo de Evanya">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <a href="../../README.md">English</a> · <strong>Español</strong> · <a href="README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>El correo vuelve a ser rápido</h3>
-    <p>Diseñado desde cero para la velocidad. Flectar Mail ofrece rendimiento nativo, inicio instantáneo y unos 20 MB de memoria privada en reposo.</p>
+    <p>Diseñado desde cero para la velocidad. Evanya ofrece rendimiento nativo, inicio instantáneo y unos 20 MB de memoria privada en reposo.</p>
   </div>
   <p>
     <a href="https://flectar.com">Sitio web</a> ·
@@ -32,14 +32,14 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail en macOS con la bandeja de entrada unificada y la vista de mensajes">
+  <img src="../../resources/screenshots/desktop-light.png" alt="Evanya en macOS con la bandeja de entrada unificada y la vista de mensajes">
 </picture>
 
-Flectar Mail es una aplicación nativa y ligera para tu correo, calendarios y
+Evanya es una aplicación nativa y ligera para tu correo, calendarios y
 contactos. Está diseñada para abrirse al instante, responder con fluidez y usar
 una fracción de la memoria de un cliente de correo típico basado en tecnologías web.
 
-## ❓ ¿Por qué Flectar Mail?
+## ❓ ¿Por qué Evanya?
 
 | Ventaja | Detalles |
 | --- | --- |
@@ -56,7 +56,7 @@ una fracción de la memoria de un cliente de correo típico basado en tecnologí
 
 ## ⚡ Rendimiento
 
-| En reposo, mismo buzón | Flectar Mail | Thunderbird 159 |
+| En reposo, mismo buzón | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | Memoria privada | **~20 MB** | ~250 MB |
 | Con código y bibliotecas (PSS) | **~85 MB** | ~435 MB |
@@ -74,7 +74,7 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
 
 | Cliente de correo | Interfaz | Renderiza el correo con | Plataformas |
 | --- | --- | --- | --- |
-| **Flectar Mail** | Aplicación nativa en Rust | Blitz, un renderizador HTML/CSS en Rust; sin WebView | Windows, macOS, Linux, Android; iOS próximamente |
+| **Evanya** | Aplicación nativa en Rust | Blitz, un renderizador HTML/CSS en Rust; sin WebView | Windows, macOS, Linux, Android; iOS próximamente |
 | Thunderbird | Aplicación de escritorio basada en Gecko | Gecko | Windows, macOS, Linux, Android |
 | Outlook para Windows | Aplicación de Windows con interfaz web | Microsoft Edge WebView2 | Windows |
 | Spark | Aplicación Electron | Chromium | macOS, Windows, iOS, Android |
@@ -111,14 +111,14 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Vista completa de Flectar Mail en el escritorio" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Vista completa de Evanya en el escritorio" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Vista minimalista de Flectar Mail en el escritorio" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Vista minimalista de Evanya en el escritorio" width="100%">
         </picture>
       </td>
     </tr>
@@ -141,21 +141,21 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail con pestañas para varias conversaciones, el calendario, los contactos y los archivos" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Evanya con pestañas para varias conversaciones, el calendario, los contactos y los archivos" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-thread-light.png">
-          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Conversación de Flectar Mail con mensajes recibidos y respuestas" width="100%">
+          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Conversación de Evanya con mensajes recibidos y respuestas" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Bandeja de entrada unificada de Flectar Mail con indicadores de perfil morados y naranjas" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Bandeja de entrada unificada de Evanya con indicadores de perfil morados y naranjas" width="100%">
         </picture>
       </td>
     </tr>
@@ -179,28 +179,28 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Paleta verde azulada de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Paleta verde azulada de Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="Paleta verde de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="Paleta verde de Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Paleta morada de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Paleta morada de Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Paleta personalizada de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Paleta personalizada de Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -220,14 +220,14 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/macos-light.png">
-          <img src="../../resources/screenshots/frameless/macos-light.png" alt="Ventana sin marco de Flectar Mail en macOS" width="100%">
+          <img src="../../resources/screenshots/frameless/macos-light.png" alt="Ventana sin marco de Evanya en macOS" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/windows-light.png">
-          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Ventana sin marco de Flectar Mail en Windows" width="100%">
+          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Ventana sin marco de Evanya en Windows" width="100%">
         </picture>
       </td>
     </tr>
@@ -240,14 +240,14 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="Ventana sin marco de Flectar Mail en GNOME" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="Ventana sin marco de Evanya en GNOME" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-kde-light.png">
-          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="Ventana sin marco de Flectar Mail en KDE Plasma" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="Ventana sin marco de Evanya en KDE Plasma" width="100%">
         </picture>
       </td>
     </tr>
@@ -270,21 +270,21 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Calendario de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Calendario de Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Contactos de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Contactos de Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="Archivos de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="Archivos de Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -295,24 +295,24 @@ al cerrarla a la bandeja del sistema. Consulta [cómo lo medimos y cómo comprob
 
 | Claro | Oscuro |
 | --- | --- |
-| ![Bandeja de entrada móvil de Flectar Mail en modo claro](../../resources/screenshots/mobile-light.png) | ![Bandeja de entrada móvil de Flectar Mail en modo oscuro](../../resources/screenshots/mobile-dark.png) |
+| ![Bandeja de entrada móvil de Evanya en modo claro](../../resources/screenshots/mobile-light.png) | ![Bandeja de entrada móvil de Evanya en modo oscuro](../../resources/screenshots/mobile-dark.png) |
 
 ## 🧪 Renderizado HTML experimental
 
 > [!WARNING]
 > El renderizado de correo HTML es actualmente la parte más experimental de
-> Flectar Mail. Algunos mensajes, especialmente los que contienen marcado y CSS
+> Evanya. Algunos mensajes, especialmente los que contienen marcado y CSS
 > complejos o poco habituales, pueden no mostrarse correctamente todavía.
 
-Flectar Mail renderiza el correo con [Blitz](https://github.com/DioxusLabs/blitz),
+Evanya renderiza el correo con [Blitz](https://github.com/DioxusLabs/blitz),
 un renderizador HTML/CSS en Rust del equipo de Dioxus, en lugar de integrar un
 navegador o una WebView. Si un mensaje se muestra de forma incorrecta,
 [informa del problema](https://github.com/flectar/mail/issues). Más información
 sobre [el renderizador y las opciones de CPU y GPU](../features.md#html-rendering).
 
-## 📥 Consigue Flectar Mail
+## 📥 Consigue Evanya
 
-Flectar Mail está en desarrollo y todavía no es estable. Las versiones de prueba
+Evanya está en desarrollo y todavía no es estable. Las versiones de prueba
 se publican en [GitHub Releases](https://github.com/flectar/mail/releases) con
 la etiqueta **Pre-release**.
 
@@ -341,7 +341,7 @@ aplicación de Google o Microsoft, o conecta una cuenta IMAP, POP3 o JMAP.
 La [guía de instalación](../install.md) explica los comandos de instalación, el
 llavero y el portal del escritorio en Linux, las notas sobre Flatpak y RPM, cómo
 verificar las descargas, la firma de Android y cómo compilar desde el código
-fuente con `cargo run --bin flectar-mail`.
+fuente con `cargo run --bin evanya`.
 
 ## 🤝 Participa
 
@@ -355,11 +355,11 @@ fuente con `cargo run --bin flectar-mail`.
 
 ## 🫡 Agradecimientos
 
-Flectar Mail es posible gracias al trabajo de estos proyectos y de quienes
+Evanya es posible gracias al trabajo de estos proyectos y de quienes
 contribuyen a ellos:
 
 - [Slint](https://slint.dev/), el conjunto de herramientas de interfaz nativa
-  que da vida a la interfaz de Flectar Mail.
+  que da vida a la interfaz de Evanya.
 - [Blitz](https://github.com/DioxusLabs/blitz), el renderizador HTML/CSS en Rust
   del equipo de Dioxus que permite leer los mensajes de correo.
 

@@ -368,8 +368,8 @@ pub fn remove(alias: &str) -> Result<(), String> {
 
 /// One `put`/`get`/`remove` cycle; returns `Ok` when the service works.
 pub fn self_test() -> Result<(), String> {
-    const ALIAS: &str = "flectar:asset-self-test";
-    let probe = "flectar-asset-probe-v1";
+    const ALIAS: &str = "evanya:asset-self-test";
+    let probe = "evanya-asset-probe-v1";
     put(ALIAS, probe)?;
     let loaded = get(ALIAS)?;
     let remove_result = remove(ALIAS);
@@ -381,7 +381,7 @@ pub fn self_test() -> Result<(), String> {
     }
 
     // Exercise the chunked path with a value above the Asset Store limit.
-    const LONG_ALIAS: &str = "flectar:asset-self-test-long";
+    const LONG_ALIAS: &str = "evanya:asset-self-test-long";
     let long_probe = "long-secret-".repeat(200);
     put(LONG_ALIAS, &long_probe)?;
     let loaded = get(LONG_ALIAS)?;

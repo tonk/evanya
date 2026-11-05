@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="Логотип Flectar Mail">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="Логотип Evanya">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>Почта снова стала быстрой</h3>
-    <p>Создано с нуля ради скорости. Flectar Mail предлагает нативную производительность, мгновенный запуск и потребление приватной памяти около 20 МБ в простое.</p>
+    <p>Создано с нуля ради скорости. Evanya предлагает нативную производительность, мгновенный запуск и потребление приватной памяти около 20 МБ в простое.</p>
   </div>
   <p>
     <a href="https://flectar.com">Сайт</a> ·
@@ -32,12 +32,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail в macOS с общей папкой входящих и просмотром письма">
+  <img src="../../resources/screenshots/desktop-light.png" alt="Evanya в macOS с общей папкой входящих и просмотром письма">
 </picture>
 
-Flectar Mail — лёгкое нативное приложение для почты, календарей и контактов. Оно мгновенно запускается, быстро реагирует на действия и использует лишь небольшую часть памяти, необходимой обычному почтовому клиенту на веб-технологиях.
+Evanya — лёгкое нативное приложение для почты, календарей и контактов. Оно мгновенно запускается, быстро реагирует на действия и использует лишь небольшую часть памяти, необходимой обычному почтовому клиенту на веб-технологиях.
 
-## ❓ Почему Flectar Mail?
+## ❓ Почему Evanya?
 
 | Преимущество | Подробности |
 | --- | --- |
@@ -54,7 +54,7 @@ Flectar Mail — лёгкое нативное приложение для по�
 
 ## ⚡ Производительность
 
-| В простое, один и тот же почтовый ящик | Flectar Mail | Thunderbird 159 |
+| В простое, один и тот же почтовый ящик | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | Приватная память | **~20 МБ** | ~250 МБ |
 | С учётом кода и библиотек (PSS) | **~85 МБ** | ~435 МБ |
@@ -66,7 +66,7 @@ Flectar Mail — лёгкое нативное приложение для по�
 
 | Почтовый клиент | Интерфейс | Отображение писем | Платформы |
 | --- | --- | --- | --- |
-| **Flectar Mail** | Нативное приложение на Rust | Blitz, движок HTML/CSS на Rust; без WebView | Windows, macOS, Linux, Android; скоро iOS |
+| **Evanya** | Нативное приложение на Rust | Blitz, движок HTML/CSS на Rust; без WebView | Windows, macOS, Linux, Android; скоро iOS |
 | Thunderbird | Настольное приложение на основе Gecko | Gecko | Windows, macOS, Linux, Android |
 | Outlook для Windows | Приложение Windows с веб-интерфейсом | Microsoft Edge WebView2 | Windows |
 | Spark | Приложение на Electron | Chromium | macOS, Windows, iOS, Android |
@@ -103,14 +103,14 @@ Flectar Mail — лёгкое нативное приложение для по�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Полный настольный интерфейс Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Полный настольный интерфейс Evanya" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Минималистичный настольный интерфейс Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Минималистичный настольный интерфейс Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -133,21 +133,21 @@ Flectar Mail — лёгкое нативное приложение для по�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail с вкладками переписок, календаря, контактов и файлов" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Evanya с вкладками переписок, календаря, контактов и файлов" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-thread-light.png">
-          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Переписка Flectar Mail с входящими письмами и ответами" width="100%">
+          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Переписка Evanya с входящими письмами и ответами" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Общая папка входящих Flectar Mail с фиолетовыми и оранжевыми метками профилей" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Общая папка входящих Evanya с фиолетовыми и оранжевыми метками профилей" width="100%">
         </picture>
       </td>
     </tr>
@@ -171,28 +171,28 @@ Flectar Mail — лёгкое нативное приложение для по�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Бирюзовая палитра Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Бирюзовая палитра Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="Зелёная палитра Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="Зелёная палитра Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Фиолетовая палитра Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Фиолетовая палитра Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Пользовательская палитра Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Пользовательская палитра Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -212,14 +212,14 @@ Flectar Mail — лёгкое нативное приложение для по�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/macos-light.png">
-          <img src="../../resources/screenshots/frameless/macos-light.png" alt="Окно Flectar Mail без рамки в macOS" width="100%">
+          <img src="../../resources/screenshots/frameless/macos-light.png" alt="Окно Evanya без рамки в macOS" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/windows-light.png">
-          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Окно Flectar Mail без рамки в Windows" width="100%">
+          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Окно Evanya без рамки в Windows" width="100%">
         </picture>
       </td>
     </tr>
@@ -232,14 +232,14 @@ Flectar Mail — лёгкое нативное приложение для по�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="Окно Flectar Mail без рамки в GNOME" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="Окно Evanya без рамки в GNOME" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-kde-light.png">
-          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="Окно Flectar Mail без рамки в KDE Plasma" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="Окно Evanya без рамки в KDE Plasma" width="100%">
         </picture>
       </td>
     </tr>
@@ -262,21 +262,21 @@ Flectar Mail — лёгкое нативное приложение для по�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Календарь Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Календарь Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Контакты Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Контакты Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="Файлы Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="Файлы Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -287,18 +287,18 @@ Flectar Mail — лёгкое нативное приложение для по�
 
 | Светлая тема | Тёмная тема |
 | --- | --- |
-| ![Мобильная папка входящих Flectar Mail в светлой теме](../../resources/screenshots/mobile-light.png) | ![Мобильная папка входящих Flectar Mail в тёмной теме](../../resources/screenshots/mobile-dark.png) |
+| ![Мобильная папка входящих Evanya в светлой теме](../../resources/screenshots/mobile-light.png) | ![Мобильная папка входящих Evanya в тёмной теме](../../resources/screenshots/mobile-dark.png) |
 
 ## 🧪 Экспериментальное отображение HTML
 
 > [!WARNING]
-> Отображение HTML-писем — пока самая экспериментальная часть Flectar Mail. Некоторые письма, особенно со сложной или необычной разметкой и CSS, могут отображаться некорректно.
+> Отображение HTML-писем — пока самая экспериментальная часть Evanya. Некоторые письма, особенно со сложной или необычной разметкой и CSS, могут отображаться некорректно.
 
-Flectar Mail отображает письма с помощью [Blitz](https://github.com/DioxusLabs/blitz) — движка HTML/CSS на Rust от команды Dioxus — вместо встроенного браузера или WebView. Если письмо отображается неправильно, [сообщите об этом](https://github.com/flectar/mail/issues). Подробнее о [движке и режимах CPU и GPU](../features.md#html-rendering).
+Evanya отображает письма с помощью [Blitz](https://github.com/DioxusLabs/blitz) — движка HTML/CSS на Rust от команды Dioxus — вместо встроенного браузера или WebView. Если письмо отображается неправильно, [сообщите об этом](https://github.com/flectar/mail/issues). Подробнее о [движке и режимах CPU и GPU](../features.md#html-rendering).
 
-## 📥 Скачать Flectar Mail
+## 📥 Скачать Evanya
 
-Flectar Mail находится в разработке и пока не является стабильным. Предварительные сборки публикуются в [GitHub Releases](https://github.com/flectar/mail/releases) с отметкой **Pre-release**.
+Evanya находится в разработке и пока не является стабильным. Предварительные сборки публикуются в [GitHub Releases](https://github.com/flectar/mail/releases) с отметкой **Pre-release**.
 
 > [!WARNING]
 > **Верификация Google OAuth требует ежегодной оценки безопасности CASA.** Flectar — открытый общественный проект, поэтому прохождение оценки зависит от спонсорской поддержки. Пока необходимая верификация не профинансирована и не завершена, стабильный выпуск с Gmail OAuth, настроенным по умолчанию, невозможен. Если хотите помочь сделать встроенный вход в Gmail доступным, [поддержите Flectar](https://github.com/sponsors/flectar).
@@ -313,7 +313,7 @@ Flectar Mail находится в разработке и пока не явл�
 
 В сборках без ключей приложений OAuth вход в Gmail и Outlook отключён. Используйте значок шестерёнки **Настройки входа** на экране приветствия, чтобы добавить собственную регистрацию приложения Google или Microsoft, либо подключите аккаунт IMAP, POP3 или JMAP.
 
-В [руководстве по установке](../install.md) описаны команды установки, хранилище ключей и портал рабочего стола в Linux, особенности Flatpak и RPM, проверка загрузок, подпись сборок Android и сборка из исходного кода командой `cargo run --bin flectar-mail`.
+В [руководстве по установке](../install.md) описаны команды установки, хранилище ключей и портал рабочего стола в Linux, особенности Flatpak и RPM, проверка загрузок, подпись сборок Android и сборка из исходного кода командой `cargo run --bin evanya`.
 
 ## 🤝 Как принять участие
 
@@ -322,14 +322,14 @@ Flectar Mail находится в разработке и пока не явл�
 | 🌍 **Перевод** | Переводите приложение, улучшайте существующие переводы или проверяйте строки в [Weblate](https://translate.flectar.com/); знания программирования или опыт работы с GitHub не нужны. Переводы поступают в этот репозиторий в виде запросов на слияние, а их авторы получают указание авторства в GitHub. Переводы README хранятся здесь же; см. [руководство для переводчиков](../../CONTRIBUTING.md#translations). |
 | ♿ **Доступность** | Управление с клавиатуры, светлая и тёмная темы и гибкие варианты интерфейса; работа над доступностью продолжается. Текущие возможности, ограничения тестирования и порядок сообщения о препятствиях описаны в [ACCESSIBILITY.md](../../ACCESSIBILITY.md). |
 | 🔒 **Безопасность** | Сообщайте об уязвимостях конфиденциально, как описано в [SECURITY.md](../../SECURITY.md), и не публикуйте сведения о них в открытых обсуждениях проблем. |
-| 🌐 **Открытый код** | Flectar Mail — единое приложение с открытым кодом, без отдельной общественной редакции, распространяемое по лицензии [GNU Affero General Public License v3](../../LICENSE). Практические подробности приведены в [обзоре лицензирования](../../LICENSING.md). |
+| 🌐 **Открытый код** | Evanya — единое приложение с открытым кодом, без отдельной общественной редакции, распространяемое по лицензии [GNU Affero General Public License v3](../../LICENSE). Практические подробности приведены в [обзоре лицензирования](../../LICENSING.md). |
 | 🛠️ **Участие** | Как участвовать в развитии проекта, описано в [CONTRIBUTING.md](../../CONTRIBUTING.md). |
 
 ## 🫡 Благодарности
 
-Flectar Mail существует благодаря работе этих проектов и их участников:
+Evanya существует благодаря работе этих проектов и их участников:
 
-- [Slint](https://slint.dev/) — инструментарий нативного интерфейса, на котором построен Flectar Mail.
+- [Slint](https://slint.dev/) — инструментарий нативного интерфейса, на котором построен Evanya.
 - [Blitz](https://github.com/DioxusLabs/blitz) — движок HTML/CSS на Rust от команды Dioxus, обеспечивающий отображение писем.
 
 ---

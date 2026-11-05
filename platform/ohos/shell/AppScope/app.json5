@@ -1,7 +1,7 @@
 {
   app: {
     // Bundle name; build-hap.sh can override it with BUNDLE=...
-    bundleName: 'com.flectar.mail',
+    bundleName: 'com.evanya.mail',
     vendor: 'Flectar',
     // build-hap.sh rewrites these from the workspace Cargo.toml (versionName
     // is the crate version, versionCode is derived from it). The values here

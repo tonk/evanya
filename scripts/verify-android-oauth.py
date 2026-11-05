@@ -12,8 +12,8 @@ import sys
 
 def verify(environment, require_all=False):
     for provider, variable in (
-        ("Google", "FLECTAR_GOOGLE_ANDROID_CLIENT_ID"),
-        ("Microsoft", "FLECTAR_MICROSOFT_ANDROID_CLIENT_ID"),
+        ("Google", "EVANYA_GOOGLE_ANDROID_CLIENT_ID"),
+        ("Microsoft", "EVANYA_MICROSOFT_ANDROID_CLIENT_ID"),
     ):
         value = environment.get(variable, "").strip()
         if not value:

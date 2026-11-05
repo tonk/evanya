@@ -14,7 +14,7 @@ panic = "unwind"
 strip = "symbols"
 
 [package]
-name = "flectar-mail-android"
+name = "evanya-android"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.92"
@@ -27,7 +27,7 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-flectar-mail = { path = "../..", default-features = false, features = ["remote-content"] }
+evanya = { path = "../..", default-features = false, features = ["remote-content"] }
 async-trait = "0.1"
 base64 = "0.23"
 jni = "0.21"
@@ -45,8 +45,8 @@ tokio = { version = "1", features = ["sync", "time"] }
 url = "2"
 
 [package.metadata.android]
-package = "com.flectar.mail"
-apk_name = "flectar-mail"
+package = "com.evanya.mail"
+apk_name = "evanya"
 # Keep third-party notices inspectable in the APK alongside the embedded font.
 assets = "assets"
 # Release CI selects arm64 explicitly. Keeping x86_64 here as well lets Intel
@@ -68,7 +68,7 @@ name = "android.permission.ACCESS_NETWORK_STATE"
 name = "android.permission.POST_NOTIFICATIONS"
 
 [package.metadata.android.application]
-label = "Flectar Mail"
+label = "Evanya"
 theme = "@android:style/Theme.Material.Light.NoActionBar"
 # Provider traffic is TLS-only. Local development exceptions must use adb
 # reverse-port forwarding instead of weakening every endpoint in the APK.
@@ -85,4 +85,4 @@ categories = ["android.intent.category.DEFAULT", "android.intent.category.BROWSA
 
 [[package.metadata.android.application.activity.intent_filter.data]]
 scheme = "msauth"
-host = "com.flectar.mail"
+host = "com.evanya.mail"

@@ -48,7 +48,7 @@ class SmapsParsingTests(unittest.TestCase):
 
     def test_mappings_are_counted_without_profile_paths(self):
         smaps = """\
-55550000-55551000 r-xp 00000000 08:01 10 /opt/flectar-mail
+55550000-55551000 r-xp 00000000 08:01 10 /opt/evanya
 Size:                  4 kB
 Rss:                   4 kB
 Pss:                   4 kB
@@ -70,7 +70,7 @@ Private_Dirty:         4 kB
 Swap:                  0 kB
 SwapPss:               0 kB
 """
-        report = benchmark.parse_smaps(smaps, Path("/opt/flectar-mail"))
+        report = benchmark.parse_smaps(smaps, Path("/opt/evanya"))
 
         self.assertEqual(report["mapping_count"], 3)
         self.assertEqual(report["by_kind"]["database_file"]["pss_kib"], 6)
@@ -85,7 +85,7 @@ SwapPss:               0 kB
     def test_renderer_selection_is_recorded_for_cpu_gate(self):
         events, tail = {}, []
         benchmark.record_stderr_line(
-            'FLECTAR_RENDERER {"event":"selected","active":"cpu","wgpu_initialized":false}',
+            'EVANYA_RENDERER {"event":"selected","active":"cpu","wgpu_initialized":false}',
             events,
             tail,
         )

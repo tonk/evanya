@@ -10,11 +10,11 @@
 
 use super::*;
 use crate::data_controller::{format_storage_size, restore_account_backup};
-use flectar_mail_core::mail_import::{
+use evanya_core::mail_import::{
     self, ChosenFile, Destination, FolderKind, MailImportProgress, MailImportRequest, MailSource,
     SourceFolder,
 };
-use flectar_mail_core::migration::{
+use evanya_core::migration::{
     self, AccountImportReport, AccountPlan, MailStore, OtherEntryKind, PlanStatus, Severity,
     SignIn, Source, SourceError,
 };
@@ -913,7 +913,7 @@ pub(super) fn register_import_callbacks(
                             .map_err(|error| error.to_string())?;
                         let inventory = match source {
                             Ok(Source::Accounts(inventory)) => inventory,
-                            Ok(Source::FlectarBackup(bytes)) => {
+                            Ok(Source::EvanyaBackup(bytes)) => {
                                 return Ok(Ok(Inspected::Backup(bytes)));
                             }
                             Ok(Source::Mail(mail)) => return Ok(Ok(Inspected::Mail(mail))),
@@ -1535,7 +1535,7 @@ pub(super) fn register_import_callbacks(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use flectar_mail_core::models::{AuthKind, Provider};
+    use evanya_core::models::{AuthKind, Provider};
 
     const MESSAGE: &str = "From a@example.org Mon Jan  1 00:00:00 2024\n\
         From: a@example.org\nSubject: Hi\n\nHello\n";

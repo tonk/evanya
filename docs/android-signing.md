@@ -1,12 +1,12 @@
 # Android signing and updates
 
-Every published APK uses `com.flectar.mail` and the certificate pinned in
+Every published APK uses `com.evanya.mail` and the certificate pinned in
 `platform/android/app-signing-certificate.sha256`. This includes alpha, beta,
 release-candidate, and stable versions, starting with alpha 8. Keep the original
 private key **and certificate** for the lifetime of this update path. Alpha 6
 and alpha 7 used different identities and cannot update to this one.
 
-The certificate's historical subject (`Flectar Mail Test`) and alias
+The certificate's historical subject (`Evanya Test`) and alias
 (`androiddebugkey`) are names, not a measure of key security. The pin identifies
 the actual certificate. Re-encrypting the existing keystore with a strong
 password keeps the certificate and private key unchanged.
@@ -21,8 +21,8 @@ From the repository root:
 
 ```bash
 python3 scripts/configure-android-signing.py \
-  "$HOME/.local/share/flectar-mail/android/alpha-signing.keystore" \
-  --output "$HOME/.local/share/flectar-mail/android/app-signing.p12" \
+  "$HOME/.local/share/evanya/android/alpha-signing.keystore" \
+  --output "$HOME/.local/share/evanya/android/app-signing.p12" \
   --upload
 ```
 
@@ -42,10 +42,10 @@ and sets these four **environment secrets**:
 
 | Secret | Value |
 | --- | --- |
-| `FLECTAR_ANDROID_KEYSTORE_BASE64` | Base64 encoding of the re-encrypted keystore |
-| `FLECTAR_ANDROID_KEYSTORE_PASSWORD` | New keystore password |
-| `FLECTAR_ANDROID_KEY_ALIAS` | Existing alias, normally `androiddebugkey` |
-| `FLECTAR_ANDROID_KEY_PASSWORD` | New private-key password; same as the store password for this PKCS12 file |
+| `EVANYA_ANDROID_KEYSTORE_BASE64` | Base64 encoding of the re-encrypted keystore |
+| `EVANYA_ANDROID_KEYSTORE_PASSWORD` | New keystore password |
+| `EVANYA_ANDROID_KEY_ALIAS` | Existing alias, normally `androiddebugkey` |
+| `EVANYA_ANDROID_KEY_PASSWORD` | New private-key password; same as the store password for this PKCS12 file |
 
 An existing environment's protection rules are preserved. An environment with
 no branch restrictions is rejected. Review the environment's allowed branches
@@ -53,13 +53,13 @@ and tags when configuring a different repository. An empty edit field on
 GitHub does not show whether a stored secret has a value: saved secret values
 are not returned for inspection. Base64 is encoding, not encryption.
 
-The old repository secret `FLECTAR_ANDROID_TEST_KEYSTORE_BASE64` belongs to
+The old repository secret `EVANYA_ANDROID_TEST_KEYSTORE_BASE64` belongs to
 older workflow revisions. After the four environment secrets are configured
 and the new workflows are merged, remove the old repository secret so the
 same private key is no longer available outside the protected environment:
 
 ```bash
-gh secret delete FLECTAR_ANDROID_TEST_KEYSTORE_BASE64 --repo flectar/mail
+gh secret delete EVANYA_ANDROID_TEST_KEYSTORE_BASE64 --repo flectar/mail
 ```
 
 Do not dispatch releases from older workflow revisions after this migration;
@@ -71,7 +71,7 @@ If upload fails after the new file was created, retry without re-encrypting:
 
 ```bash
 python3 scripts/configure-android-signing.py \
-  "$HOME/.local/share/flectar-mail/android/app-signing.p12" --upload
+  "$HOME/.local/share/evanya/android/app-signing.p12" --upload
 ```
 
 Enter the **new** password this time. To update the secrets manually after
@@ -79,11 +79,11 @@ configuring the environment:
 
 ```bash
 set -o pipefail
-base64 < "$HOME/.local/share/flectar-mail/android/app-signing.p12" |
-  gh secret set FLECTAR_ANDROID_KEYSTORE_BASE64 --repo flectar/mail --env android-release
-gh secret set FLECTAR_ANDROID_KEYSTORE_PASSWORD --repo flectar/mail --env android-release
-gh secret set FLECTAR_ANDROID_KEY_ALIAS --repo flectar/mail --env android-release
-gh secret set FLECTAR_ANDROID_KEY_PASSWORD --repo flectar/mail --env android-release
+base64 < "$HOME/.local/share/evanya/android/app-signing.p12" |
+  gh secret set EVANYA_ANDROID_KEYSTORE_BASE64 --repo flectar/mail --env android-release
+gh secret set EVANYA_ANDROID_KEYSTORE_PASSWORD --repo flectar/mail --env android-release
+gh secret set EVANYA_ANDROID_KEY_ALIAS --repo flectar/mail --env android-release
+gh secret set EVANYA_ANDROID_KEY_PASSWORD --repo flectar/mail --env android-release
 ```
 
 The final three commands prompt for the corresponding value. Do not pass

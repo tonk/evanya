@@ -9,9 +9,7 @@ use chrono::{
     Datelike, Duration as ChronoDuration, Local, NaiveDate, NaiveDateTime, NaiveTime, TimeZone,
     Timelike, Utc,
 };
-use flectar_mail_core::models::{
-    Account, Address, Calendar, CalendarConnectionKind, CalendarEvent,
-};
+use evanya_core::models::{Account, Address, Calendar, CalendarConnectionKind, CalendarEvent};
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 use std::{
     collections::{BTreeMap, HashMap, HashSet},
@@ -215,7 +213,7 @@ fn palette_color(index: i32) -> slint::Color {
 /// ones first. Each is its calendar id, account id and a label naming both.
 pub(crate) fn event_targets(
     state: &LocalCalendarState,
-    accounts: &[flectar_mail_core::models::Account],
+    accounts: &[evanya_core::models::Account],
 ) -> Vec<(i64, i64, String)> {
     let mut sources = state
         .sources

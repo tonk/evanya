@@ -88,7 +88,7 @@ class Generator:
         message = EmailMessage()
         message["Date"] = email.utils.formatdate(sent)
         message["To"] = "Test User <testuser@localhost>"
-        message["Message-ID"] = f"<ram-{index}@flectar.test>"
+        message["Message-ID"] = f"<ram-{index}@evanya.test>"
         if kind < 0.45:
             name, address = self.rng.choice(LISTS)
             message["From"] = f"{name} <{address}>"
@@ -108,8 +108,8 @@ class Generator:
             subject = self.sentence(5)[:-1]
             if self.rng.random() < 0.35 and index > 10:
                 parent = self.rng.randint(0, index - 1)
-                message["In-Reply-To"] = f"<ram-{parent}@flectar.test>"
-                message["References"] = f"<ram-{parent}@flectar.test>"
+                message["In-Reply-To"] = f"<ram-{parent}@evanya.test>"
+                message["References"] = f"<ram-{parent}@evanya.test>"
                 subject = "Re: " + subject
             message["Subject"] = subject
             first = name.split()[0]
@@ -130,7 +130,7 @@ class Generator:
             (folder / name).mkdir(parents=True, exist_ok=True)
         for index in range(first, first + count):
             sent, raw, flags = self.message(index)
-            path = folder / "cur" / f"{int(sent)}.M{index}P1.flectar-bench,S={len(raw)}:2,{flags}"
+            path = folder / "cur" / f"{int(sent)}.M{index}P1.evanya-bench,S={len(raw)}:2,{flags}"
             path.write_bytes(raw)
             # Maildir servers report the file time as the received date.
             os.utime(path, (sent, sent))

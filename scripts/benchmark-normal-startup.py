@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Measure an unsnapshotted Linux launch at a fixed time.
 
-This intentionally does not enable FLECTAR_STARTUP_METRICS, which forces frame
+This intentionally does not enable EVANYA_STARTUP_METRICS, which forces frame
 snapshots in the regular startup benchmark. The sample is timed from process
 launch, not from a rendered-frame event.
 """
@@ -95,23 +95,23 @@ def run_once(
     profile_cache: Path | None,
     sample_interval: float | None = None,
 ) -> dict:
-    with tempfile.TemporaryDirectory(prefix="flectar-normal-startup-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="evanya-normal-startup-") as temporary:
         root = Path(temporary)
-        startup.copy_profile(profile_data, root / "data" / "flectar-mail")
-        startup.copy_profile(profile_cache, root / "cache" / "flectar-mail")
+        startup.copy_profile(profile_data, root / "data" / "evanya")
+        startup.copy_profile(profile_cache, root / "cache" / "evanya")
         environment = os.environ.copy()
         for name in (
-            "FLECTAR_STARTUP_METRICS",
-            "FLECTAR_BENCHMARK_EXIT_AFTER_MS",
-            "FLECTAR_BENCHMARK_SCREENSHOT_DIR",
-            "FLECTAR_BENCHMARK_TRAY_INTERVAL_MS",
+            "EVANYA_STARTUP_METRICS",
+            "EVANYA_BENCHMARK_EXIT_AFTER_MS",
+            "EVANYA_BENCHMARK_SCREENSHOT_DIR",
+            "EVANYA_BENCHMARK_TRAY_INTERVAL_MS",
         ):
             environment.pop(name, None)
         environment.update(
             XDG_DATA_HOME=str(root / "data"),
             XDG_CACHE_HOME=str(root / "cache"),
-            FLECTAR_RENDERER="cpu",
-            FLECTAR_BENCHMARK_DISABLE_SYNC="1",
+            EVANYA_RENDERER="cpu",
+            EVANYA_BENCHMARK_DISABLE_SYNC="1",
         )
         with tempfile.TemporaryFile(mode="w+t") as log:
             process = subprocess.Popen(

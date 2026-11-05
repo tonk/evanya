@@ -15,10 +15,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         unsafe { std::env::set_var("SLINT_DESTROY_WINDOW_ON_HIDE", "1") };
     }
     #[cfg(desktop)]
-    if let Some(code) = flectar_mail::pdf_preview::run_worker_if_requested() {
+    if let Some(code) = evanya::pdf_preview::run_worker_if_requested() {
         std::process::exit(code);
     }
-    flectar_mail::run_desktop(flectar_mail::platform::launch_context()?)
+    evanya::run_desktop(evanya::platform::launch_context()?)
 }
 
 /// The mail shell has a small number of worker threads. One glibc allocation

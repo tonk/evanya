@@ -142,7 +142,7 @@ fn reader_deletion_uses_checked_messages_in_every_layout() {
             // Enter the reader after Minimal's layout initialization opens the list.
             ui.set_page("message".into());
             let pixels = render();
-            if let Ok(dir) = std::env::var("FLECTAR_MAIL_TEST_SCREENSHOTS") {
+            if let Ok(dir) = std::env::var("EVANYA_TEST_SCREENSHOTS") {
                 let bytes: Vec<u8> = pixels.iter().flat_map(|p| [p.r, p.g, p.b]).collect();
                 image::save_buffer(
                     format!("{dir}/{name}-{}.png", if dark { "dark" } else { "light" }),

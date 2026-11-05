@@ -47,7 +47,7 @@ use windows_sys::Win32::UI::WindowsAndMessaging::{
 };
 
 /// Window class that identifies the main window during creation.
-const CLASS_NAME: &str = "FlectarMailWindow";
+const CLASS_NAME: &str = "EvanyaWindow";
 /// Winit's class for windows created without the attributes hook.
 const WINIT_CLASS_NAME: &str = "Window Class";
 const SUBCLASS_ID: usize = 0x464d_6169; // "FMai"

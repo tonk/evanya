@@ -38,9 +38,9 @@ with intervening VS16. It does not add bitmap emoji support to the CPU painter.
 ```sh
 python3 scripts/verify-parley.py
 cargo test --manifest-path crates/parley/Cargo.toml --lib --locked --target-dir target/parley-tests
-cargo test -p flectar-mail --lib renderer::regression --locked
+cargo test -p evanya --lib renderer::regression --locked
 # On a host with a WGPU adapter:
-cargo test -p flectar-mail --lib issue_23_gpu --locked -- --ignored
+cargo test -p evanya --lib issue_23_gpu --locked -- --ignored
 ```
 
 The verifier downloads checksum-pinned sources into a temporary directory,

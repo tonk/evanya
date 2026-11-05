@@ -17,10 +17,10 @@ SCRIPTS = Path(__file__).resolve().parent
 def verify(keystore: Path, alias: str, store_password: str, key_password: str) -> dict[str, str]:
     environment = {
         **os.environ,
-        "FLECTAR_ANDROID_KEYSTORE": str(keystore),
-        "FLECTAR_ANDROID_KEY_ALIAS": alias,
-        "FLECTAR_ANDROID_KEYSTORE_PASSWORD": store_password,
-        "FLECTAR_ANDROID_KEY_PASSWORD": key_password,
+        "EVANYA_ANDROID_KEYSTORE": str(keystore),
+        "EVANYA_ANDROID_KEY_ALIAS": alias,
+        "EVANYA_ANDROID_KEYSTORE_PASSWORD": store_password,
+        "EVANYA_ANDROID_KEY_PASSWORD": key_password,
     }
     subprocess.run(
         ["bash", str(SCRIPTS / "verify-android-keystore.sh")],
@@ -37,19 +37,19 @@ def reprotect(source: Path, destination: Path, alias: str,
     if destination.exists() or destination.is_symlink():
         raise ValueError("The destination already exists; refusing to overwrite a signing key.")
     environment = verify(source, alias, store_password, key_password)
-    environment["FLECTAR_ANDROID_NEW_PASSWORD"] = new_password
+    environment["EVANYA_ANDROID_NEW_PASSWORD"] = new_password
     destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=".android-signing-", dir=destination.parent) as directory:
         staged = Path(directory) / "app-signing.p12"
         subprocess.run([
             "keytool", "-importkeystore", "-noprompt",
             "-srckeystore", str(source), "-srcalias", alias,
-            "-srcstorepass:env", "FLECTAR_ANDROID_KEYSTORE_PASSWORD",
-            "-srckeypass:env", "FLECTAR_ANDROID_KEY_PASSWORD",
+            "-srcstorepass:env", "EVANYA_ANDROID_KEYSTORE_PASSWORD",
+            "-srckeypass:env", "EVANYA_ANDROID_KEY_PASSWORD",
             "-destkeystore", str(staged), "-deststoretype", "PKCS12",
             "-destalias", alias,
-            "-deststorepass:env", "FLECTAR_ANDROID_NEW_PASSWORD",
-            "-destkeypass:env", "FLECTAR_ANDROID_NEW_PASSWORD",
+            "-deststorepass:env", "EVANYA_ANDROID_NEW_PASSWORD",
+            "-destkeypass:env", "EVANYA_ANDROID_NEW_PASSWORD",
         ], env=environment, check=True, stdout=subprocess.DEVNULL)
         verify(staged, alias, new_password, new_password)
         staged.chmod(0o600)
@@ -98,11 +98,11 @@ def upload(environment: dict[str, str], repository: str, name: str) -> None:
         if not settings.get("deployment_branch_policy"):
             raise ValueError(f"Restrict branches/tags for the {name} environment before uploading signing secrets.")
     secrets = {
-        "FLECTAR_ANDROID_KEYSTORE_BASE64": base64.b64encode(
-            Path(environment["FLECTAR_ANDROID_KEYSTORE"]).read_bytes()
+        "EVANYA_ANDROID_KEYSTORE_BASE64": base64.b64encode(
+            Path(environment["EVANYA_ANDROID_KEYSTORE"]).read_bytes()
         ).decode("ascii"),
         **{key: environment[key] for key in (
-            "FLECTAR_ANDROID_KEYSTORE_PASSWORD", "FLECTAR_ANDROID_KEY_ALIAS", "FLECTAR_ANDROID_KEY_PASSWORD",
+            "EVANYA_ANDROID_KEYSTORE_PASSWORD", "EVANYA_ANDROID_KEY_ALIAS", "EVANYA_ANDROID_KEY_PASSWORD",
         )},
     }
     for key, value in secrets.items():
@@ -142,7 +142,7 @@ def main() -> None:
         environment = verify(source, args.alias, store_password, key_password)
     if args.upload:
         if min(len(environment[key]) for key in (
-            "FLECTAR_ANDROID_KEYSTORE_PASSWORD", "FLECTAR_ANDROID_KEY_PASSWORD"
+            "EVANYA_ANDROID_KEYSTORE_PASSWORD", "EVANYA_ANDROID_KEY_PASSWORD"
         )) < 16:
             raise ValueError("Use --output to protect the existing key with a password of at least 16 characters first.")
         upload(environment, args.repo, args.environment)

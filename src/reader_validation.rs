@@ -449,14 +449,14 @@ fn automatic_selection_hydrates_and_reader_controls_are_responsive_and_keyboard_
     // Hydrated attachments must survive a body-rendering failure and remain
     // projected independently of the HTML/plain-text reader.
     state.borrow_mut().messages[0].attachments = vec![
-        flectar_mail_core::models::AttachmentMeta {
+        evanya_core::models::AttachmentMeta {
             id: 42,
             filename: Some("Project overview.pdf".into()),
             mime_type: Some("application/pdf".into()),
             size: Some(1024),
             is_inline: false,
         },
-        flectar_mail_core::models::AttachmentMeta {
+        evanya_core::models::AttachmentMeta {
             id: 43,
             filename: Some("email-logo.png".into()),
             mime_type: Some("image/png".into()),

@@ -62,11 +62,11 @@ remain in place until Slint adopts a fixed version too.
 ## Upgrade validation
 
 ```sh
-cargo test -p flectar-renderer-probe --test blitz_upgrade --locked
+cargo test -p evanya-renderer-probe --test blitz_upgrade --locked
 cargo check --workspace --all-targets --locked
-cargo check -p flectar-mail --no-default-features --locked
-cargo check -p flectar-mail --no-default-features --features remote-content --locked
-cargo check -p flectar-mail --features flatpak --locked
+cargo check -p evanya --no-default-features --locked
+cargo check -p evanya --no-default-features --features remote-content --locked
+cargo check -p evanya --features flatpak --locked
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --all-targets --locked
 cargo test -p blitz-dom --lib --locked
@@ -74,7 +74,7 @@ cargo metadata --manifest-path platform/android/Cargo.toml --locked --format-ver
 # With the NDK compiler environment used by scripts/build-android-test-apk.sh:
 cargo check --manifest-path platform/android/Cargo.toml --target aarch64-linux-android --locked
 # Requires a working WGPU adapter:
-cargo test -p flectar-mail --lib issue_23_gpu --locked -- --ignored
+cargo test -p evanya --lib issue_23_gpu --locked -- --ignored
 ```
 
 `crates/renderer-probe/tests/blitz_upgrade.rs` covers the upstream/local table

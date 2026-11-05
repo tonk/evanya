@@ -1,4 +1,4 @@
-//! Bridge to FlectarActivity.setLauncherIcon for the app icon chosen in
+//! Bridge to EvanyaActivity.setLauncherIcon for the app icon chosen in
 //! Settings.
 use jni::{
     JavaVM,
@@ -34,7 +34,7 @@ pub fn install(app: &slint::android::AndroidApp) -> Result<(), String> {
             activity: Mutex::new(activity),
         })
         .map_err(|_| "Launcher icon bridge already initialized")?;
-    flectar_mail::platform::configure_launcher_icon(|icon| {
+    evanya::platform::configure_launcher_icon(|icon| {
         if let Err(error) = choose(icon) {
             tracing::warn!(%error, "could not choose the launcher icon");
         }

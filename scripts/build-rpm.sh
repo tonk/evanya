@@ -22,9 +22,9 @@ else
 fi
 
 build_args=(--locked --bin evanya --manifest-path "$project_dir/Cargo.toml" --release --no-default-features --features remote-content,gpu-renderer)
-if [[ "${FLECTAR_SKIP_BUILD:-0}" == "1" ]]; then
+if [[ "${EVANYA_SKIP_BUILD:-0}" == "1" ]]; then
   if [[ ! -x "$project_dir/target/release/evanya" ]]; then
-    printf 'FLECTAR_SKIP_BUILD=1 requires an existing release executable.\n' >&2
+    printf 'EVANYA_SKIP_BUILD=1 requires an existing release executable.\n' >&2
     exit 1
   fi
 else
@@ -43,8 +43,8 @@ tar -C "$package_root$rpm_libdir/evanya/pdfium-licenses" -czf "$source_dir/pdfiu
 python3 "$project_dir/scripts/stage-linux-metadata.py" "$build_dir/metadata" >/dev/null
 install -m0644 "$build_dir/metadata/usr/share/applications/com.evanya.mail.desktop" "$source_dir/com.evanya.mail.desktop"
 install -m0644 "$build_dir/metadata/usr/share/metainfo/com.evanya.mail.metainfo.xml" "$source_dir/com.evanya.mail.metainfo.xml"
-install -m0644 "$project_dir/resources/app-icon/flectar-mail-masked-512.png" "$source_dir/com.evanya.mail.png"
-install -m0644 "$project_dir/resources/app-icon/flectar-mail-masked.svg" "$source_dir/com.evanya.mail.svg"
+install -m0644 "$project_dir/resources/app-icon/evanya-masked-512.png" "$source_dir/com.evanya.mail.png"
+install -m0644 "$project_dir/resources/app-icon/evanya-masked.svg" "$source_dir/com.evanya.mail.svg"
 install -m0644 "$project_dir/LICENSE" "$source_dir/LICENSE"
 tar -C "$project_dir/LICENSES" -czf "$source_dir/LICENSES.tar.gz" .
 install -m0644 "$project_dir/THIRD_PARTY_NOTICES.md" "$source_dir/THIRD_PARTY_NOTICES.md"

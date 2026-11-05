@@ -1,7 +1,7 @@
 //! The mail account form shows what it will submit: values reset or filled in
 //! after the user typed reach the fields, and closing Settings closes the form.
 
-use flectar_mail::AppWindow;
+use evanya::AppWindow;
 use i_slint_core::accessibility::{AccessibilityAction, AccessibleStringProperty};
 use i_slint_core::item_tree::ItemRc;
 use i_slint_core::window::WindowInner;

@@ -20,7 +20,7 @@ fn account(id: i64) -> Account {
         display_name: Some(format!("Account {id}")),
         avatar_url: None,
         provider: Provider::Generic,
-        auth_kind: flectar_mail_core::models::AuthKind::Password,
+        auth_kind: evanya_core::models::AuthKind::Password,
         mail_protocol: MailProtocol::Imap,
         sync_state: "idle".into(),
         sync_error: None,
@@ -44,7 +44,7 @@ fn config(account: &Account) -> AccountConfig {
         incoming_port: 993,
         smtp_host: "smtp.example.test".into(),
         smtp_port: 465,
-        settings: flectar_mail_core::models::AccountSettings::new(MailConnectionSettings::new(
+        settings: evanya_core::models::AccountSettings::new(MailConnectionSettings::new(
             ConnectionSecurity::Tls,
             ConnectionSecurity::Tls,
         )),

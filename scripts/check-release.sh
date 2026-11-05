@@ -35,7 +35,7 @@ for path in Path("scripts").glob("*.sh"):
     subprocess.run(["bash", "-n", str(path)], check=True)
 for path in Path("scripts").glob("*.py"):
     ast.parse(path.read_text(), filename=str(path))
-icon = Path("resources/app-icon/flectar-mail.ico").read_bytes()
+icon = Path("resources/app-icon/evanya.ico").read_bytes()
 reserved, kind, count = struct.unpack_from("<HHH", icon)
 assert reserved == 0 and kind == 1 and count > 0, "Windows ICO header is invalid"
 for index in range(count):

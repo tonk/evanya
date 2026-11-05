@@ -212,7 +212,7 @@ export struct ThreadMessageRow {
 }
 
 // A calendar server an account syncs; mirrors
-// flectar_mail_core::models::CalendarConnection.
+// evanya_core::models::CalendarConnection.
 export struct CalendarConnectionRow {
     id: int,
     // google | generic | microsoft
@@ -423,7 +423,7 @@ export struct ComposeContact {
     initials: string,
 }
 
-// Mirrors flectar_mail_core::models::ContactSync.
+// Mirrors evanya_core::models::ContactSync.
 export enum ContactSyncState { local, detached, synced, pending, conflict, unavailable, failed }
 
 export struct ContactValueRow {

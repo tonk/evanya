@@ -1,6 +1,6 @@
 # Third-party notices
 
-Flectar Mail contains third-party open-source software. The source and binary
+Evanya contains third-party open-source software. The source and binary
 forms remain subject to the licenses and copyright notices of their respective
 authors.
 
@@ -100,7 +100,7 @@ options. Rust package versions and source checksums are recorded in `Cargo.lock`
 
 The composer checks spelling with the `spellbook` crate, copyright © the
 Helix editor contributors, used under the Mozilla Public License 2.0. Its
-source is <https://github.com/helix-editor/spellbook>. Flectar Mail does not
+source is <https://github.com/helix-editor/spellbook>. Evanya does not
 bundle dictionaries: it reads the Hunspell dictionaries installed on the
 system or placed in its data directory, each under its own license.
 
@@ -110,7 +110,7 @@ The original SVG inputs in `ui/icons/lucide/sources` are sourced from
 [Lucide](https://lucide.dev) Static 1.46.0. The displayed outlines in
 `ui/icons/lucide/outline` preserve that geometry with an adjusted stroke weight.
 The active and sidebar variants in `ui/icons/lucide/filled` are modifications
-created for Flectar Mail from the same 24px Lucide geometry. Lucide is licensed
+created for Evanya from the same 24px Lucide geometry. Lucide is licensed
 under the ISC License, with Feather-derived icons covered by the MIT License.
 Both notices are retained in `ui/icons/lucide/LICENSE`. Source mappings are
 recorded in `ui/icons/lucide/sources.json` and `ui/icons/lucide/solid_recipes.py`.

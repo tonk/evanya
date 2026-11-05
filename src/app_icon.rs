@@ -17,8 +17,8 @@
 //! some mobile platforms reserve switching the home screen icon for system
 //! apps, so the choice is not offered there.
 
-use crate::{AppIconVariant, AppWindow, tray_ui::FlectarTray};
-use flectar_mail_core::models;
+use crate::{AppIconVariant, AppWindow, tray_ui::EvanyaTray};
+use evanya_core::models;
 use slint::ComponentHandle;
 use std::cell::RefCell;
 
@@ -34,7 +34,7 @@ const PLATFORM: &str = crate::window_chrome::PLATFORM;
 const PLATFORM: &str = crate::platform::NAME;
 
 thread_local! {
-    static TRAY: RefCell<Option<slint::Weak<FlectarTray>>> = const { RefCell::new(None) };
+    static TRAY: RefCell<Option<slint::Weak<EvanyaTray>>> = const { RefCell::new(None) };
 }
 
 pub(crate) fn variant(icon: models::AppIcon) -> AppIconVariant {
@@ -85,7 +85,7 @@ pub(crate) fn apply(app: &AppWindow, icon: models::AppIcon) {
 }
 
 /// Keep the tray's image in step with the chosen icon.
-pub(crate) fn attach_tray(app: &AppWindow, tray: &FlectarTray) {
+pub(crate) fn attach_tray(app: &AppWindow, tray: &EvanyaTray) {
     let global = app.global::<crate::AppIcon>();
     tray.set_image(global.invoke_tray_image(global.get_variant()));
     TRAY.with(|slot| *slot.borrow_mut() = Some(tray.as_weak()));
@@ -117,7 +117,7 @@ fn png_512(icon: models::AppIcon) -> Option<&'static [u8]> {
 
 #[cfg(target_os = "macos")]
 mod dock {
-    use flectar_mail_core::models::AppIcon;
+    use evanya_core::models::AppIcon;
     use objc2::{AnyThread, MainThreadMarker};
     use objc2_app_kit::{NSApplication, NSImage};
     use objc2_foundation::NSData;
@@ -159,7 +159,7 @@ mod dock {
 /// themselves is left alone.
 #[cfg(all(linux_desktop, not(feature = "flatpak")))]
 mod launcher {
-    use flectar_mail_core::models::AppIcon;
+    use evanya_core::models::AppIcon;
     use std::{
         io::{self, Write},
         path::{Path, PathBuf},

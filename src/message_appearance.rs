@@ -222,7 +222,7 @@ impl AppearanceDocument {
                         // Stylo buckets attribute selectors by name. A unique
                         // name keeps matching linear in the message size;
                         // one shared attribute with unique values is quadratic.
-                        local: format!("data-flectar-appearance-{}", id.as_u64()).into(),
+                        local: format!("data-evanya-appearance-{}", id.as_u64()).into(),
                     },
                     "",
                 );
@@ -298,7 +298,7 @@ impl AppearanceDocument {
                 };
                 let _ = write!(
                     css,
-                    "[data-flectar-appearance-{}] {{ color: {} !important;",
+                    "[data-evanya-appearance-{}] {{ color: {} !important;",
                     id.as_u64(),
                     css_color(mapped_fg)
                 );

@@ -12,7 +12,7 @@ import zipfile
 
 REQUIRED_EXPORTS = {
     "ANativeActivity_onCreate",
-    *("Java_com_flectar_mail_FlectarActivity_" + method for method in (
+    *("Java_com_evanya_mail_EvanyaActivity_" + method for method in (
         "nativeGoogleAuthorizationResult",
         "nativeMicrosoftRedirect",
         "nativeDocumentResult",
@@ -29,7 +29,7 @@ def verify_jni_exports(data, name):
     readelf = os.environ.get("READELF") or shutil.which("llvm-readelf") or shutil.which("readelf")
     if not readelf:
         raise ValueError("JNI verification requires llvm-readelf or readelf (or set READELF)")
-    with tempfile.TemporaryDirectory(prefix="flectar-jni-") as directory:
+    with tempfile.TemporaryDirectory(prefix="evanya-jni-") as directory:
         library = Path(directory) / "library.so"
         library.write_bytes(data)
         result = subprocess.run(
@@ -73,9 +73,9 @@ def verify_elf(data, name):
 def verify_apk(path):
     with zipfile.ZipFile(path) as archive:
         names = set(archive.namelist())
-        app_libraries = sorted(name for name in names if name.endswith("/libflectar_mail_android.so"))
+        app_libraries = sorted(name for name in names if name.endswith("/libevanya_android.so"))
         if not app_libraries:
-            raise ValueError("APK contains no Flectar native application")
+            raise ValueError("APK contains no Evanya native application")
         for app in app_libraries:
             abi = app.split("/")[1]
             pdfium = f"lib/{abi}/libpdfium.so"

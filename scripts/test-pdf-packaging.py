@@ -122,7 +122,7 @@ class PackagingTests(unittest.TestCase):
                 shutil.copyfile(SCRIPTS.parent / name, output)
             shutil.copytree(SCRIPTS.parent / "LICENSES", root / "LICENSES")
             (root / "resources/app-icon").mkdir(parents=True)
-            (root / "resources/app-icon/flectar-mail-masked.png").write_bytes(b"png")
+            (root / "resources/app-icon/evanya-masked.png").write_bytes(b"png")
             (root / "Cargo.toml").write_text('[package]\nversion = "0.1.0-alpha.5"\n')
             (root / "target/release").mkdir(parents=True)
             shutil.copyfile("/bin/true", root / "target/release/evanya")
@@ -212,7 +212,7 @@ class PackagingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             apk = pathlib.Path(directory) / "fixture.apk"
             files = {
-                "lib/arm64-v8a/libflectar_mail_android.so": elf(),
+                "lib/arm64-v8a/libevanya_android.so": elf(),
                 "lib/arm64-v8a/libpdfium.so": elf(),
                 "assets/licenses/PDFium/arm64-v8a/pdfium-licenses/build.json": b"{}",
                 "assets/licenses/PDFium/arm64-v8a/pdfium-licenses/LICENSE": b"license",

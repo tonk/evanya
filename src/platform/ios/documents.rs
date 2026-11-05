@@ -28,13 +28,13 @@ const PICKER_TIMEOUT: Duration = Duration::from_secs(600);
 /// Several documents can be gigabytes of mail to copy.
 const SEVERAL_TIMEOUT: Duration = Duration::from_secs(3600);
 unsafe extern "C" {
-    fn flectar_cancel_document(id: i64);
-    fn flectar_choose_document(
+    fn evanya_cancel_document(id: i64);
+    fn evanya_choose_document(
         id: i64,
         path: *const c_char,
         callback: extern "C" fn(i64, *const c_char, *const c_char, *const c_char),
     );
-    fn flectar_choose_documents(
+    fn evanya_choose_documents(
         id: i64,
         limit: c_ulong,
         callback: extern "C" fn(
@@ -156,7 +156,7 @@ fn start<T: Send + 'static>(
     let guard = DocumentRequestGuard(Box::new(move || {
         if take(id).is_some() {
             unsafe {
-                flectar_cancel_document(id);
+                evanya_cancel_document(id);
             }
         }
     }));
@@ -177,7 +177,7 @@ fn request(path: PathBuf) -> DocumentFuture<Option<ImportedDocument>> {
     start(
         |sender| Pending::One(sender, importing),
         PICKER_TIMEOUT,
-        |id| unsafe { flectar_choose_document(id, value.as_ptr(), result) },
+        |id| unsafe { evanya_choose_document(id, value.as_ptr(), result) },
     )
 }
 impl DocumentProvider for IosDocuments {
@@ -186,11 +186,11 @@ impl DocumentProvider for IosDocuments {
     }
     fn export(&self, path: PathBuf, name: String) -> DocumentFuture<bool> {
         Box::pin(async move {
-            flectar_mail_core::files::validate_name(&name).map_err(|e| e.to_string())?;
+            evanya_core::files::validate_name(&name).map_err(|e| e.to_string())?;
             let folder = tempfile::tempdir_in(path.parent().ok_or("Invalid export directory.")?)
                 .map_err(|e| e.to_string())?;
             let destination = folder.path().join(name);
-            flectar_mail_core::files::save_cached_file(&path, &destination)
+            evanya_core::files::save_cached_file(&path, &destination)
                 .await
                 .map_err(|e| e.to_string())?;
             Ok(request(destination).await?.is_some())
@@ -203,7 +203,7 @@ impl DocumentProvider for IosDocuments {
     ) -> DocumentFuture<Vec<ImportedDocument>> {
         let limit = c_ulong::try_from(limit).unwrap_or(c_ulong::MAX);
         start(Pending::Many, SEVERAL_TIMEOUT, |id| unsafe {
-            flectar_choose_documents(id, limit, results)
+            evanya_choose_documents(id, limit, results)
         })
     }
 }

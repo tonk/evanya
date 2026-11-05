@@ -1,7 +1,7 @@
 //! Android integration used by platform/android. The Kotlin/Java activity and
 //! JNI services live in that shell; this module only holds what the shared
 //! application needs at runtime.
-use flectar_mail_core::models::AppIcon;
+use evanya_core::models::AppIcon;
 use std::{path::PathBuf, sync::OnceLock};
 
 static PDFIUM_LIBRARY: OnceLock<PathBuf> = OnceLock::new();
@@ -51,10 +51,10 @@ pub(crate) fn lower_current_thread_priority() {
     }
 }
 
-/// Lifecycle callbacks arrive through FlectarActivity's JNI bridge.
+/// Lifecycle callbacks arrive through EvanyaActivity's JNI bridge.
 pub(crate) fn install_preview_lifecycle() {}
 
-/// Supply the bridge to FlectarActivity.setLauncherIcon, which receives the
+/// Supply the bridge to EvanyaActivity.setLauncherIcon, which receives the
 /// icon's name and switches the launcher entry once the app leaves the
 /// foreground.
 pub fn configure_launcher_icon(switch: impl Fn(&str) + Send + Sync + 'static) {

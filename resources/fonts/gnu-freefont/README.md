@@ -1,7 +1,7 @@
 # GNU FreeFont
 
 This directory contains the unmodified GNU FreeFont families FreeSans,
-FreeSerif and FreeMono, each in four styles. Flectar Mail bundles them so
+FreeSerif and FreeMono, each in four styles. Evanya bundles them so
 they can be chosen in Settings → Fonts on every platform, whether or not
 they are installed.
 

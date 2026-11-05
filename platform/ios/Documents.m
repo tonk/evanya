@@ -3,8 +3,8 @@
 
 // Imported copies take generated names. Each result carries the name the user
 // picked alongside, which Rust validates before using it.
-typedef void (*FlectarDocumentCallback)(long long, const char *, const char *, const char *);
-typedef void (*FlectarDocumentsCallback)(long long, const char *const *, const char *const *, unsigned long, const char *);
+typedef void (*EvanyaDocumentCallback)(long long, const char *, const char *, const char *);
+typedef void (*EvanyaDocumentsCallback)(long long, const char *const *, const char *const *, unsigned long, const char *);
 // Accessed only on the main queue. The delegate survives picker dismissal
 // while a coordinated background import is still running.
 static NSMutableDictionary<NSNumber *, id> *requests;
@@ -16,7 +16,7 @@ static const unsigned long long singleDocumentLimit = 512ULL * 1024 * 1024;
 static const unsigned long long freeSpaceReserve = 64ULL * 1024 * 1024;
 
 static NSError *documentError(NSString *message) {
-    return [NSError errorWithDomain:@"FlectarDocuments" code:1
+    return [NSError errorWithDomain:@"EvanyaDocuments" code:1
                           userInfo:@{NSLocalizedDescriptionKey: message}];
 }
 
@@ -27,11 +27,11 @@ static unsigned long long freeSpace(void) {
     return capacity ? capacity.unsignedLongLongValue : ULLONG_MAX;
 }
 
-@interface FlectarDocumentDelegate : NSObject <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
+@interface EvanyaDocumentDelegate : NSObject <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 @property(nonatomic) long long requestId;
-@property(nonatomic) FlectarDocumentCallback callback;
+@property(nonatomic) EvanyaDocumentCallback callback;
 // Set for a request of several documents, as many as the limit.
-@property(nonatomic) FlectarDocumentsCallback documentsCallback;
+@property(nonatomic) EvanyaDocumentsCallback documentsCallback;
 @property(nonatomic) unsigned long limit;
 @property(nonatomic) BOOL exporting;
 @property(nonatomic) BOOL finished;
@@ -42,7 +42,7 @@ static unsigned long long freeSpace(void) {
 // Copies the document at `url` into the caches under a generated name, in no
 // more than `limit` bytes. Returns the copy and the document's own name, or
 // nil and the reason.
-static NSURL *copyDocument(FlectarDocumentDelegate *delegate, NSURL *url, unsigned long long limit,
+static NSURL *copyDocument(EvanyaDocumentDelegate *delegate, NSURL *url, unsigned long long limit,
                            NSString **name, NSError **error) {
     BOOL scoped = [url startAccessingSecurityScopedResource];
     __block NSError *readError = nil;
@@ -115,7 +115,7 @@ static NSURL *copyDocument(FlectarDocumentDelegate *delegate, NSURL *url, unsign
     return destination;
 }
 
-@implementation FlectarDocumentDelegate
+@implementation EvanyaDocumentDelegate
 - (void)finishPaths:(NSArray<NSString *> *)paths names:(NSArray<NSString *> *)names error:(NSString *)error {
     if (self.finished) return;
     self.finished = YES;
@@ -202,9 +202,9 @@ static NSURL *copyDocument(FlectarDocumentDelegate *delegate, NSURL *url, unsign
 }
 @end
 
-void flectar_cancel_document(long long requestId) {
+void evanya_cancel_document(long long requestId) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        FlectarDocumentDelegate *delegate = requests[@(requestId)];
+        EvanyaDocumentDelegate *delegate = requests[@(requestId)];
         if (!delegate) return;
         delegate.cancelled = YES;
         [delegate.picker dismissViewControllerAnimated:YES completion:nil];
@@ -214,7 +214,7 @@ void flectar_cancel_document(long long requestId) {
 
 // Presents the picker for `delegate`'s request, on the main queue: an export
 // of `path`, or an import.
-static void presentPicker(FlectarDocumentDelegate *delegate, NSString *path) {
+static void presentPicker(EvanyaDocumentDelegate *delegate, NSString *path) {
     if (!requests) requests = [NSMutableDictionary dictionary];
     UIWindow *window = nil;
     if (@available(iOS 13.0, *)) {
@@ -248,19 +248,19 @@ static void presentPicker(FlectarDocumentDelegate *delegate, NSString *path) {
     picker.presentationController.delegate = delegate;
 }
 
-void flectar_choose_document(long long requestId, const char *exportPath, FlectarDocumentCallback callback) {
+void evanya_choose_document(long long requestId, const char *exportPath, EvanyaDocumentCallback callback) {
     NSString *path = exportPath ? [NSString stringWithUTF8String:exportPath] : @"";
     dispatch_async(dispatch_get_main_queue(), ^{
-        FlectarDocumentDelegate *delegate = [FlectarDocumentDelegate new];
+        EvanyaDocumentDelegate *delegate = [EvanyaDocumentDelegate new];
         delegate.requestId = requestId;
         delegate.callback = callback;
         presentPicker(delegate, path ?: @"");
     });
 }
 
-void flectar_choose_documents(long long requestId, unsigned long limit, FlectarDocumentsCallback callback) {
+void evanya_choose_documents(long long requestId, unsigned long limit, EvanyaDocumentsCallback callback) {
     dispatch_async(dispatch_get_main_queue(), ^{
-        FlectarDocumentDelegate *delegate = [FlectarDocumentDelegate new];
+        EvanyaDocumentDelegate *delegate = [EvanyaDocumentDelegate new];
         delegate.requestId = requestId;
         delegate.documentsCallback = callback;
         delegate.limit = limit;

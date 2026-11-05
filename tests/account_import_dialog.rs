@@ -117,7 +117,7 @@ fn rows() -> Vec<ImportAccountRow> {
     ]
 }
 
-/// Renders a few frames; writes a PNG when `FLECTAR_IMPORT_SNAPSHOTS` names
+/// Renders a few frames; writes a PNG when `EVANYA_IMPORT_SNAPSHOTS` names
 /// a directory, for reviewing layout changes.
 fn render(window: &MinimalSoftwareWindow, width: u32, height: u32, name: &str) {
     let mut pixels = vec![slint::Rgb8Pixel::default(); (width * height) as usize];
@@ -128,7 +128,7 @@ fn render(window: &MinimalSoftwareWindow, width: u32, height: u32, name: &str) {
             renderer.render(&mut pixels, width as usize);
         });
     }
-    if let Some(directory) = std::env::var_os("FLECTAR_IMPORT_SNAPSHOTS") {
+    if let Some(directory) = std::env::var_os("EVANYA_IMPORT_SNAPSHOTS") {
         let bytes = pixels
             .iter()
             .flat_map(|pixel| [pixel.r, pixel.g, pixel.b])

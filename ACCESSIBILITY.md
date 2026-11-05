@@ -1,6 +1,6 @@
 # Accessibility
 
-Flectar Mail aims to make email, calendars, contacts, and files usable with
+Evanya aims to make email, calendars, contacts, and files usable with
 keyboard navigation, readable layouts, and assistive technology. Accessibility
 work is ongoing while the app is in development.
 
@@ -33,7 +33,7 @@ Custom color palettes and original message colors may also reduce contrast.
 [Open an issue](https://github.com/flectar/mail/issues/new) with
 “Accessibility” in the title. Include, where possible:
 
-- The Flectar Mail version, operating system, and desktop environment.
+- The Evanya version, operating system, and desktop environment.
 - Assistive technology and its version, if used.
 - The task you were trying to complete, steps to reproduce the barrier, and
   what you expected to happen.

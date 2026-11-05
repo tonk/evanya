@@ -10,9 +10,9 @@
 // input that keeps its width must still show its whole value.
 //
 // Build with SLINT_EMIT_DEBUG_INFO=1 to name the offending elements. Set
-// FLECTAR_TEXT_FIT_SNAPSHOTS to a directory to save a render of each state.
+// EVANYA_TEXT_FIT_SNAPSHOTS to a directory to save a render of each state.
 
-use flectar_mail::{
+use evanya::{
     AccountImport, AccountRow, AppIcon, AppTheme, AppWindow, CalendarAgendaRow,
     CalendarConnectionRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay,
     ContactAccountRow, ContactRow, ContactSidebarRow, ContactSidebarRowKind, ContactSyncState,
@@ -664,7 +664,7 @@ fn apply_fixture(app: &AppWindow) {
     }]));
     app.set_contact_source("Personal · jamie.rivera@example.com".into());
     app.set_contact_sync(ContactSyncState::Pending);
-    app.on_usable_contact_email(|email| flectar_mail_core::carddav::vcard::usable_email(&email));
+    app.on_usable_contact_email(|email| evanya_core::carddav::vcard::usable_email(&email));
     app.set_contact_company("Northwind".into());
     app.set_contact_job_title("Product lead".into());
     app.set_contact_notes("Prefers morning meetings.".into());
@@ -787,7 +787,7 @@ fn load_catalog(language: &str) -> BTreeMap<String, String> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("lang")
         .join(language)
-        .join("LC_MESSAGES/flectar-mail.po");
+        .join("LC_MESSAGES/evanya.po");
     let unquote = |line: &str| {
         line.trim()
             .trim_matches('"')
@@ -1638,7 +1638,7 @@ fn text_fits_at_desktop_font_sizes() {
     apply_fixture(&app);
     app.show().unwrap();
     // Opt-in renders of every checked state, for comparing layouts by eye.
-    let snapshots = std::env::var_os("FLECTAR_TEXT_FIT_SNAPSHOTS").map(std::path::PathBuf::from);
+    let snapshots = std::env::var_os("EVANYA_TEXT_FIT_SNAPSHOTS").map(std::path::PathBuf::from);
 
     let sources = Sources::load();
     let mut hints: BTreeMap<(String, u32), String> = BTreeMap::new();

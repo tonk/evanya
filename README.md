@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="resources/app-icon/flectar-mail-masked.png" width="88" alt="Evanya logo">
+  <img src="resources/app-icon/evanya-masked.png" width="88" alt="Evanya logo">
   <h1 align="center">
     Evanya
   </h1>
@@ -317,7 +317,7 @@ WebView. If a message renders incorrectly, please
 ## 📥 Get Evanya
 
 Evanya is in development and not yet stable, and is built from source. Preview
-builds of the upstream Flectar Mail are on
+builds of the upstream Evanya are on
 [GitHub Releases](https://github.com/flectar/mail/releases) with the
 **Pre-release** badge.
 

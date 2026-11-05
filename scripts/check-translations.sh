@@ -19,22 +19,22 @@ cd "$repo_root"
 find ui -type f -name '*.slint' ! -name '.*' -print0 \
   | sort -z \
   | xargs -0 slint-tr-extractor --no-default-translation-context \
-      --package-name flectar-mail --package-version 0.1.0 \
-      -o "$work_dir/flectar-mail.pot"
+      --package-name evanya --package-version 0.1.0 \
+      -o "$work_dir/evanya.pot"
 
 # Extraction timestamps are intentionally volatile; compare every semantic
 # catalog line while ignoring only that generated header field.
 diff -u \
-  <(sed '/^"POT-Creation-Date:/d' lang/flectar-mail.pot) \
-  <(sed '/^"POT-Creation-Date:/d' "$work_dir/flectar-mail.pot")
+  <(sed '/^"POT-Creation-Date:/d' lang/evanya.pot) \
+  <(sed '/^"POT-Creation-Date:/d' "$work_dir/evanya.pot")
 
 for language in da de es fr it ja nl ru tr zh_Hans; do
   msgmerge --quiet --no-fuzzy-matching \
-    --output-file "$work_dir/flectar-mail-$language.po" \
-    "lang/$language/LC_MESSAGES/flectar-mail.po" "$work_dir/flectar-mail.pot"
+    --output-file "$work_dir/evanya-$language.po" \
+    "lang/$language/LC_MESSAGES/evanya.po" "$work_dir/evanya.pot"
   diff -u \
-    <(sed '/^"POT-Creation-Date:/d' "lang/$language/LC_MESSAGES/flectar-mail.po") \
-    <(sed '/^"POT-Creation-Date:/d' "$work_dir/flectar-mail-$language.po")
+    <(sed '/^"POT-Creation-Date:/d' "lang/$language/LC_MESSAGES/evanya.po") \
+    <(sed '/^"POT-Creation-Date:/d' "$work_dir/evanya-$language.po")
 done
 
 bash scripts/check-ui-message-catalog.sh

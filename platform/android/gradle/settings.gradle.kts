@@ -39,5 +39,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FlectarMailAndroid"
+rootProject.name = "EvanyaAndroid"
 include(":app")

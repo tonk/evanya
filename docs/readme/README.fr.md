@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="Logo de Flectar Mail">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="Logo de Evanya">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>L’e-mail retrouve sa rapidité</h3>
-    <p>Conçu de zéro pour la vitesse. Flectar Mail offre des performances natives, un démarrage instantané et une consommation d’environ 20 Mo de mémoire privée au repos.</p>
+    <p>Conçu de zéro pour la vitesse. Evanya offre des performances natives, un démarrage instantané et une consommation d’environ 20 Mo de mémoire privée au repos.</p>
   </div>
   <p>
     <a href="https://flectar.com">Site web</a> ·
@@ -32,12 +32,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail sur macOS avec la boîte de réception unifiée et la vue du message">
+  <img src="../../resources/screenshots/desktop-light.png" alt="Evanya sur macOS avec la boîte de réception unifiée et la vue du message">
 </picture>
 
-Flectar Mail est une application native et légère pour vos e-mails, calendriers et contacts. Elle est conçue pour s’ouvrir instantanément, rester réactive et n’utiliser qu’une fraction de la mémoire d’un client de messagerie classique basé sur des technologies web.
+Evanya est une application native et légère pour vos e-mails, calendriers et contacts. Elle est conçue pour s’ouvrir instantanément, rester réactive et n’utiliser qu’une fraction de la mémoire d’un client de messagerie classique basé sur des technologies web.
 
-## ❓ Pourquoi Flectar Mail ?
+## ❓ Pourquoi Evanya ?
 
 | Avantage | Détails |
 | --- | --- |
@@ -54,7 +54,7 @@ Flectar Mail est une application native et légère pour vos e-mails, calendrier
 
 ## ⚡ Performances
 
-| Au repos, même boîte aux lettres | Flectar Mail | Thunderbird 159 |
+| Au repos, même boîte aux lettres | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | Mémoire privée | **~20 Mo** | ~250 Mo |
 | Y compris le code et les bibliothèques (PSS) | **~85 Mo** | ~435 Mo |
@@ -66,7 +66,7 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
 
 | Client de messagerie | Interface | Rendu des e-mails | Plateformes |
 | --- | --- | --- | --- |
-| **Flectar Mail** | Application native en Rust | Blitz, un moteur HTML/CSS en Rust ; aucune WebView | Windows, macOS, Linux, Android ; iOS bientôt disponible |
+| **Evanya** | Application native en Rust | Blitz, un moteur HTML/CSS en Rust ; aucune WebView | Windows, macOS, Linux, Android ; iOS bientôt disponible |
 | Thunderbird | Application de bureau basée sur Gecko | Gecko | Windows, macOS, Linux, Android |
 | Outlook pour Windows | Application Windows à interface web | Microsoft Edge WebView2 | Windows |
 | Spark | Application Electron | Chromium | macOS, Windows, iOS, Android |
@@ -103,14 +103,14 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Espace de travail complet de Flectar Mail sur ordinateur" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Espace de travail complet de Evanya sur ordinateur" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Espace de travail minimaliste de Flectar Mail sur ordinateur" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Espace de travail minimaliste de Evanya sur ordinateur" width="100%">
         </picture>
       </td>
     </tr>
@@ -133,21 +133,21 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail avec des onglets pour plusieurs conversations, le calendrier, les contacts et les fichiers" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Evanya avec des onglets pour plusieurs conversations, le calendrier, les contacts et les fichiers" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-thread-light.png">
-          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Conversation Flectar Mail avec les messages reçus et les réponses" width="100%">
+          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Conversation Evanya avec les messages reçus et les réponses" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Boîte de réception unifiée de Flectar Mail avec des repères de profil violets et orange" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Boîte de réception unifiée de Evanya avec des repères de profil violets et orange" width="100%">
         </picture>
       </td>
     </tr>
@@ -171,28 +171,28 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Palette bleu-vert de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Palette bleu-vert de Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="Palette verte de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="Palette verte de Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Palette violette de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Palette violette de Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Palette personnalisée de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Palette personnalisée de Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -212,14 +212,14 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/macos-light.png">
-          <img src="../../resources/screenshots/frameless/macos-light.png" alt="Fenêtre sans bordure de Flectar Mail sur macOS" width="100%">
+          <img src="../../resources/screenshots/frameless/macos-light.png" alt="Fenêtre sans bordure de Evanya sur macOS" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/windows-light.png">
-          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Fenêtre sans bordure de Flectar Mail sur Windows" width="100%">
+          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Fenêtre sans bordure de Evanya sur Windows" width="100%">
         </picture>
       </td>
     </tr>
@@ -232,14 +232,14 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="Fenêtre sans bordure de Flectar Mail sur GNOME" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="Fenêtre sans bordure de Evanya sur GNOME" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-kde-light.png">
-          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="Fenêtre sans bordure de Flectar Mail sur KDE Plasma" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="Fenêtre sans bordure de Evanya sur KDE Plasma" width="100%">
         </picture>
       </td>
     </tr>
@@ -262,21 +262,21 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Calendrier de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Calendrier de Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Contacts de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Contacts de Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="Fichiers de Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="Fichiers de Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -287,18 +287,18 @@ Mesures effectuées sur Linux avec un compte IMAP (860 messages), la boîte de r
 
 | Clair | Sombre |
 | --- | --- |
-| ![Boîte de réception mobile de Flectar Mail en mode clair](../../resources/screenshots/mobile-light.png) | ![Boîte de réception mobile de Flectar Mail en mode sombre](../../resources/screenshots/mobile-dark.png) |
+| ![Boîte de réception mobile de Evanya en mode clair](../../resources/screenshots/mobile-light.png) | ![Boîte de réception mobile de Evanya en mode sombre](../../resources/screenshots/mobile-dark.png) |
 
 ## 🧪 Rendu HTML expérimental
 
 > [!WARNING]
-> Le rendu des e-mails HTML est actuellement la partie la plus expérimentale de Flectar Mail. Certains messages, notamment ceux dont le balisage et le CSS sont complexes ou inhabituels, peuvent encore s’afficher incorrectement.
+> Le rendu des e-mails HTML est actuellement la partie la plus expérimentale de Evanya. Certains messages, notamment ceux dont le balisage et le CSS sont complexes ou inhabituels, peuvent encore s’afficher incorrectement.
 
-Flectar Mail affiche les e-mails avec [Blitz](https://github.com/DioxusLabs/blitz), un moteur HTML/CSS en Rust de l’équipe Dioxus, plutôt qu’en intégrant un navigateur ou une WebView. Si un message s’affiche incorrectement, [signalez-le](https://github.com/flectar/mail/issues). En savoir plus sur [le moteur de rendu et les options CPU et GPU](../features.md#html-rendering).
+Evanya affiche les e-mails avec [Blitz](https://github.com/DioxusLabs/blitz), un moteur HTML/CSS en Rust de l’équipe Dioxus, plutôt qu’en intégrant un navigateur ou une WebView. Si un message s’affiche incorrectement, [signalez-le](https://github.com/flectar/mail/issues). En savoir plus sur [le moteur de rendu et les options CPU et GPU](../features.md#html-rendering).
 
-## 📥 Obtenir Flectar Mail
+## 📥 Obtenir Evanya
 
-Flectar Mail est en cours de développement et n’est pas encore stable. Les versions de test sont disponibles sur [GitHub Releases](https://github.com/flectar/mail/releases) avec la mention **Pre-release**.
+Evanya est en cours de développement et n’est pas encore stable. Les versions de test sont disponibles sur [GitHub Releases](https://github.com/flectar/mail/releases) avec la mention **Pre-release**.
 
 > [!WARNING]
 > **La vérification OAuth de Google exige une évaluation annuelle de sécurité CASA.** Flectar est un projet libre communautaire ; cette évaluation dépend donc du soutien des sponsors. Tant que la vérification requise n’est pas financée et terminée, une version stable avec OAuth Gmail configuré par défaut ne sera pas possible. Pour aider à proposer la connexion Gmail intégrée, [sponsorisez Flectar](https://github.com/sponsors/flectar).
@@ -313,7 +313,7 @@ Flectar Mail est en cours de développement et n’est pas encore stable. Les ve
 
 Dans les compilations sans clés d’application OAuth, la connexion Gmail et Outlook reste désactivée. Utilisez la roue dentée **Paramètres de connexion** de l’écran d’accueil pour ajouter votre propre inscription d’application Google ou Microsoft, ou connectez un compte IMAP, POP3 ou JMAP.
 
-Le [guide d’installation](../install.md) couvre les commandes d’installation, le trousseau et le portail du bureau sur Linux, les remarques sur Flatpak et RPM, la vérification des téléchargements, la signature Android et la compilation à partir des sources avec `cargo run --bin flectar-mail`.
+Le [guide d’installation](../install.md) couvre les commandes d’installation, le trousseau et le portail du bureau sur Linux, les remarques sur Flatpak et RPM, la vérification des téléchargements, la signature Android et la compilation à partir des sources avec `cargo run --bin evanya`.
 
 ## 🤝 Participer
 
@@ -327,9 +327,9 @@ Le [guide d’installation](../install.md) couvre les commandes d’installation
 
 ## 🫡 Remerciements
 
-Flectar Mail existe grâce au travail de ces projets et de leurs contributeurs :
+Evanya existe grâce au travail de ces projets et de leurs contributeurs :
 
-- [Slint](https://slint.dev/), la boîte à outils d’interface native qui fait fonctionner l’interface de Flectar Mail.
+- [Slint](https://slint.dev/), la boîte à outils d’interface native qui fait fonctionner l’interface de Evanya.
 - [Blitz](https://github.com/DioxusLabs/blitz), le moteur HTML/CSS en Rust de l’équipe Dioxus qui assure l’affichage des e-mails.
 
 ---

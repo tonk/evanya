@@ -93,9 +93,9 @@ prepare_data() {
 email_dir="$temporary_dir/email"
 echo "Rendering demo-email bodies"
 prepare_data email 1320 800 light
-FLECTAR_SCREENSHOT_DATA="$temporary_dir/email.json" \
-FLECTAR_EMAIL_SCREENSHOTS="$email_dir" cargo test --quiet --locked \
-  -p flectar-mail --lib screenshot_email::email_screenshots -- --ignored --exact
+EVANYA_SCREENSHOT_DATA="$temporary_dir/email.json" \
+EVANYA_EMAIL_SCREENSHOTS="$email_dir" cargo test --quiet --locked \
+  -p evanya --lib screenshot_email::email_screenshots -- --ignored --exact
 
 # Desktop screenshots that still need their macOS traffic lights.
 macos_screenshots=()
@@ -197,7 +197,7 @@ fi
 if [[ -z "${SCREENSHOT_ONLY:-}" || ",${SCREENSHOT_ONLY}," == *",frameless,"* ]]; then
   echo "Rendering frameless/*.png"
   prepare_data frameless 1320 800 light
-  FLECTAR_SCREENSHOT_DATA="$temporary_dir/frameless.json" \
-  FLECTAR_FRAMELESS_SCREENSHOTS="$output_dir/frameless" cargo test --quiet --locked \
-    -p flectar-mail --lib screenshot_frameless::frameless_screenshots -- --ignored --exact
+  EVANYA_SCREENSHOT_DATA="$temporary_dir/frameless.json" \
+  EVANYA_FRAMELESS_SCREENSHOTS="$output_dir/frameless" cargo test --quiet --locked \
+    -p evanya --lib screenshot_frameless::frameless_screenshots -- --ignored --exact
 fi

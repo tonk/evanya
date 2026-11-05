@@ -22,13 +22,13 @@ spec.loader.exec_module(startup)
 
 
 def run(binary, screenshots, include_mappings=False):
-    with tempfile.TemporaryDirectory(prefix="flectar-tray-benchmark-") as root:
+    with tempfile.TemporaryDirectory(prefix="evanya-tray-benchmark-") as root:
         env = dict(os.environ, XDG_DATA_HOME=root + "/data", XDG_CACHE_HOME=root + "/cache",
-                   FLECTAR_RENDERER="cpu", FLECTAR_STARTUP_METRICS="1",
-                   FLECTAR_BENCHMARK_DISABLE_SYNC="1", FLECTAR_BENCHMARK_TRAY_INTERVAL_MS="6000",
-                   FLECTAR_BENCHMARK_EXIT_AFTER_MS="18000")
+                   EVANYA_RENDERER="cpu", EVANYA_STARTUP_METRICS="1",
+                   EVANYA_BENCHMARK_DISABLE_SYNC="1", EVANYA_BENCHMARK_TRAY_INTERVAL_MS="6000",
+                   EVANYA_BENCHMARK_EXIT_AFTER_MS="18000")
         if screenshots:
-            env["FLECTAR_BENCHMARK_SCREENSHOT_DIR"] = str(screenshots.resolve())
+            env["EVANYA_BENCHMARK_SCREENSHOT_DIR"] = str(screenshots.resolve())
         process = subprocess.Popen([str(binary)], env=env, stderr=subprocess.PIPE,
                                    stdout=subprocess.DEVNULL, text=True)
         messages = queue.Queue()

@@ -135,7 +135,7 @@ mod xdg {
     /// The entry Flectar Mail wrote before the app was renamed to Evanya.
     const LEGACY_FILE_NAME: &str = "com.flectar.mail.desktop";
     /// Records the launched executable without parsing the quoted `Exec` line.
-    const EXECUTABLE_KEY: &str = "X-Flectar-Executable";
+    const EXECUTABLE_KEY: &str = "X-Evanya-Executable";
 
     fn entry_path() -> io::Result<PathBuf> {
         let config = std::env::var_os("XDG_CONFIG_HOME")
@@ -347,11 +347,8 @@ mod xdg {
             let directory = tempfile::tempdir().unwrap();
             let path = directory.path().join(FILE_NAME);
             for disabled in ["Hidden=true", "X-GNOME-Autostart-enabled=false"] {
-                std::fs::write(
-                    &path,
-                    format!("[Desktop Entry]\nExec=flectar-mail\n{disabled}\n"),
-                )
-                .unwrap();
+                std::fs::write(&path, format!("[Desktop Entry]\nExec=evanya\n{disabled}\n"))
+                    .unwrap();
                 let entry = read_from(&path).unwrap().unwrap();
                 assert!(!entry.enabled, "{disabled}");
                 assert_eq!(entry.executable, None);
@@ -360,7 +357,7 @@ mod xdg {
             // Keys outside the main group do not describe the entry.
             std::fs::write(
                 &path,
-                "[Desktop Entry]\nExec=flectar-mail\n[Desktop Action x]\nHidden=true\n",
+                "[Desktop Entry]\nExec=evanya\n[Desktop Action x]\nHidden=true\n",
             )
             .unwrap();
             assert!(read_from(&path).unwrap().unwrap().enabled);
@@ -542,8 +539,7 @@ mod registry {
 
         #[test]
         fn command_line_round_trips_the_executable() {
-            let executable =
-                Path::new(r"C:\Users\A B\AppData\Local\Programs\Flectar Mail\flectar-mail.exe");
+            let executable = Path::new(r"C:\Users\A B\AppData\Local\Programs\Evanya\evanya.exe");
             let command = command_line(executable);
             assert_eq!(
                 command.to_str().unwrap(),
@@ -554,8 +550,8 @@ mod registry {
                 Some(executable)
             );
             assert_eq!(
-                command_executable(r"C:\flectar.exe --background").as_deref(),
-                Some(Path::new(r"C:\flectar.exe"))
+                command_executable(r"C:\evanya.exe --background").as_deref(),
+                Some(Path::new(r"C:\evanya.exe"))
             );
             assert_eq!(command_executable("\"unterminated"), None);
         }
@@ -657,7 +653,7 @@ mod portal {
     };
 
     fn record() -> io::Result<PathBuf> {
-        let paths = flectar_mail_core::config::Paths::default_dirs()
+        let paths = evanya_core::config::Paths::default_dirs()
             .map_err(|error| io::Error::other(error.to_string()))?;
         Ok(paths.data_dir.join("launch-at-login"))
     }

@@ -43,8 +43,8 @@ modules:
       - python3 scripts/stage-linux-metadata.py --flatpak _flatpak-stage
       - install -Dm0644 _flatpak-stage/usr/share/applications/com.evanya.mail.desktop /app/share/applications/com.evanya.mail.desktop
       - install -Dm0644 _flatpak-stage/usr/share/metainfo/com.evanya.mail.metainfo.xml /app/share/metainfo/com.evanya.mail.metainfo.xml
-      - install -Dm0644 resources/app-icon/flectar-mail-masked-512.png /app/share/icons/hicolor/512x512/apps/com.evanya.mail.png
-      - install -Dm0644 resources/app-icon/flectar-mail-masked.svg /app/share/icons/hicolor/scalable/apps/com.evanya.mail.svg
+      - install -Dm0644 resources/app-icon/evanya-masked-512.png /app/share/icons/hicolor/512x512/apps/com.evanya.mail.png
+      - install -Dm0644 resources/app-icon/evanya-masked.svg /app/share/icons/hicolor/scalable/apps/com.evanya.mail.svg
       - install -Dm0644 LICENSE /app/share/licenses/evanya/LICENSE
       - cp -a LICENSES /app/share/licenses/evanya/LICENSES
       - install -Dm0644 THIRD_PARTY_NOTICES.md /app/share/doc/evanya/THIRD_PARTY_NOTICES.md

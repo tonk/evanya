@@ -39,9 +39,9 @@ class JniExportsTests(unittest.TestCase):
 
     def test_every_native_declaration_is_required(self):
         activity = (Path(__file__).resolve().parents[1] / "platform/android/gradle/app/src/main"
-                    / "java/com/flectar/mail/FlectarActivity.java")
+                    / "java/com/evanya/mail/EvanyaActivity.java")
         declared = set(re.findall(r"\bnative\s+\w+\s+(\w+)\s*\(", activity.read_text()))
-        prefix = "Java_com_flectar_mail_FlectarActivity_"
+        prefix = "Java_com_evanya_mail_EvanyaActivity_"
         required = {name.removeprefix(prefix) for name in native.REQUIRED_EXPORTS
                     if name.startswith(prefix)}
         self.assertEqual(declared, required)
@@ -61,7 +61,7 @@ class JniExportsTests(unittest.TestCase):
                         native.verify_jni_exports(data, "fixture.so")
 
     def test_non_callable_symbols_do_not_satisfy_the_contract(self):
-        name = "Java_com_flectar_mail_FlectarActivity_nativeGoogleAuthorizationResult"
+        name = "Java_com_evanya_mail_EvanyaActivity_nativeGoogleAuthorizationResult"
         variants = {
             "hidden": f'__attribute__((visibility("hidden"))) void {name}(void) {{}}',
             "local": f"static void {name}(void) {{}}",
@@ -80,7 +80,7 @@ class JniExportsTests(unittest.TestCase):
     def test_apk_checks_each_packaged_abi(self):
         with tempfile.TemporaryDirectory() as directory:
             complete = self.build_library(directory)
-            name = "Java_com_flectar_mail_FlectarActivity_nativeGoogleAuthorizationResult"
+            name = "Java_com_evanya_mail_EvanyaActivity_nativeGoogleAuthorizationResult"
             incomplete = self.build_library(directory, (name, ""))
             apk = Path(directory) / "fixture.apk"
             for second_library in (complete, incomplete):
@@ -88,7 +88,7 @@ class JniExportsTests(unittest.TestCase):
                     for abi, app in (("arm64-v8a", complete), ("x86_64", second_library)):
                         # Host ELF fixtures represent each packaging location;
                         # they are never executed as Android code.
-                        archive.writestr(f"lib/{abi}/libflectar_mail_android.so", app)
+                        archive.writestr(f"lib/{abi}/libevanya_android.so", app)
                         archive.writestr(f"lib/{abi}/libpdfium.so", complete)
                         notices = f"assets/licenses/PDFium/{abi}/pdfium-licenses"
                         archive.writestr(f"{notices}/build.json", "{}")

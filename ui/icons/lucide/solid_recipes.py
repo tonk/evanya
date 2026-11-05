@@ -63,7 +63,7 @@ def build(sources):
     # inward by only 0.35 units toward the top. The opening follows that taper,
     # with broad curved shoulders and softly rounded bottom corners. A slightly
     # thinner top rim keeps the opening airy at the 18px sidebar display size.
-    inbox_flectar = cut(solid(ET.Element("path", d=(
+    inbox_evanya = cut(solid(ET.Element("path", d=(
         "M4.75 2H19.25C20.55 2 21.62 3.02 21.65 4.32L22 19.32"
         "C22.035 20.78 20.91 22 19.45 22H4.55"
         "C3.09 22 1.965 20.78 2 19.32L2.35 4.32"
@@ -78,7 +78,7 @@ def build(sources):
         "C5.065 5.72 5.39 5.4 5.8 5.4Z"
     ))))
     # Preserve the earlier opening as a generated variant, byte-for-byte.
-    inbox_flectar_old = cut(inbox_flectar.body, solid(ET.Element("path", d=(
+    inbox_evanya_old = cut(inbox_evanya.body, solid(ET.Element("path", d=(
         "M5.95 5.75H18.05C18.53 5.75 18.935 6.12 18.95 6.6L19.1 11.6"
         "C19.115 12.1 18.73 12.5 18.23 12.5H17.5"
         "A2.25 2.25 0 0 0 15.25 14.75V18.75"
@@ -163,9 +163,9 @@ def build(sources):
             "Solid gear; central hole."),
         "inbox": Recipe("inbox", cut(solid(p("inbox", 1)), line(p("inbox", 0), 1.8)),
             "Solid tray; original lip becomes a cutout."),
-        "inbox-flectar": Recipe(None, inbox_flectar,
+        "inbox-evanya": Recipe(None, inbox_evanya,
             "Custom tapered tray; softly rounded outline and curved shoulders around an open well."),
-        "inbox-flectar-old": Recipe(None, inbox_flectar_old,
+        "inbox-evanya-old": Recipe(None, inbox_evanya_old,
             "Preserved earlier Flectar tray opening."),
         "info": Recipe("info", cut(solid(p("info", 0)), lines("info", 1, 2)),
             "Solid circle; information mark cutout."),

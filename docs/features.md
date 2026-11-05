@@ -1,4 +1,4 @@
-# Flectar Mail features
+# Evanya features
 
 A closer look at what the [README](../README.md) summarizes.
 
@@ -36,7 +36,7 @@ In the minimal layout, arrow keys highlight messages and **Enter** opens them;
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../resources/screenshots/desktop-thread-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../resources/screenshots/desktop-thread-light.png">
-  <img src="../resources/screenshots/desktop-thread-light.png" alt="Flectar Mail conversation with incoming and replied messages">
+  <img src="../resources/screenshots/desktop-thread-light.png" alt="Evanya conversation with incoming and replied messages">
 </picture>
 
 ## Tabs
@@ -45,7 +45,7 @@ Keep several places open at once with browser-style tabs. Each tab remembers
 its own place: a mailbox, search, or open conversation, the calendar,
 contacts, files, or Settings, along with how far you scrolled the list and the
 message you were reading. Pick up where you left off the next time you open
-Flectar Mail.
+Evanya.
 
 | Action | How |
 | --- | --- |
@@ -69,7 +69,7 @@ Settings → General.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../resources/screenshots/desktop-tabs-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../resources/screenshots/desktop-tabs-light.png">
-  <img src="../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail with tabs for several conversations, the calendar, contacts, and files">
+  <img src="../resources/screenshots/desktop-tabs-light.png" alt="Evanya with tabs for several conversations, the calendar, contacts, and files">
 </picture>
 
 ## Profiles and account colors
@@ -89,7 +89,7 @@ for Work and orange for Support.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../resources/screenshots/desktop-profiles-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../resources/screenshots/desktop-profiles-light.png">
-  <img src="../resources/screenshots/desktop-profiles-light.png" alt="Flectar Mail unified inbox with purple and orange profile color markers">
+  <img src="../resources/screenshots/desktop-profiles-light.png" alt="Evanya unified inbox with purple and orange profile color markers">
 </picture>
 
 ## Appearance
@@ -113,7 +113,7 @@ colors** from the message's three-dot menu on any screen size.
 
 ## Frameless window
 
-Flectar Mail replaces the system title bar with window controls in the toolbar
+Evanya replaces the system title bar with window controls in the toolbar
 by default; turn off **Frameless window** in Settings → General → Interface to
 bring the system title bar back. Each platform keeps its own behavior: macOS
 keeps the native traffic lights, Windows keeps Snap Layouts and the system menu,
@@ -158,7 +158,7 @@ can import.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../resources/screenshots/desktop-storage-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../resources/screenshots/desktop-storage-light.png">
-  <img src="../resources/screenshots/desktop-storage-light.png" alt="Flectar Mail Storage settings with local usage, mail on this device, database snapshot, and account backup controls">
+  <img src="../resources/screenshots/desktop-storage-light.png" alt="Evanya Storage settings with local usage, mail on this device, database snapshot, and account backup controls">
 </picture>
 
 ## Importing accounts and mail
@@ -166,14 +166,14 @@ can import.
 The same import also brings accounts over from Thunderbird (a profile folder,
 its Tools › Export archive, or `prefs.js`) and from Thunderbird for Android or
 K-9 Mail (`.k9s` settings exports). You review each account before anything is
-added: settings Flectar Mail can't reproduce, such as an Exchange server, are
+added: settings Evanya can't reproduce, such as an Exchange server, are
 explained instead of changed silently, and POP3 accounts keep their rule for
 removing mail from the server. Existing accounts are never modified, and
 passwords are never imported.
 
 Saved mail comes over the same way: Thunderbird's Local Folders and the mail
 its POP3 accounts downloaded, mbox files such as a Google Takeout export or
-Flectar Mail's own, `.eml` messages, maildir folders, Apple Mail mailboxes, and
+Evanya's own, `.eml` messages, maildir folders, Apple Mail mailboxes, and
 ZIP archives of them. You pick the files, several at once if you like, then the
 folders, with Trash and Junk left out unless you check them, and the folder
 structure and read and starred states come along. Mail that's already there is
@@ -185,11 +185,11 @@ Gmail account, into a folder of its own there.
 
 ## HTML rendering
 
-To keep the client fully native and its memory use low, Flectar Mail renders
+To keep the client fully native and its memory use low, Evanya renders
 email HTML with [Blitz](https://github.com/DioxusLabs/blitz), a Rust HTML/CSS
 renderer from the Dioxus team, instead of embedding a browser or WebView.
 
-As far as we know, Flectar Mail is one of the first projects using Blitz for
+As far as we know, Evanya is one of the first projects using Blitz for
 arbitrary, real-world email HTML. Email markup contains plenty of unusual HTML
 and CSS, so this pushes the renderer into demanding territory. We currently
 carry several patches on top of Blitz and hope to upstream as much of that work
@@ -197,7 +197,7 @@ as possible over time.
 
 If you find an email that renders incorrectly, please
 [report it](https://github.com/flectar/mail/issues). This approach is still
-experimental, but it is also a major reason Flectar Mail can remain so
+experimental, but it is also a major reason Evanya can remain so
 lightweight compared with WebView-based clients built with frameworks such as
 Tauri or Wails.
 

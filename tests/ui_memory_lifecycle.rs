@@ -1,4 +1,4 @@
-use flectar_mail::{AccountRow, AppWindow};
+use evanya::{AccountRow, AppWindow};
 use slint::platform::{
     Platform, WindowAdapter,
     software_renderer::{MinimalSoftwareWindow, RepaintBufferType},

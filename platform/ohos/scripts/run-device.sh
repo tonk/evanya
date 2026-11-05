@@ -11,7 +11,7 @@ PLATFORM_DIR=$(dirname "$HERE")
 . "$HERE/env.sh"
 
 HAP="${1:-$PLATFORM_DIR/build/slint_ohos_demo-signed.hap}"
-BUNDLE="${BUNDLE:-com.flectar.mail}"
+BUNDLE="${BUNDLE:-com.evanya.mail}"
 
 [ -f "$HAP" ] || { echo "[run-device] hap not found: $HAP (run build-hap.sh first)" >&2; exit 1; }
 
@@ -28,4 +28,4 @@ echo "[run-device] starting $BUNDLE/EntryAbility"
 "$HDC" -t "$HDC_TARGET" shell aa start -a EntryAbility -b "$BUNDLE"
 
 echo "[run-device] streaming hilog (Ctrl-C to stop)"
-"$HDC" -t "$HDC_TARGET" shell hilog | grep -iE "slint|flectar|EntryAbility|panic|Rust"
+"$HDC" -t "$HDC_TARGET" shell hilog | grep -iE "slint|evanya|EntryAbility|panic|Rust"

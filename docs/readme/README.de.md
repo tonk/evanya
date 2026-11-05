@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="Flectar-Mail-Logo">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="Flectar-Mail-Logo">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <strong>Deutsch</strong> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>E-Mail wird wieder schnell</h3>
-    <p>Von Grund auf für Geschwindigkeit entwickelt. Flectar Mail bietet native Leistung, startet sofort und belegt im Leerlauf nur etwa 20 MB privaten Speicher.</p>
+    <p>Von Grund auf für Geschwindigkeit entwickelt. Evanya bietet native Leistung, startet sofort und belegt im Leerlauf nur etwa 20 MB privaten Speicher.</p>
   </div>
   <p>
     <a href="https://flectar.com">Website</a> ·
@@ -32,12 +32,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail unter macOS mit gemeinsamem Posteingang und Nachrichtenansicht">
+  <img src="../../resources/screenshots/desktop-light.png" alt="Evanya unter macOS mit gemeinsamem Posteingang und Nachrichtenansicht">
 </picture>
 
-Flectar Mail ist eine schlanke, native Anwendung für E-Mails, Kalender und Kontakte. Sie startet sofort, bleibt reaktionsschnell und benötigt nur einen Bruchteil des Arbeitsspeichers eines üblichen webbasierten E-Mail-Clients.
+Evanya ist eine schlanke, native Anwendung für E-Mails, Kalender und Kontakte. Sie startet sofort, bleibt reaktionsschnell und benötigt nur einen Bruchteil des Arbeitsspeichers eines üblichen webbasierten E-Mail-Clients.
 
-## ❓ Warum Flectar Mail?
+## ❓ Warum Evanya?
 
 | Vorteil | Details |
 | --- | --- |
@@ -54,7 +54,7 @@ Flectar Mail ist eine schlanke, native Anwendung für E-Mails, Kalender und Kont
 
 ## ⚡ Leistung
 
-| Im Leerlauf, gleiches Postfach | Flectar Mail | Thunderbird 159 |
+| Im Leerlauf, gleiches Postfach | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | Privater Speicher | **~20 MB** | ~250 MB |
 | Einschließlich Code und Bibliotheken (PSS) | **~85 MB** | ~435 MB |
@@ -66,7 +66,7 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
 
 | E-Mail-Client | Oberfläche | E-Mail-Darstellung | Plattformen |
 | --- | --- | --- | --- |
-| **Flectar Mail** | Native Rust-App | Blitz, ein Rust-Renderer für HTML/CSS; keine WebView | Windows, macOS, Linux, Android; iOS folgt in Kürze |
+| **Evanya** | Native Rust-App | Blitz, ein Rust-Renderer für HTML/CSS; keine WebView | Windows, macOS, Linux, Android; iOS folgt in Kürze |
 | Thunderbird | Gecko-basierte Desktop-App | Gecko | Windows, macOS, Linux, Android |
 | Outlook für Windows | Windows-App mit Web-Oberfläche | Microsoft Edge WebView2 | Windows |
 | Spark | Electron-App | Chromium | macOS, Windows, iOS, Android |
@@ -103,14 +103,14 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Vollständige Desktop-Arbeitsumgebung von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Vollständige Desktop-Arbeitsumgebung von Evanya" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Minimalistische Desktop-Arbeitsumgebung von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Minimalistische Desktop-Arbeitsumgebung von Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -133,7 +133,7 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail mit Tabs für mehrere Unterhaltungen, Kalender, Kontakte und Dateien" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Evanya mit Tabs für mehrere Unterhaltungen, Kalender, Kontakte und Dateien" width="100%">
         </picture>
       </td>
       <td width="33.33%">
@@ -147,7 +147,7 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Gemeinsamer Posteingang von Flectar Mail mit violetten und orangefarbenen Profilmarkierungen" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Gemeinsamer Posteingang von Evanya mit violetten und orangefarbenen Profilmarkierungen" width="100%">
         </picture>
       </td>
     </tr>
@@ -171,28 +171,28 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Türkise Farbpalette von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Türkise Farbpalette von Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="Grüne Farbpalette von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="Grüne Farbpalette von Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Violette Farbpalette von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Violette Farbpalette von Evanya" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Eigene Farbpalette von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Eigene Farbpalette von Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -262,21 +262,21 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Kalender von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Kalender von Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Kontakte von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Kontakte von Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="Dateien von Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="Dateien von Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -287,18 +287,18 @@ Gemessen unter Linux mit einem IMAP-Konto (860 Nachrichten), geöffnetem Postein
 
 | Hell | Dunkel |
 | --- | --- |
-| ![Mobiler Posteingang von Flectar Mail im hellen Design](../../resources/screenshots/mobile-light.png) | ![Mobiler Posteingang von Flectar Mail im dunklen Design](../../resources/screenshots/mobile-dark.png) |
+| ![Mobiler Posteingang von Evanya im hellen Design](../../resources/screenshots/mobile-light.png) | ![Mobiler Posteingang von Evanya im dunklen Design](../../resources/screenshots/mobile-dark.png) |
 
 ## 🧪 Experimentelle HTML-Darstellung
 
 > [!WARNING]
-> Die Darstellung von HTML-E-Mails ist derzeit der experimentellste Teil von Flectar Mail. Manche Nachrichten, insbesondere mit komplexem oder ungewöhnlichem Markup und CSS, werden möglicherweise noch nicht korrekt angezeigt.
+> Die Darstellung von HTML-E-Mails ist derzeit der experimentellste Teil von Evanya. Manche Nachrichten, insbesondere mit komplexem oder ungewöhnlichem Markup und CSS, werden möglicherweise noch nicht korrekt angezeigt.
 
-Flectar Mail rendert E-Mails mit [Blitz](https://github.com/DioxusLabs/blitz), einem Rust-Renderer für HTML/CSS des Dioxus-Teams, statt einen Browser oder eine WebView einzubetten. Falls eine Nachricht falsch dargestellt wird, [melde das Problem](https://github.com/flectar/mail/issues). Erfahre mehr über [den Renderer und die Optionen für CPU und GPU](../features.md#html-rendering).
+Evanya rendert E-Mails mit [Blitz](https://github.com/DioxusLabs/blitz), einem Rust-Renderer für HTML/CSS des Dioxus-Teams, statt einen Browser oder eine WebView einzubetten. Falls eine Nachricht falsch dargestellt wird, [melde das Problem](https://github.com/flectar/mail/issues). Erfahre mehr über [den Renderer und die Optionen für CPU und GPU](../features.md#html-rendering).
 
-## 📥 Flectar Mail herunterladen
+## 📥 Evanya herunterladen
 
-Flectar Mail wird derzeit entwickelt und ist noch nicht stabil. Vorschauversionen findest du mit der Kennzeichnung **Pre-release** unter [GitHub Releases](https://github.com/flectar/mail/releases).
+Evanya wird derzeit entwickelt und ist noch nicht stabil. Vorschauversionen findest du mit der Kennzeichnung **Pre-release** unter [GitHub Releases](https://github.com/flectar/mail/releases).
 
 > [!WARNING]
 > **Die OAuth-Verifizierung von Google erfordert eine jährliche CASA-Sicherheitsprüfung.** Flectar ist ein gemeinschaftliches Open-Source-Projekt, daher hängt diese Prüfung von Sponsoren ab. Solange die erforderliche Verifizierung nicht finanziert und abgeschlossen ist, kann es keine stabile Version mit standardmäßig eingerichtetem Gmail OAuth geben. Wenn du die integrierte Gmail-Anmeldung ermöglichen möchtest, [unterstütze Flectar](https://github.com/sponsors/flectar).
@@ -313,7 +313,7 @@ Flectar Mail wird derzeit entwickelt und ist noch nicht stabil. Vorschauversione
 
 In Builds ohne OAuth-App-Schlüssel bleiben Gmail- und Outlook-Anmeldung deaktiviert. Über das Zahnrad **Anmeldeeinstellungen** auf dem Begrüßungsbildschirm kannst du deine eigene Google- oder Microsoft-App-Registrierung hinzufügen oder ein IMAP-, POP3- oder JMAP-Konto verbinden.
 
-Die [Installationsanleitung](../install.md) behandelt Installationsbefehle, Schlüsselbund und Desktop-Portal unter Linux, Hinweise zu Flatpak und RPM, das Prüfen von Downloads, die Android-Signatur und das Bauen aus dem Quellcode mit `cargo run --bin flectar-mail`.
+Die [Installationsanleitung](../install.md) behandelt Installationsbefehle, Schlüsselbund und Desktop-Portal unter Linux, Hinweise zu Flatpak und RPM, das Prüfen von Downloads, die Android-Signatur und das Bauen aus dem Quellcode mit `cargo run --bin evanya`.
 
 ## 🤝 Mitmachen
 
@@ -327,9 +327,9 @@ Die [Installationsanleitung](../install.md) behandelt Installationsbefehle, Schl
 
 ## 🫡 Danksagungen
 
-Flectar Mail wird durch die Arbeit dieser Projekte und ihrer Mitwirkenden ermöglicht:
+Evanya wird durch die Arbeit dieser Projekte und ihrer Mitwirkenden ermöglicht:
 
-- [Slint](https://slint.dev/), das native UI-Toolkit hinter der Oberfläche von Flectar Mail.
+- [Slint](https://slint.dev/), das native UI-Toolkit hinter der Oberfläche von Evanya.
 - [Blitz](https://github.com/DioxusLabs/blitz), der Rust-Renderer für HTML/CSS des Dioxus-Teams, der die Darstellung von E-Mails ermöglicht.
 
 ---

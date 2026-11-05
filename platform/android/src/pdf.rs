@@ -25,13 +25,13 @@ pub fn configure(app: &slint::android::AndroidApp) -> Result<(), String> {
         .get_string(&JString::from(directory))
         .map_err(|e| e.to_string())?
         .into();
-    flectar_mail::platform::configure_pdfium(directory.into())
+    evanya::platform::configure_pdfium(directory.into())
 }
 
 #[unsafe(no_mangle)]
-extern "system" fn Java_com_flectar_mail_FlectarActivity_nativeSuspendPdfPreview(
+extern "system" fn Java_com_evanya_mail_EvanyaActivity_nativeSuspendPdfPreview(
     _env: jni::JNIEnv,
     _class: JClass,
 ) {
-    flectar_mail::suspend_file_preview();
+    evanya::suspend_file_preview();
 }

@@ -40,9 +40,9 @@ pub(super) fn show(app: &AppWindow, scale: f32) {
 #[test]
 #[ignore = "writes screenshots; run by scripts/generate-screenshots.sh"]
 fn email_screenshots() {
-    let Some(out) = std::env::var_os("FLECTAR_EMAIL_SCREENSHOTS").map(std::path::PathBuf::from)
+    let Some(out) = std::env::var_os("EVANYA_EMAIL_SCREENSHOTS").map(std::path::PathBuf::from)
     else {
-        panic!("set FLECTAR_EMAIL_SCREENSHOTS to the output directory");
+        panic!("set EVANYA_EMAIL_SCREENSHOTS to the output directory");
     };
     std::fs::create_dir_all(&out).unwrap();
 

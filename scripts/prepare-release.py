@@ -23,7 +23,7 @@ def prepare(source: Path, destination: Path, version: str) -> None:
         "evanya-macos-arm64.dmg": f"evanya-{version}-macos-arm64.dmg",
         "evanya-macos-x64.zip": f"evanya-{version}-macos-x64.zip",
         "evanya-macos-x64.dmg": f"evanya-{version}-macos-x64.dmg",
-        "flectar-mail.apk": f"flectar-mail-{version}-android-arm64.apk",
+        "evanya.apk": f"evanya-{version}-android-arm64.apk",
     }
     # Validate every input before copying anything; unrelated benchmark files
     # are intentionally excluded from the public downloads.

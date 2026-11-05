@@ -2,13 +2,13 @@
 // the UI font; compiling a SystemTrayIcon alongside it makes Slint create
 // a window adapter just to register that font, which leaks an empty 800x600
 // "Slint Window" into Linux task switchers.
-export component FlectarTray inherits SystemTrayIcon {
+export component EvanyaTray inherits SystemTrayIcon {
     in-out property <bool> enabled: false;
     visible: root.enabled;
     // Rust sets the chosen icon's tray image from AppIcon.tray-image, which
     // explains the small size; this compilation unit cannot share globals
     // with app.slint.
-    in property <image> image: @image-url("../resources/app-icon/flectar-mail-tray.png");
+    in property <image> image: @image-url("../resources/app-icon/evanya-tray.png");
     icon: root.image;
     title: @tr("Evanya");
     tooltip: @tr("Evanya");

@@ -1,22 +1,22 @@
 # Platform architecture
 
-Flectar Mail is one shared application with thin, per-platform hosts.
+Evanya is one shared application with thin, per-platform hosts.
 
 | Layer | Location | Contains |
 | --- | --- | --- |
-| Core | `crates/flectar-mail-core` | Protocols, sync, storage, search. No UI and no host APIs. |
+| Core | `crates/evanya-core` | Protocols, sync, storage, search. No UI and no host APIs. |
 | Application | `src/`, `ui/` | Slint UI, controllers, rendering. Shared by every platform. |
 | Platform layer | `src/platform/` | The application's only code that names a mobile operating system. |
 | Hosts | `platform/<name>/` | Native entry points, packaging and native services (JNI, Objective-C). |
 
-Desktop builds use the `flectar-mail` binary (`src/desktop.rs`), and the
+Desktop builds use the `evanya` binary (`src/desktop.rs`), and the
 release workflows package it for Linux, Windows and macOS. Mobile hosts embed
 the same library.
 
 ## Capability aliases
 
 Shared code never asks which operating system it runs on, only what the
-platform provides. `build.rs` and `crates/flectar-mail-core/build.rs` define
+platform provides. `build.rs` and `crates/evanya-core/build.rs` define
 these aliases with [`cfg_aliases`](https://crates.io/crates/cfg_aliases):
 
 | Alias | Meaning |
@@ -43,7 +43,7 @@ such as native window chrome or keyboard shortcut conventions.
 ## Host contract
 
 A host runs the shared application by building a `PlatformContext` and calling
-`flectar_mail::run` (or `run_desktop`). The context carries every
+`evanya::run` (or `run_desktop`). The context carries every
 host-provided service:
 
 | Field | Desktop | Mobile host |
@@ -64,7 +64,7 @@ The constructors default `external_urls` to the system URL launcher. A host
 without desktop launchers configures its context before calling `run`:
 
 ```rust,ignore
-platform.external_urls = flectar_mail::ExternalUrlOpener::new(bridge::open_url);
+platform.external_urls = evanya::ExternalUrlOpener::new(bridge::open_url);
 ```
 
 This replaces the process-global `set_external_url_opener` registration. The
@@ -85,7 +85,7 @@ provides these crate-internal items, which shared code calls without a `cfg`:
 | `select_renderer()` | Install the Slint backend if the host has not, and return the renderer name for diagnostics. |
 | `pdfium_library()` | Path of the bundled PDFium library. |
 | `lower_current_thread_priority()` | Run the PDF worker thread at background priority. |
-| `install_preview_lifecycle()` | Register for background/memory-pressure notifications, which must call `flectar_mail::suspend_file_preview()`. |
+| `install_preview_lifecycle()` | Register for background/memory-pressure notifications, which must call `evanya::suspend_file_preview()`. |
 | `NAME` | The platform's name, which Settings uses to describe where the app icon appears. |
 | `SWITCHES_APP_ICON` | Whether apps may switch their home screen icon. Settings offers the choice only where they may. |
 | `show_app_icon(icon)` | Show the app icon chosen in Settings on the home screen. Android forwards it to the bridge its host registers with `configure_launcher_icon`; iOS switches to the alternate icon sets declared in `platform/ios/project.yml`. |

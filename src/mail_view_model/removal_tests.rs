@@ -1,6 +1,6 @@
 //! Exercise removal through the real list and reader projection.
 use super::*;
-use flectar_mail_core::accounts::credentials::DevelopmentFileCredentialStore;
+use evanya_core::accounts::credentials::DevelopmentFileCredentialStore;
 use slint::platform::{
     Platform, WindowAdapter,
     software_renderer::{MinimalSoftwareWindow, RepaintBufferType},
@@ -53,11 +53,11 @@ fn background_removal_keeps_the_reader_and_visible_selection_in_sync() {
     let dir = tempfile::tempdir().unwrap();
     let core = runtime
         .block_on(CoreMailSource::start(
-            flectar_mail_core::config::Paths::for_tests(dir.path()),
+            evanya_core::config::Paths::for_tests(dir.path()),
             Arc::new(DevelopmentFileCredentialStore::new(
                 dir.path().join("credentials.json"),
             )),
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
         ))
         .unwrap();
     let now = Local::now();
@@ -309,7 +309,7 @@ fn background_removal_keeps_the_reader_and_visible_selection_in_sync() {
             );
         }
         if case.clear_selection
-            && let Some(path) = std::env::var_os("FLECTAR_SELECTION_SCREENSHOT")
+            && let Some(path) = std::env::var_os("EVANYA_SELECTION_SCREENSHOT")
         {
             app.window().set_size(slint::PhysicalSize::new(1320, 800));
             app.show().unwrap();

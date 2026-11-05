@@ -2,7 +2,7 @@
 #
 # This mirrors the layout of `platform/android`: a separate cargo workspace that
 # builds the OHOS shell artifacts (a cdylib loaded by the ArkTS hap) on top of
-# the shared `flectar-mail` library. It is NOT part of the root workspace.
+# the shared `evanya` library. It is NOT part of the root workspace.
 [workspace]
 members = ["backend", "demo", "mail"]
 resolver = "3"
@@ -18,7 +18,7 @@ slint = { version = "=1.18.1", default-features = false, features = [
     "unstable-fontique-011",
     # Experimental GPU path: the femtovg renderer on wgpu 30 (EGL/GLES on
     # OHOS). Attempted by default at runtime with an automatic fallback to the
-    # software renderer (disable the attempt with FLECTAR_OHOS_SOFTWARE=1).
+    # software renderer (disable the attempt with EVANYA_OHOS_SOFTWARE=1).
     "renderer-femtovg-wgpu",
     "unstable-wgpu-30",
 ] }

@@ -241,7 +241,7 @@ fn render(window: &Rc<MinimalSoftwareWindow>, width: usize, height: usize, name:
     window.draw_if_needed(|renderer| {
         renderer.render(&mut pixels, width);
     });
-    if let Some(directory) = std::env::var_os("FLECTAR_KEYBOARD_SCREENSHOT_DIR") {
+    if let Some(directory) = std::env::var_os("EVANYA_KEYBOARD_SCREENSHOT_DIR") {
         let directory = std::path::PathBuf::from(directory);
         std::fs::create_dir_all(&directory).unwrap();
         let bytes = pixels

@@ -9,7 +9,7 @@
 
 use crate::{AppWindow, I18n};
 use chrono::{Datelike, NaiveDate, NaiveDateTime, Timelike};
-use flectar_mail_core::models::TimeFormat;
+use evanya_core::models::TimeFormat;
 use slint::ComponentHandle;
 use std::{cell::RefCell, fmt::Write, rc::Rc, time::Duration};
 
@@ -1155,7 +1155,7 @@ mod tests {
         let lang = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("lang");
         let mut checked = 0;
         for language in std::fs::read_dir(lang).unwrap() {
-            let catalog = language.unwrap().path().join("LC_MESSAGES/flectar-mail.po");
+            let catalog = language.unwrap().path().join("LC_MESSAGES/evanya.po");
             let Ok(catalog) = std::fs::read_to_string(catalog) else {
                 continue;
             };

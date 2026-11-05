@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="Flectar Mail 徽标">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="Evanya 徽标">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>邮件，重归迅捷</h3>
-    <p>从底层开始，为速度而构建。Flectar Mail 提供原生性能、瞬时启动，空闲时私有内存占用约 20 MB。</p>
+    <p>从底层开始，为速度而构建。Evanya 提供原生性能、瞬时启动，空闲时私有内存占用约 20 MB。</p>
   </div>
   <p>
     <a href="https://flectar.com">官网</a> ·
@@ -32,12 +32,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="macOS 上的 Flectar Mail 统一收件箱与邮件视图">
+  <img src="../../resources/screenshots/desktop-light.png" alt="macOS 上的 Evanya 统一收件箱与邮件视图">
 </picture>
 
-Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、日历和联系人。它经过专门设计，能够瞬时打开、始终保持流畅，内存占用仅为常见网页版邮件客户端的一小部分。
+Evanya 是一个轻量、原生的客户端，用来承载你的邮件、日历和联系人。它经过专门设计，能够瞬时打开、始终保持流畅，内存占用仅为常见网页版邮件客户端的一小部分。
 
-## ❓ 为什么选择 Flectar Mail？
+## ❓ 为什么选择 Evanya？
 
 | 优势 | 说明 |
 | --- | --- |
@@ -54,7 +54,7 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
 
 ## ⚡ 性能
 
-| 空闲时（同一邮箱） | Flectar Mail | Thunderbird 159 |
+| 空闲时（同一邮箱） | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | 私有内存 | **~20 MB** | ~250 MB |
 | 含代码与库（PSS） | **~85 MB** | ~435 MB |
@@ -66,7 +66,7 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
 
 | 邮件客户端 | 界面 | 邮件渲染方式 | 平台 |
 | --- | --- | --- | --- |
-| **Flectar Mail** | 原生 Rust 应用 | Blitz（Rust HTML/CSS 渲染器），不使用 WebView | Windows、macOS、Linux、Android；iOS 即将推出 |
+| **Evanya** | 原生 Rust 应用 | Blitz（Rust HTML/CSS 渲染器），不使用 WebView | Windows、macOS、Linux、Android；iOS 即将推出 |
 | Thunderbird | 基于 Gecko 的桌面应用 | Gecko | Windows、macOS、Linux、Android |
 | Outlook for Windows | 带网页界面的 Windows 应用 | Microsoft Edge WebView2 | Windows |
 | Spark | Electron 应用 | Chromium | macOS、Windows、iOS、Android |
@@ -103,14 +103,14 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail 完整桌面工作区" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Evanya 完整桌面工作区" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Flectar Mail 极简桌面工作区" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Evanya 极简桌面工作区" width="100%">
         </picture>
       </td>
     </tr>
@@ -133,21 +133,21 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail 打开了多个会话、日历、联系人与文件标签页" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Evanya 打开了多个会话、日历、联系人与文件标签页" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-thread-light.png">
-          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Flectar Mail 会话，包含收到的邮件与回复" width="100%">
+          <img src="../../resources/screenshots/desktop-thread-light.png" alt="Evanya 会话，包含收到的邮件与回复" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Flectar Mail 统一收件箱，带有紫色与橙色分组色标" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="Evanya 统一收件箱，带有紫色与橙色分组色标" width="100%">
         </picture>
       </td>
     </tr>
@@ -171,28 +171,28 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Flectar Mail 青绿配色" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Evanya 青绿配色" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="Flectar Mail 绿色配色" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="Evanya 绿色配色" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Flectar Mail 紫色配色" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Evanya 紫色配色" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail 自定义配色" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Evanya 自定义配色" width="100%">
         </picture>
       </td>
     </tr>
@@ -212,14 +212,14 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/macos-light.png">
-          <img src="../../resources/screenshots/frameless/macos-light.png" alt="macOS 上的 Flectar Mail 无边框窗口" width="100%">
+          <img src="../../resources/screenshots/frameless/macos-light.png" alt="macOS 上的 Evanya 无边框窗口" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/windows-light.png">
-          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Windows 上的 Flectar Mail 无边框窗口" width="100%">
+          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Windows 上的 Evanya 无边框窗口" width="100%">
         </picture>
       </td>
     </tr>
@@ -232,14 +232,14 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="GNOME 上的 Flectar Mail 无边框窗口" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="GNOME 上的 Evanya 无边框窗口" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-kde-light.png">
-          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="KDE Plasma 上的 Flectar Mail 无边框窗口" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="KDE Plasma 上的 Evanya 无边框窗口" width="100%">
         </picture>
       </td>
     </tr>
@@ -262,21 +262,21 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Flectar Mail 日历" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Evanya 日历" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Flectar Mail 联系人" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Evanya 联系人" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="Flectar Mail 文件" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="Evanya 文件" width="100%">
         </picture>
       </td>
     </tr>
@@ -287,18 +287,18 @@ Flectar Mail 是一个轻量、原生的客户端，用来承载你的邮件、�
 
 | 浅色 | 深色 |
 | --- | --- |
-| ![Flectar Mail 浅色模式下的移动端收件箱](../../resources/screenshots/mobile-light.png) | ![Flectar Mail 深色模式下的移动端收件箱](../../resources/screenshots/mobile-dark.png) |
+| ![Evanya 浅色模式下的移动端收件箱](../../resources/screenshots/mobile-light.png) | ![Evanya 深色模式下的移动端收件箱](../../resources/screenshots/mobile-dark.png) |
 
 ## 🧪 实验性的 HTML 渲染
 
 > [!WARNING]
-> HTML 邮件渲染目前是 Flectar Mail 中最具实验性的部分。部分邮件，尤其是标记与 CSS 复杂或特殊的邮件，可能仍无法正确渲染。
+> HTML 邮件渲染目前是 Evanya 中最具实验性的部分。部分邮件，尤其是标记与 CSS 复杂或特殊的邮件，可能仍无法正确渲染。
 
-Flectar Mail 使用 [Blitz](https://github.com/DioxusLabs/blitz)——Dioxus 团队开发的 Rust HTML/CSS 渲染器——来渲染邮件，而不是内嵌浏览器或 WebView。如果某封邮件渲染有误，请[提交问题](https://github.com/flectar/mail/issues)。详细了解[渲染器以及 CPU 与 GPU 选项](../features.md#html-rendering)。
+Evanya 使用 [Blitz](https://github.com/DioxusLabs/blitz)——Dioxus 团队开发的 Rust HTML/CSS 渲染器——来渲染邮件，而不是内嵌浏览器或 WebView。如果某封邮件渲染有误，请[提交问题](https://github.com/flectar/mail/issues)。详细了解[渲染器以及 CPU 与 GPU 选项](../features.md#html-rendering)。
 
-## 📥 获取 Flectar Mail
+## 📥 获取 Evanya
 
-Flectar Mail 目前仍在开发中，尚未稳定。预览构建发布在 [GitHub Releases](https://github.com/flectar/mail/releases) 上，带有 **Pre-release** 标记。
+Evanya 目前仍在开发中，尚未稳定。预览构建发布在 [GitHub Releases](https://github.com/flectar/mail/releases) 上，带有 **Pre-release** 标记。
 
 > [!WARNING]
 > **Google OAuth 验证需要每年进行一次 CASA 安全评估。** Flectar 是社区开源项目，因此能否完成该项评估取决于赞助支持。在所需的验证获得资金并完成之前，无法推出默认配置 Gmail OAuth 的稳定版本。如果你希望帮助实现内置的 Gmail 登录，请[赞助 Flectar](https://github.com/sponsors/flectar)。
@@ -313,7 +313,7 @@ Flectar Mail 目前仍在开发中，尚未稳定。预览构建发布在 [GitHu
 
 未内置 OAuth 应用密钥的构建版本会禁用 Gmail 和 Outlook 登录。可使用欢迎界面上的**登录设置**齿轮，添加你自己的 Google 或 Microsoft 应用注册信息，或连接 IMAP、POP3 或 JMAP 账户。
 
-[安装指南](../install.md)介绍了安装命令、Linux 密钥环与桌面门户、Flatpak 与 RPM 注意事项、下载校验、Android 签名，以及如何使用 `cargo run --bin flectar-mail` 从源码构建。
+[安装指南](../install.md)介绍了安装命令、Linux 密钥环与桌面门户、Flatpak 与 RPM 注意事项、下载校验、Android 签名，以及如何使用 `cargo run --bin evanya` 从源码构建。
 
 ## 🤝 参与项目
 
@@ -322,14 +322,14 @@ Flectar Mail 目前仍在开发中，尚未稳定。预览构建发布在 [GitHu
 | 🌍 **翻译** | 在 [Weblate](https://translate.flectar.com/) 上翻译应用、改进现有译文或参与审校，无需编程或 GitHub 使用经验。译文会以拉取请求的形式提交到本仓库，贡献者可在 GitHub 上获得署名。README 译文在本仓库中维护，详见[翻译贡献指南](../../CONTRIBUTING.md#translations)。 |
 | ♿ **无障碍** | 提供键盘导航、浅色和深色主题以及灵活的布局，无障碍支持仍在持续改进。有关现有功能、测试局限以及如何报告使用障碍，请参阅 [ACCESSIBILITY.md](../../ACCESSIBILITY.md)。 |
 | 🔒 **安全** | 如需私下报告安全漏洞，请遵循 [SECURITY.md](../../SECURITY.md)。请勿在公开的问题报告中披露漏洞细节。 |
-| 🌐 **开源** | Flectar Mail 只有一个开源版本，没有单独划分的社区版，采用 [GNU Affero 通用公共许可证 v3](../../LICENSE) 授权。实际细节请阅读[许可说明](../../LICENSING.md)。 |
+| 🌐 **开源** | Evanya 只有一个开源版本，没有单独划分的社区版，采用 [GNU Affero 通用公共许可证 v3](../../LICENSE) 授权。实际细节请阅读[许可说明](../../LICENSING.md)。 |
 | 🛠️ **参与贡献** | 如需参与项目建设，请参阅 [CONTRIBUTING.md](../../CONTRIBUTING.md)。 |
 
 ## 🫡 致谢
 
-Flectar Mail 的实现离不开以下项目及其贡献者的工作：
+Evanya 的实现离不开以下项目及其贡献者的工作：
 
-- [Slint](https://slint.dev/)，驱动 Flectar Mail 界面的原生 UI 工具包。
+- [Slint](https://slint.dev/)，驱动 Evanya 界面的原生 UI 工具包。
 - [Blitz](https://github.com/DioxusLabs/blitz)，Dioxus 团队开发的 Rust HTML/CSS 渲染器，支撑邮件阅读体验。
 
 ---

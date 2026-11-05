@@ -31,7 +31,7 @@ fn launch(app: slint::Weak<AppWindow>, url: String, opener: ExternalUrlOpener) {
 
 pub(super) fn register(
     app: &AppWindow,
-    redirects: flectar_mail_core::oauth::redirect::OAuthRedirectBrokerHandle,
+    redirects: evanya_core::oauth::redirect::OAuthRedirectBrokerHandle,
     opener: ExternalUrlOpener,
 ) {
     let weak = app.as_weak();
@@ -101,7 +101,7 @@ mod tests {
         });
         register(
             &app,
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
             opener.clone(),
         );
         app.set_startup_ready(true);

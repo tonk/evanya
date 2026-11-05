@@ -708,7 +708,7 @@ fn make_thread_rows(
 
 pub(super) fn apply_label_rows(
     app: &AppWindow,
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
     selected: Option<&MailMessage>,
 ) {
     let picker_rows = make_label_rows(labels, selected, "");
@@ -724,7 +724,7 @@ pub(super) fn apply_label_rows(
 }
 
 pub(super) fn make_label_rows(
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
     selected: Option<&MailMessage>,
     query: &str,
 ) -> Vec<MailLabelRow> {
@@ -752,7 +752,7 @@ pub(super) fn make_label_rows(
 }
 
 fn project_label_rows(
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
     applied: &[i64],
     selected_account_id: Option<i64>,
     query: &str,
@@ -797,10 +797,7 @@ fn project_label_rows(
 /// `applied` flag per entry for its checkboxes), a chip list only ever
 /// shows labels actually on the message, so the catalog is filtered down
 /// *before* building rows rather than after.
-fn applied_label_rows(
-    labels: &[flectar_mail_core::models::Label],
-    applied: &[i64],
-) -> Vec<MailLabelRow> {
+fn applied_label_rows(labels: &[evanya_core::models::Label], applied: &[i64]) -> Vec<MailLabelRow> {
     labels
         .iter()
         .filter(|label| applied.contains(&label.id))
@@ -958,7 +955,7 @@ pub(super) fn make_rows<M: std::borrow::Borrow<MailMessage>>(
     selected_id: Option<i32>,
     checked_ids: &HashSet<i32>,
     favicon_icons: &HashMap<String, FaviconImages>,
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
     account_presentation: &AccountPresentationSettings,
 ) -> Vec<EmailRow> {
     let now = Local::now();
@@ -1101,7 +1098,7 @@ fn message_time_label(date_ms: i64, now: &chrono::DateTime<Local>, name_yesterda
     }
 }
 
-fn label_summary(ids: &[i64], labels: &[flectar_mail_core::models::Label]) -> String {
+fn label_summary(ids: &[i64], labels: &[evanya_core::models::Label]) -> String {
     labels
         .iter()
         .filter(|label| ids.contains(&label.id))
@@ -1547,7 +1544,7 @@ fn contains_emoji(text: &str) -> bool {
 pub(super) fn make_mailbox_rows(
     mailboxes: &[MailboxEntry],
     avatars: &HashMap<i64, ProfileAvatarImages>,
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
     collapsed_folder_ids: &HashSet<i64>,
 ) -> Vec<MailboxRow> {
     // Index label colors once; matching every folder against the entire label
@@ -1629,7 +1626,7 @@ pub(super) fn make_mailbox_rows(
 fn mailbox_scope_title(
     scope: Scope,
     mailboxes: &[MailboxEntry],
-    labels: &[flectar_mail_core::models::Label],
+    labels: &[evanya_core::models::Label],
 ) -> String {
     let mailbox = || {
         mailboxes
@@ -1986,7 +1983,7 @@ mod tests {
         old[0].html = Some("selected HTML".repeat(1_000));
         old[0].text = Some("selected text".repeat(1_000));
         old[0].to = "recipient@example.org".into();
-        old[0].attachments = vec![flectar_mail_core::models::AttachmentMeta {
+        old[0].attachments = vec![evanya_core::models::AttachmentMeta {
             id: 7,
             filename: Some("selected.txt".into()),
             mime_type: Some("text/plain".into()),
@@ -2229,7 +2226,7 @@ mod tests {
     #[test]
     fn mail_rows_offer_the_first_file() {
         let mut email = message(1);
-        email.first_attachment = Some(flectar_mail_core::models::AttachmentMeta {
+        email.first_attachment = Some(evanya_core::models::AttachmentMeta {
             id: 9,
             filename: Some("Joel-Solano-CV.pdf".into()),
             mime_type: Some("application/pdf".into()),
@@ -2253,7 +2250,7 @@ mod tests {
     #[test]
     fn label_summary_uses_label_order_and_ignores_unknown_ids() {
         let labels = vec![
-            flectar_mail_core::models::Label {
+            evanya_core::models::Label {
                 id: 2,
                 name: "Work".into(),
                 color: "#2563eb".into(),
@@ -2262,7 +2259,7 @@ mod tests {
                 owner_account_id: None,
                 is_auto: false,
             },
-            flectar_mail_core::models::Label {
+            evanya_core::models::Label {
                 id: 4,
                 name: "Follow up".into(),
                 color: "#7c3aed".into(),
@@ -2281,7 +2278,7 @@ mod tests {
         let mut selected = message(12);
         selected.labels = vec![4];
         let labels = vec![
-            flectar_mail_core::models::Label {
+            evanya_core::models::Label {
                 id: 2,
                 name: "Work".into(),
                 color: "#2563eb".into(),
@@ -2290,7 +2287,7 @@ mod tests {
                 owner_account_id: None,
                 is_auto: false,
             },
-            flectar_mail_core::models::Label {
+            evanya_core::models::Label {
                 id: 4,
                 name: "Follow Up".into(),
                 color: "#7c3aed".into(),
@@ -2312,7 +2309,7 @@ mod tests {
         let mut selected = message(12);
         selected.account_id = 7;
         selected.account = "Work".into();
-        let label = |id, owner_account_id| flectar_mail_core::models::Label {
+        let label = |id, owner_account_id| evanya_core::models::Label {
             id,
             name: format!("Label {id}"),
             color: "#2563eb".into(),
@@ -2339,7 +2336,7 @@ mod tests {
         let mut email = message(12);
         email.labels = vec![4];
         let labels = vec![
-            flectar_mail_core::models::Label {
+            evanya_core::models::Label {
                 id: 2,
                 name: "Personal".into(),
                 color: "#ef4444".into(),
@@ -2348,7 +2345,7 @@ mod tests {
                 owner_account_id: None,
                 is_auto: false,
             },
-            flectar_mail_core::models::Label {
+            evanya_core::models::Label {
                 id: 4,
                 name: "Viaje".into(),
                 color: "#7c3aed".into(),
@@ -2394,7 +2391,7 @@ mod tests {
             is_account: false,
             count: String::new(),
         }];
-        let labels = vec![flectar_mail_core::models::Label {
+        let labels = vec![evanya_core::models::Label {
             id: 7,
             name: "Projects".into(),
             color: "#22c55e".into(),
@@ -2457,7 +2454,7 @@ mod tests {
         assert!(!contains_emoji("Cars"));
         assert!(!contains_emoji("Folder 1"));
 
-        let labels = [flectar_mail_core::models::Label {
+        let labels = [evanya_core::models::Label {
             id: 1,
             name: "🚗🚗".into(),
             color: "#4a86e8".into(),

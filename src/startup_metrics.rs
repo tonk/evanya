@@ -1,7 +1,7 @@
 //! Opt-in startup phase markers used by the repeatable benchmark harness.
 //!
 //! Normal launches pay only one environment lookup and keep no timers. Set
-//! `FLECTAR_STARTUP_METRICS=1` to emit JSON events on stderr. Benchmark-only
+//! `EVANYA_STARTUP_METRICS=1` to emit JSON events on stderr. Benchmark-only
 //! snapshots force a real Slint render, making the reported frame milestones
 //! comparable across runs without changing production rendering behavior.
 
@@ -14,7 +14,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-const METRIC_PREFIX: &str = "FLECTAR_STARTUP_METRIC ";
+const METRIC_PREFIX: &str = "EVANYA_STARTUP_METRIC ";
 
 #[derive(Clone)]
 pub(crate) struct StartupMetrics {
@@ -28,7 +28,7 @@ struct StartupMetricsInner {
 
 impl StartupMetrics {
     pub(crate) fn from_environment() -> Self {
-        let enabled = std::env::var("FLECTAR_STARTUP_METRICS")
+        let enabled = std::env::var("EVANYA_STARTUP_METRICS")
             .is_ok_and(|value| matches!(value.as_str(), "1" | "true" | "yes"));
         let metrics = Self {
             inner: enabled.then(|| {
@@ -99,7 +99,7 @@ impl StartupMetrics {
             };
             match app.window().take_snapshot() {
                 Ok(frame) => {
-                    if let Some(directory) = std::env::var_os("FLECTAR_BENCHMARK_SCREENSHOT_DIR") {
+                    if let Some(directory) = std::env::var_os("EVANYA_BENCHMARK_SCREENSHOT_DIR") {
                         let directory = std::path::PathBuf::from(directory);
                         let result = std::fs::create_dir_all(&directory).and_then(|_| {
                             image::save_buffer(
@@ -139,7 +139,7 @@ impl StartupMetrics {
         }
         // Opt-in lifecycle measurement uses exactly the production tray
         // release/restore paths, without requiring a desktop tray host.
-        if let Some(interval) = std::env::var("FLECTAR_BENCHMARK_TRAY_INTERVAL_MS")
+        if let Some(interval) = std::env::var("EVANYA_BENCHMARK_TRAY_INTERVAL_MS")
             .ok()
             .and_then(|s| s.parse::<u64>().ok())
             .filter(|n| (1000..=30_000).contains(n))
@@ -165,7 +165,7 @@ impl StartupMetrics {
                 }
             });
         }
-        let Some(delay_ms) = std::env::var("FLECTAR_BENCHMARK_EXIT_AFTER_MS")
+        let Some(delay_ms) = std::env::var("EVANYA_BENCHMARK_EXIT_AFTER_MS")
             .ok()
             .and_then(|value| value.parse::<u64>().ok())
             .filter(|delay| (250..=120_000).contains(delay))

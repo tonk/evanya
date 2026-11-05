@@ -8,13 +8,13 @@
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Flectar Mail"
+        android:label="Evanya"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false">
         <activity
-            android:name=".FlectarActivity"
+            android:name=".EvanyaActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|smallestScreenSize|density|uiMode|locale|layoutDirection|fontScale|keyboard|navigation|touchscreen"
             android:exported="true"
@@ -22,17 +22,17 @@
             android:screenOrientation="unspecified">
             <meta-data
                 android:name="android.app.lib_name"
-                android:value="flectar_mail_android" />
+                android:value="evanya_android" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:host="com.flectar.mail"
+                    android:host="com.evanya.mail"
                     android:scheme="msauth" />
             </intent-filter>
         </activity>
-        <!-- One launcher entry per app icon in Settings. FlectarActivity
+        <!-- One launcher entry per app icon in Settings. EvanyaActivity
              enables the chosen one; resources/app-icon/generate.py checks
              that every icon has an entry. -->
         <activity-alias
@@ -41,7 +41,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:targetActivity=".FlectarActivity">
+            android:targetActivity=".EvanyaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -53,7 +53,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_graphite"
             android:roundIcon="@mipmap/ic_launcher_round_graphite"
-            android:targetActivity=".FlectarActivity">
+            android:targetActivity=".EvanyaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -65,7 +65,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_light"
             android:roundIcon="@mipmap/ic_launcher_round_light"
-            android:targetActivity=".FlectarActivity">
+            android:targetActivity=".EvanyaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -77,7 +77,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_blue"
             android:roundIcon="@mipmap/ic_launcher_round_blue"
-            android:targetActivity=".FlectarActivity">
+            android:targetActivity=".EvanyaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -89,7 +89,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_green"
             android:roundIcon="@mipmap/ic_launcher_round_green"
-            android:targetActivity=".FlectarActivity">
+            android:targetActivity=".EvanyaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -101,7 +101,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_purple"
             android:roundIcon="@mipmap/ic_launcher_round_purple"
-            android:targetActivity=".FlectarActivity">
+            android:targetActivity=".EvanyaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -74,7 +74,7 @@ fn save(path: &Path, mode: RendererMode) -> Result<(), Box<dyn std::error::Error
 }
 
 /// Set on the CPU process that replaces one whose GPU startup failed.
-const GPU_FALLBACK: &str = "FLECTAR_GPU_FALLBACK";
+const GPU_FALLBACK: &str = "EVANYA_GPU_FALLBACK";
 
 pub(crate) fn gpu_startup_failed() -> bool {
     std::env::var_os(GPU_FALLBACK).is_some()
@@ -84,9 +84,9 @@ pub(crate) fn requested(preferred: RendererMode) -> RendererMode {
     if gpu_startup_failed() {
         return RendererMode::Cpu;
     }
-    match std::env::var("FLECTAR_RENDERER") {
+    match std::env::var("EVANYA_RENDERER") {
         Ok(value) => RendererMode::parse(&value).unwrap_or_else(|| {
-            eprintln!("invalid FLECTAR_RENDERER; using saved preference");
+            eprintln!("invalid EVANYA_RENDERER; using saved preference");
             preferred
         }),
         Err(_) => preferred,

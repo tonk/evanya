@@ -46,7 +46,7 @@ mod observability {
     }
 
     fn write_log(priority: std::ffi::c_int, message: &str) {
-        static TAG: &[u8] = b"flectar-mail\0";
+        static TAG: &[u8] = b"evanya\0";
         let Ok(message) = CString::new(message) else {
             return;
         };
@@ -133,7 +133,7 @@ fn android_main(app: slint::android::AndroidApp) {
     }
     let documents =
         documents::AndroidDocuments::new(&app).expect("failed to initialize document access");
-    let platform = flectar_mail::PlatformContext::app_private(
+    let platform = evanya::PlatformContext::app_private(
         internal.clone(),
         cache_dir,
         documents,
@@ -141,7 +141,7 @@ fn android_main(app: slint::android::AndroidApp) {
         oauth_redirects,
     );
     slint::android::init(app).expect("failed to initialize Slint's Android backend");
-    flectar_mail::run(platform).expect("Flectar Mail terminated with an error");
+    evanya::run(platform).expect("Evanya terminated with an error");
 }
 #[cfg(target_os = "android")]
 mod credentials;

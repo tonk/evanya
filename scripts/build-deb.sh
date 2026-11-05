@@ -14,14 +14,14 @@ if [[ -z "$version" ]]; then
   exit 1
 fi
 
-app_features="${FLECTAR_APP_FEATURES:-}"
+app_features="${EVANYA_APP_FEATURES:-}"
 build_args=(--locked --bin evanya --manifest-path "$project_dir/Cargo.toml" --release --no-default-features --features remote-content,gpu-renderer)
 if [[ -n "$app_features" ]]; then
   build_args+=(--features "$app_features")
 fi
-if [[ "${FLECTAR_SKIP_BUILD:-0}" == "1" ]]; then
+if [[ "${EVANYA_SKIP_BUILD:-0}" == "1" ]]; then
   if [[ ! -x "$project_dir/target/release/evanya" ]]; then
-    printf 'FLECTAR_SKIP_BUILD=1 requires an existing release executable.\n' >&2
+    printf 'EVANYA_SKIP_BUILD=1 requires an existing release executable.\n' >&2
     exit 1
   fi
 else
@@ -43,9 +43,9 @@ install -m755 "$project_dir/target/release/evanya" \
 python3 "$project_dir/scripts/stage-pdfium.py" linux-x64 "$package_root/usr/lib/evanya"
 python3 "$project_dir/scripts/test-pdf-preview.py" "$package_root/usr/bin/evanya"
 python3 "$project_dir/scripts/stage-linux-metadata.py" "$package_root"
-install -m644 "$project_dir/resources/app-icon/flectar-mail-masked-512.png" \
+install -m644 "$project_dir/resources/app-icon/evanya-masked-512.png" \
   "$package_root/usr/share/icons/hicolor/512x512/apps/com.evanya.mail.png"
-install -m644 "$project_dir/resources/app-icon/flectar-mail-masked.svg" \
+install -m644 "$project_dir/resources/app-icon/evanya-masked.svg" \
   "$package_root/usr/share/icons/hicolor/scalable/apps/com.evanya.mail.svg"
 install -m644 "$project_dir/LICENSE" \
   "$package_root/usr/share/doc/evanya/LICENSE"

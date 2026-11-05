@@ -42,7 +42,7 @@ class KeystoreTests(unittest.TestCase):
             "-genkeypair", "-noprompt", "-keystore", str(self.source),
             "-storetype", "PKCS12", "-storepass:env", "FIXTURE_PASSWORD",
             "-keypass:env", "FIXTURE_PASSWORD", "-alias", self.alias,
-            "-dname", "CN=Flectar Mail Test,O=Android,C=US", "-keyalg", "RSA",
+            "-dname", "CN=Evanya Test,O=Android,C=US", "-keyalg", "RSA",
             "-keysize", "2048", "-validity", "10000",
         )
         self.certificate = self.keytool(
@@ -66,10 +66,10 @@ class KeystoreTests(unittest.TestCase):
                                      self.password, self.password, self.new_password)
         self.assertEqual(self.source.read_bytes(), original_bytes)
         self.assertEqual(destination.stat().st_mode & 0o777, 0o600)
-        self.assertEqual(result["FLECTAR_ANDROID_KEYSTORE_PASSWORD"], self.new_password)
+        self.assertEqual(result["EVANYA_ANDROID_KEYSTORE_PASSWORD"], self.new_password)
         actual = subprocess.check_output([
             "keytool", "-exportcert", "-keystore", str(destination), "-alias", self.alias,
-            "-storepass:env", "FLECTAR_ANDROID_KEYSTORE_PASSWORD",
+            "-storepass:env", "EVANYA_ANDROID_KEYSTORE_PASSWORD",
         ], env=result)
         self.assertEqual(actual, self.certificate)
         # Verification includes signing a CSR, so a certificate-only copy or
@@ -135,10 +135,10 @@ class SecretUploadTests(unittest.TestCase):
             keystore = Path(directory) / "fixture.p12"
             keystore.write_bytes(b"fixture private key")
             environment = {
-                "FLECTAR_ANDROID_KEYSTORE": str(keystore),
-                "FLECTAR_ANDROID_KEYSTORE_PASSWORD": "secret store password",
-                "FLECTAR_ANDROID_KEY_ALIAS": "fixture-alias",
-                "FLECTAR_ANDROID_KEY_PASSWORD": "secret key password",
+                "EVANYA_ANDROID_KEYSTORE": str(keystore),
+                "EVANYA_ANDROID_KEYSTORE_PASSWORD": "secret store password",
+                "EVANYA_ANDROID_KEY_ALIAS": "fixture-alias",
+                "EVANYA_ANDROID_KEY_PASSWORD": "secret key password",
             }
             responses = [
                 [{"environments": []}], {}, {"default_branch": "main"}, {}, {},
@@ -159,8 +159,8 @@ class SecretUploadTests(unittest.TestCase):
                 self.assertEqual(command[4:], ["--repo", "owner/repo", "--env", "android-release"])
                 self.assertNotIn(call.kwargs["input"], command)
                 values[command[3]] = call.kwargs["input"]
-            self.assertEqual(base64.b64decode(values["FLECTAR_ANDROID_KEYSTORE_BASE64"]), keystore.read_bytes())
-            for key in ("FLECTAR_ANDROID_KEYSTORE_PASSWORD", "FLECTAR_ANDROID_KEY_ALIAS", "FLECTAR_ANDROID_KEY_PASSWORD"):
+            self.assertEqual(base64.b64decode(values["EVANYA_ANDROID_KEYSTORE_BASE64"]), keystore.read_bytes())
+            for key in ("EVANYA_ANDROID_KEYSTORE_PASSWORD", "EVANYA_ANDROID_KEY_ALIAS", "EVANYA_ANDROID_KEY_PASSWORD"):
                 self.assertEqual(values[key], environment[key])
 
     def test_upload_refuses_an_unrestricted_existing_environment(self):

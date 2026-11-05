@@ -1,7 +1,7 @@
 //! Screenshots of the integrated window frame on each desktop platform.
 //!
 //! `scripts/generate-screenshots.sh` runs this ignored test with
-//! `FLECTAR_FRAMELESS_SCREENSHOTS` set to the output directory. The real
+//! `EVANYA_FRAMELESS_SCREENSHOTS` set to the output directory. The real
 //! application window loads the same prepared Cloudflare fixture as the normal
 //! screenshots and is rendered offscreen, so the images
 //! follow the shipping layout. The message body is rendered by the reader for
@@ -34,9 +34,9 @@ fn paint_traffic_lights(app: &AppWindow, image: &mut image::RgbImage) {
 #[test]
 #[ignore = "writes screenshots; run by scripts/generate-screenshots.sh"]
 fn frameless_screenshots() {
-    let Some(out) = std::env::var_os("FLECTAR_FRAMELESS_SCREENSHOTS").map(std::path::PathBuf::from)
+    let Some(out) = std::env::var_os("EVANYA_FRAMELESS_SCREENSHOTS").map(std::path::PathBuf::from)
     else {
-        panic!("set FLECTAR_FRAMELESS_SCREENSHOTS to the output directory");
+        panic!("set EVANYA_FRAMELESS_SCREENSHOTS to the output directory");
     };
     std::fs::create_dir_all(&out).unwrap();
 

@@ -45,7 +45,7 @@ VARIANTS = {
 ICONS = ["orange", *VARIANTS]
 
 # Logical name, pixel size. The window and tray sizes match the master's
-# flectar-mail-window.png and flectar-mail-tray.png; 512 px feeds the Dock and
+# evanya-window.png and evanya-tray.png; 512 px feeds the Dock and
 # the Linux icon theme.
 RASTERS = (("512", 512), ("window", 256), ("tray", 64))
 
@@ -224,8 +224,8 @@ def opaque_rgb(path):
 
 
 def expected_text():
-    masked = (ROOT / "flectar-mail-masked.svg").read_text(encoding="utf-8")
-    files = {VARIANTS_DIR / f"{name}.svg": variant_svg(masked, colors, "flectar-mail-masked.svg")
+    masked = (ROOT / "evanya-masked.svg").read_text(encoding="utf-8")
+    files = {VARIANTS_DIR / f"{name}.svg": variant_svg(masked, colors, "evanya-masked.svg")
              for name, colors in VARIANTS.items()}
     files.update({IOS_ASSETS / f"AppIcon{title(name)}.appiconset/Contents.json": IOS_CONTENTS
                   for name in VARIANTS})
@@ -292,11 +292,11 @@ def main():
         for name in VARIANTS:
             for label, size in RASTERS:
                 rasterize(VARIANTS_DIR / f"{name}.svg", VARIANTS_DIR / f"{name}-{label}.png", size)
-        full_bleed = (ROOT / "flectar-mail-nonmasked.svg").read_text(encoding="utf-8")
+        full_bleed = (ROOT / "evanya-nonmasked.svg").read_text(encoding="utf-8")
         with tempfile.TemporaryDirectory() as directory:
             for name, colors in VARIANTS.items():
                 svg = Path(directory) / f"{name}.svg"
-                svg.write_text(variant_svg(full_bleed, colors, "flectar-mail-nonmasked.svg"), encoding="utf-8")
+                svg.write_text(variant_svg(full_bleed, colors, "evanya-nonmasked.svg"), encoding="utf-8")
                 png = IOS_ASSETS / f"AppIcon{title(name)}.appiconset/AppIcon-1024.png"
                 rasterize(svg, png, 1024)
                 opaque_rgb(png)

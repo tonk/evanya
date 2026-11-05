@@ -462,7 +462,7 @@ pub(super) unsafe extern "C" fn suspend_preview(
     env: napi_env,
     _info: ffi::napi_callback_info,
 ) -> napi_value {
-    flectar_mail::suspend_file_preview();
+    evanya::suspend_file_preview();
     undefined(env)
 }
 

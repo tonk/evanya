@@ -1,6 +1,6 @@
-# Contributing to Flectar Mail
+# Contributing to Evanya
 
-Thank you for helping improve Flectar Mail. Keep changes focused, reviewable,
+Thank you for helping improve Evanya. Keep changes focused, reviewable,
 and safe for a mail client that handles private user data.
 
 ## Before starting
@@ -86,6 +86,6 @@ Icon sources, generation and sizing are documented in
 
 ## Licensing of accepted contributions
 
-Accepted contributions are published as part of Flectar Mail under
+Accepted contributions are published as part of Evanya under
 `AGPL-3.0-only`, unless a file is explicitly identified as third-party material
 under another compatible license.

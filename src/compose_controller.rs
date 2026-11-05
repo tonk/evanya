@@ -1,7 +1,7 @@
 //! Compose view-model projection and recipient/file helpers.
 
 use super::*;
-use flectar_mail_core::sender_identities::{is_own_address, reply_sender};
+use evanya_core::sender_identities::{is_own_address, reply_sender};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct ComposeIntent {
@@ -163,14 +163,14 @@ pub(super) fn opening_plain_text(app: &AppWindow) -> bool {
     app.get_compose_plain_text_default() != crate::window_chrome::shift_held()
 }
 
-pub(super) fn compose_addresses(addresses: &[flectar_mail_core::models::Address]) -> String {
+pub(super) fn compose_addresses(addresses: &[evanya_core::models::Address]) -> String {
     join_addresses(addresses)
 }
 
 fn deduplicated_addresses<'a>(
-    addresses: impl IntoIterator<Item = &'a flectar_mail_core::models::Address>,
+    addresses: impl IntoIterator<Item = &'a evanya_core::models::Address>,
     is_own: impl Fn(&str) -> bool,
-) -> Vec<&'a flectar_mail_core::models::Address> {
+) -> Vec<&'a evanya_core::models::Address> {
     let mut seen = HashSet::new();
     addresses
         .into_iter()
@@ -187,7 +187,7 @@ fn deduplicated_addresses<'a>(
 }
 
 fn join_addresses<'a>(
-    addresses: impl IntoIterator<Item = &'a flectar_mail_core::models::Address>,
+    addresses: impl IntoIterator<Item = &'a evanya_core::models::Address>,
 ) -> String {
     let mut output = String::new();
     append_addresses(&mut output, addresses);
@@ -196,7 +196,7 @@ fn join_addresses<'a>(
 
 fn append_addresses<'a>(
     output: &mut String,
-    addresses: impl IntoIterator<Item = &'a flectar_mail_core::models::Address>,
+    addresses: impl IntoIterator<Item = &'a evanya_core::models::Address>,
 ) {
     for (index, address) in addresses.into_iter().enumerate() {
         if index > 0 {
@@ -206,13 +206,13 @@ fn append_addresses<'a>(
     }
 }
 
-fn format_address(address: &flectar_mail_core::models::Address) -> String {
+fn format_address(address: &evanya_core::models::Address) -> String {
     let mut output = String::new();
     append_address(&mut output, address);
     output
 }
 
-fn append_address(output: &mut String, address: &flectar_mail_core::models::Address) {
+fn append_address(output: &mut String, address: &evanya_core::models::Address) {
     match address
         .name
         .as_deref()
@@ -451,10 +451,7 @@ pub(super) fn apply_rich_compose_state(
     app.set_compose_active_link_url(document.active_link().unwrap_or_default().into());
 }
 
-pub(super) fn apply_compose_contacts(
-    app: &AppWindow,
-    contacts: &[flectar_mail_core::models::Address],
-) {
+pub(super) fn apply_compose_contacts(app: &AppWindow, contacts: &[evanya_core::models::Address]) {
     let rows = contacts
         .iter()
         .map(|contact| ComposeContact {
@@ -466,10 +463,7 @@ pub(super) fn apply_compose_contacts(
     app.set_compose_contact_suggestions(ModelRc::new(VecModel::from(rows)));
 }
 
-pub(super) fn apply_email_templates(
-    app: &AppWindow,
-    templates: &[flectar_mail_core::models::Snippet],
-) {
+pub(super) fn apply_email_templates(app: &AppWindow, templates: &[evanya_core::models::Snippet]) {
     let rows = templates
         .iter()
         .filter_map(|template| {
@@ -485,7 +479,7 @@ pub(super) fn apply_email_templates(
     app.set_compose_templates(ModelRc::new(VecModel::from(rows)));
 }
 
-pub(super) fn contact_initials(contact: &flectar_mail_core::models::Address) -> String {
+pub(super) fn contact_initials(contact: &evanya_core::models::Address) -> String {
     let source = contact
         .name
         .as_deref()
@@ -511,7 +505,7 @@ pub(super) fn compose_recipient_query(recipients: &str) -> String {
 
 pub(super) fn complete_compose_recipient(
     recipients: &str,
-    contact: &flectar_mail_core::models::Address,
+    contact: &evanya_core::models::Address,
 ) -> String {
     if recipients
         .to_lowercase()
@@ -553,7 +547,7 @@ pub(super) fn clear_compose(
     session: &Cell<u64>,
     document: &Rc<RefCell<RichComposeDocument>>,
     editor: &Rc<RefCell<LazyComposeEditor>>,
-    contacts: &Rc<RefCell<Vec<flectar_mail_core::models::Address>>>,
+    contacts: &Rc<RefCell<Vec<evanya_core::models::Address>>>,
 ) {
     files.borrow_mut().clear();
     // A picker still open for this composer must not attach to the next one.
@@ -582,7 +576,7 @@ pub(super) fn clear_compose(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use flectar_mail_core::models::{
+    use evanya_core::models::{
         Address, SenderDeliveryStatus, SenderIdentity, SenderIdentitySource,
     };
 

@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="Flectar Mail का लोगो">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="Evanya का लोगो">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>ईमेल फिर से तेज़</h3>
-    <p>शुरू से गति के लिए बना। Flectar Mail नेटिव प्रदर्शन और तुरंत शुरुआत देता है, और निष्क्रिय अवस्था में लगभग 20 MB निजी मेमोरी ही इस्तेमाल करता है।</p>
+    <p>शुरू से गति के लिए बना। Evanya नेटिव प्रदर्शन और तुरंत शुरुआत देता है, और निष्क्रिय अवस्था में लगभग 20 MB निजी मेमोरी ही इस्तेमाल करता है।</p>
   </div>
   <p>
     <a href="https://flectar.com">वेबसाइट</a> ·
@@ -32,12 +32,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="macOS पर संयुक्त इनबॉक्स और संदेश दृश्य दिखाता Flectar Mail">
+  <img src="../../resources/screenshots/desktop-light.png" alt="macOS पर संयुक्त इनबॉक्स और संदेश दृश्य दिखाता Evanya">
 </picture>
 
-Flectar Mail आपके ईमेल, कैलेंडर और संपर्कों के लिए एक हल्का, नेटिव ऐप है। इसे तुरंत खुलने, तेज़ी से प्रतिक्रिया देने और आम वेब-आधारित मेल क्लाइंट की तुलना में बहुत कम मेमोरी इस्तेमाल करने के लिए बनाया गया है।
+Evanya आपके ईमेल, कैलेंडर और संपर्कों के लिए एक हल्का, नेटिव ऐप है। इसे तुरंत खुलने, तेज़ी से प्रतिक्रिया देने और आम वेब-आधारित मेल क्लाइंट की तुलना में बहुत कम मेमोरी इस्तेमाल करने के लिए बनाया गया है।
 
-## ❓ Flectar Mail क्यों?
+## ❓ Evanya क्यों?
 
 | लाभ | विवरण |
 | --- | --- |
@@ -54,7 +54,7 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
 
 ## ⚡ प्रदर्शन
 
-| निष्क्रिय अवस्था, एक ही मेलबॉक्स | Flectar Mail | Thunderbird 159 |
+| निष्क्रिय अवस्था, एक ही मेलबॉक्स | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | निजी मेमोरी | **~20 MB** | ~250 MB |
 | कोड और लाइब्रेरी सहित (PSS) | **~85 MB** | ~435 MB |
@@ -66,7 +66,7 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
 
 | ईमेल क्लाइंट | इंटरफ़ेस | ईमेल किससे रेंडर होता है | प्लेटफ़ॉर्म |
 | --- | --- | --- | --- |
-| **Flectar Mail** | नेटिव Rust ऐप | Blitz, Rust में बना HTML/CSS रेंडरर; कोई WebView नहीं | Windows, macOS, Linux, Android; iOS जल्द आ रहा है |
+| **Evanya** | नेटिव Rust ऐप | Blitz, Rust में बना HTML/CSS रेंडरर; कोई WebView नहीं | Windows, macOS, Linux, Android; iOS जल्द आ रहा है |
 | Thunderbird | Gecko-आधारित डेस्कटॉप ऐप | Gecko | Windows, macOS, Linux, Android |
 | Windows के लिए Outlook | वेब UI वाला Windows ऐप | Microsoft Edge WebView2 | Windows |
 | Spark | Electron ऐप | Chromium | macOS, Windows, iOS, Android |
@@ -103,14 +103,14 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail का पूर्ण डेस्कटॉप कार्यक्षेत्र" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Evanya का पूर्ण डेस्कटॉप कार्यक्षेत्र" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Flectar Mail का मिनिमल डेस्कटॉप कार्यक्षेत्र" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="Evanya का मिनिमल डेस्कटॉप कार्यक्षेत्र" width="100%">
         </picture>
       </td>
     </tr>
@@ -133,21 +133,21 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="कई बातचीत, कैलेंडर, संपर्क और फ़ाइलों के टैब वाला Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="कई बातचीत, कैलेंडर, संपर्क और फ़ाइलों के टैब वाला Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-thread-light.png">
-          <img src="../../resources/screenshots/desktop-thread-light.png" alt="प्राप्त संदेशों और जवाबों वाली Flectar Mail बातचीत" width="100%">
+          <img src="../../resources/screenshots/desktop-thread-light.png" alt="प्राप्त संदेशों और जवाबों वाली Evanya बातचीत" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="बैंगनी और नारंगी प्रोफ़ाइल संकेतों वाला Flectar Mail का संयुक्त इनबॉक्स" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="बैंगनी और नारंगी प्रोफ़ाइल संकेतों वाला Evanya का संयुक्त इनबॉक्स" width="100%">
         </picture>
       </td>
     </tr>
@@ -171,28 +171,28 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Flectar Mail का नीलहरित पैलेट" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="Evanya का नीलहरित पैलेट" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="Flectar Mail का हरा पैलेट" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="Evanya का हरा पैलेट" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Flectar Mail का बैंगनी पैलेट" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="Evanya का बैंगनी पैलेट" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail का कस्टम पैलेट" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="Evanya का कस्टम पैलेट" width="100%">
         </picture>
       </td>
     </tr>
@@ -212,14 +212,14 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/macos-light.png">
-          <img src="../../resources/screenshots/frameless/macos-light.png" alt="macOS पर Flectar Mail की बिना फ़्रेम की विंडो" width="100%">
+          <img src="../../resources/screenshots/frameless/macos-light.png" alt="macOS पर Evanya की बिना फ़्रेम की विंडो" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/windows-light.png">
-          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Windows पर Flectar Mail की बिना फ़्रेम की विंडो" width="100%">
+          <img src="../../resources/screenshots/frameless/windows-light.png" alt="Windows पर Evanya की बिना फ़्रेम की विंडो" width="100%">
         </picture>
       </td>
     </tr>
@@ -232,14 +232,14 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="GNOME पर Flectar Mail की बिना फ़्रेम की विंडो" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="GNOME पर Evanya की बिना फ़्रेम की विंडो" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-kde-light.png">
-          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="KDE Plasma पर Flectar Mail की बिना फ़्रेम की विंडो" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="KDE Plasma पर Evanya की बिना फ़्रेम की विंडो" width="100%">
         </picture>
       </td>
     </tr>
@@ -262,21 +262,21 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Flectar Mail का कैलेंडर" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="Evanya का कैलेंडर" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Flectar Mail के संपर्क" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="Evanya के संपर्क" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="Flectar Mail की फ़ाइलें" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="Evanya की फ़ाइलें" width="100%">
         </picture>
       </td>
     </tr>
@@ -287,18 +287,18 @@ Flectar Mail आपके ईमेल, कैलेंडर और संप�
 
 | हल्का | गहरा |
 | --- | --- |
-| ![हल्के मोड में Flectar Mail का मोबाइल इनबॉक्स](../../resources/screenshots/mobile-light.png) | ![गहरे मोड में Flectar Mail का मोबाइल इनबॉक्स](../../resources/screenshots/mobile-dark.png) |
+| ![हल्के मोड में Evanya का मोबाइल इनबॉक्स](../../resources/screenshots/mobile-light.png) | ![गहरे मोड में Evanya का मोबाइल इनबॉक्स](../../resources/screenshots/mobile-dark.png) |
 
 ## 🧪 प्रयोगात्मक HTML रेंडरिंग
 
 > [!WARNING]
-> HTML ईमेल रेंडरिंग इस समय Flectar Mail का सबसे प्रयोगात्मक हिस्सा है। कुछ संदेश, खासकर जटिल या असामान्य मार्कअप और CSS वाले, अभी सही तरह से नहीं दिख सकते हैं।
+> HTML ईमेल रेंडरिंग इस समय Evanya का सबसे प्रयोगात्मक हिस्सा है। कुछ संदेश, खासकर जटिल या असामान्य मार्कअप और CSS वाले, अभी सही तरह से नहीं दिख सकते हैं।
 
-Flectar Mail ब्राउज़र या WebView जोड़ने के बजाय [Blitz](https://github.com/DioxusLabs/blitz) से ईमेल रेंडर करता है। Blitz, Dioxus टीम का Rust में बना HTML/CSS रेंडरर है। अगर कोई संदेश गलत दिखता है, तो कृपया [उसकी रिपोर्ट करें](https://github.com/flectar/mail/issues)। [रेंडरर और CPU व GPU विकल्पों](../features.md#html-rendering) के बारे में और पढ़ें।
+Evanya ब्राउज़र या WebView जोड़ने के बजाय [Blitz](https://github.com/DioxusLabs/blitz) से ईमेल रेंडर करता है। Blitz, Dioxus टीम का Rust में बना HTML/CSS रेंडरर है। अगर कोई संदेश गलत दिखता है, तो कृपया [उसकी रिपोर्ट करें](https://github.com/flectar/mail/issues)। [रेंडरर और CPU व GPU विकल्पों](../features.md#html-rendering) के बारे में और पढ़ें।
 
-## 📥 Flectar Mail पाएँ
+## 📥 Evanya पाएँ
 
-Flectar Mail अभी विकास में है और स्थिर नहीं है। प्रीव्यू बिल्ड [GitHub Releases](https://github.com/flectar/mail/releases) पर **Pre-release** चिह्न के साथ उपलब्ध हैं।
+Evanya अभी विकास में है और स्थिर नहीं है। प्रीव्यू बिल्ड [GitHub Releases](https://github.com/flectar/mail/releases) पर **Pre-release** चिह्न के साथ उपलब्ध हैं।
 
 > [!WARNING]
 > **Google OAuth सत्यापन के लिए हर साल CASA सुरक्षा मूल्यांकन ज़रूरी है।** Flectar एक सामुदायिक ओपन-सोर्स परियोजना है, इसलिए यह मूल्यांकन प्रायोजकों के सहयोग पर निर्भर करता है। जब तक आवश्यक सत्यापन के लिए धन नहीं मिलता और वह पूरा नहीं होता, डिफ़ॉल्ट रूप से कॉन्फ़िगर किए गए Gmail OAuth वाली स्थिर रिलीज़ संभव नहीं होगी। अंतर्निहित Gmail साइन-इन उपलब्ध कराने में मदद के लिए [Flectar को प्रायोजित करें](https://github.com/sponsors/flectar)।
@@ -313,7 +313,7 @@ Flectar Mail अभी विकास में है और स्थिर �
 
 OAuth ऐप कुंजियों के बिना बने बिल्ड में Gmail और Outlook साइन-इन बंद रहता है। स्वागत स्क्रीन पर **साइन-इन सेटिंग्स** के गियर आइकन से अपना Google या Microsoft ऐप पंजीकरण जोड़ें, या IMAP, POP3 अथवा JMAP खाता कनेक्ट करें।
 
-[इंस्टॉलेशन गाइड](../install.md) में इंस्टॉल करने के कमांड, Linux कीरिंग और डेस्कटॉप पोर्टल, Flatpak और RPM से जुड़ी बातें, डाउनलोड का सत्यापन, Android हस्ताक्षर और `cargo run --bin flectar-mail` के ज़रिए स्रोत कोड से बिल्ड करना शामिल हैं।
+[इंस्टॉलेशन गाइड](../install.md) में इंस्टॉल करने के कमांड, Linux कीरिंग और डेस्कटॉप पोर्टल, Flatpak और RPM से जुड़ी बातें, डाउनलोड का सत्यापन, Android हस्ताक्षर और `cargo run --bin evanya` के ज़रिए स्रोत कोड से बिल्ड करना शामिल हैं।
 
 ## 🤝 शामिल हों
 
@@ -322,14 +322,14 @@ OAuth ऐप कुंजियों के बिना बने बिल्
 | 🌍 **अनुवाद करें** | [Weblate](https://translate.flectar.com/) पर ऐप का अनुवाद करें, मौजूदा अनुवाद सुधारें या अनूदित टेक्स्ट की समीक्षा करें; प्रोग्रामिंग या GitHub के अनुभव की ज़रूरत नहीं है। अनुवाद पुल अनुरोध के रूप में इस रिपॉज़िटरी तक पहुँचते हैं और योगदानकर्ताओं को GitHub पर उनके काम का श्रेय मिलता है। README के अनुवाद यहीं रखे जाते हैं; [अनुवाद में योगदान](../../CONTRIBUTING.md#translations) देखें। |
 | ♿ **सुगम्यता** | कीबोर्ड नेविगेशन, हल्की और गहरी थीम तथा लचीले लेआउट; सुगम्यता पर काम जारी है। वर्तमान सुविधाओं, परीक्षण की सीमाओं और बाधा की रिपोर्ट करने के तरीके के लिए [ACCESSIBILITY.md](../../ACCESSIBILITY.md) देखें। |
 | 🔒 **सुरक्षा** | सुरक्षा कमज़ोरियों की रिपोर्ट [SECURITY.md](../../SECURITY.md) में बताए गए तरीके से निजी रूप से करें, और उनका विवरण सार्वजनिक इश्यू में न दें। |
-| 🌐 **ओपन सोर्स** | Flectar Mail एक ही ओपन-सोर्स ऐप है, जिसका कोई अलग कम्युनिटी संस्करण नहीं है, और यह [GNU Affero General Public License v3](../../LICENSE) के अंतर्गत है। व्यावहारिक जानकारी के लिए [लाइसेंस का अवलोकन](../../LICENSING.md) पढ़ें। |
+| 🌐 **ओपन सोर्स** | Evanya एक ही ओपन-सोर्स ऐप है, जिसका कोई अलग कम्युनिटी संस्करण नहीं है, और यह [GNU Affero General Public License v3](../../LICENSE) के अंतर्गत है। व्यावहारिक जानकारी के लिए [लाइसेंस का अवलोकन](../../LICENSING.md) पढ़ें। |
 | 🛠️ **योगदान दें** | परियोजना को आकार देने में कैसे मदद करें, यह [CONTRIBUTING.md](../../CONTRIBUTING.md) में बताया गया है। |
 
 ## 🫡 आभार
 
-Flectar Mail इन परियोजनाओं और उनके योगदानकर्ताओं के काम से संभव हुआ है:
+Evanya इन परियोजनाओं और उनके योगदानकर्ताओं के काम से संभव हुआ है:
 
-- [Slint](https://slint.dev/), वह नेटिव UI टूलकिट जो Flectar Mail के इंटरफ़ेस को चलाता है।
+- [Slint](https://slint.dev/), वह नेटिव UI टूलकिट जो Evanya के इंटरफ़ेस को चलाता है।
 - [Blitz](https://github.com/DioxusLabs/blitz), Dioxus टीम का Rust HTML/CSS रेंडरर जो ईमेल पढ़ने का अनुभव उपलब्ध कराता है।
 
 ---

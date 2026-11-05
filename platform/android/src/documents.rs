@@ -1,4 +1,4 @@
-use flectar_mail::documents::{
+use evanya::documents::{
     DocumentDialog, DocumentFuture, DocumentProvider, DocumentRequestGuard, ImportedDocument,
 };
 use jni::{
@@ -208,7 +208,7 @@ fn strings(env: &mut JNIEnv, array: &JObjectArray) -> jni::errors::Result<Vec<St
     Ok(values)
 }
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_flectar_mail_FlectarActivity_nativeDocumentResult(
+pub extern "system" fn Java_com_evanya_mail_EvanyaActivity_nativeDocumentResult(
     mut env: JNIEnv,
     _class: JClass,
     id: jlong,
@@ -249,7 +249,7 @@ pub extern "system" fn Java_com_flectar_mail_FlectarActivity_nativeDocumentResul
     }
 }
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_flectar_mail_FlectarActivity_nativeDocumentsResult(
+pub extern "system" fn Java_com_evanya_mail_EvanyaActivity_nativeDocumentsResult(
     mut env: JNIEnv,
     _class: JClass,
     id: jlong,
@@ -285,7 +285,7 @@ pub extern "system" fn Java_com_flectar_mail_FlectarActivity_nativeDocumentsResu
     }
 }
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_flectar_mail_FlectarActivity_nativeDocumentRequestActive(
+pub extern "system" fn Java_com_evanya_mail_EvanyaActivity_nativeDocumentRequestActive(
     _env: JNIEnv,
     _class: JClass,
     id: jlong,

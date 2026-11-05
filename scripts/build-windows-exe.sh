@@ -38,10 +38,10 @@ done
 # stack setting.
 export RUSTFLAGS="-C target-feature=+crt-static -C link-arg=/STACK:8000000"
 build_args=(--locked --release --target "$target" --bin evanya --manifest-path "$project_dir/Cargo.toml" --no-default-features --features remote-content,gpu-renderer)
-if [[ -n "${FLECTAR_APP_FEATURES:-}" ]]; then
-  build_args+=(--features "$FLECTAR_APP_FEATURES")
+if [[ -n "${EVANYA_APP_FEATURES:-}" ]]; then
+  build_args+=(--features "$EVANYA_APP_FEATURES")
 fi
-if [[ "${FLECTAR_SKIP_BUILD:-0}" != "1" ]]; then
+if [[ "${EVANYA_SKIP_BUILD:-0}" != "1" ]]; then
   # Extra arguments are passed to Cargo, for example -j 4.
   cargo xwin build "${build_args[@]}" "$@"
 fi

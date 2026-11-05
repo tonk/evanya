@@ -6,7 +6,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { util } from '@kit.ArkTS';
 
-const LOG_TAG = 'FlectarOhos';
+const LOG_TAG = 'EvanyaOhos';
 // Keep picker imports bounded: a mail attachment is copied into the app
 // cache, so a mis-picked multi-GB file must not fill the sandbox.
 // Per-file cache guard for the picker; the shared compose/draft limit is
@@ -15,7 +15,7 @@ const MAX_IMPORT_BYTES = 50 * 1024 * 1024;
 // Services the native module invokes from Rust; the closures run on the ArkTS
 // UI thread through a thread-safe function. `pickOpen`/`pickSave` are
 // request/response: the page reports the outcome through `submitBridgeResult`.
-interface FlectarBridge {
+interface EvanyaBridge {
   openUrl: (url: string) => void;
   pickOpen: (requestId: number) => void;
   pickOpenMany: (requestId: number, limit: number) => void;
@@ -39,8 +39,8 @@ interface StagedFile {
 }
 
 // The exports of the native XComponent module (`onLoad` hands them over).
-interface FlectarNativeModule {
-  setBridge?: (bridge: FlectarBridge) => void;
+interface EvanyaNativeModule {
+  setBridge?: (bridge: EvanyaBridge) => void;
   submitBridgeResult?: (requestId: number, path: string, name: string, error: string) => boolean;
   imeCommit?: (text: string) => void;
   imeDelete?: (count: number) => void;
@@ -53,8 +53,8 @@ interface FlectarNativeModule {
 @Entry
 @Component
 struct Index {
-  private nativeModule: FlectarNativeModule | undefined = undefined;
-  @StorageLink('flectarColorMode') @Watch('onColorModeChanged') colorMode: number =
+  private nativeModule: EvanyaNativeModule | undefined = undefined;
+  @StorageLink('evanyaColorMode') @Watch('onColorModeChanged') colorMode: number =
     ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
   private imeAttached: boolean = false;
   private imeAttachPending: boolean = false;
@@ -78,8 +78,8 @@ struct Index {
     this.probeResources();
     try {
       const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      AppStorage.setOrCreate('flectarColorMode', context.config.colorMode ?? -1);
-      context.eventHub.on('flectarBackground', this.appBackgroundHandler);
+      AppStorage.setOrCreate('evanyaColorMode', context.config.colorMode ?? -1);
+      context.eventHub.on('evanyaBackground', this.appBackgroundHandler);
     } catch (error) {
       hilog.error(0x0000, LOG_TAG, 'could not read the system color mode: %{public}s',
         (error as BusinessError).message);
@@ -115,7 +115,7 @@ struct Index {
     }
     try {
       const context = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      context.eventHub.off('flectarBackground', this.appBackgroundHandler);
+      context.eventHub.off('evanyaBackground', this.appBackgroundHandler);
     } catch (error) {
       hilog.error(0x0000, LOG_TAG, 'background listener cleanup failed: %{public}s',
         (error as BusinessError).message);
@@ -137,9 +137,9 @@ struct Index {
   build(): void {
     Column() {
       XComponent({
-        id: 'flectar_mail_surface',
+        id: 'evanya_surface',
         type: XComponentType.SURFACE,
-        libraryname: 'flectar_mail_ohos',
+        libraryname: 'evanya_ohos',
       })
         .width('100%')
         .height('100%')
@@ -179,7 +179,7 @@ struct Index {
   // system browser with an implicit Want, and import/export opens the system
   // document picker — neither is reachable from native code directly.
   private installBridge(context: object): void {
-    const nativeModule = context as FlectarNativeModule;
+    const nativeModule = context as EvanyaNativeModule;
     if (nativeModule.setBridge === undefined) {
       hilog.error(0x0000, LOG_TAG, 'native module has no setBridge');
       return;

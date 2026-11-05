@@ -6,7 +6,7 @@
 //! composition root independent of platform window policy.
 
 use super::*;
-use crate::tray_ui::FlectarTray;
+use crate::tray_ui::EvanyaTray;
 
 #[cfg(target_os = "macos")]
 mod macos;
@@ -41,11 +41,11 @@ struct Lifecycle {
 
 pub(super) fn create_and_register_window_lifecycle(
     app: &AppWindow,
-) -> Result<Option<FlectarTray>, slint::PlatformError> {
+) -> Result<Option<EvanyaTray>, slint::PlatformError> {
     #[cfg(not(any(mobile, feature = "flatpak")))]
-    let tray = Some(FlectarTray::new()?);
+    let tray = Some(EvanyaTray::new()?);
     #[cfg(any(mobile, feature = "flatpak"))]
-    let tray: Option<FlectarTray> = None;
+    let tray: Option<EvanyaTray> = None;
 
     #[cfg(any(mobile, feature = "flatpak"))]
     app.set_close_to_tray(false);
@@ -329,7 +329,7 @@ fn release_free_memory() {
 
 pub(super) fn register_window_preference_callbacks(
     app: &AppWindow,
-    tray: Option<&FlectarTray>,
+    tray: Option<&EvanyaTray>,
     state: &Rc<RefCell<InboxState>>,
     runtime: &Rc<tokio::runtime::Runtime>,
     ui_task_tx: &UiSender<UiTaskUpdate>,
@@ -381,7 +381,7 @@ pub(super) fn register_window_preference_callbacks(
     });
 
     let app_weak = app.as_weak();
-    let tray_for_close_setting = tray.map(FlectarTray::as_weak);
+    let tray_for_close_setting = tray.map(EvanyaTray::as_weak);
     let state_for_close_setting = Rc::clone(state);
     let runtime_for_close_setting = Rc::clone(runtime);
     let ui_task_tx_for_close_setting = ui_task_tx.clone();

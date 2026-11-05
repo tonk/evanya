@@ -1,7 +1,7 @@
-# Flectar Mail licensing
+# Evanya licensing
 
-Flectar Mail is one open-source application. There is currently no separate
-“community edition”, “commercial edition”, or proprietary Flectar Mail client.
+Evanya is one open-source application. There is currently no separate
+“community edition”, “commercial edition”, or proprietary Evanya client.
 
 ## Open-source application
 
@@ -24,7 +24,7 @@ decisions cannot revoke the rights already granted for that version.
 Flectar may fund development by operating optional paid services that require
 ongoing infrastructure, such as hosted encrypted synchronization, relays,
 storage, managed processing, or support. A subscription purchases access to
-that service; it does not purchase a differently licensed Flectar Mail client.
+that service; it does not purchase a differently licensed Evanya client.
 
 The software and operational configuration used to run a Flectar-hosted
 service may be developed separately and may not be included in this repository.
@@ -60,7 +60,7 @@ directory. Flectar cannot offer commercial rights to material it does not own.
 
 ## Practical summary
 
-| Use | Flectar Mail |
+| Use | Evanya |
 |---|---|
 | Use privately or commercially | Yes |
 | Modify or fork | Yes |

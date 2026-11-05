@@ -8,7 +8,7 @@
 
 use std::path::PathBuf;
 
-use flectar_mail::documents::{DocumentDialog, DocumentFuture, DocumentProvider, ImportedDocument};
+use evanya::documents::{DocumentDialog, DocumentFuture, DocumentProvider, ImportedDocument};
 
 /// Routes import/export through `bridge::pick_open` / `bridge::pick_save`.
 pub(super) struct OhosDocuments;

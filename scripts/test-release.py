@@ -44,8 +44,8 @@ class ReleaseTests(unittest.TestCase):
                 environment = {
                     **os.environ,
                     "CI": "", "GITHUB_ACTIONS": "", ci_variable: "true",
-                    "FLECTAR_ANDROID_KEYSTORE": "",
-                    "FLECTAR_ANDROID_VERSION_NAME": "0.1.0-alpha.8",
+                    "EVANYA_ANDROID_KEYSTORE": "",
+                    "EVANYA_ANDROID_VERSION_NAME": "0.1.0-alpha.8",
                     "XDG_DATA_HOME": directory,
                 }
                 result = subprocess.run(
@@ -53,7 +53,7 @@ class ReleaseTests(unittest.TestCase):
                     env=environment, capture_output=True, text=True,
                 )
                 self.assertNotEqual(result.returncode, 0)
-                self.assertIn("requires FLECTAR_ANDROID_KEYSTORE", result.stderr)
+                self.assertIn("requires EVANYA_ANDROID_KEYSTORE", result.stderr)
                 self.assertEqual(list(Path(directory).rglob("*")), [])
 
     def test_android_persistent_key_restore_and_pin(self):
@@ -78,11 +78,11 @@ class ReleaseTests(unittest.TestCase):
                 "    sys.exit(0)\n"
                 "assert sys.argv[1] in ('-exportcert', '-certreq')\n"
                 "assert sys.argv[2] == '-keystore'\n"
-                "assert sys.argv[4:8] == ['-alias', 'release-key', '-storepass:env', 'FLECTAR_ANDROID_KEYSTORE_PASSWORD']\n"
-                "if os.environ['FLECTAR_ANDROID_KEYSTORE_PASSWORD'] != 'fixture store password': sys.exit(1)\n"
+                "assert sys.argv[4:8] == ['-alias', 'release-key', '-storepass:env', 'EVANYA_ANDROID_KEYSTORE_PASSWORD']\n"
+                "if os.environ['EVANYA_ANDROID_KEYSTORE_PASSWORD'] != 'fixture store password': sys.exit(1)\n"
                 "if sys.argv[1] == '-certreq':\n"
-                "    assert sys.argv[8:] == ['-keypass:env', 'FLECTAR_ANDROID_KEY_PASSWORD']\n"
-                "    sys.exit(0 if os.environ['FLECTAR_ANDROID_KEY_PASSWORD'] == 'fixture key password' else 1)\n"
+                "    assert sys.argv[8:] == ['-keypass:env', 'EVANYA_ANDROID_KEY_PASSWORD']\n"
+                "    sys.exit(0 if os.environ['EVANYA_ANDROID_KEY_PASSWORD'] == 'fixture key password' else 1)\n"
                 "data = pathlib.Path(sys.argv[3]).read_bytes()\n"
                 "if data == b'unreadable keystore': sys.exit(1)\n"
                 "sys.stdout.buffer.write(data)\n"
@@ -92,12 +92,12 @@ class ReleaseTests(unittest.TestCase):
             environment = {
                 **os.environ, "PATH": f"{root}{os.pathsep}{os.environ['PATH']}",
                 "RUNNER_TEMP": str(root), "GITHUB_ENV": str(output),
-                "FLECTAR_ANDROID_KEY_ALIAS": "release-key",
-                "FLECTAR_ANDROID_KEYSTORE_PASSWORD": "fixture store password",
-                "FLECTAR_ANDROID_KEY_PASSWORD": "fixture key password",
+                "EVANYA_ANDROID_KEY_ALIAS": "release-key",
+                "EVANYA_ANDROID_KEYSTORE_PASSWORD": "fixture store password",
+                "EVANYA_ANDROID_KEY_PASSWORD": "fixture key password",
             }
             for encoded, success, message in (
-                ("", False, "FLECTAR_ANDROID_KEYSTORE_BASE64 is required"),
+                ("", False, "EVANYA_ANDROID_KEYSTORE_BASE64 is required"),
                 ("not base64!", False, ""),
                 (base64.b64encode(b"unreadable keystore").decode(), False, ""),
                 (base64.b64encode(b"replacement public certificate").decode(), False, "differs from the pinned"),
@@ -107,7 +107,7 @@ class ReleaseTests(unittest.TestCase):
                     output.unlink(missing_ok=True)
                     result = subprocess.run(
                         ["bash", str(root / "scripts/restore-android-keystore.sh")], cwd=root,
-                        env={**environment, "FLECTAR_ANDROID_KEYSTORE_BASE64": encoded},
+                        env={**environment, "EVANYA_ANDROID_KEYSTORE_BASE64": encoded},
                         capture_output=True, text=True,
                     )
                     self.assertEqual(result.returncode == 0, success, result.stderr)
@@ -117,34 +117,34 @@ class ReleaseTests(unittest.TestCase):
                         self.assertEqual(keystore.stat().st_mode & 0o777, 0o600)
                     else:
                         self.assertFalse(output.exists())
-                        self.assertFalse(list(root.glob("flectar-app-signing.*.keystore")))
+                        self.assertFalse(list(root.glob("evanya-app-signing.*.keystore")))
             output.unlink()
             result = subprocess.run(
                 ["bash", str(root / "scripts/restore-android-keystore.sh")],
-                env={**environment, "FLECTAR_ANDROID_KEYSTORE_BASE64": base64.b64encode(certificate).decode(),
-                     "FLECTAR_ANDROID_KEY_PASSWORD": "wrong password"},
+                env={**environment, "EVANYA_ANDROID_KEYSTORE_BASE64": base64.b64encode(certificate).decode(),
+                     "EVANYA_ANDROID_KEY_PASSWORD": "wrong password"},
                 capture_output=True, text=True,
             )
             self.assertNotEqual(result.returncode, 0)
             self.assertFalse(output.exists())
-            self.assertEqual(list(root.glob("flectar-app-signing.*.keystore")), [keystore])
-            for missing in ("FLECTAR_ANDROID_KEYSTORE_PASSWORD", "FLECTAR_ANDROID_KEY_ALIAS", "FLECTAR_ANDROID_KEY_PASSWORD"):
+            self.assertEqual(list(root.glob("evanya-app-signing.*.keystore")), [keystore])
+            for missing in ("EVANYA_ANDROID_KEYSTORE_PASSWORD", "EVANYA_ANDROID_KEY_ALIAS", "EVANYA_ANDROID_KEY_PASSWORD"):
                 with self.subTest(missing=missing):
                     result = subprocess.run(
                         ["bash", str(root / "scripts/restore-android-keystore.sh")],
-                        env={**environment, "FLECTAR_ANDROID_KEYSTORE_BASE64": base64.b64encode(certificate).decode(),
+                        env={**environment, "EVANYA_ANDROID_KEYSTORE_BASE64": base64.b64encode(certificate).decode(),
                              missing: ""},
                         capture_output=True, text=True,
                     )
                     self.assertNotEqual(result.returncode, 0)
                     self.assertIn(f"requires {missing}", result.stderr)
                     self.assertFalse(output.exists())
-                    self.assertEqual(list(root.glob("flectar-app-signing.*.keystore")), [keystore])
+                    self.assertEqual(list(root.glob("evanya-app-signing.*.keystore")), [keystore])
             for value in ("", "not-a-digest"):
                 pin.write_text(value)
                 result = subprocess.run(
                     ["bash", str(root / "scripts/verify-android-keystore.sh")],
-                    env={**environment, "FLECTAR_ANDROID_KEYSTORE": str(keystore)},
+                    env={**environment, "EVANYA_ANDROID_KEYSTORE": str(keystore)},
                     capture_output=True, text=True,
                 )
                 self.assertNotEqual(result.returncode, 0)
@@ -262,11 +262,11 @@ class ReleaseTests(unittest.TestCase):
                 env={**os.environ, "ANDROID_HOME": str(root)}, text=True,
             )
             self.assertIn("Google Android OAuth SHA-1: CE:48:C4:6E:4A:A0:46:EF:00:7C:1F:96:5F:87:97:69:1B:A4:0E:9F", output)
-            self.assertIn("Microsoft redirect URI: msauth://com.flectar.mail/", output)
+            self.assertIn("Microsoft redirect URI: msauth://com.evanya.mail/", output)
 
     def test_android_signing_uses_certificate_not_display_name(self):
         digest = "ab" * 32
-        for subject in ("CN=Flectar Mail Test, O=Android, C=US", "C=US,O=Android,CN=Flectar Mail Test"):
+        for subject in ("CN=Evanya Test, O=Android, C=US", "C=US,O=Android,CN=Evanya Test"):
             signing = (
                 "Verified using v2 scheme (APK Signature Scheme v2): true\n"
                 "Number of signers: 1\n"
@@ -284,7 +284,7 @@ class ReleaseTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         verify_android_signing(signing.replace(": true", ": false"), mode, digest)
         # A plausible release subject cannot make a replacement key trusted.
-        production = signing.replace("CN=Flectar Mail Test", "CN=Flectar").replace(digest, "cd" * 32)
+        production = signing.replace("CN=Evanya Test", "CN=Flectar").replace(digest, "cd" * 32)
         with self.assertRaises(ValueError):
             verify_android_signing(production, "production", digest)
 
@@ -334,8 +334,8 @@ class ReleaseTests(unittest.TestCase):
                 "scripts/stage-linux-metadata.py", "resources/AppRun",
                 "LICENSE", "THIRD_PARTY_NOTICES.md",
                 "resources/com.evanya.mail.desktop", "resources/com.evanya.mail.metainfo.xml",
-                "resources/app-icon/flectar-mail-masked-512.png",
-                "resources/app-icon/flectar-mail-masked.svg",
+                "resources/app-icon/evanya-masked-512.png",
+                "resources/app-icon/evanya-masked.svg",
                 "resources/fonts/google-sans-flex/OFL.txt",
                 "resources/fonts/google-sans-flex/README.md",
                 "resources/debian/source-control.in", "resources/debian/control.in",
@@ -373,7 +373,7 @@ class ReleaseTests(unittest.TestCase):
             result = subprocess.run(
                 ["bash", str(root / "scripts/build-deb.sh")], cwd=root,
                 env={**os.environ, "PATH": f"{root / 'bin'}:{os.environ['PATH']}",
-                     "FLECTAR_SKIP_BUILD": "0", "FLECTAR_APP_FEATURES": ""},
+                     "EVANYA_SKIP_BUILD": "0", "EVANYA_APP_FEATURES": ""},
                 capture_output=True, text=True,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -442,7 +442,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
                 ["bash", str(root / "scripts/build-appimage.sh")], cwd=root,
                 env={**os.environ, "PATH": f"{root / 'bin'}:{os.environ['PATH']}",
                      "LINUXDEPLOY": str(deploy), "APPIMAGETOOL": str(pack), "VERSION": "stale",
-                     "FLECTAR_SKIP_BUILD": "0", "FLECTAR_APP_FEATURES": ""},
+                     "EVANYA_SKIP_BUILD": "0", "EVANYA_APP_FEATURES": ""},
                 capture_output=True, text=True,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -499,7 +499,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
                 "macos/evanya-macos-arm64.dmg",
                 "macos/evanya-macos-x64.zip",
                 "macos/evanya-macos-x64.dmg",
-                "android/flectar-mail.apk",
+                "android/evanya.apk",
             )
             for name in names:
                 path = source / name
@@ -509,7 +509,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             dist = root / "dist"
             prepare(source, dist, "0.1.0-beta.1")
             self.assertEqual(len(list(dist.iterdir())), 12)
-            self.assertTrue((dist / "flectar-mail-0.1.0-beta.1-android-arm64.apk").is_file())
+            self.assertTrue((dist / "evanya-0.1.0-beta.1-android-arm64.apk").is_file())
             # GitHub must not rewrite a download name after we checksum it.
             deb = dist / "evanya_0.1.0.beta.1_amd64.deb"
             self.assertEqual(deb.read_bytes(), (source / names[1]).read_bytes())
@@ -542,7 +542,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             prepare(source, stable_dist, "0.1.0")
             self.assertEqual(len(list(stable_dist.iterdir())), 12)
             self.assertTrue((stable_dist / "evanya_0.1.0_amd64.deb").is_file())
-            self.assertTrue((stable_dist / "flectar-mail-0.1.0-android-arm64.apk").is_file())
+            self.assertTrue((stable_dist / "evanya-0.1.0-android-arm64.apk").is_file())
             missing.unlink()
             with self.assertRaises(ValueError):
                 prepare(source, root / "missing-stable", "0.1.0")
@@ -559,7 +559,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             root = Path(directory)
             (root / "platform/android").mkdir(parents=True)
             (root / "Cargo.toml").write_text('[package]\nversion = "0.2.0-beta.1"\n')
-            lock = '[[package]]\nname = "flectar-mail"\nversion = "0.2.0-beta.1"\n'
+            lock = '[[package]]\nname = "evanya"\nversion = "0.2.0-beta.1"\n'
             (root / "Cargo.lock").write_text(lock)
             android_lock = root / "platform/android/Cargo.lock"
             android_lock.write_text(lock.replace("0.2.0-beta.1", "0.1.0"))

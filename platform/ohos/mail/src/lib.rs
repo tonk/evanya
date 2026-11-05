@@ -1,9 +1,9 @@
-//! Flectar Mail shell for OpenHarmony.
+//! Evanya shell for OpenHarmony.
 //!
 //! Mirrors `platform/android/src/lib.rs`: a thin cdylib that builds the
 //! `PlatformContext` (app-private paths, the Asset Store credential store, the
 //! host document provider and the OAuth broker) and hands it to
-//! `flectar_mail::run`, while the UI runs on the `slint-ohos-backend` platform.
+//! `evanya::run`, while the UI runs on the `slint-ohos-backend` platform.
 //!
 //! The ArkTS page owns the services native code cannot reach: opening the
 //! system browser with a Want, the document pickers and the soft keyboard. See
@@ -18,16 +18,16 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
 
-use flectar_mail::flectar_mail_core::accounts::credentials::{CredentialStore, Slot};
-use flectar_mail::flectar_mail_core::error::{CoreError, Result as CoreResult};
+use evanya::evanya_core::accounts::credentials::{CredentialStore, Slot};
+use evanya::evanya_core::error::{CoreError, Result as CoreResult};
 use slint_ohos_backend::ffi::{self, napi_env, napi_value};
 
 mod bridge;
 mod documents;
 
 /// NAPI module name; must match the XComponent `libraryname` in the ArkTS page
-/// (the loader resolves it to `libflectar_mail_ohos.so`).
-const MODULE_NAME: &[u8] = b"flectar_mail_ohos\0";
+/// (the loader resolves it to `libevanya_ohos.so`).
+const MODULE_NAME: &[u8] = b"evanya_ohos\0";
 
 /// App-private roots as seen from inside the app process (sandbox paths).
 const APP_DATA_ROOT: &str = "/data/storage/el2/base/files";
@@ -82,7 +82,7 @@ mod observability {
                 0,
                 4,
                 0xD00D,
-                c"flectar-mail".as_ptr(),
+                c"evanya".as_ptr(),
                 c"%{public}s".as_ptr(),
                 buffer.as_ptr().cast::<core::ffi::c_char>(),
             );
@@ -250,7 +250,7 @@ fn configure_native_libraries() -> std::result::Result<(), String> {
         .parent()
         .ok_or("the native library path has no directory")?;
     slint_ohos_backend::ohos_info!("mail: native libraries in {}", directory.display());
-    flectar_mail::platform::configure_pdfium(directory.to_path_buf())
+    evanya::platform::configure_pdfium(directory.to_path_buf())
 }
 
 /// Runs on the Slint thread spawned by the backend.
@@ -276,10 +276,10 @@ fn run_mail() -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync
     // plaintext file store on devices where the asset service is unavailable;
     // release builds never take that path, even with the variable set.
     let allow_file_store =
-        cfg!(debug_assertions) && std::env::var_os("FLECTAR_ALLOW_FILE_CREDENTIALS").is_some();
+        cfg!(debug_assertions) && std::env::var_os("EVANYA_ALLOW_FILE_CREDENTIALS").is_some();
     let credentials: Arc<dyn CredentialStore> = if allow_file_store {
         slint_ohos_backend::ohos_info!(
-            "mail: FLECTAR_ALLOW_FILE_CREDENTIALS set; using the file credential store (debug only)"
+            "mail: EVANYA_ALLOW_FILE_CREDENTIALS set; using the file credential store (debug only)"
         );
         Arc::new(OhosFileCredentialStore::new(
             internal.join("credentials-v1.json"),
@@ -289,23 +289,23 @@ fn run_mail() -> std::result::Result<(), Box<dyn std::error::Error + Send + Sync
         Arc::new(OhosAssetCredentialStore)
     };
     let oauth = Arc::new(
-        flectar_mail::flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default(),
+        evanya::evanya_core::oauth::redirect::LoopbackRedirectBroker::default(),
     );
 
     // Import/export go through the system document picker; authorization and
     // external addresses go through the ArkTS bridge (OHOS reaches the system
     // browser with a Want, which the page exposes as `openUrl`).
-    let documents: Arc<dyn flectar_mail::documents::DocumentProvider> =
+    let documents: Arc<dyn evanya::documents::DocumentProvider> =
         Arc::new(documents::OhosDocuments);
     // Soft-keyboard control for Slint's editable fields.
     slint_ohos_backend::ime::set_hooks(bridge::show_ime, bridge::hide_ime, bridge::update_cursor);
     // A denied paste asks for the pasteboard ACL permission once (see clipboard.rs).
     slint_ohos_backend::clipboard::set_permission_hook(bridge::request_pasteboard);
     let mut platform =
-        flectar_mail::PlatformContext::app_private(internal, cache, documents, credentials, oauth);
-    platform.external_urls = flectar_mail::ExternalUrlOpener::new(bridge::open_url);
-    slint_ohos_backend::ohos_info!("mail: entering flectar_mail::run");
-    flectar_mail::run(platform).map_err(|err| err.to_string())?;
+        evanya::PlatformContext::app_private(internal, cache, documents, credentials, oauth);
+    platform.external_urls = evanya::ExternalUrlOpener::new(bridge::open_url);
+    slint_ohos_backend::ohos_info!("mail: entering evanya::run");
+    evanya::run(platform).map_err(|err| err.to_string())?;
     Ok(())
 }
 
@@ -411,7 +411,7 @@ impl CredentialStore for OhosFileCredentialStore {
 // Credential store (OHOS Asset Store)
 // ---------------------------------------------------------------------------
 
-/// Credentials in the system Asset Store, aliased as `flectar:{account}:{slot}`
+/// Credentials in the system Asset Store, aliased as `evanya:{account}:{slot}`
 /// (see `slint_ohos_backend::asset`). No per-app permission is required.
 struct OhosAssetCredentialStore;
 
@@ -429,7 +429,7 @@ const ALL_SLOTS: [Slot; 9] = [
 
 impl OhosAssetCredentialStore {
     fn alias(account_id: i64, slot: Slot) -> String {
-        format!("flectar:{account_id}:{}", slot.key())
+        format!("evanya:{account_id}:{}", slot.key())
     }
 }
 

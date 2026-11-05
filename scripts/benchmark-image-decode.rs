@@ -1,6 +1,6 @@
 //! Standalone probe for the production bounded image decoder. Run one format
 //! per process so each peak excludes allocations left by previous decodes.
-//! Run with `cargo run -p flectar-renderer-probe --bin benchmark-image-decode
+//! Run with `cargo run -p evanya-renderer-probe --bin benchmark-image-decode
 //! --release -- png|jpeg|webp|gif [target_dimension] [width height]
 //! [--expect-rejected]`.
 //! Requested-live heap bytes exclude allocator overhead, DOM, paint cache,

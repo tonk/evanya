@@ -16,7 +16,7 @@ use crate::{
     theme::stored_color,
     ui_dispatch::UiWake,
 };
-use flectar_mail_core::{
+use evanya_core::{
     config::Paths,
     events::CoreEvent,
     models::{
@@ -542,7 +542,7 @@ pub(crate) struct StartupSnapshot {
     pub(crate) remote_images_enabled: bool,
     pub(crate) accounts: Vec<Account>,
     pub(crate) account_configs: Vec<AccountConfig>,
-    pub(crate) local_mail: Option<flectar_mail_core::models::LocalMail>,
+    pub(crate) local_mail: Option<evanya_core::models::LocalMail>,
     pub(crate) settings: Option<Settings>,
 }
 
@@ -606,8 +606,8 @@ impl PendingCoreUpdates {
 
 pub(crate) async fn load_startup_snapshot(
     paths: Paths,
-    credentials: flectar_mail_core::accounts::credentials::CredentialStoreHandle,
-    oauth_redirects: flectar_mail_core::oauth::redirect::OAuthRedirectBrokerHandle,
+    credentials: evanya_core::accounts::credentials::CredentialStoreHandle,
+    oauth_redirects: evanya_core::oauth::redirect::OAuthRedirectBrokerHandle,
     preferred_scope: Scope,
     metrics: &StartupMetrics,
 ) -> Result<StartupSnapshot, String> {
@@ -772,7 +772,7 @@ pub(crate) fn spawn_core_event_listener(
 }
 
 pub(crate) fn refresh_oauth_availability(app: &AppWindow) {
-    use flectar_mail_core::{models::Provider, oauth::providers::resolve_credentials};
+    use evanya_core::{models::Provider, oauth::providers::resolve_credentials};
     app.set_google_oauth_available(resolve_credentials(Provider::Gmail).is_ok());
     app.set_microsoft_oauth_available(resolve_credentials(Provider::Microsoft).is_ok());
 }
@@ -893,7 +893,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
 #[cfg(test)]
 mod warm_start_tests {
     use super::*;
-    use flectar_mail_core::models::{AuthKind, MailProtocol, Provider};
+    use evanya_core::models::{AuthKind, MailProtocol, Provider};
     use slint::platform::{
         Platform, WindowAdapter,
         software_renderer::{MinimalSoftwareWindow, RepaintBufferType},
@@ -976,7 +976,7 @@ mod warm_start_tests {
         }
 
         /// Paint a settled frame, saved as `<name>.png` when
-        /// `FLECTAR_STARTUP_REVIEW_DIR` is set.
+        /// `EVANYA_STARTUP_REVIEW_DIR` is set.
         fn render(&self, name: &str) -> Vec<Rgb8Pixel> {
             let size = self.app.window().size();
             let mut pixels = vec![Rgb8Pixel::default(); (size.width * size.height) as usize];
@@ -991,7 +991,7 @@ mod warm_start_tests {
                     renderer.render(&mut pixels, size.width as usize);
                 });
             }
-            if let Some(directory) = std::env::var_os("FLECTAR_STARTUP_REVIEW_DIR") {
+            if let Some(directory) = std::env::var_os("EVANYA_STARTUP_REVIEW_DIR") {
                 let directory = PathBuf::from(directory);
                 std::fs::create_dir_all(&directory).unwrap();
                 let bytes: Vec<u8> = pixels.iter().flat_map(|p| [p.r, p.g, p.b]).collect();
@@ -1242,7 +1242,7 @@ mod warm_start_tests {
             sender_verification: "domain".into(),
             verification_code: Some("48291375".into()),
             account_uses_labels: true,
-            first_attachment: Some(flectar_mail_core::models::AttachmentMeta {
+            first_attachment: Some(evanya_core::models::AttachmentMeta {
                 id: 3,
                 filename: Some("cached-file-name.pdf".into()),
                 mime_type: Some("application/pdf".into()),

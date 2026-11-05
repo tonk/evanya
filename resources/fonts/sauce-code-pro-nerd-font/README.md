@@ -2,7 +2,7 @@
 
 This directory contains four unmodified styles of SauceCodePro Nerd Font, the
 Nerd Fonts build of Adobe's Source Code Pro with programming and icon glyphs
-added. Flectar Mail bundles them so they can be chosen in Settings → Fonts on
+added. Evanya bundles them so they can be chosen in Settings → Fonts on
 every platform, whether or not they are installed.
 
 - Family: `SauceCodePro Nerd Font`

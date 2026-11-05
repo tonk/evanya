@@ -1,7 +1,7 @@
 <div align="center" dir="rtl">
-  <img src="../../resources/app-icon/flectar-mail-masked.png" width="88" alt="شعار Flectar Mail">
+  <img src="../../resources/app-icon/evanya-masked.png" width="88" alt="شعار Evanya">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p dir="ltr">
     <a href="../../README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>البريد يستعيد سرعته</h3>
-    <p>بُني من الصفر للسرعة. يقدم Flectar Mail أداءً أصيلًا وتشغيلًا فوريًا واستهلاكًا للذاكرة الخاصة يقارب 20 MB في وضع الخمول.</p>
+    <p>بُني من الصفر للسرعة. يقدم Evanya أداءً أصيلًا وتشغيلًا فوريًا واستهلاكًا للذاكرة الخاصة يقارب 20 MB في وضع الخمول.</p>
   </div>
   <p>
     <a href="https://flectar.com">الموقع</a> ·
@@ -32,12 +32,12 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-  <img src="../../resources/screenshots/desktop-light.png" alt="Flectar Mail على macOS يعرض صندوق الوارد الموحد وواجهة الرسالة">
+  <img src="../../resources/screenshots/desktop-light.png" alt="Evanya على macOS يعرض صندوق الوارد الموحد وواجهة الرسالة">
 </picture>
 
-يُعد Flectar Mail تطبيقًا أصيلًا وخفيفًا لبريدك الإلكتروني وتقويماتك وجهات اتصالك. صُمم ليفتح فورًا ويحافظ على سرعة الاستجابة، مع استهلاك جزء صغير من الذاكرة التي يحتاج إليها عميل بريد تقليدي مبني على تقنيات الويب.
+يُعد Evanya تطبيقًا أصيلًا وخفيفًا لبريدك الإلكتروني وتقويماتك وجهات اتصالك. صُمم ليفتح فورًا ويحافظ على سرعة الاستجابة، مع استهلاك جزء صغير من الذاكرة التي يحتاج إليها عميل بريد تقليدي مبني على تقنيات الويب.
 
-## ❓ لماذا Flectar Mail؟
+## ❓ لماذا Evanya؟
 
 <div dir="rtl">
 
@@ -49,7 +49,7 @@
 | **مصمم للعمل دون اتصال** | يُخزّن صندوق البريد والتقويم محليًا، فتبقى بياناتك المتزامنة مفيدة دون اتصال بالإنترنت. |
 | **يعمل مع حساباتك** | اربط Gmail وOutlook وMicrosoft 365، أو خدمات تعتمد معايير IMAP وPOP3 وSMTP وJMAP وCalDAV وCardDAV. |
 | **إعدادات افتراضية تراعي الخصوصية** | تُحجب الصور البعيدة حتى تسمح بها، فلا تستطيع بكسلات التتبع الإبلاغ عن وقت قراءتك للرسالة. |
-| **الأمان في البنية نفسها** | لا يُفتح محتوى البريد أبدًا داخل WebView. يعرض Flectar Mail شيفرة HTML وCSS عبر نظامه الأصيل المكتوب بلغة Rust دون تنفيذ نصوص الرسائل البرمجية، فيتجنب بذلك مساحة الهجوم الخاصة بالمتصفح المضمّن. |
+| **الأمان في البنية نفسها** | لا يُفتح محتوى البريد أبدًا داخل WebView. يعرض Evanya شيفرة HTML وCSS عبر نظامه الأصيل المكتوب بلغة Rust دون تنفيذ نصوص الرسائل البرمجية، فيتجنب بذلك مساحة الهجوم الخاصة بالمتصفح المضمّن. |
 | **محرّك عرض تجريبي بلغة Rust** | يُعد عرض البريد دون محرّك متصفح مجالًا جديدًا. قد لا تُعرض الرسائل المعقدة بصورة صحيحة بعد، والعمل جارٍ على تحسين التوافق. |
 | **لكل الشاشات** | تقدم تخطيطات سطح المكتب الواسعة والمبسطة التجربة نفسها التي تقدمها الواجهة المدمجة الملائمة للمس. |
 | **أصيل ومفتوح المصدر** | بُني من الصفر بلغة Rust. ليس متصفحًا داخل نافذة، ويُوزّع بترخيص AGPLv3. |
@@ -60,7 +60,7 @@
 
 <div dir="rtl">
 
-| في وضع الخمول، بصندوق البريد نفسه | Flectar Mail | Thunderbird 159 |
+| في وضع الخمول، بصندوق البريد نفسه | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | الذاكرة الخاصة | **~20 MB** | ~250 MB |
 | مع احتساب الشيفرة والمكتبات (PSS) | **~85 MB** | ~435 MB |
@@ -76,7 +76,7 @@
 
 | عميل البريد | الواجهة | يعرض البريد عبر | المنصات |
 | --- | --- | --- | --- |
-| **Flectar Mail** | تطبيق Rust أصيل | Blitz، محرّك HTML/CSS بلغة Rust؛ دون WebView | Windows وmacOS وLinux وAndroid؛ وiOS قريبًا |
+| **Evanya** | تطبيق Rust أصيل | Blitz، محرّك HTML/CSS بلغة Rust؛ دون WebView | Windows وmacOS وLinux وAndroid؛ وiOS قريبًا |
 | Thunderbird | تطبيق سطح مكتب مبني على Gecko | Gecko | Windows وmacOS وLinux وAndroid |
 | Outlook for Windows | تطبيق Windows بواجهة ويب | Microsoft Edge WebView2 | Windows |
 | Spark | تطبيق Electron | Chromium | macOS وWindows وiOS وAndroid |
@@ -120,14 +120,14 @@
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="مساحة عمل Flectar Mail الكاملة على سطح المكتب" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="مساحة عمل Evanya الكاملة على سطح المكتب" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-minimal-light.png">
-          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="مساحة عمل Flectar Mail المبسطة على سطح المكتب" width="100%">
+          <img src="../../resources/screenshots/desktop-minimal-light.png" alt="مساحة عمل Evanya المبسطة على سطح المكتب" width="100%">
         </picture>
       </td>
     </tr>
@@ -152,21 +152,21 @@
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-tabs-light.png">
-          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail بعلامات تبويب لعدة محادثات والتقويم وجهات الاتصال والملفات" width="100%">
+          <img src="../../resources/screenshots/desktop-tabs-light.png" alt="Evanya بعلامات تبويب لعدة محادثات والتقويم وجهات الاتصال والملفات" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-thread-light.png">
-          <img src="../../resources/screenshots/desktop-thread-light.png" alt="محادثة Flectar Mail تتضمن الرسائل الواردة والردود" width="100%">
+          <img src="../../resources/screenshots/desktop-thread-light.png" alt="محادثة Evanya تتضمن الرسائل الواردة والردود" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-profiles-light.png">
-          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="صندوق الوارد الموحد في Flectar Mail بعلامات ملفات شخصية بنفسجية وبرتقالية" width="100%">
+          <img src="../../resources/screenshots/desktop-profiles-light.png" alt="صندوق الوارد الموحد في Evanya بعلامات ملفات شخصية بنفسجية وبرتقالية" width="100%">
         </picture>
       </td>
     </tr>
@@ -192,28 +192,28 @@
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-teal-light.png">
-          <img src="../../resources/screenshots/desktop-teal-light.png" alt="لوحة Flectar Mail الزرقاء المخضرة" width="100%">
+          <img src="../../resources/screenshots/desktop-teal-light.png" alt="لوحة Evanya الزرقاء المخضرة" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-green-light.png">
-          <img src="../../resources/screenshots/desktop-green-light.png" alt="لوحة Flectar Mail الخضراء" width="100%">
+          <img src="../../resources/screenshots/desktop-green-light.png" alt="لوحة Evanya الخضراء" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-purple-light.png">
-          <img src="../../resources/screenshots/desktop-purple-light.png" alt="لوحة Flectar Mail البنفسجية" width="100%">
+          <img src="../../resources/screenshots/desktop-purple-light.png" alt="لوحة Evanya البنفسجية" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-light.png">
-          <img src="../../resources/screenshots/desktop-light.png" alt="لوحة ألوان Flectar Mail المخصصة" width="100%">
+          <img src="../../resources/screenshots/desktop-light.png" alt="لوحة ألوان Evanya المخصصة" width="100%">
         </picture>
       </td>
     </tr>
@@ -235,14 +235,14 @@
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/macos-light.png">
-          <img src="../../resources/screenshots/frameless/macos-light.png" alt="نافذة Flectar Mail بلا إطار على macOS" width="100%">
+          <img src="../../resources/screenshots/frameless/macos-light.png" alt="نافذة Evanya بلا إطار على macOS" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/windows-light.png">
-          <img src="../../resources/screenshots/frameless/windows-light.png" alt="نافذة Flectar Mail بلا إطار على Windows" width="100%">
+          <img src="../../resources/screenshots/frameless/windows-light.png" alt="نافذة Evanya بلا إطار على Windows" width="100%">
         </picture>
       </td>
     </tr>
@@ -255,14 +255,14 @@
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="نافذة Flectar Mail بلا إطار على GNOME" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-gnome-light.png" alt="نافذة Evanya بلا إطار على GNOME" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/frameless/linux-kde-light.png">
-          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="نافذة Flectar Mail بلا إطار على KDE Plasma" width="100%">
+          <img src="../../resources/screenshots/frameless/linux-kde-light.png" alt="نافذة Evanya بلا إطار على KDE Plasma" width="100%">
         </picture>
       </td>
     </tr>
@@ -287,21 +287,21 @@
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-calendar-light.png">
-          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="تقويم Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-calendar-light.png" alt="تقويم Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-contacts-light.png">
-          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="جهات اتصال Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-contacts-light.png" alt="جهات اتصال Evanya" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="../../resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="../../resources/screenshots/desktop-files-light.png">
-          <img src="../../resources/screenshots/desktop-files-light.png" alt="ملفات Flectar Mail" width="100%">
+          <img src="../../resources/screenshots/desktop-files-light.png" alt="ملفات Evanya" width="100%">
         </picture>
       </td>
     </tr>
@@ -315,20 +315,20 @@
 
 | فاتح | داكن |
 | --- | --- |
-| ![صندوق الوارد المحمول في Flectar Mail بالوضع الفاتح](../../resources/screenshots/mobile-light.png) | ![صندوق الوارد المحمول في Flectar Mail بالوضع الداكن](../../resources/screenshots/mobile-dark.png) |
+| ![صندوق الوارد المحمول في Evanya بالوضع الفاتح](../../resources/screenshots/mobile-light.png) | ![صندوق الوارد المحمول في Evanya بالوضع الداكن](../../resources/screenshots/mobile-dark.png) |
 
 </div>
 
 ## 🧪 عرض HTML تجريبي
 
 > [!WARNING]
-> عرض رسائل HTML هو حاليًا الجزء الأكثر تجريبية في Flectar Mail. قد لا تُعرض بعض الرسائل بصورة صحيحة بعد، خاصة التي تتضمن ترميزًا وتنسيقات CSS معقدة أو غير معتادة.
+> عرض رسائل HTML هو حاليًا الجزء الأكثر تجريبية في Evanya. قد لا تُعرض بعض الرسائل بصورة صحيحة بعد، خاصة التي تتضمن ترميزًا وتنسيقات CSS معقدة أو غير معتادة.
 
-يعرض Flectar Mail البريد باستخدام [Blitz](https://github.com/DioxusLabs/blitz)، وهو محرّك HTML/CSS بلغة Rust من فريق Dioxus، بدلًا من تضمين متصفح أو WebView. إذا وجدت رسالة لا تُعرض بصورة صحيحة، يرجى [الإبلاغ عنها](https://github.com/flectar/mail/issues). اقرأ المزيد عن [محرّك العرض وخيارَي CPU وGPU](../features.md#html-rendering).
+يعرض Evanya البريد باستخدام [Blitz](https://github.com/DioxusLabs/blitz)، وهو محرّك HTML/CSS بلغة Rust من فريق Dioxus، بدلًا من تضمين متصفح أو WebView. إذا وجدت رسالة لا تُعرض بصورة صحيحة، يرجى [الإبلاغ عنها](https://github.com/flectar/mail/issues). اقرأ المزيد عن [محرّك العرض وخيارَي CPU وGPU](../features.md#html-rendering).
 
-## 📥 احصل على Flectar Mail
+## 📥 احصل على Evanya
 
-لا يزال Flectar Mail قيد التطوير ولم يصل إلى الاستقرار بعد. تتوفر نسخ المعاينة على [GitHub Releases](https://github.com/flectar/mail/releases) وتحمل شارة **Pre-release**.
+لا يزال Evanya قيد التطوير ولم يصل إلى الاستقرار بعد. تتوفر نسخ المعاينة على [GitHub Releases](https://github.com/flectar/mail/releases) وتحمل شارة **Pre-release**.
 
 > [!WARNING]
 > **يتطلب تحقق Google OAuth تقييمًا أمنيًا سنويًا من CASA.** Flectar مشروع مجتمعي مفتوح المصدر، لذا يعتمد إجراء هذا التقييم على دعم الرعاة. لن يكون إصدار مستقر مع Gmail OAuth مهيأ افتراضيًا ممكنًا قبل تمويل التحقق المطلوب وإتمامه. إذا أردت المساعدة في توفير تسجيل الدخول المدمج إلى Gmail، يرجى [رعاية Flectar](https://github.com/sponsors/flectar).
@@ -347,7 +347,7 @@
 
 تُبقي النسخ المبنية دون مفاتيح تطبيق OAuth تسجيل الدخول إلى Gmail وOutlook معطلًا. استخدم ترس **إعدادات تسجيل الدخول** في شاشة الترحيب لإضافة تسجيل تطبيق Google أو Microsoft الخاص بك، أو اربط حساب IMAP أو POP3 أو JMAP.
 
-يشرح [دليل التثبيت](../install.md) أوامر التثبيت، ومخزن المفاتيح وبوابة سطح المكتب على Linux، وملاحظات Flatpak وRPM، والتحقق من التنزيلات، وتوقيع Android، والبناء من المصدر باستخدام `cargo run --bin flectar-mail`.
+يشرح [دليل التثبيت](../install.md) أوامر التثبيت، ومخزن المفاتيح وبوابة سطح المكتب على Linux، وملاحظات Flatpak وRPM، والتحقق من التنزيلات، وتوقيع Android، والبناء من المصدر باستخدام `cargo run --bin evanya`.
 
 ## 🤝 شارك في المشروع
 
@@ -356,18 +356,18 @@
 | المجال | التفاصيل |
 | --- | --- |
 | 🌍 **الترجمة** | ترجم التطبيق، أو حسّن ترجمة موجودة، أو راجع النصوص المترجمة عبر [Weblate](https://translate.flectar.com/)؛ لا تحتاج إلى خبرة بالبرمجة أو GitHub. تصل الترجمات إلى هذا المستودع كطلبات سحب، وتُنسب المساهمات إلى أصحابها على GitHub. تُصان ترجمات README في هذا المستودع؛ راجع [المساهمة في الترجمات](../../CONTRIBUTING.md#translations). |
-| ♿ **إمكانية الوصول** | يوفر Flectar Mail التنقل بلوحة المفاتيح والسمات الفاتحة والداكنة والتخطيطات المرنة، ويستمر العمل على إمكانية الوصول. راجع [ACCESSIBILITY.md](../../ACCESSIBILITY.md) للاطلاع على الميزات الحالية وحدود الاختبار وكيفية الإبلاغ عن عائق. |
+| ♿ **إمكانية الوصول** | يوفر Evanya التنقل بلوحة المفاتيح والسمات الفاتحة والداكنة والتخطيطات المرنة، ويستمر العمل على إمكانية الوصول. راجع [ACCESSIBILITY.md](../../ACCESSIBILITY.md) للاطلاع على الميزات الحالية وحدود الاختبار وكيفية الإبلاغ عن عائق. |
 | 🔒 **الأمان** | للإبلاغ عن ثغرة بصورة خاصة، اتبع [SECURITY.md](../../SECURITY.md). يرجى عدم نشر تفاصيل الثغرات في البلاغات العامة. |
-| 🌐 **مفتوح المصدر** | Flectar Mail تطبيق واحد مفتوح المصدر، ولا توجد نسخة مجتمعية منفصلة. وهو مرخّص بموجب [GNU Affero General Public License v3](../../LICENSE). اقرأ [نظرة عامة على الترخيص](../../LICENSING.md) للتفاصيل العملية. |
+| 🌐 **مفتوح المصدر** | Evanya تطبيق واحد مفتوح المصدر، ولا توجد نسخة مجتمعية منفصلة. وهو مرخّص بموجب [GNU Affero General Public License v3](../../LICENSE). اقرأ [نظرة عامة على الترخيص](../../LICENSING.md) للتفاصيل العملية. |
 | 🛠️ **المساهمة** | راجع [CONTRIBUTING.md](../../CONTRIBUTING.md) للمساعدة في تطوير المشروع. |
 
 </div>
 
 ## 🫡 شكر وتقدير
 
-أصبح Flectar Mail ممكنًا بفضل عمل هذه المشاريع ومساهميها:
+أصبح Evanya ممكنًا بفضل عمل هذه المشاريع ومساهميها:
 
-- ‏[Slint](https://slint.dev/)، أدوات الواجهة الأصيلة التي تشغّل واجهة Flectar Mail.
+- ‏[Slint](https://slint.dev/)، أدوات الواجهة الأصيلة التي تشغّل واجهة Evanya.
 - ‏[Blitz](https://github.com/DioxusLabs/blitz)، محرّك HTML/CSS بلغة Rust من فريق Dioxus الذي يتيح عرض رسائل البريد.
 
 ---

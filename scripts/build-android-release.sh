@@ -16,11 +16,11 @@ elif [[ $# != 0 ]]; then
 fi
 
 required=(
-  FLECTAR_ANDROID_VERSION_NAME
-  FLECTAR_ANDROID_KEYSTORE
-  FLECTAR_ANDROID_KEYSTORE_PASSWORD
-  FLECTAR_ANDROID_KEY_ALIAS
-  FLECTAR_ANDROID_KEY_PASSWORD
+  EVANYA_ANDROID_VERSION_NAME
+  EVANYA_ANDROID_KEYSTORE
+  EVANYA_ANDROID_KEYSTORE_PASSWORD
+  EVANYA_ANDROID_KEY_ALIAS
+  EVANYA_ANDROID_KEY_PASSWORD
 )
 for name in "${required[@]}"; do
   if [[ -z "${!name:-}" ]]; then
@@ -29,16 +29,16 @@ for name in "${required[@]}"; do
   fi
 done
 
-version_code="$(python3 "$project_dir/scripts/android-version-code.py" "$FLECTAR_ANDROID_VERSION_NAME")"
-if [[ -n "${FLECTAR_ANDROID_VERSION_CODE:-}" && "$FLECTAR_ANDROID_VERSION_CODE" != "$version_code" ]]; then
-  printf 'FLECTAR_ANDROID_VERSION_CODE must match the shared release sequence (%s).\n' "$version_code" >&2
+version_code="$(python3 "$project_dir/scripts/android-version-code.py" "$EVANYA_ANDROID_VERSION_NAME")"
+if [[ -n "${EVANYA_ANDROID_VERSION_CODE:-}" && "$EVANYA_ANDROID_VERSION_CODE" != "$version_code" ]]; then
+  printf 'EVANYA_ANDROID_VERSION_CODE must match the shared release sequence (%s).\n' "$version_code" >&2
   exit 1
 fi
-export FLECTAR_ANDROID_VERSION_CODE="$version_code"
+export EVANYA_ANDROID_VERSION_CODE="$version_code"
 bash "$project_dir/scripts/verify-android-keystore.sh" >/dev/null
 
 if [[ "$preview" == true ]]; then
-  if [[ "$FLECTAR_ANDROID_VERSION_NAME" != *-* ]]; then
+  if [[ "$EVANYA_ANDROID_VERSION_NAME" != *-* ]]; then
     printf 'Stable Android releases cannot use --preview.\n' >&2
     exit 1
   fi
@@ -46,9 +46,9 @@ if [[ "$preview" == true ]]; then
 else
   python3 "$project_dir/scripts/verify-android-oauth.py" --require-all
 fi
-if [[ "$preview" == false || -n "${FLECTAR_MICROSOFT_ANDROID_REDIRECT_URI:-}" ]]; then
-  if [[ ! "${FLECTAR_MICROSOFT_ANDROID_REDIRECT_URI:-}" =~ ^msauth://com\.flectar\.mail/.+ ]]; then
-    printf 'Microsoft redirect must be msauth://com.flectar.mail/<signature-hash>.\n' >&2
+if [[ "$preview" == false || -n "${EVANYA_MICROSOFT_ANDROID_REDIRECT_URI:-}" ]]; then
+  if [[ ! "${EVANYA_MICROSOFT_ANDROID_REDIRECT_URI:-}" =~ ^msauth://com\.evanya\.mail/.+ ]]; then
+    printf 'Microsoft redirect must be msauth://com.evanya.mail/<signature-hash>.\n' >&2
     exit 1
   fi
 fi
@@ -90,10 +90,10 @@ cargo build \
   --release \
   --lib
 
-native_lib="$target_dir/aarch64-linux-android/release/libflectar_mail_android.so"
+native_lib="$target_dir/aarch64-linux-android/release/libevanya_android.so"
 jni_dir="$target_dir/android/gradle-jni/arm64-v8a"
 mkdir -p "$jni_dir"
-cp "$native_lib" "$jni_dir/libflectar_mail_android.so"
+cp "$native_lib" "$jni_dir/libevanya_android.so"
 python3 "$project_dir/scripts/stage-pdfium.py" android-arm64 "$jni_dir" \
   --cache "$target_dir/pdfium-downloads"
 
@@ -105,28 +105,28 @@ python3 "$project_dir/scripts/stage-pdfium.py" android-arm64 "$jni_dir" \
 artifact_dir="$target_dir/android/release"
 mkdir -p "$artifact_dir"
 cp "$target_dir/android/gradle/app/outputs/apk/release/app-release.apk" \
-  "$artifact_dir/flectar-mail.apk"
+  "$artifact_dir/evanya.apk"
 cp "$target_dir/android/gradle/app/outputs/bundle/release/app-release.aab" \
-  "$artifact_dir/flectar-mail.aab"
+  "$artifact_dir/evanya.aab"
 
 if ! command -v jarsigner >/dev/null 2>&1 \
-  || ! jarsigner -verify "$artifact_dir/flectar-mail.aab" >/dev/null; then
+  || ! jarsigner -verify "$artifact_dir/evanya.aab" >/dev/null; then
   printf 'The production App Bundle signature could not be verified.\n' >&2
   exit 1
 fi
 
-if [[ -n "${FLECTAR_MICROSOFT_ANDROID_REDIRECT_URI:-}" ]]; then
+if [[ -n "${EVANYA_MICROSOFT_ANDROID_REDIRECT_URI:-}" ]]; then
   actual_redirect="$(ANDROID_HOME="$android_sdk" "$project_dir/scripts/android-signing-identities.sh" \
-    "$artifact_dir/flectar-mail.apk" | sed -n 's/^Microsoft redirect URI: //p')"
-  if [[ "$actual_redirect" != "$FLECTAR_MICROSOFT_ANDROID_REDIRECT_URI" ]]; then
+    "$artifact_dir/evanya.apk" | sed -n 's/^Microsoft redirect URI: //p')"
+  if [[ "$actual_redirect" != "$EVANYA_MICROSOFT_ANDROID_REDIRECT_URI" ]]; then
     printf 'The Entra redirect does not match the APK signing certificate.\n' >&2
     printf 'Configured: %s\nActual:     %s\n' \
-      "$FLECTAR_MICROSOFT_ANDROID_REDIRECT_URI" "$actual_redirect" >&2
+      "$EVANYA_MICROSOFT_ANDROID_REDIRECT_URI" "$actual_redirect" >&2
     exit 1
   fi
 fi
 
 ANDROID_HOME="$android_sdk" "$project_dir/scripts/verify-android-apk.sh" \
-  "$artifact_dir/flectar-mail.apk" production
+  "$artifact_dir/evanya.apk" production
 printf 'Signed release artifacts:\n  %s\n  %s\n' \
-  "$artifact_dir/flectar-mail.apk" "$artifact_dir/flectar-mail.aab"
+  "$artifact_dir/evanya.apk" "$artifact_dir/evanya.aab"

@@ -29,16 +29,16 @@ download_tool() {
 
 mkdir -p "$build_dir"
 # Include both renderer choices; CPU remains the initial runtime selection.
-# FLECTAR_APP_FEATURES can enable additional application features.
-app_features="${FLECTAR_APP_FEATURES:-}"
+# EVANYA_APP_FEATURES can enable additional application features.
+app_features="${EVANYA_APP_FEATURES:-}"
 build_args=(--locked --bin evanya --manifest-path "$project_dir/Cargo.toml" --release --no-default-features --features remote-content,gpu-renderer)
 if [[ -n "$app_features" ]]; then
   build_args+=(--features "$app_features")
 fi
 # The controls are app-owned and the Linux shell uses winit directly.
-if [[ "${FLECTAR_SKIP_BUILD:-0}" == "1" ]]; then
+if [[ "${EVANYA_SKIP_BUILD:-0}" == "1" ]]; then
   if [[ ! -x "$project_dir/target/release/evanya" ]]; then
-    printf 'FLECTAR_SKIP_BUILD=1 requires an existing release executable.\n' >&2
+    printf 'EVANYA_SKIP_BUILD=1 requires an existing release executable.\n' >&2
     exit 1
   fi
 else
@@ -61,8 +61,8 @@ mkdir -p \
 cp "$project_dir/target/release/evanya" "$app_dir/usr/bin/evanya"
 python3 "$project_dir/scripts/stage-pdfium.py" linux-x64 "$app_dir/usr/lib/evanya"
 app_version="$(python3 "$project_dir/scripts/stage-linux-metadata.py" "$app_dir")"
-cp "$project_dir/resources/app-icon/flectar-mail-masked-512.png" "$app_dir/usr/share/icons/hicolor/512x512/apps/com.evanya.mail.png"
-cp "$project_dir/resources/app-icon/flectar-mail-masked.svg" "$app_dir/usr/share/icons/hicolor/scalable/apps/com.evanya.mail.svg"
+cp "$project_dir/resources/app-icon/evanya-masked-512.png" "$app_dir/usr/share/icons/hicolor/512x512/apps/com.evanya.mail.png"
+cp "$project_dir/resources/app-icon/evanya-masked.svg" "$app_dir/usr/share/icons/hicolor/scalable/apps/com.evanya.mail.svg"
 cp "$project_dir/LICENSE" "$app_dir/usr/share/doc/evanya/LICENSE"
 cp -R "$project_dir/LICENSES" "$app_dir/usr/share/doc/evanya/LICENSES"
 cp "$project_dir/THIRD_PARTY_NOTICES.md" "$app_dir/usr/share/doc/evanya/THIRD_PARTY_NOTICES.md"
@@ -134,7 +134,7 @@ python3 "$project_dir/scripts/test-pdf-preview.py" "$app_dir/usr/bin/evanya"
 # AppDir specifies a PNG .DirIcon for file-manager thumbnails. linuxdeploy
 # prefers the scalable icon for the root entry, so restore the PNG thumbnail
 # explicitly while retaining the SVG and themed icon copies for integration.
-cp "$project_dir/resources/app-icon/flectar-mail-masked-512.png" "$app_dir/evanya.png"
+cp "$project_dir/resources/app-icon/evanya-masked-512.png" "$app_dir/evanya.png"
 ln -sfn evanya.png "$app_dir/.DirIcon"
 
 mkdir -p "$(dirname "$output_path")"

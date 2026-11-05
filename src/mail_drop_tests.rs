@@ -1,6 +1,6 @@
 //! Drag-and-drop destinations resolved from typed sidebar scopes.
 use super::*;
-use flectar_mail_core::accounts::credentials::DevelopmentFileCredentialStore;
+use evanya_core::accounts::credentials::DevelopmentFileCredentialStore;
 use slint::platform::{
     Platform, WindowAdapter,
     software_renderer::{MinimalSoftwareWindow, RepaintBufferType},
@@ -47,11 +47,11 @@ fn drops_resolve_by_scope_not_by_mailbox_name() {
     let dir = tempfile::tempdir().unwrap();
     let core = runtime
         .block_on(CoreMailSource::start(
-            flectar_mail_core::config::Paths::for_tests(dir.path()),
+            evanya_core::config::Paths::for_tests(dir.path()),
             Arc::new(DevelopmentFileCredentialStore::new(
                 dir.path().join("credentials.json"),
             )),
-            Arc::new(flectar_mail_core::oauth::redirect::LoopbackRedirectBroker::default()),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
         ))
         .unwrap();
     let (favicons, _) = bounded_ui_channel();

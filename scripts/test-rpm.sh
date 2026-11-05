@@ -36,9 +36,9 @@ for library in (
     ctypes.CDLL(library)
     print(f"Loaded runtime library: {library}")
 PY
-useradd --create-home flectar-rpm-test
-chown flectar-rpm-test:flectar-rpm-test "$results"
-runuser -u flectar-rpm-test -- python3 "$project_dir/scripts/test-pdf-preview.py" \
+useradd --create-home evanya-rpm-test
+chown evanya-rpm-test:evanya-rpm-test "$results"
+runuser -u evanya-rpm-test -- python3 "$project_dir/scripts/test-pdf-preview.py" \
   /usr/bin/evanya "$results/pdf-preview.png"
 
 dnf install -y --setopt=install_weak_deps=False \
@@ -50,12 +50,12 @@ appstreamcli validate --no-net /usr/share/metainfo/com.evanya.mail.metainfo.xml
 # an application that hangs for 15 seconds as a successful launch.
 startup=(python3 "$project_dir/scripts/benchmark-startup.py"
   --binary /usr/bin/evanya --rounds 1 --settle-seconds 0 --idle-seconds 1)
-runuser -u flectar-rpm-test -- dbus-run-session -- xvfb-run -a \
+runuser -u evanya-rpm-test -- dbus-run-session -- xvfb-run -a \
   "${startup[@]}" --output "$results/x11.json"
 
 runtime_dir="$(mktemp -d)"
-chown flectar-rpm-test:flectar-rpm-test "$runtime_dir"
-runuser -u flectar-rpm-test -- env XDG_RUNTIME_DIR="$runtime_dir" \
+chown evanya-rpm-test:evanya-rpm-test "$runtime_dir"
+runuser -u evanya-rpm-test -- env XDG_RUNTIME_DIR="$runtime_dir" \
   weston --backend=headless --renderer=pixman --socket=wayland-rpm --idle-time=0 \
   --no-config > "$results/wayland-compositor.log" 2>&1 &
 weston_pid=$!
@@ -69,7 +69,7 @@ for ((attempt = 0; attempt < 100; attempt++)); do
   sleep 0.1
 done
 test -S "$runtime_dir/wayland-rpm"
-runuser -u flectar-rpm-test -- env -u DISPLAY \
+runuser -u evanya-rpm-test -- env -u DISPLAY \
   XDG_RUNTIME_DIR="$runtime_dir" WAYLAND_DISPLAY=wayland-rpm \
   dbus-run-session -- "${startup[@]}" --output "$results/wayland.json"
 

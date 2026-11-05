@@ -6,7 +6,7 @@
 //! from accumulating one closure per setting.
 
 use super::*;
-use flectar_mail_core::models::CustomTheme;
+use evanya_core::models::CustomTheme;
 
 /// The parts of the workspace with a font of their own, in Settings order.
 const FONT_AREAS: [&str; 7] = [
@@ -38,7 +38,7 @@ fn installed_font_families() -> Vec<String> {
 }
 
 /// Show each part of the workspace in its chosen font and size.
-pub(crate) fn apply_area_fonts(app: &AppWindow, settings: &flectar_mail_core::models::Settings) {
+pub(crate) fn apply_area_fonts(app: &AppWindow, settings: &evanya_core::models::Settings) {
     let families = installed_font_families();
     let fonts = app.global::<AreaFonts>();
     let mut rows = Vec::new();
@@ -104,7 +104,7 @@ pub(crate) fn apply_area_fonts(app: &AppWindow, settings: &flectar_mail_core::mo
 
 /// Load the spelling dictionaries these settings ask for and show the
 /// choice in Settings.
-pub(crate) fn apply_spellcheck(app: &AppWindow, settings: &flectar_mail_core::models::Settings) {
+pub(crate) fn apply_spellcheck(app: &AppWindow, settings: &evanya_core::models::Settings) {
     let available = crate::spellcheck::available_languages();
     let interface_language = if settings.language == "system" {
         sys_locale::get_locale().unwrap_or_default()
@@ -144,7 +144,7 @@ fn apply_account_presentation_settings(
     app: &AppWindow,
     state: &Rc<RefCell<InboxState>>,
     runtime: &tokio::runtime::Runtime,
-    settings: &flectar_mail_core::models::Settings,
+    settings: &evanya_core::models::Settings,
 ) {
     state.borrow_mut().account_presentation = AccountPresentationSettings::from_settings(settings);
     refresh_connected_accounts(app, state);
@@ -447,7 +447,7 @@ pub(super) fn register_settings_preference_callbacks(
         let Some(app) = app_weak.upgrade() else {
             return;
         };
-        if flectar_mail_core::models::MessageAppearance::parse(&preference).is_none() {
+        if evanya_core::models::MessageAppearance::parse(&preference).is_none() {
             return;
         }
         let colors = app.global::<MessageColors>();
@@ -547,7 +547,7 @@ pub(super) fn register_settings_preference_callbacks(
         let Some(app) = app_weak.upgrade() else {
             return;
         };
-        let Some(format) = flectar_mail_core::models::TimeFormat::parse(&value) else {
+        let Some(format) = evanya_core::models::TimeFormat::parse(&value) else {
             return;
         };
         date_format::reload(&app);
@@ -1136,7 +1136,7 @@ pub(super) fn register_settings_preference_callbacks(
             } else {
                 settings
                     .area_fonts
-                    .insert(area, flectar_mail_core::models::AreaFont { family, scale });
+                    .insert(area, evanya_core::models::AreaFont { family, scale });
             }
         }));
         match result.and(runtime_for_fonts.block_on(core.load_settings())) {
@@ -1248,13 +1248,13 @@ pub(super) fn register_settings_preference_callbacks(
         // A second click on the same column turns its order around; a new
         // column starts newest first for dates and A to Z for text.
         let sort = if requested.key == current.key {
-            flectar_mail_core::models::MailSort {
+            evanya_core::models::MailSort {
                 descending: !current.descending,
                 ..current
             }
         } else {
-            flectar_mail_core::models::MailSort {
-                descending: requested.key == flectar_mail_core::models::MailSortKey::Date,
+            evanya_core::models::MailSort {
+                descending: requested.key == evanya_core::models::MailSortKey::Date,
                 ..requested
             }
         };
@@ -1388,8 +1388,7 @@ pub(super) fn register_settings_preference_callbacks(
         let Some(app) = app_weak.upgrade() else {
             return;
         };
-        let width =
-            flectar_mail_core::models::normalized_workspace_list_pane_width(width.round() as i64);
+        let width = evanya_core::models::normalized_workspace_list_pane_width(width.round() as i64);
         app.set_workspace_list_pane_width(width as f32);
         let Some(core) = state_for_list_pane_width.borrow().core.clone() else {
             return;

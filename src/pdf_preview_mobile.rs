@@ -33,9 +33,9 @@ fn library_path() -> Result<PathBuf, String> {
     #[cfg(mobile)]
     return crate::platform::pdfium_library();
     #[cfg(desktop)]
-    std::env::var_os("FLECTAR_TEST_PDFIUM")
+    std::env::var_os("EVANYA_TEST_PDFIUM")
         .map(PathBuf::from)
-        .ok_or_else(|| "Set FLECTAR_TEST_PDFIUM for the native integration test.".into())
+        .ok_or_else(|| "Set EVANYA_TEST_PDFIUM for the native integration test.".into())
 }
 
 struct Cancellation {
@@ -350,10 +350,10 @@ mod tests {
         });
     }
     #[test]
-    #[ignore = "requires FLECTAR_TEST_PDFIUM and FLECTAR_TEST_PDF; runs the actual mobile renderer on the host"]
+    #[ignore = "requires EVANYA_TEST_PDFIUM and EVANYA_TEST_PDF; runs the actual mobile renderer on the host"]
     fn mobile_native_pages_and_rejection() {
         let _test = TEST_GATE.lock().unwrap();
-        let data = Arc::new(std::fs::read(std::env::var_os("FLECTAR_TEST_PDF").unwrap()).unwrap());
+        let data = Arc::new(std::fs::read(std::env::var_os("EVANYA_TEST_PDF").unwrap()).unwrap());
         let runtime = tokio::runtime::Builder::new_current_thread()
             .enable_time()
             .build()
@@ -386,7 +386,7 @@ mod tests {
                 );
                 if index == 0
                     && zoom == 100
-                    && let Some(path) = std::env::var_os("FLECTAR_TEST_PDF_RGBA")
+                    && let Some(path) = std::env::var_os("EVANYA_TEST_PDF_RGBA")
                 {
                     std::fs::write(path, &page.pixels).unwrap();
                 }

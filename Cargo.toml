@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/flectar-mail-core", "crates/renderer-probe"]
+members = ["crates/evanya-core", "crates/renderer-probe"]
 exclude = ["crates/candle-core", "crates/blitz-dom", "crates/blitz-paint", "crates/i-slint-backend-winit", "crates/parley", "crates/parley_emoji"]
 resolver = "3"
 
@@ -23,7 +23,7 @@ parley = { path = "crates/parley" }
 i-slint-backend-winit = { path = "crates/i-slint-backend-winit" }
 
 [package]
-name = "flectar-mail"
+name = "evanya"
 version = "0.1.0-alpha.7"
 description = "A native email client built with Rust, Slint, and Blitz"
 license = "AGPL-3.0-only"
@@ -91,7 +91,7 @@ pulldown-cmark = "0.13.6"
 vello = { version = "0.11", optional = true }
 # This native shell currently exposes keyword/FTS search, not local semantic
 # search. Do not link Candle, tokenizers, or Hugging Face into every AppImage.
-flectar-mail-core = { path = "crates/flectar-mail-core", default-features = false }
+evanya-core = { path = "crates/evanya-core", default-features = false }
 # Slint uses Fontique 0.11; Blitz beta.3 uses 0.12. Both must load
 # Fontconfig dynamically so the rendering stacks agree on the native ABI.
 fontique_0_11 = { package = "fontique", version = "=0.11.1", features = ["fontconfig-dlopen"] }
@@ -180,8 +180,8 @@ arboard = { version = "3.6", default-features = false, features = ["wayland-data
 rfd = { version = "0.16", default-features = false, features = ["tokio", "xdg-portal"] }
 
 [package.metadata.appimage]
-icon = "resources/app-icon/flectar-mail-masked-512.png"
-desktop_entry = "resources/com.flectar.mail.desktop"
+icon = "resources/app-icon/evanya-masked-512.png"
+desktop_entry = "resources/com.evanya.mail.desktop"
 auto_link = true
 auto_link_exclude_list = [
     "ld-linux*.so*",

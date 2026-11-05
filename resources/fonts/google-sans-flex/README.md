@@ -1,7 +1,7 @@
 # Google Sans Flex
 
 This directory contains the unmodified Google Sans Flex variable TrueType font
-used for Flectar Mail's application UI and compose editor.
+used for Evanya's application UI and compose editor.
 
 - Family: `Google Sans Flex`
 - Upstream file: `GoogleSansFlex-VariableFont_GRAD,ROND,opsz,slnt,wdth,wght.ttf`

@@ -60,7 +60,7 @@ pub(crate) fn project(app: &AppWindow, email: &MailMessage, same: bool) {
     }
 }
 
-fn visible_attachment(attachment: &flectar_mail_core::models::AttachmentMeta) -> bool {
+fn visible_attachment(attachment: &evanya_core::models::AttachmentMeta) -> bool {
     !attachment.is_inline
         || attachment
             .filename
@@ -71,7 +71,7 @@ fn visible_attachment(attachment: &flectar_mail_core::models::AttachmentMeta) ->
 // attachment_rows preserves this filtered metadata order. Walk the two in
 // lockstep instead of formatting an ID for every row in a nested search.
 fn thumbnail_ids(
-    attachments: &[flectar_mail_core::models::AttachmentMeta],
+    attachments: &[evanya_core::models::AttachmentMeta],
     rows: &[MailAttachment],
 ) -> Vec<slint::SharedString> {
     attachments
@@ -84,7 +84,7 @@ fn thumbnail_ids(
         .collect()
 }
 
-fn thumbnail_candidate(attachment: &flectar_mail_core::models::AttachmentMeta) -> bool {
+fn thumbnail_candidate(attachment: &evanya_core::models::AttachmentMeta) -> bool {
     let media = attachment
         .mime_type
         .as_deref()
@@ -123,9 +123,7 @@ async fn read_preview_bytes(file: tokio::fs::File, max_bytes: usize) -> Result<V
         bytes.extend_from_slice(&chunk[..count]);
     }
 }
-fn attachment_rows(
-    attachments: &[flectar_mail_core::models::AttachmentMeta],
-) -> Vec<MailAttachment> {
+fn attachment_rows(attachments: &[evanya_core::models::AttachmentMeta]) -> Vec<MailAttachment> {
     attachments
         .iter()
         .filter(|a| visible_attachment(a))
@@ -146,9 +144,7 @@ fn attachment_rows(
 }
 
 /// A message-list row's file chip.
-pub(crate) fn list_attachment(
-    attachment: &flectar_mail_core::models::AttachmentMeta,
-) -> ListAttachment {
+pub(crate) fn list_attachment(attachment: &evanya_core::models::AttachmentMeta) -> ListAttachment {
     let name = file_name(attachment);
     let media = media_type(attachment);
     let (stem, extension) = split_extension(name);
@@ -161,7 +157,7 @@ pub(crate) fn list_attachment(
     }
 }
 
-fn file_name(attachment: &flectar_mail_core::models::AttachmentMeta) -> &str {
+fn file_name(attachment: &evanya_core::models::AttachmentMeta) -> &str {
     attachment
         .filename
         .as_deref()
@@ -169,7 +165,7 @@ fn file_name(attachment: &flectar_mail_core::models::AttachmentMeta) -> &str {
         .unwrap_or("attachment")
 }
 
-fn media_type(attachment: &flectar_mail_core::models::AttachmentMeta) -> String {
+fn media_type(attachment: &evanya_core::models::AttachmentMeta) -> String {
     attachment
         .mime_type
         .as_deref()
@@ -336,7 +332,7 @@ fn file_kind(name: &str, media: &str) -> &'static str {
 struct Session {
     task: Option<tokio::task::AbortHandle>,
     document: Option<Arc<Vec<u8>>>,
-    selected: Option<flectar_mail_core::models::AttachmentMeta>,
+    selected: Option<evanya_core::models::AttachmentMeta>,
 }
 impl Session {
     fn stop(&mut self) {
@@ -390,7 +386,7 @@ pub(crate) fn register(
     }
     // Profile IDs are not globally unique: compare Core identity as well as
     // message identity before allowing an old session to remain actionable.
-    let context = Rc::new(RefCell::new(None::<(Arc<flectar_mail_core::Core>, i32)>));
+    let context = Rc::new(RefCell::new(None::<(Arc<evanya_core::Core>, i32)>));
     let timer = slint::Timer::default();
     let state = inbox.clone();
     let observed = context.clone();
@@ -423,19 +419,19 @@ pub(crate) fn register(
     let (sender, mut receiver) = tokio::sync::mpsc::channel::<(
         u64,
         i32,
-        Arc<flectar_mail_core::Core>,
+        Arc<evanya_core::Core>,
         Result<Option<Preview>, String>,
     )>(2);
     let (thumbnail_sender, mut thumbnail_receiver) = tokio::sync::mpsc::channel::<(
         i32,
         i64,
-        Arc<flectar_mail_core::Core>,
+        Arc<evanya_core::Core>,
         Result<(Vec<u8>, u32, u32), String>,
     )>(8);
     let (thumbnail_job_sender, mut thumbnail_job_receiver) = tokio::sync::mpsc::channel::<(
         i32,
-        flectar_mail_core::models::AttachmentMeta,
-        Arc<flectar_mail_core::Core>,
+        evanya_core::models::AttachmentMeta,
+        Arc<evanya_core::Core>,
     )>(8);
     let thumbnail_window = weak.clone();
     runtime.handle().spawn(async move {
@@ -757,7 +753,7 @@ mod tests {
     }
     #[test]
     fn thumbnail_plan_keeps_visible_order_and_four_item_limit() {
-        use flectar_mail_core::models::AttachmentMeta;
+        use evanya_core::models::AttachmentMeta;
         let files = (0..10)
             .map(|id| AttachmentMeta {
                 id,
@@ -818,7 +814,7 @@ mod tests {
             split_extension("version 1.2 final"),
             ("version 1.2 final", "")
         );
-        let chip = list_attachment(&flectar_mail_core::models::AttachmentMeta {
+        let chip = list_attachment(&evanya_core::models::AttachmentMeta {
             id: 7,
             filename: Some("portfolio.zip".into()),
             mime_type: Some("application/zip".into()),
@@ -834,7 +830,7 @@ mod tests {
 
     #[test]
     fn attachment_rows_preserve_large_ids_and_offer_safe_previews() {
-        use flectar_mail_core::models::AttachmentMeta;
+        use evanya_core::models::AttachmentMeta;
         let files = vec![
             AttachmentMeta {
                 id: i64::MAX,

@@ -17,7 +17,7 @@
 //!   window manager for its window menu.
 
 use crate::{AppWindow, WindowChrome};
-use flectar_mail_core::models::normalized_window_frame;
+use evanya_core::models::normalized_window_frame;
 use slint::ComponentHandle;
 #[cfg(desktop)]
 use slint::winit_030::{EventResult, WinitWindowAccessor, winit};

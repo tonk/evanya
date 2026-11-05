@@ -7,8 +7,8 @@
 
 use super::*;
 use chrono::Utc;
-use flectar_mail_core::accounts::{backup as account_backup, mailbox_key};
-use flectar_mail_core::models::{
+use evanya_core::accounts::{backup as account_backup, mailbox_key};
+use evanya_core::models::{
     MIN_WORKSPACE_LIST_PANE_WIDTH, MailExport, PortableAccountConfig, Settings,
     normalized_workspace_list_pane_width,
 };
@@ -162,7 +162,7 @@ fn storage_category(root: StorageRoot, relative: &std::path::Path) -> usize {
                 .file_name()
                 .and_then(|name| name.to_str())
                 .is_some_and(|name| {
-                    ["flectar-mail.db", "flectar-calendar.db", "flectar-files.db"]
+                    ["evanya-mail.db", "evanya-calendar.db", "evanya-files.db"]
                         .iter()
                         .any(|database| {
                             name == *database
@@ -353,7 +353,11 @@ pub(super) fn restore_account_backup(
     let result = (|| -> Result<Restored, String> {
         let backup: serde_json::Value =
             serde_json::from_slice(bytes).map_err(|error| format!("invalid JSON: {error}"))?;
-        if backup.get("format").and_then(|value| value.as_str()) != Some(account_backup::FORMAT) {
+        if !backup
+            .get("format")
+            .and_then(|value| value.as_str())
+            .is_some_and(account_backup::is_backup_format)
+        {
             return Err("this is not an Evanya account backup".into());
         }
         let Some(version) = backup.get("version").and_then(|value| value.as_u64()) else {
@@ -404,7 +408,7 @@ pub(super) fn restore_account_backup(
             if let Some(icon) = preferences
                 .get("appIcon")
                 .and_then(|value| value.as_str())
-                .and_then(flectar_mail_core::models::AppIcon::parse)
+                .and_then(evanya_core::models::AppIcon::parse)
             {
                 settings.app_icon = icon;
             }
@@ -497,7 +501,7 @@ pub(super) fn restore_account_backup(
             if let Some(preference) = preferences
                 .get("messageAppearance")
                 .and_then(|value| value.as_str())
-                .and_then(flectar_mail_core::models::MessageAppearance::parse)
+                .and_then(evanya_core::models::MessageAppearance::parse)
             {
                 settings.message_appearance = preference;
             }
@@ -515,7 +519,7 @@ pub(super) fn restore_account_backup(
             if let Some(format) = preferences
                 .get("timeFormat")
                 .and_then(|value| value.as_str())
-                .and_then(flectar_mail_core::models::TimeFormat::parse)
+                .and_then(evanya_core::models::TimeFormat::parse)
             {
                 settings.time_format = format;
             }
@@ -854,7 +858,7 @@ async fn stage_database_snapshot(
             archive_directory(
                 &directory,
                 &archive_for_zip,
-                flectar_mail_core::files::MAX_TRANSFER as u64,
+                evanya_core::files::MAX_TRANSFER as u64,
             )
         })
         .await
@@ -1020,7 +1024,7 @@ async fn stage_mail_export(
             archive_directory(
                 &directory,
                 &archive_for_zip,
-                flectar_mail_core::files::MAX_TRANSFER as u64,
+                evanya_core::files::MAX_TRANSFER as u64,
             )
         })
         .await
@@ -1734,7 +1738,7 @@ pub(super) fn register_data_management_callbacks(
                     app.set_calendar_zoom(1.0);
                     crate::settings_controller::apply_area_fonts(
                         &app,
-                        &flectar_mail_core::models::Settings::default(),
+                        &evanya_core::models::Settings::default(),
                     );
                     crate::mail::set_mail_sort(Default::default());
                     app.set_mail_sort("date-desc".into());
@@ -1899,10 +1903,10 @@ mod tests {
     #[test]
     fn storage_database_category_requires_exact_database_or_sidecar() {
         for name in [
-            "flectar-mail.db",
-            "flectar-calendar.db-wal",
-            "flectar-files.db-shm",
-            "flectar-mail.db-journal",
+            "evanya-mail.db",
+            "evanya-calendar.db-wal",
+            "evanya-files.db-shm",
+            "evanya-mail.db-journal",
         ] {
             assert_eq!(
                 storage_category(StorageRoot::Data, name.as_ref()),
@@ -1910,9 +1914,9 @@ mod tests {
             );
         }
         for name in [
-            "flectar-mail.db.backup",
-            "flectar-files.db-old",
-            "other/flectar-mail.db",
+            "evanya-mail.db.backup",
+            "evanya-files.db-old",
+            "other/evanya-mail.db",
         ] {
             assert_eq!(
                 storage_category(StorageRoot::Data, name.as_ref()),

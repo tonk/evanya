@@ -132,7 +132,7 @@ fn render(window: &Rc<MinimalSoftwareWindow>, name: &str) {
         let size = window.size();
         let mut pixels = vec![Rgb8Pixel::default(); (size.width * size.height) as usize];
         renderer.render(&mut pixels, size.width as usize);
-        if let Some(directory) = std::env::var_os("FLECTAR_AGENDA_SCREENSHOT_DIR") {
+        if let Some(directory) = std::env::var_os("EVANYA_AGENDA_SCREENSHOT_DIR") {
             let directory = std::path::PathBuf::from(directory);
             std::fs::create_dir_all(&directory).unwrap();
             let bytes: Vec<_> = pixels.iter().flat_map(|p| [p.r, p.g, p.b]).collect();

@@ -4,7 +4,7 @@ Issue [#64](https://github.com/flectar/mail/issues/64) reported an
 `UnsatisfiedLinkError` when Java delivered a Google authorization result.
 `NativeActivity` opens the native library and calls `ANativeActivity_onCreate`,
 but this does not register the library with ART's Java native-method lookup.
-`FlectarActivity` must also call `System.loadLibrary("flectar_mail_android")`
+`EvanyaActivity` must also call `System.loadLibrary("evanya_android")`
 in its static initializer, before any native callback can run.
 
 References:
@@ -19,7 +19,7 @@ References:
 ```sh
 python3 scripts/test-android-jni.py
 python3 scripts/test-pdf-packaging.py
-python3 scripts/verify-android-native.py path/to/flectar-mail.apk
+python3 scripts/verify-android-native.py path/to/evanya.apk
 ```
 
 The offline tests require a C compiler (`cc`) and GNU `readelf` or
@@ -49,7 +49,7 @@ Both Android build workflows run these tests on the API 30 Google APIs x86_64
 image, which supports ARM64 translation, and retain the instrumentation reports.
 
 `NativeCallbacksTest` invokes all five native callbacks through the real
-`FlectarActivity` class and packaged Rust library. It intentionally does not
+`EvanyaActivity` class and packaged Rust library. It intentionally does not
 load the library itself or launch the Activity. No Google account, network
 access, OAuth registration, or mailbox data is needed. Removing the static
 initializer must make the invocation tests fail with `UnsatisfiedLinkError`.
@@ -77,8 +77,8 @@ from JNI linkage failures; never include access tokens or mailbox data in logs.
 
 ## OAuth configuration and issue #65
 
-Preview builds may omit either `FLECTAR_GOOGLE_ANDROID_CLIENT_ID` or
-`FLECTAR_MICROSOFT_ANDROID_CLIENT_ID`. No placeholder is substituted: that
+Preview builds may omit either `EVANYA_GOOGLE_ANDROID_CLIENT_ID` or
+`EVANYA_MICROSOFT_ANDROID_CLIENT_ID`. No placeholder is substituted: that
 provider stays unavailable until a valid custom registration is saved through
 Sign-in settings. A supplied invalid ID fails the build before compilation.
 Production builds require both IDs and verify that the configured Microsoft
@@ -90,7 +90,7 @@ runtime configuration before starting authorization. Existing invalid saved
 IDs remain editable, and unrelated settings remain usable. Invalid custom
 input is rejected without changing either provider's saved registration.
 
-For working Outlook sign-in, register the Android package `com.flectar.mail`
+For working Outlook sign-in, register the Android package `com.evanya.mail`
 and the signing certificate of the APK being installed. Obtain the certificate
 hash and exact redirect with `scripts/android-signing-identities.sh <apk>`.
 The running app derives its redirect from its installed signing certificate;
@@ -104,7 +104,7 @@ References: [Microsoft app registration](https://learn.microsoft.com/en-us/entra
 and [Android signing redirects](https://learn.microsoft.com/en-us/entra/msal/android/frequently-asked-questions).
 
 Run `python3 scripts/test-android-oauth.py` for the build configuration regression
-tests. Run `cargo test -p flectar-mail-core --locked --test oauth_settings` for
+tests. Run `cargo test -p evanya-core --locked --test oauth_settings` for
 saved configuration, atomic rejection, and the no-browser-on-invalid-ID check.
 Local syntax validation cannot establish that an ID is registered, that its
 redirect is registered, or that a tenant permits consent. Check real sign-in

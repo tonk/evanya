@@ -20,7 +20,7 @@ REPO_DIR=$(cd "$PLATFORM_DIR/../.." && pwd)
 
 SOURCE_REPO="${OHOS_PDFIUM_SOURCE_REPO:-https://gitcode.com/OpenHarmonyPCDeveloper/pdfium.git}"
 SOURCE_REVISION="${OHOS_PDFIUM_REVISION:-f2a7573b5fd1071f61388aeb642329006ae22153}"
-SOURCE_DIR="${OHOS_PDFIUM_SOURCE_DIR:-$HOME/.cache/flectar/ohos-pdfium}"
+SOURCE_DIR="${OHOS_PDFIUM_SOURCE_DIR:-$HOME/.cache/evanya/ohos-pdfium}"
 BUILD_DIR="${OHOS_PDFIUM_BUILD_DIR:-out/ohos_arm64}"
 JOBS="${OHOS_PDFIUM_JOBS:-$(nproc 2>/dev/null || echo 4)}"
 TARGET="$PLATFORM_DIR/prebuilt/arm64/libpdfium.so"

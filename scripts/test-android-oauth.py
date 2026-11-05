@@ -16,9 +16,9 @@ SCRIPTS = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location("oauth", SCRIPTS / "verify-android-oauth.py")
 oauth = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(oauth)
-GOOGLE = "FLECTAR_GOOGLE_ANDROID_CLIENT_ID"
-MICROSOFT = "FLECTAR_MICROSOFT_ANDROID_CLIENT_ID"
-REDIRECT = "FLECTAR_MICROSOFT_ANDROID_REDIRECT_URI"
+GOOGLE = "EVANYA_GOOGLE_ANDROID_CLIENT_ID"
+MICROSOFT = "EVANYA_MICROSOFT_ANDROID_CLIENT_ID"
+REDIRECT = "EVANYA_MICROSOFT_ANDROID_REDIRECT_URI"
 VALID = {
     GOOGLE: "123456789-fixture.apps.googleusercontent.com",
     MICROSOFT: "abcdef01-2345-4678-9abc-def012345678",
@@ -81,7 +81,7 @@ class AndroidOAuthTests(unittest.TestCase):
                 "#!/usr/bin/env python3\nimport pathlib, sys\n"
                 "assert sys.argv[1] in ('-exportcert', '-certreq')\n"
                 "assert sys.argv[2] == '-keystore'\n"
-                "assert sys.argv[4:8] == ['-alias', 'fixture', '-storepass:env', 'FLECTAR_ANDROID_KEYSTORE_PASSWORD']\n"
+                "assert sys.argv[4:8] == ['-alias', 'fixture', '-storepass:env', 'EVANYA_ANDROID_KEYSTORE_PASSWORD']\n"
                 "assert pathlib.Path(sys.argv[3]).is_file()\n"
                 f"sys.stdout.buffer.write({certificate!r})\n"
             )
@@ -97,7 +97,7 @@ class AndroidOAuthTests(unittest.TestCase):
             cargo.chmod(0o755)
             keystore = root / "test.keystore"
             keystore.touch()
-            env = {key: value for key, value in os.environ.items() if not key.startswith("FLECTAR_")}
+            env = {key: value for key, value in os.environ.items() if not key.startswith("EVANYA_")}
             env.update({
                 # Select the build mode explicitly instead of inheriting the
                 # test runner's CI environment.
@@ -108,11 +108,11 @@ class AndroidOAuthTests(unittest.TestCase):
                 "ANDROID_NDK_ROOT": str(root / "ndk"),
                 "GRADLE_CMD": str(binaries / "gradle"),
                 "XDG_DATA_HOME": str(root / "data"),
-                "FLECTAR_ANDROID_KEYSTORE": str(keystore),
-                "FLECTAR_ANDROID_KEYSTORE_PASSWORD": "fixture",
-                "FLECTAR_ANDROID_KEY_ALIAS": "fixture",
-                "FLECTAR_ANDROID_KEY_PASSWORD": "fixture",
-                "FLECTAR_ANDROID_VERSION_NAME": "0.1.0-alpha.8" if preview else "0.1.0",
+                "EVANYA_ANDROID_KEYSTORE": str(keystore),
+                "EVANYA_ANDROID_KEYSTORE_PASSWORD": "fixture",
+                "EVANYA_ANDROID_KEY_ALIAS": "fixture",
+                "EVANYA_ANDROID_KEY_PASSWORD": "fixture",
+                "EVANYA_ANDROID_VERSION_NAME": "0.1.0-alpha.8" if preview else "0.1.0",
                 "OAUTH_CAPTURE": str(capture),
                 **configuration,
             })
@@ -144,7 +144,7 @@ class AndroidOAuthTests(unittest.TestCase):
                     self.assertIn("not a valid", result.stderr)
 
     def test_production_requires_real_ids_before_compilation(self):
-        values = {**VALID, REDIRECT: "msauth://com.flectar.mail/fixture-signature"}
+        values = {**VALID, REDIRECT: "msauth://com.evanya.mail/fixture-signature"}
         result, recorded = self.run_build("build-android-release.sh", values)
         self.assertEqual(result.returncode, 73, result.stdout + result.stderr)
         self.assertEqual(recorded, values)
@@ -155,8 +155,8 @@ class AndroidOAuthTests(unittest.TestCase):
 
     def test_stable_cannot_bypass_provider_checks_or_override_version_order(self):
         for values in (
-            {"FLECTAR_ANDROID_VERSION_NAME": "0.1.0"},
-            {"FLECTAR_ANDROID_VERSION_CODE": "1"},
+            {"EVANYA_ANDROID_VERSION_NAME": "0.1.0"},
+            {"EVANYA_ANDROID_VERSION_CODE": "1"},
         ):
             result, recorded = self.run_build("build-android-release.sh", values, preview=True)
             self.assertEqual(result.returncode, 1, result.stdout + result.stderr)

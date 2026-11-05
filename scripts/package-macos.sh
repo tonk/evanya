@@ -48,7 +48,7 @@ python3 "$project_dir/scripts/stage-pdfium.py" \
   --licenses-destination "$app_dir/Contents/Resources/Licenses/PDFium"
 chmod 0755 "$app_dir/Contents/Frameworks/libpdfium.dylib"
 
-icon_source="$project_dir/resources/app-icon/flectar-mail-masked.png"
+icon_source="$project_dir/resources/app-icon/evanya-masked.png"
 iconset_dir="$output_dir/Evanya.iconset"
 rm -rf "$iconset_dir"
 mkdir -p "$iconset_dir"

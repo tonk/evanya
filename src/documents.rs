@@ -39,7 +39,7 @@ impl ImportedDocument {
         let name = name
             .into()
             .replace(|c: char| c.is_control() || matches!(c, '/' | '\\'), "_");
-        if flectar_mail_core::files::validate_name(&name).is_ok() {
+        if evanya_core::files::validate_name(&name).is_ok() {
             self.picked_name = Some(name);
         }
         self
@@ -152,7 +152,7 @@ pub fn default_provider() -> std::sync::Arc<dyn DocumentProvider> {
     std::sync::Arc::new(DesktopDocuments)
 }
 pub(crate) fn safe_name(name: &str) -> String {
-    if flectar_mail_core::files::validate_name(name).is_ok() {
+    if evanya_core::files::validate_name(name).is_ok() {
         name.into()
     } else {
         "download".into()
@@ -173,7 +173,7 @@ pub(crate) fn download_dialog(title: impl Into<String>, setting: &str) -> Docume
 /// through here, so a new download site picks up the configured location
 /// without repeating the lookup. An unreadable settings row falls back to the
 /// platform default rather than blocking the download.
-pub(crate) async fn download_dialog_for(core: &flectar_mail_core::Core) -> DocumentDialog {
+pub(crate) async fn download_dialog_for(core: &evanya_core::Core) -> DocumentDialog {
     let setting = core
         .get_settings()
         .await
@@ -314,7 +314,7 @@ impl DocumentProvider for DesktopDocuments {
             let Some(file) = dialog.file_dialog().set_file_name(name).save_file().await else {
                 return Ok(false);
             };
-            flectar_mail_core::files::save_cached_file(&path, file.path())
+            evanya_core::files::save_cached_file(&path, file.path())
                 .await
                 .map_err(|e| e.to_string())?;
             Ok(true)

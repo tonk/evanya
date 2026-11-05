@@ -20,7 +20,7 @@ class TimedSampleTests(unittest.TestCase):
             stub = Path(directory) / 'fixture'
             stub.write_text('''#!/usr/bin/env python3
 import sys, time
-sys.stderr.write('FLECTAR_RENDERER {"event":"selected","active":"cpu","wgpu_initialized":false}\\n')
+sys.stderr.write('EVANYA_RENDERER {"event":"selected","active":"cpu","wgpu_initialized":false}\\n')
 sys.stderr.flush()
 payload = bytearray(1024 * 1024)
 time.sleep(10)

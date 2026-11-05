@@ -314,7 +314,7 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
                         account-id: 0;
                         folder-id: -1;
                         mail-drop-enabled: true;
-                        icon: @image-url("../icons/lucide/filled/inbox-flectar.svg");
+                        icon: @image-url("../icons/lucide/filled/inbox-evanya.svg");
                         selected: root.selected-scope == "Unified Inbox";
                         row-height: 32px;
                         sidebar-background: root.background-color;
@@ -564,7 +564,7 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
                             || entry.mailbox.label == "Starred");
                         mail-drop-copies: entry.mailbox.label == "Starred";
                         left-padding: SidebarStyle.icon-left + entry.mailbox.depth * SidebarStyle.branch-indent;
-                        icon: entry.mailbox.label == "Inbox" ? @image-url("../icons/lucide/filled/inbox-flectar.svg")
+                        icon: entry.mailbox.label == "Inbox" ? @image-url("../icons/lucide/filled/inbox-evanya.svg")
                             : entry.mailbox.label == "Starred" ? @image-url("../icons/lucide/filled/star.svg")
                             : entry.mailbox.label == "Sent" ? @image-url("../icons/lucide/filled/paper-airplane.svg")
                             : entry.mailbox.label == "Archive" ? @image-url("../icons/lucide/filled/archive.svg")
