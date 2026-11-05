@@ -238,6 +238,11 @@ incremental = true
 # File and line numbers in backtraces, without the full variable information
 # that makes debug builds slower to compile and link.
 debug = "line-tables-only"
+# Leave debug information in the object files instead of copying it into every
+# executable. Each integration test links the whole application, so otherwise
+# every one of them carries its own copy.
+split-debuginfo = "unpacked"
 
 [profile.test]
-debug = 1
+debug = "line-tables-only"
+split-debuginfo = "unpacked"
