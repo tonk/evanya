@@ -279,6 +279,14 @@ export component SidebarItem inherits SidebarRowSurface {
             return DragAction.none;
         }
     }
+
+    // Mail held over a closed folder opens it after a moment, so it can be
+    // dropped into a subfolder.
+    Timer {
+        interval: 700ms;
+        running: mail-drop-target.has-drag && root.has-children && !root.expanded;
+        triggered => { root.toggled(root.label-tree-node ? root.label-id : root.folder-id, true); }
+    }
 }
 
 // Expansion belongs to the host model so recycled headers retain their state.
