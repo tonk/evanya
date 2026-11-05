@@ -6460,6 +6460,11 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             *intent_for_open.borrow_mut() = ComposeIntent::default();
             app.set_compose_mode("new".into());
             app.set_compose_plain_text(opening_plain_text(&app));
+            // Send from the account being looked at.
+            let view_account = compose_account_for_view(&state_for_open.borrow());
+            if let Some(account_id) = view_account {
+                choose_compose_account(&app, account_id);
+            }
             app.global::<AccountMailPreferences>()
                 .invoke_composer_reset();
             app.global::<AccountMailPreferences>()

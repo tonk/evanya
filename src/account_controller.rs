@@ -564,6 +564,52 @@ fn set_compose_account(app: &AppWindow, account: Option<&AccountRow>) {
     }
 }
 
+/// The account a new message is sent from: the one whose mailbox, folder or
+/// label is open, else the selected message's in a unified mailbox.
+pub(super) fn compose_account_for_view(state: &InboxState) -> Option<i64> {
+    let account = match state.scope {
+        Scope::Account { account_id, .. } => Some(account_id),
+        Scope::Folder(folder_id) => state
+            .mailboxes
+            .iter()
+            .find(|mailbox| mailbox.folder_id == folder_id && !mailbox.is_account)
+            .map(|mailbox| mailbox.account_id),
+        Scope::Label { id, .. } => state
+            .labels
+            .iter()
+            .find(|label| label.id == id)
+            .and_then(|label| label.owner_account_id),
+        Scope::Unified(_) | Scope::Important | Scope::Other => None,
+    };
+    account
+        .or_else(|| {
+            let selected = state.selected_id?;
+            state
+                .messages
+                .iter()
+                .find(|message| message.id == selected)
+                .map(|message| message.account_id)
+        })
+        // Local mail is answered from an account, never sent from itself.
+        .filter(|account_id| {
+            state
+                .connected_accounts
+                .iter()
+                .any(|account| account.id == *account_id)
+        })
+}
+
+/// Make `account_id` the sender of the message being written.
+pub(super) fn choose_compose_account(app: &AppWindow, account_id: i64) {
+    let rows = connected_account_rows(app);
+    if let Some(account) = rows
+        .iter()
+        .find(|account| i64::from(account.id) == account_id)
+    {
+        set_compose_account(app, Some(account));
+    }
+}
+
 /// New mail starts from an account the mail view shows, so writing from a
 /// profile sends from one of its accounts.
 pub(super) fn prefer_shown_compose_account(app: &AppWindow, state: &InboxState) {
