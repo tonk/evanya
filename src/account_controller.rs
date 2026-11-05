@@ -264,6 +264,7 @@ pub(super) fn apply_connected_accounts(
                 has_account_color: presentation.has_account_color(account.id),
                 shown_in_mail: !crate::mail::mail_account_hidden(account.id),
                 username: config.username.clone().into(),
+                smtp_username: config.settings.connection.smtp_username.clone().into(),
                 jmap_url: config.jmap_url.clone().into(),
                 incoming_security: config.settings.connection.incoming_security.as_str().into(),
                 smtp_security: config.settings.connection.smtp_security.as_str().into(),

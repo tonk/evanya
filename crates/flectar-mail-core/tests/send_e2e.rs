@@ -97,6 +97,7 @@ async fn reply_send_reaches_smtp_and_sent_folder() {
         display_name: Some("Send User".into()),
         username: "senduser".into(),
         password: "pass".into(),
+        smtp_password: String::new(),
         mail_protocol: flectar_mail_core::models::MailProtocol::Imap,
         jmap_url: String::new(),
         incoming_host: "127.0.0.1".into(),

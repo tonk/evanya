@@ -161,6 +161,7 @@ async fn account_against_dovecot() {
             display_name: Some("Test User".into()),
             username: "testuser".into(),
             password: "pass".into(),
+            smtp_password: String::new(),
             mail_protocol: MailProtocol::Pop3,
             jmap_url: String::new(),
             incoming_host: "127.0.0.1".into(),

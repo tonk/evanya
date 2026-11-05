@@ -208,6 +208,7 @@ async fn full_sync_triage_and_search() {
             display_name: Some("Test User".into()),
             username: "testuser".into(),
             password: "pass".into(),
+            smtp_password: String::new(),
             mail_protocol: flectar_mail_core::models::MailProtocol::Imap,
             jmap_url: String::new(),
             incoming_host: "127.0.0.1".into(),

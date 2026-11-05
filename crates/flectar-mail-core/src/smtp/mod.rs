@@ -291,7 +291,7 @@ async fn connect(cfg: &AccountConfig, auth: &SmtpAuth) -> Result<AsyncSmtpConnec
         )
         .await
         .map_err(|error| map_smtp_error(cfg, error))?;
-        let (credentials, mechanisms) = smtp_auth(auth, &cfg.username);
+        let (credentials, mechanisms) = smtp_auth(auth, cfg.smtp_username());
         // Servers commonly offer sign-in only after STARTTLS. Say so instead
         // of reporting a failed sign-in.
         if !encrypted

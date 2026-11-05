@@ -511,15 +511,16 @@ fn password_mapping(
         findings,
     );
     let smtp_host = check_host(outgoing, findings);
+    // A separate outgoing login is kept as the account's SMTP username.
+    // Names that differ only in ASCII case name the same mailbox.
     let outgoing_username = outgoing.username.trim();
-    if !outgoing_username.is_empty()
+    let smtp_username = if !outgoing_username.is_empty()
         && !outgoing_username.eq_ignore_ascii_case(incoming.username.trim())
     {
-        findings.push(Finding::new(
-            FindingCode::SeparateOutgoingLogin,
-            outgoing_username,
-        ));
-    }
+        outgoing_username.to_owned()
+    } else {
+        String::new()
+    };
     if incoming.auth == SourceAuth::OAuth2 {
         findings.push(Finding::new(
             FindingCode::OAuthReplacedByPassword,
@@ -552,7 +553,10 @@ fn password_mapping(
         incoming_port: incoming.effective_port(),
         smtp_host: smtp_host?,
         smtp_port: outgoing.effective_port(),
-        connection: MailConnectionSettings::new(incoming_security?, smtp_security?),
+        connection: MailConnectionSettings {
+            smtp_username,
+            ..MailConnectionSettings::new(incoming_security?, smtp_security?)
+        },
         keep_on_server,
     })
 }
@@ -1031,13 +1035,14 @@ mod tests {
     }
 
     #[test]
-    fn a_separate_outgoing_login_blocks_import() {
+    fn a_separate_outgoing_login_becomes_the_smtp_username() {
         let mut account = candidate("me@example.com");
         account.outgoing.as_mut().unwrap().username = "relay-user".into();
         let plan = plan_one(account);
-        assert_eq!(plan.status, PlanStatus::Unsupported);
-        assert_eq!(plan.findings[0].code, FindingCode::SeparateOutgoingLogin);
-        assert_eq!(plan.findings[0].detail, "relay-user");
+        assert_eq!(plan.status, PlanStatus::Ready);
+        assert!(plan.findings.is_empty());
+        let connection = &plan.draft.unwrap().config.settings.connection;
+        assert_eq!(connection.smtp_username, "relay-user");
 
         // Login names that differ only in ASCII case name the same mailbox.
         let mut account = candidate("me@example.com");

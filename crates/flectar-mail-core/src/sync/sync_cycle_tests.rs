@@ -286,6 +286,7 @@ async fn courier_cycle_applies_move_and_downloads_sparse_new_uid_without_uidnext
         smtp_security: ConnectionSecurity::Tls,
         trusted_certificate_pem: CERT.into(),
         invalid_certificates: Default::default(),
+        smtp_username: String::new(),
     };
     credentials::store_async(
         ctx.credentials.clone(),
@@ -399,6 +400,7 @@ async fn deleted_mail_context(port: u16) -> (tempfile::TempDir, SyncCtx, Account
         smtp_security: ConnectionSecurity::Tls,
         trusted_certificate_pem: CERT.into(),
         invalid_certificates: Default::default(),
+        smtp_username: String::new(),
     };
     credentials::store_async(
         ctx.credentials.clone(),

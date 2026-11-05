@@ -41,6 +41,9 @@ pub enum Slot {
     /// CardDAV app password. Kept separate because a user may configure
     /// different DAV providers for calendars and contacts.
     CarddavPassword,
+    /// Password for sending (SMTP) when it differs from the account's
+    /// [`Slot::Password`].
+    SmtpPassword,
 }
 
 impl Slot {
@@ -59,6 +62,7 @@ impl Slot {
                 format!("caldav_password:{connection_id}").into()
             }
             Slot::CarddavPassword => "carddav_password".into(),
+            Slot::SmtpPassword => "smtp_password".into(),
         }
     }
 }
@@ -162,6 +166,18 @@ pub async fn load_async(
         .map_err(|e| CoreError::Other(e.to_string()))?
 }
 
+/// The password to send with: the account's own SMTP password when it has
+/// one, else its password.
+pub async fn load_smtp_password_async(
+    store: CredentialStoreHandle,
+    account_id: i64,
+) -> Result<String> {
+    match load_async(store.clone(), account_id, Slot::SmtpPassword).await {
+        Ok(password) if !password.is_empty() => Ok(password),
+        _ => load_async(store, account_id, Slot::Password).await,
+    }
+}
+
 pub async fn delete_all_async(store: CredentialStoreHandle, account_id: i64) -> Result<()> {
     tokio::task::spawn_blocking(move || store.delete_all(account_id))
         .await
@@ -232,6 +248,26 @@ mod tests {
                 .is_err()
         );
         assert!(load_async(store, 1, Slot::Password).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn sending_uses_its_own_password_or_falls_back_to_the_account_one() {
+        let store: CredentialStoreHandle = Arc::new(MemoryStore::default());
+        store_async(store.clone(), 3, Slot::Password, "imap".into())
+            .await
+            .unwrap();
+        assert_eq!(
+            load_smtp_password_async(store.clone(), 3).await.unwrap(),
+            "imap"
+        );
+        store_async(store.clone(), 3, Slot::SmtpPassword, "smtp".into())
+            .await
+            .unwrap();
+        assert_eq!(
+            load_smtp_password_async(store.clone(), 3).await.unwrap(),
+            "smtp"
+        );
+        assert_eq!(load_async(store, 3, Slot::Password).await.unwrap(), "imap");
     }
 
     #[tokio::test]

@@ -304,9 +304,14 @@ fn password_account_config(args: &AddPasswordAccountArgs) -> AccountConfig {
 }
 
 async fn check_smtp(args: &AddPasswordAccountArgs) -> Result<()> {
+    let password = if args.smtp_password.is_empty() {
+        &args.password
+    } else {
+        &args.smtp_password
+    };
     smtp::test_connection(
         &password_account_config(args),
-        &smtp::SmtpAuth::Password(args.password.clone()),
+        &smtp::SmtpAuth::Password(password.clone()),
     )
     .await
 }
@@ -468,6 +473,7 @@ mod apple_sign_in_guidance_tests {
             display_name: None,
             username: email.into(),
             password: "secret".into(),
+            smtp_password: String::new(),
             mail_protocol: MailProtocol::Imap,
             jmap_url: String::new(),
             incoming_host: host.into(),
@@ -1631,13 +1637,17 @@ impl Core {
                 .filter(|value| !value.is_empty()),
             username: args.username.trim().to_owned(),
             password: normalize_account_password(args.password),
+            smtp_password: normalize_account_password(args.smtp_password),
             mail_protocol: args.mail_protocol,
             jmap_url: args.jmap_url.trim().to_owned(),
             incoming_host: args.incoming_host.trim().to_owned(),
             incoming_port: args.incoming_port,
             smtp_host: args.smtp_host.trim().to_owned(),
             smtp_port: args.smtp_port,
-            connection: args.connection,
+            connection: MailConnectionSettings {
+                smtp_username: args.connection.smtp_username.trim().to_owned(),
+                ..args.connection
+            },
         };
         if args.username.is_empty() {
             args.username = args.email.clone();
@@ -1646,6 +1656,7 @@ impl Core {
             return Err(CoreError::Auth("email and password are required".into()));
         }
         if args.username.len() > 512
+            || args.connection.smtp_username.len() > 512
             || args.jmap_url.len() > 2048
             || args.incoming_host.len() > 253
             || args.smtp_host.len() > 253
@@ -1861,6 +1872,26 @@ impl Core {
                 // authentication error state instead of remaining inert until
                 // the next app restart.
                 self.spawn_actor(cfg).await;
+            }
+            return Err(error);
+        }
+        // A separate sending password. Left empty, a new account uses its
+        // own password for both servers and an edited one keeps the sending
+        // password it has.
+        let smtp_saved = if args.smtp_password.is_empty() {
+            Ok(())
+        } else {
+            credentials::store_async(
+                self.credentials.clone(),
+                id,
+                Slot::SmtpPassword,
+                args.smtp_password.clone(),
+            )
+            .await
+        };
+        if let Err(error) = smtp_saved {
+            if is_new_account {
+                self.rollback_incomplete_account_credentials(id).await;
             }
             return Err(error);
         }
@@ -3515,7 +3546,7 @@ impl Core {
             .await?;
         let auth = match cfg.auth_kind {
             AuthKind::Password => crate::smtp::SmtpAuth::Password(
-                credentials::load_async(self.credentials.clone(), cfg.id, Slot::Password).await?,
+                credentials::load_smtp_password_async(self.credentials.clone(), cfg.id).await?,
             ),
             AuthKind::Oauth2 => crate::smtp::SmtpAuth::XOAuth2(
                 self.tokens.access_token(cfg.id, cfg.provider).await?,

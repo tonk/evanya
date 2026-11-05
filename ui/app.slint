@@ -1025,6 +1025,7 @@ export component AppWindow inherits Window {
             ThemeDraft.revert();
             root.account_form_open = false;
             root.account_password = "";
+            root.account_smtp_password = "";
             root.caldav_account_id = -1;
             root.caldav_connection_id = -1;
             root.caldav_password = "";
@@ -1169,6 +1170,10 @@ export component AppWindow inherits Window {
     in-out property <string> account_email: "";
     in-out property <string> account_display_name: "";
     in-out property <string> account_username: "";
+    // The sign-in name for SMTP, when it differs from the incoming one.
+    in-out property <string> account_smtp_username: "";
+    // The SMTP password when it differs; never stored outside the keyring.
+    in-out property <string> account_smtp_password: "";
     in-out property <string> account_password: "";
     in-out property <string> account_protocol: "imap";
     in-out property <string> jmap_url: "";
@@ -2181,6 +2186,8 @@ export component AppWindow inherits Window {
             account_email <=> root.account_email;
             account_display_name <=> root.account_display_name;
             account_username <=> root.account_username;
+            account_smtp_username <=> root.account_smtp_username;
+            account_smtp_password <=> root.account_smtp_password;
             account_password <=> root.account_password;
             account_protocol <=> root.account_protocol;
             jmap_url <=> root.jmap_url;
@@ -2594,6 +2601,8 @@ export component AppWindow inherits Window {
         trusted-certificate-pem <=> root.trusted_certificate_pem;
         invalid-certificates <=> root.invalid_certificates;
         account-username <=> root.account_username;
+        account-smtp-username <=> root.account_smtp_username;
+        account-smtp-password <=> root.account_smtp_password;
         oauth-authorization-url: root.oauth_authorization_url;
         oauth-browser-error: root.oauth_browser_error;
         retry-oauth-browser => { root.retry_oauth_browser(); }

@@ -247,6 +247,8 @@ export struct AccountRow {
     has_profile: bool,
     has_account_color: bool,
     username: string,
+    // The SMTP sign-in name when it differs; empty when it is the same.
+    smtp_username: string,
     jmap_url: string,
     incoming_security: string,
     smtp_security: string,

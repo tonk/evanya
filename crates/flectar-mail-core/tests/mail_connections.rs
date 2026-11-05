@@ -41,6 +41,7 @@ fn settings_with_certificate(
         smtp_security: mode,
         trusted_certificate_pem: certificate.into(),
         invalid_certificates: Default::default(),
+        smtp_username: String::new(),
     }
 }
 async fn line<S: tokio::io::AsyncRead + Unpin>(stream: &mut BufReader<S>) -> String {
@@ -1092,6 +1093,7 @@ async fn smtp_sent_policy(provider: Provider, policy: SentCopyPolicy, expected_a
             display_name: Some("Sender".into()),
             username: "sender@example.com".into(),
             password: "test-password".into(),
+            smtp_password: String::new(),
             mail_protocol: MailProtocol::Imap,
             jmap_url: String::new(),
             incoming_host: "127.0.0.1".into(),
@@ -1369,6 +1371,7 @@ async fn smtp_failure_prevents_saving_account() {
             // Password managers and browser copy actions can include a line
             // ending even though the password field itself is single-line.
             password: "\r\nbridge-password\r\n".into(),
+            smtp_password: String::new(),
             mail_protocol: MailProtocol::Imap,
             jmap_url: String::new(),
             incoming_host: "127.0.0.1".into(),
@@ -1443,6 +1446,7 @@ async fn imap_mailbox_failure_prevents_saving_account() {
             display_name: None,
             username: "bridge-user".into(),
             password: "bridge-password".into(),
+            smtp_password: String::new(),
             mail_protocol: MailProtocol::Imap,
             jmap_url: String::new(),
             incoming_host: "127.0.0.1".into(),
@@ -1530,6 +1534,7 @@ async fn another_gmail_spelling_does_not_edit_a_password_account() {
             display_name: None,
             username: "john.doe@gmail.com".into(),
             password: "app-password".into(),
+            smtp_password: String::new(),
             mail_protocol: MailProtocol::Imap,
             jmap_url: String::new(),
             incoming_host: "imap.gmail.com".into(),

@@ -312,6 +312,10 @@ pub struct MailConnectionSettings {
     /// Skip certificate verification (expired, self-signed, wrong host).
     #[serde(default)]
     pub invalid_certificates: InvalidCertificates,
+    /// The sign-in name for sending (SMTP) when it differs from the one for
+    /// receiving; empty uses the account's username for both.
+    #[serde(default)]
+    pub smtp_username: String,
 }
 
 impl MailConnectionSettings {
@@ -321,6 +325,7 @@ impl MailConnectionSettings {
             smtp_security,
             trusted_certificate_pem: String::new(),
             invalid_certificates: InvalidCertificates::Reject,
+            smtp_username: String::new(),
         }
     }
 }
@@ -614,6 +619,15 @@ pub struct AccountConfig {
     pub smtp_host: String,
     pub smtp_port: u16,
     pub settings: AccountSettings,
+}
+
+impl AccountConfig {
+    /// The name to sign in to the outgoing (SMTP) server with: its own when
+    /// set, else the account's username.
+    pub fn smtp_username(&self) -> &str {
+        let own = self.settings.connection.smtp_username.trim();
+        if own.is_empty() { &self.username } else { own }
+    }
 }
 
 /// Portable account connection metadata used by backup/restore. Credentials,
@@ -1262,6 +1276,10 @@ pub struct AddPasswordAccountArgs {
     pub display_name: Option<String>,
     pub username: String,
     pub password: String,
+    /// The password for sending (SMTP) when it differs; empty uses
+    /// `password` for both servers.
+    #[serde(default)]
+    pub smtp_password: String,
     pub mail_protocol: MailProtocol,
     #[serde(default)]
     pub jmap_url: String,

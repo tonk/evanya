@@ -38,6 +38,9 @@ export component OnboardingView inherits Rectangle {
     in-out property <string> trusted-certificate-pem;
     in-out property <string> invalid-certificates: "reject";
     in-out property <string> account-username;
+    // The sign-in name for sending, when it differs.
+    in-out property <string> account-smtp-username;
+    in-out property <string> account-smtp-password;
     in property <string> status: "";
     in property <color> page-bg;
     in property <color> surface;
@@ -74,6 +77,8 @@ export component OnboardingView inherits Rectangle {
     function open-new-mail-account() {
         root.account-email = "";
         root.account-username = "";
+        root.account-smtp-username = "";
+        root.account-smtp-password = "";
         root.account-password = "";
         root.account-display-name = "";
         root.account-protocol = "imap";
@@ -277,10 +282,18 @@ export component OnboardingView inherits Rectangle {
                 FormField {
                     enabled: !root.account-setup-in-progress;
                     height: 60px;
-                    label: @tr("Username (defaults to email)");
+                    label: root.account-protocol == "jmap" ? @tr("Username (defaults to email)") : @tr("Incoming username (defaults to email)");
                     label-color: root.muted-text;
                     value <=> root.account-username;
-                    placeholder: @tr("Username (defaults to email)");
+                    placeholder: @tr("A name or an email address");
+                }
+                if root.account-protocol != "jmap" : FormField {
+                    enabled: !root.account-setup-in-progress;
+                    height: 60px;
+                    label: @tr("SMTP username (defaults to the incoming one)");
+                    label-color: root.muted-text;
+                    value <=> root.account-smtp-username;
+                    placeholder: @tr("A name or an email address");
                 }
                 FormField {
                     enabled: !root.account-setup-in-progress;
@@ -298,6 +311,15 @@ export component OnboardingView inherits Rectangle {
                     value <=> root.account-password;
                     input-type: password;
                     placeholder: root.account-protocol == "jmap" ? @tr("Password, app password, or API token") : @tr("Password or app password");
+                }
+                if root.account-protocol != "jmap" : FormField {
+                    enabled: !root.account-setup-in-progress;
+                    height: 60px;
+                    label: @tr("SMTP password (defaults to the one above)");
+                    label-color: root.muted-text;
+                    value <=> root.account-smtp-password;
+                    placeholder: @tr("Only when sending needs another password");
+                    input-type: password;
                 }
                 HorizontalBox {
                     height: 42px;

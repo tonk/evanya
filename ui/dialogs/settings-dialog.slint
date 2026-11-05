@@ -533,6 +533,8 @@ export component SettingsDialog inherits Rectangle {
     in-out property <string> account_email: "";
     in-out property <string> account_display_name: "";
     in-out property <string> account_username: "";
+    in-out property <string> account_smtp_username: "";
+    in-out property <string> account_smtp_password: "";
     in-out property <string> account_password: "";
     in-out property <string> account_protocol: "imap";
     in-out property <string> jmap_url: "";
@@ -919,6 +921,8 @@ export component SettingsDialog inherits Rectangle {
             root.account_email = account.email;
             root.account_display_name = account.name == account.email ? "" : account.name;
             root.account_username = account.username;
+            root.account_smtp_username = account.smtp_username;
+            root.account_smtp_password = "";
             root.account_protocol = account.mail_protocol;
             root.jmap_url = account.jmap_url;
             root.incoming_security = account.incoming_security;
@@ -967,6 +971,8 @@ export component SettingsDialog inherits Rectangle {
         root.account_email = "";
         root.account_display_name = "";
         root.account_username = "";
+        root.account_smtp_username = "";
+        root.account_smtp_password = "";
         root.account_password = "";
         root.account_protocol = "imap";
         root.jmap_url = "";
@@ -3255,16 +3261,18 @@ export component SettingsDialog inherits Rectangle {
                                     height: 57px;
                                     spacing: 10px;
                                     FormField { enabled: !root.account_setup_in_progress; horizontal-stretch: 1; label: @tr("Email address"); value <=> root.account_email; placeholder: @tr("name@example.com"); label-color: root.secondary-text; edited(value) => { root.suggest-servers(value); } }
-                                    FormField { enabled: !root.account_setup_in_progress; horizontal-stretch: 1; label: @tr("Username"); value <=> root.account_username; placeholder: @tr("Usually your email address"); label-color: root.secondary-text; }
+                                    FormField { enabled: !root.account_setup_in_progress; horizontal-stretch: 1; label: root.account_protocol == "jmap" ? @tr("Username") : root.account_protocol == "pop3" ? @tr("POP3 username") : @tr("IMAP username"); value <=> root.account_username; placeholder: @tr("A name or an email address"); label-color: root.secondary-text; }
                                 }
                                 if root.compact : VerticalBox {
                                     padding: 0px;
                                     height: 124px;
                                     spacing: 10px;
                                     FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("Email address"); value <=> root.account_email; placeholder: @tr("name@example.com"); label-color: root.secondary-text; edited(value) => { root.suggest-servers(value); } }
-                                    FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("Username"); value <=> root.account_username; placeholder: @tr("Usually your email address"); label-color: root.secondary-text; }
+                                    FormField { enabled: !root.account_setup_in_progress; height: 57px; label: root.account_protocol == "jmap" ? @tr("Username") : root.account_protocol == "pop3" ? @tr("POP3 username") : @tr("IMAP username"); value <=> root.account_username; placeholder: @tr("A name or an email address"); label-color: root.secondary-text; }
                                 }
                                 FormField { enabled: !root.account_setup_in_progress; height: 57px; label: root.account_protocol == "jmap" ? @tr("Password, app password, or API token") : @tr("Password or app password"); value <=> root.account_password; placeholder: @tr("Stored securely in your system keyring"); input-type: password; label-color: root.secondary-text; }
+                                if root.account_protocol != "jmap" : FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("SMTP username · Optional"); value <=> root.account_smtp_username; placeholder: root.account_username != "" ? root.account_username : @tr("Same as the incoming username"); label-color: root.secondary-text; }
+                                if root.account_protocol != "jmap" : FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("SMTP password · Optional"); value <=> root.account_smtp_password; placeholder: root.account_editing ? @tr("Leave empty to keep the current one") : @tr("Only when sending needs another password"); input-type: password; label-color: root.secondary-text; }
                                 FormField { enabled: !root.account_setup_in_progress; height: 57px; label: @tr("Account name · Optional"); value <=> root.account_display_name; placeholder: @tr("Shown in the sidebar instead of the email address"); label-color: root.secondary-text; }
                                 // POP3 mail exists only on this device, so an account
                                 // never switches to or from POP3.

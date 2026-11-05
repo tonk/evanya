@@ -5057,7 +5057,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 app.set_account_display_name("".into());
                 app.set_account_email("".into());
                 app.set_account_username("".into());
+                app.set_account_smtp_username("".into());
                 app.set_account_password("".into());
+                app.set_account_smtp_password("".into());
                 app.set_account_protocol("imap".into());
                 app.set_jmap_url("".into());
                 app.set_incoming_host("".into());
@@ -7601,6 +7603,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     .filter(|name| !name.is_empty()),
                 username: username.to_string(),
                 password: password.to_string(),
+                smtp_password: app.get_account_smtp_password().to_string(),
                 mail_protocol,
                 jmap_url: jmap_url.to_string(),
                 incoming_host: incoming_host.to_string(),
@@ -7612,6 +7615,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     invalid_certificates: flectar_mail_core::models::InvalidCertificates::parse(
                         app.get_invalid_certificates().as_str(),
                     ),
+                    smtp_username: app.get_account_smtp_username().trim().to_owned(),
                     ..MailConnectionSettings::new(incoming_security, smtp_security)
                 },
             };

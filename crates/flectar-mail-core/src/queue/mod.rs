@@ -4,7 +4,7 @@
 //! that exists only on this device, the queued change is already the result,
 //! and only deletions have work left to finish.
 
-use crate::accounts::credentials::{self, Slot};
+use crate::accounts::credentials;
 use crate::db::repo;
 use crate::error::{CoreError, Result};
 use crate::events::CoreEvent;
@@ -1031,7 +1031,7 @@ async fn send_action(
 
     let auth = match config.auth_kind {
         AuthKind::Password => smtp::SmtpAuth::Password(
-            credentials::load_async(ctx.credentials.clone(), config.id, Slot::Password).await?,
+            credentials::load_smtp_password_async(ctx.credentials.clone(), config.id).await?,
         ),
         AuthKind::Oauth2 => {
             smtp::SmtpAuth::XOAuth2(ctx.tokens.access_token(config.id, config.provider).await?)

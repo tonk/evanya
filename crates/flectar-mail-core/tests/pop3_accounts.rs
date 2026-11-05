@@ -135,6 +135,7 @@ fn pop3_args(pop3_port: u16, smtp_port: u16) -> AddPasswordAccountArgs {
         display_name: Some("Me".into()),
         username: "me".into(),
         password: "secret".into(),
+        smtp_password: String::new(),
         mail_protocol: MailProtocol::Pop3,
         jmap_url: String::new(),
         incoming_host: "127.0.0.1".into(),
