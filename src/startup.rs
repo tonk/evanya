@@ -822,14 +822,8 @@ pub(crate) fn refresh_oauth_availability(app: &AppWindow) {
 }
 
 pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
-    app.global::<MessageColors>()
-        .set_preference(settings.message_appearance.as_str().into());
+    apply_presentation(app, settings);
     refresh_oauth_availability(app);
-    app.set_time_format(settings.time_format.as_str().into());
-    app.set_list_date_format(
-        crate::mail::normalized_list_date_format(&settings.list_date_format).into(),
-    );
-    crate::apply_language(app, &settings.language);
     app.set_custom_oauth_configured(
         !settings.google_client_id.trim().is_empty() || !settings.ms_client_id.trim().is_empty(),
     );
@@ -857,8 +851,22 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
         app,
         crate::window_chrome::WindowFrame::parse(&settings.window_frame),
     );
-    app.set_monochrome_sidebar_icons(settings.monochrome_sidebar_icons);
     crate::app_icon::apply(app, settings.app_icon);
+    app.set_compose_plain_text_default(settings.compose_plain_text);
+    crate::settings_controller::apply_spellcheck(app, settings);
+}
+
+/// The settings that decide how the window looks: theme, language, fonts and
+/// layout. Cheap enough to apply before the first frame, see `run`.
+pub(crate) fn apply_presentation(app: &AppWindow, settings: &Settings) {
+    app.global::<MessageColors>()
+        .set_preference(settings.message_appearance.as_str().into());
+    app.set_time_format(settings.time_format.as_str().into());
+    app.set_list_date_format(
+        crate::mail::normalized_list_date_format(&settings.list_date_format).into(),
+    );
+    crate::apply_language(app, &settings.language);
+    app.set_monochrome_sidebar_icons(settings.monochrome_sidebar_icons);
     app.set_show_avatars(settings.show_avatars);
     app.set_group_mail_by_date(settings.group_mail_by_date);
     app.set_show_tabs(settings.show_tabs);
@@ -866,8 +874,6 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     crate::mail::set_folder_unread_counts(settings.show_folder_unread_counts);
     app.set_show_folder_unread_counts(settings.show_folder_unread_counts);
     app.set_conversation_view(settings.conversation_view);
-    app.set_compose_plain_text_default(settings.compose_plain_text);
-    crate::settings_controller::apply_spellcheck(app, settings);
     crate::settings_controller::apply_area_fonts(app, settings);
     app.set_calendar_zoom(settings.calendar_zoom.clamp(0.4, 4.0));
     app.set_mail_list_layout(

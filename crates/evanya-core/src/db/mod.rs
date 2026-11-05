@@ -235,6 +235,19 @@ pub(crate) fn startup_presentation(path: &Path) -> StartupPresentation {
     }
 }
 
+/// The saved settings, read the same zero-wait way, so the first frame can
+/// already show the user's theme and layout. `None` when they cannot be read
+/// right away; normal startup applies them then.
+pub(crate) fn startup_settings(path: &Path) -> Option<crate::models::Settings> {
+    let serde_json::Value::Object(saved) = startup_settings_value(path)? else {
+        return None;
+    };
+    // Fields the record lacks keep their defaults instead of failing it.
+    let mut settings = serde_json::to_value(crate::models::Settings::default()).ok()?;
+    settings.as_object_mut()?.extend(saved);
+    serde_json::from_value(settings).ok()
+}
+
 fn startup_settings_value(path: &Path) -> Option<serde_json::Value> {
     let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY).ok()?;
     conn.busy_timeout(std::time::Duration::ZERO).ok()?;
@@ -789,7 +802,7 @@ mod connection_profile_tests {
 
 #[cfg(test)]
 mod startup_preference_tests {
-    use super::startup_presentation;
+    use super::{startup_presentation, startup_settings};
     use crate::models::{AppIcon, MIN_WORKSPACE_LIST_PANE_WIDTH};
     use rusqlite::Connection;
 
@@ -830,6 +843,28 @@ mod startup_preference_tests {
             startup_presentation(&temp.path().join("missing.db")).grouping,
             MailGrouping::Conversations
         );
+    }
+
+    #[test]
+    fn startup_settings_carry_theme_and_layout() {
+        let temp = tempfile::tempdir().unwrap();
+        let path = temp.path().join("mail.db");
+        let conn = Connection::open(&path).unwrap();
+        conn.execute_batch(
+            "CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+             INSERT INTO app_settings (key, value)
+             VALUES ('settings', '{\"theme\": \"dark\", \"themePreset\": \"black\",
+                                   \"readingPanePosition\": \"bottom\"}');",
+        )
+        .unwrap();
+        drop(conn);
+        let settings = startup_settings(&path).unwrap();
+        assert_eq!(settings.theme, "dark");
+        assert_eq!(settings.theme_preset, "black");
+        assert_eq!(settings.reading_pane_position, "bottom");
+        // Unsaved preferences keep their defaults.
+        assert!(settings.show_tabs);
+        assert!(startup_settings(&temp.path().join("missing.db")).is_none());
     }
 
     #[test]

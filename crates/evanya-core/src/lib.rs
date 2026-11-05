@@ -176,6 +176,12 @@ pub fn startup_presentation(paths: &Paths) -> models::StartupPresentation {
     db::startup_presentation(&paths.db_file())
 }
 
+/// The saved settings for the first application frame, read without waiting
+/// for the database. Normal core startup still loads and validates them.
+pub fn startup_settings(paths: &Paths) -> Option<models::Settings> {
+    db::startup_settings(&paths.db_file())
+}
+
 fn normalize_account_email(value: &str) -> Option<String> {
     let value = value.trim();
     if value.is_empty() || value.len() > 320 || value.chars().any(char::is_whitespace) {

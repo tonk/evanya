@@ -1770,6 +1770,11 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     }
     window_chrome::register(&app, &runtime);
     app_icon::apply(&app, startup_presentation.app_icon);
+    // Paint the first frame with the saved theme, language and layout, so the
+    // window does not open in the defaults and change once the core is up.
+    if let Some(settings) = evanya_core::startup_settings(&platform.paths) {
+        startup::apply_presentation(&app, &settings);
+    }
     app.set_app_version(env!("CARGO_PKG_VERSION").into());
     app.on_settings_search_matches(|haystack, query| {
         let query = query.to_string().trim().to_lowercase();
