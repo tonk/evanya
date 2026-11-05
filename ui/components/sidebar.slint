@@ -255,13 +255,17 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
 
                 // The repeater must be a direct ListView child: nesting it in
                 // a layout disables virtualization. Rust supplies only expanded rows.
-                for entry in root.rows: Rectangle {
+                for entry[index] in root.rows: Rectangle {
                     private property <bool> reveal-ready: !entry.reveal_row;
+                    // Space above each account after the first sets the
+                    // accounts apart.
+                    private property <length> account-gap: entry.kind == SidebarRowKind.account && index > 0
+                        && root.rows[index - 1].kind != SidebarRowKind.accounts-heading ? 14px : 0px;
                     width: max(0px, mailbox-scroll.visible-width - LayoutMetrics.sidebar-scrollbar-gutter);
                     height: !entry.show_row || (entry.reveal_row && !self.reveal-ready && MotionSettings.enabled) ? 0px
                         : entry.kind == SidebarRowKind.unified-heading ? 21px
                         : entry.kind == SidebarRowKind.accounts-heading ? 25px
-                        : entry.kind == SidebarRowKind.account ? (entry.mailbox.detail == "" ? 35px : root.account-row-height)
+                        : entry.kind == SidebarRowKind.account ? self.account-gap + (entry.mailbox.detail == "" ? 35px : root.account-row-height)
                         : entry.kind == SidebarRowKind.unified-section || entry.kind == SidebarRowKind.unified-inbox ? 35px
                         : entry.kind == SidebarRowKind.folder && entry.mailbox.label == "Inbox" ? 35px
                         : 31px;
@@ -509,8 +513,9 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
                         private property <bool> local: entry.mailbox.account_id == LocalMailUi.account-id;
                         x: 0px;
                         interactive: entry.show_row;
-                        y: 0px;
+                        y: parent.account-gap;
                         width: parent.width;
+                        height: parent.height - parent.account-gap;
                         label: self.local ? @tr("On this device") : entry.mailbox.label;
                         detail: entry.mailbox.detail;
                         avatar: entry.mailbox.avatar;
