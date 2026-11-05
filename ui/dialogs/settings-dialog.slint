@@ -504,6 +504,8 @@ export component SettingsDialog inherits Rectangle {
     in-out property <string> theme_mode: "system";
     in-out property <bool> show_avatars: true;
     in-out property <bool> show_tabs: true;
+    in-out property <bool> show_status_bar: true;
+    in-out property <bool> show_folder_unread_counts: false;
     in-out property <bool> group_mail_by_date: true;
     in-out property <bool> conversation_view: true;
     in-out property <bool> compose_plain_text: false;
@@ -615,6 +617,8 @@ export component SettingsDialog inherits Rectangle {
     callback save_custom_theme(color, color, color, color, color, color, color, color, color, color) -> bool;
     callback save_avatar_visibility(bool);
     callback save_show_tabs(bool);
+    callback save_show_status_bar(bool);
+    callback save_folder_unread_counts(bool);
     callback save_group_mail_by_date(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
@@ -1216,7 +1220,7 @@ export component SettingsDialog inherits Rectangle {
                             if AppIcon.available : AppIconPicker { compact: root.compact; }
 
                             Rectangle {
-                                height: max((root.compact ? 435px : 323px)
+                                height: max((root.compact ? 435px + 144px : 323px + 112px)
                                     + (WindowChrome.available ? (root.compact ? 89px : 59px) : 0px), self.preferred-height);
                                 background: root.surface;
                                 border-radius: 8px;
@@ -1265,6 +1269,32 @@ export component SettingsDialog inherits Rectangle {
                                         toggled(checked) => {
                                             root.show_tabs = checked;
                                             root.save_show_tabs(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Status line");
+                                        description: @tr("Show along the bottom of the window how mail synchronization is progressing.");
+                                        checked: root.show_status_bar;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.show_status_bar = checked;
+                                            root.save_show_status_bar(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Unread counts on every folder");
+                                        description: @tr("Show the number of unread messages beside each folder in the sidebar.");
+                                        checked: root.show_folder_unread_counts;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.show_folder_unread_counts = checked;
+                                            root.save_folder_unread_counts(checked);
                                         }
                                     }
                                     Rectangle { height: 1px; background: root.border-subtle; }

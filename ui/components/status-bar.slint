@@ -1,0 +1,93 @@
+import { TypeScale } from "../typography.slint";
+
+/// What one account's mail synchronization is doing.
+export struct SyncStatusLine {
+    account: string,
+    // idle | syncing | offline | error | needs_reauth
+    state: string,
+    // inbox | headers | content | retrying | indexing
+    phase: string,
+    folder: string,
+    done: int,
+    total: int,
+    failed: int,
+    error: string,
+}
+
+/// The status line along the bottom of the window.
+export component StatusBar inherits Rectangle {
+    in property <[SyncStatusLine]> lines;
+    in property <bool> has-accounts;
+    in property <color> background-color;
+    in property <color> line-color;
+    in property <color> text-color;
+    in property <color> warning-color;
+
+    background: root.background-color;
+    accessible-role: text;
+    accessible-label: root.lines.length == 0 ? root.idle-text() : root.describe(root.lines[0]);
+
+    function idle-text() -> string {
+        return root.has-accounts ? @tr("All accounts are up to date") : "";
+    }
+
+    function progress(line: SyncStatusLine) -> string {
+        if line.phase == "headers" {
+            return @tr("message history: {} of {} folders", line.done, line.total);
+        }
+        if line.phase == "content" {
+            return @tr("downloading messages: {} of {}", line.done, line.total);
+        }
+        if line.phase == "retrying" {
+            return @tr("retrying {} that failed", line.failed);
+        }
+        if line.phase == "indexing" {
+            return @tr("indexing for search: {} of {}", line.done, line.total);
+        }
+        return @tr("checking for new mail");
+    }
+
+    function describe(line: SyncStatusLine) -> string {
+        if line.state == "offline" {
+            return @tr("{}: offline", line.account);
+        }
+        if line.state == "needs_reauth" {
+            return @tr("{}: sign in again", line.account);
+        }
+        if line.state == "error" {
+            return line.error == "" ? @tr("{}: sync failed", line.account) : @tr("{}: sync failed ({})", line.account, line.error);
+        }
+        return line.folder == "" ? @tr("{}: {}", line.account, root.progress(line))
+            : @tr("{}: {} · {}", line.account, root.progress(line), line.folder);
+    }
+
+    Rectangle {
+        y: 0px;
+        height: 1px;
+        background: root.line-color;
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        spacing: 18px;
+
+        if root.lines.length == 0 : Text {
+            text: root.idle-text();
+            color: root.text-color;
+            font-size: TypeScale.caption * 0.92;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        for line in root.lines : Text {
+            text: root.describe(line);
+            color: line.state == "idle" || line.state == "syncing" ? root.text-color : root.warning-color;
+            font-size: TypeScale.caption * 0.92;
+            vertical-alignment: center;
+            overflow: elide;
+            min-width: 0px;
+            horizontal-stretch: 1;
+        }
+        if root.lines.length == 0 : Rectangle { horizontal-stretch: 1; }
+    }
+}

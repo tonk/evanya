@@ -313,6 +313,8 @@ export component MailListPane inherits FocusScope {
     in property <string> sort-key: "date-desc";
     in-out property <length> sender-column-width: 220px;
     in-out property <length> date-column-width: 130px;
+    // The table's columns from left to right, such as "sender,subject,date".
+    in-out property <string> column-order: "sender,subject,date";
     callback sort-by(string);
     callback columns-committed();
     in property <bool> loading: false;
@@ -387,12 +389,60 @@ export component MailListPane inherits FocusScope {
     // Room for the selection box, or the unread dot in its place.
     private property <length> table-lead: 34px;
     private property <length> table-gap: 12px;
-    private property <length> sender-x: root.table-lead;
     private property <length> sender-width: max(80px, min(root.sender-column-width, root.table-width * 0.5));
     private property <length> date-width: max(60px, min(root.date-column-width, 260px));
-    private property <length> date-x: root.table-width - 12px - root.date-width;
-    private property <length> subject-x: root.sender-x + root.sender-width + root.table-gap;
-    private property <length> subject-width: max(0px, root.date-x - root.table-gap - root.subject-x);
+    // The subject takes the room the sender and date columns leave.
+    private property <length> subject-width: max(0px, root.table-width - 12px - root.table-lead
+        - root.sender-width - root.date-width - 2 * root.table-gap);
+    private property <length> sender-x: root.column-x("sender");
+    private property <length> subject-x: root.column-x("subject");
+    private property <length> date-x: root.column-x("date");
+    // The column a header drag is moving, and where the pointer is.
+    private property <string> dragged-column;
+    private property <length> drag-x;
+
+    // Where `key` stands, counted from the left.
+    pure function column-pos(key: string) -> int {
+        if root.column-order == "subject,sender,date" { return key == "subject" ? 0 : key == "sender" ? 1 : 2; }
+        if root.column-order == "sender,date,subject" { return key == "sender" ? 0 : key == "date" ? 1 : 2; }
+        if root.column-order == "date,sender,subject" { return key == "date" ? 0 : key == "sender" ? 1 : 2; }
+        if root.column-order == "date,subject,sender" { return key == "date" ? 0 : key == "subject" ? 1 : 2; }
+        if root.column-order == "subject,date,sender" { return key == "subject" ? 0 : key == "date" ? 1 : 2; }
+        return key == "sender" ? 0 : key == "subject" ? 1 : 2;
+    }
+    pure function column-at(pos: int) -> string {
+        if root.column-pos("sender") == pos { return "sender"; }
+        if root.column-pos("subject") == pos { return "subject"; }
+        return "date";
+    }
+    pure function column-width(key: string) -> length {
+        return key == "sender" ? root.sender-width : key == "date" ? root.date-width : root.subject-width;
+    }
+    pure function column-x(key: string) -> length {
+        return root.table-lead
+            + (root.column-pos("sender") < root.column-pos(key) ? root.sender-width + root.table-gap : 0px)
+            + (root.column-pos("subject") < root.column-pos(key) ? root.subject-width + root.table-gap : 0px)
+            + (root.column-pos("date") < root.column-pos(key) ? root.date-width + root.table-gap : 0px);
+    }
+    // The place a dragged column lands: past every other column whose middle
+    // the pointer passed.
+    pure function drop-pos(key: string, x: length) -> int {
+        return (key != "sender" && root.sender-x + root.sender-width / 2 < x ? 1 : 0)
+            + (key != "subject" && root.subject-x + root.subject-width / 2 < x ? 1 : 0)
+            + (key != "date" && root.date-x + root.date-width / 2 < x ? 1 : 0);
+    }
+    function move-column(key: string, x: length) {
+        let target = root.drop-pos(key, x);
+        let first = root.column-pos(key) == 0 ? root.column-at(1) : root.column-at(0);
+        let second = root.column-pos(key) == 2 ? root.column-at(1) : root.column-at(2);
+        let order = target == 0 ? key + "," + first + "," + second
+            : target == 1 ? first + "," + key + "," + second
+            : first + "," + second + "," + key;
+        if order != root.column-order {
+            root.column-order = order;
+            root.columns-committed();
+        }
+    }
 
     pure function sort-arrow(key: string) -> string {
         if root.sort-key == key + "-asc" { return " ↑"; }
@@ -816,22 +866,47 @@ export component MailListPane inherits FocusScope {
                             for column in [
                                 { key: "sender", title: @tr("From"), x: root.sender-x, width: root.sender-width, right: false },
                                 { key: "subject", title: @tr("Subject"), x: root.subject-x, width: root.subject-width, right: false },
-                                { key: "date", title: @tr("Date"), x: root.date-x, width: root.date-width, right: true },
+                                { key: "date", title: @tr("Date"), x: root.date-x, width: root.date-width, right: root.column-pos("date") == 2 },
                             ] : header-cell := TouchArea {
+                                // Set once the pointer moved far enough to drag the column.
+                                property <bool> dragging;
                                 x: column.x;
                                 width: column.width;
                                 height: parent.height;
-                                mouse-cursor: pointer;
+                                mouse-cursor: self.dragging ? MouseCursor.grabbing : MouseCursor.pointer;
                                 accessible-role: button;
                                 accessible-label: @tr("Sort by {}", column.title);
                                 accessible-action-default => { root.sort-by(column.key); }
-                                clicked => { root.sort-by(column.key); }
+                                pointer-event(event) => {
+                                    if event.kind == PointerEventKind.down {
+                                        self.dragging = false;
+                                    } else if event.kind == PointerEventKind.up && self.dragging {
+                                        root.move-column(column.key, self.x + self.mouse-x);
+                                        root.dragged-column = "";
+                                    }
+                                }
+                                moved => {
+                                    if self.pressed && abs(self.mouse-x - self.pressed-x) > 6px {
+                                        self.dragging = true;
+                                        root.dragged-column = column.key;
+                                        root.drag-x = self.x + self.mouse-x;
+                                    }
+                                }
+                                clicked => {
+                                    if !self.dragging { root.sort-by(column.key); }
+                                }
+                                Rectangle {
+                                    visible: root.dragged-column == column.key;
+                                    background: root.accent.with-alpha(0.12);
+                                    border-radius: 4px;
+                                }
 
                                 Text {
                                     width: parent.width;
                                     height: parent.height;
                                     text: column.title + root.sort-arrow(column.key);
-                                    color: root.sort-key == column.key + "-asc" || root.sort-key == column.key + "-desc" || header-cell.has-hover
+                                    color: root.dragged-column == column.key ? root.accent
+                                        : root.sort-key == column.key + "-asc" || root.sort-key == column.key + "-desc" || header-cell.has-hover
                                         ? root.title-color : root.secondary-text;
                                     font-family: AreaFonts.list-family; font-size: TypeScale.caption * AreaFonts.list-scale;
                                     font-weight: 600;
@@ -844,12 +919,15 @@ export component MailListPane inherits FocusScope {
                             // Grips between the columns. Each follows the edge it moves.
                             sender-grip := TouchArea {
                                 height: parent.height;
-                                x: root.subject-x - root.table-gap / 2 - 4px;
+                                // On the sender column's edge toward the subject.
+                                property <bool> right-edge: root.column-pos("sender") < root.column-pos("subject");
+                                x: (self.right-edge ? root.sender-x + root.sender-width + root.table-gap / 2 : root.sender-x - root.table-gap / 2) - 4px;
                                 width: 8px;
                                 mouse-cursor: col-resize;
                                 moved => {
                                     if self.pressed {
-                                        root.sender-column-width = max(80px, min(root.sender-width + self.mouse-x - self.pressed-x, root.table-width * 0.5));
+                                        root.sender-column-width = max(80px, min(root.sender-width
+                                            + (self.right-edge ? 1 : -1) * (self.mouse-x - self.pressed-x), root.table-width * 0.5));
                                     }
                                 }
                                 pointer-event(event) => {
@@ -865,12 +943,15 @@ export component MailListPane inherits FocusScope {
                             }
                             date-grip := TouchArea {
                                 height: parent.height;
-                                x: root.date-x - root.table-gap / 2 - 4px;
+                                // On the date column's edge toward the subject.
+                                property <bool> left-edge: root.column-pos("date") > root.column-pos("subject");
+                                x: (self.left-edge ? root.date-x - root.table-gap / 2 : root.date-x + root.date-width + root.table-gap / 2) - 4px;
                                 width: 8px;
                                 mouse-cursor: col-resize;
                                 moved => {
                                     if self.pressed {
-                                        root.date-column-width = max(60px, min(root.date-width - (self.mouse-x - self.pressed-x), 260px));
+                                        root.date-column-width = max(60px, min(root.date-width
+                                            + (self.left-edge ? -1 : 1) * (self.mouse-x - self.pressed-x), 260px));
                                     }
                                 }
                                 pointer-event(event) => {
@@ -1223,7 +1304,7 @@ export component MailListPane inherits FocusScope {
                                                     color: mail-data.unread ? root.title-color : root.muted-text;
                                                     font-family: AreaFonts.list-family; font-size: TypeScale.secondary * AreaFonts.list-scale;
                                                     overflow: elide;
-                                                    horizontal-alignment: right;
+                                                    horizontal-alignment: root.column-pos("date") == 2 ? TextHorizontalAlignment.right : TextHorizontalAlignment.left;
                                                     vertical-alignment: center;
                                                 }
                                             }

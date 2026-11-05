@@ -1,0 +1,20 @@
+[package]
+name = "evanya-ui"
+version = "0.1.0"
+edition = "2024"
+license = "AGPL-3.0-only"
+description = "Evanya's Slint interface, compiled once into its own crate"
+publish = false
+
+# The generated interface is large. Keeping it in its own crate means a change
+# to the application's Rust code does not recompile it, and the other way round.
+
+[dependencies]
+slint = { version = "1.18.1", default-features = false, features = [
+    "std",
+    "system-tray",
+    "compat-1-2",
+] }
+
+[build-dependencies]
+slint-build = "1.18.1"

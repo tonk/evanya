@@ -8451,6 +8451,13 @@ impl Core {
             .await
     }
 
+    /// Unread messages per folder id, for counts beside every folder.
+    pub async fn folder_unread_counts(&self) -> Result<std::collections::HashMap<i64, i64>> {
+        self.db
+            .read(|conn| repo::counts::folder_unread_counts(conn))
+            .await
+    }
+
     pub async fn get_settings(&self) -> Result<Settings> {
         self.db.read(|conn| repo::settings::get(conn)).await
     }

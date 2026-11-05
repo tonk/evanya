@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/evanya-core", "crates/renderer-probe"]
+members = ["crates/evanya-core", "crates/evanya-ui", "crates/renderer-probe"]
 exclude = ["crates/candle-core", "crates/blitz-dom", "crates/blitz-paint", "crates/i-slint-backend-winit", "crates/parley", "crates/parley_emoji"]
 resolver = "3"
 
@@ -92,6 +92,7 @@ vello = { version = "0.11", optional = true }
 # This native shell currently exposes keyword/FTS search, not local semantic
 # search. Do not link Candle, tokenizers, or Hugging Face into every AppImage.
 evanya-core = { path = "crates/evanya-core", default-features = false }
+evanya-ui = { path = "crates/evanya-ui" }
 # Slint uses Fontique 0.11; Blitz beta.3 uses 0.12. Both must load
 # Fontconfig dynamically so the rendering stacks agree on the native ABI.
 fontique_0_11 = { package = "fontique", version = "=0.11.1", features = ["fontconfig-dlopen"] }
@@ -198,11 +199,11 @@ auto_link_exclude_list = [
 # transitive font stacks. `wayland-backend` is reached through
 # `wayland_client::backend`; the direct dependency guarantees its
 # `client_system` feature, which attaching to winit's display requires.
-# `slint-build`, iOS-only `cc`, and Windows-only `winresource` are consumed by build.rs.
+# iOS-only `cc` and Windows-only `winresource` are consumed by build.rs.
 # These do not appear as normal Rust paths on every host, so dependency
 # scanners need the explicit exceptions.
 [package.metadata.cargo-machete]
-ignored = ["fontique_0_11", "fontique_0_12", "wayland-backend", "slint-build", "winresource", "cc", "cfg_aliases"]
+ignored = ["fontique_0_11", "fontique_0_12", "wayland-backend", "winresource", "cc", "cfg_aliases"]
 
 # tests/text_fit.rs measures laid-out text through Slint's item tree, which
 # only the internal crate exposes. It must stay on the version `slint` uses.
@@ -212,7 +213,6 @@ i-slint-core = { version = "=1.18.1", default-features = false }
 [build-dependencies]
 cc = "1"
 cfg_aliases = "0.2"
-slint-build = "1.18.1"
 winresource = "0.1"
 
 [profile.release]
@@ -235,7 +235,9 @@ codegen-units = 16
 incremental = true
 
 [profile.dev]
-debug = 1
+# File and line numbers in backtraces, without the full variable information
+# that makes debug builds slower to compile and link.
+debug = "line-tables-only"
 
 [profile.test]
 debug = 1

@@ -2234,13 +2234,22 @@ async fn extend_history(
     let lo = hi.saturating_sub(HISTORY_CHUNK - 1).max(1);
     let set = format!("{lo}:{hi}");
     let headers = imap::fetch_headers(session, &set).await?;
+    // UIDs only grow, so a long-lived mailbox can have wide stretches without
+    // mail. After an empty chunk, continue right below the next older message
+    // instead of stepping through the gap one chunk per pass.
+    let new_cursor = if headers.is_empty() {
+        imap::uid_search_highest_below(session, lo)
+            .await?
+            .map_or(1, |uid| i64::from(uid) + 1)
+    } else {
+        lo as i64
+    };
     let (thread_ids, _) =
         store_headers(ctx, config, folder, headers, None, NewHeaders::Insert).await?;
     if !thread_ids.is_empty() {
         ctx.bus.emit(CoreEvent::MailUpdated { thread_ids });
     }
     let fid = folder.id;
-    let new_cursor = lo as i64;
     ctx.db
         .write(move |conn| {
             repo::folders::set_backfill(conn, fid, Some(new_cursor), new_cursor <= 1)

@@ -425,6 +425,18 @@ pub(super) fn restore_account_backup(
                 settings.show_tabs = enabled;
             }
             if let Some(enabled) = preferences
+                .get("showStatusBar")
+                .and_then(|value| value.as_bool())
+            {
+                settings.show_status_bar = enabled;
+            }
+            if let Some(enabled) = preferences
+                .get("showFolderUnreadCounts")
+                .and_then(|value| value.as_bool())
+            {
+                settings.show_folder_unread_counts = enabled;
+            }
+            if let Some(enabled) = preferences
                 .get("conversationView")
                 .and_then(|value| value.as_bool())
             {
@@ -451,6 +463,13 @@ pub(super) fn restore_account_backup(
                 .and_then(|value| value.as_i64())
             {
                 settings.mail_table_date_width = width.clamp(60, 260);
+            }
+            if let Some(order) = preferences
+                .get("mailTableColumnOrder")
+                .and_then(|value| value.as_str())
+            {
+                settings.mail_table_column_order =
+                    evanya_core::models::normalized_mail_table_column_order(order);
             }
             if let Some(enabled) = preferences
                 .get("composePlainText")
@@ -725,6 +744,9 @@ pub(super) fn restore_account_backup(
         .set_preference(settings.message_appearance.as_str().into());
     app.set_show_avatars(settings.show_avatars);
     app.set_show_tabs(settings.show_tabs);
+    app.set_show_status_bar(settings.show_status_bar);
+    crate::mail::set_folder_unread_counts(settings.show_folder_unread_counts);
+    app.set_show_folder_unread_counts(settings.show_folder_unread_counts);
     apply_mail_grouping(app, state, runtime, settings.mail_grouping());
     app.set_show_account_markers(settings.show_account_badges);
     crate::window_chrome::apply_preference(
@@ -1393,12 +1415,15 @@ pub(super) fn register_data_management_callbacks(
                     "messageAppearance": settings.message_appearance,
                     "showAvatars": settings.show_avatars,
                     "showTabs": settings.show_tabs,
+                    "showStatusBar": settings.show_status_bar,
+                    "showFolderUnreadCounts": settings.show_folder_unread_counts,
                     "conversationView": settings.conversation_view,
                     "composePlainText": settings.compose_plain_text,
                     "mailListLayout": settings.mail_list_layout,
                     "mailSort": settings.mail_sort,
                     "mailTableSenderWidth": settings.mail_table_sender_width,
                     "mailTableDateWidth": settings.mail_table_date_width,
+                    "mailTableColumnOrder": settings.mail_table_column_order,
                     "workspaceLayout": settings.workspace_layout,
                     "unifiedMailbox": settings.unified_mailbox,
                     "readingPanePosition": settings.reading_pane_position,
@@ -1722,6 +1747,9 @@ pub(super) fn register_data_management_callbacks(
                     crate::app_icon::apply(&app, Default::default());
                     app.set_show_avatars(true);
                     app.set_show_tabs(true);
+                    app.set_show_status_bar(true);
+                    crate::mail::set_folder_unread_counts(false);
+                    app.set_show_folder_unread_counts(false);
                     apply_mail_grouping(
                         &app,
                         &data_reset_state,
@@ -1744,6 +1772,7 @@ pub(super) fn register_data_management_callbacks(
                     app.set_mail_sort("date-desc".into());
                     app.set_mail_sender_column_width(220.0);
                     app.set_mail_date_column_width(130.0);
+                    app.set_mail_column_order("sender,subject,date".into());
                     date_format::reload(&app);
                     app.set_reading_pane_position("right".into());
                     app.set_reading_pane_bottom_fraction(0.4);

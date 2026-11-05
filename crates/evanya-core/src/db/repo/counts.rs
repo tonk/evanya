@@ -247,6 +247,28 @@ pub fn unread_counts(
     })
 }
 
+/// Unread messages per folder, for the counts beside every folder in the
+/// sidebar. A message counts in its own folder and in every label folder it
+/// carries (Gmail), never twice in one.
+pub fn folder_unread_counts(conn: &Connection) -> Result<HashMap<i64, i64>> {
+    let mut stmt = conn.prepare(
+        "SELECT folder_id, COUNT(*) FROM (
+             SELECT folder_id FROM messages
+             WHERE is_read = 0 AND is_draft = 0 AND folder_id IS NOT NULL
+             UNION ALL
+             SELECT mf.folder_id FROM message_folders mf
+             JOIN messages m ON m.id = mf.message_id
+             WHERE m.is_read = 0 AND m.is_draft = 0
+               AND mf.folder_id IS NOT COALESCE(m.folder_id, -1)
+         )
+         GROUP BY folder_id",
+    )?;
+    let counts = stmt
+        .query_map([], |row| Ok((row.get::<_, i64>(0)?, row.get::<_, i64>(1)?)))?
+        .collect::<rusqlite::Result<HashMap<_, _>>>()?;
+    Ok(counts)
+}
+
 /// Return the native sidebar's badges for every account in one grouped scan.
 /// This deliberately avoids calling `unread_counts` once per account: the
 /// Slint sidebar does not render split/label badges, and repeating those

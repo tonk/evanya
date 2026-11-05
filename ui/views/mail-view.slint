@@ -44,6 +44,7 @@ export component MailView inherits FocusScope {
     in property <string> mail-sort: "date-desc";
     in-out property <length> sender-column-width: 220px;
     in-out property <length> date-column-width: 130px;
+    in-out property <string> column-order: "sender,subject,date";
     callback sort-mail(string);
     callback mail-columns-committed();
     in property <bool> loading: false;
@@ -402,6 +403,7 @@ export component MailView inherits FocusScope {
                 sort-key: root.mail-sort;
                 sender-column-width <=> root.sender-column-width;
                 date-column-width <=> root.date-column-width;
+                column-order <=> root.column-order;
                 sort-by(key) => { root.sort-mail(key); }
                 columns-committed => { root.mail-columns-committed(); }
                 selected_scope: root.selected_scope;
@@ -691,6 +693,7 @@ export component MailView inherits FocusScope {
                 sort-key: root.mail-sort;
                 sender-column-width <=> root.sender-column-width;
                 date-column-width <=> root.date-column-width;
+                column-order <=> root.column-order;
                 sort-by(key) => { root.sort-mail(key); }
                 columns-committed => { root.mail-columns-committed(); }
                 selected_scope: root.selected_scope;

@@ -630,6 +630,16 @@ pub(super) fn register_settings_preference_callbacks(
         }
     });
 
+    let state_for_status_bar = Rc::clone(state);
+    let runtime_for_status_bar = Rc::clone(runtime);
+    app.on_save_show_status_bar(move |enabled| {
+        let core = state_for_status_bar.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_status_bar
+                .block_on(core.update_settings(|settings| settings.show_status_bar = enabled));
+        }
+    });
+
     let app_weak = app.as_weak();
     let state_for_tabs = Rc::clone(state);
     let runtime_for_tabs = Rc::clone(runtime);
@@ -1226,12 +1236,14 @@ pub(super) fn register_settings_preference_callbacks(
 
     let state_for_columns = Rc::clone(state);
     let runtime_for_columns = Rc::clone(runtime);
-    app.on_save_mail_columns(move |sender, date| {
+    app.on_save_mail_columns(move |sender, date, order| {
         let core = state_for_columns.borrow().core.clone();
         if let Some(core) = core {
             let _ = runtime_for_columns.block_on(core.update_settings(|settings| {
                 settings.mail_table_sender_width = (sender.round() as i64).clamp(80, 2000);
                 settings.mail_table_date_width = (date.round() as i64).clamp(60, 260);
+                settings.mail_table_column_order =
+                    evanya_core::models::normalized_mail_table_column_order(&order);
             }));
         }
     });

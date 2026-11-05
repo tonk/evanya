@@ -493,7 +493,7 @@ fn flags_of(fetch: &async_imap::types::Fetch) -> FetchedFlags {
     f
 }
 
-const HEADER_FIELDS: &str = "BODY.PEEK[HEADER.FIELDS (MESSAGE-ID X-FLECTAR-SUBMISSION-ID IN-REPLY-TO REFERENCES SUBJECT FROM TO CC BCC DATE LIST-ID LIST-UNSUBSCRIBE LIST-UNSUBSCRIBE-POST PRECEDENCE AUTO-SUBMITTED AUTHENTICATION-RESULTS)]";
+const HEADER_FIELDS: &str = "BODY.PEEK[HEADER.FIELDS (MESSAGE-ID X-EVANYA-SUBMISSION-ID X-FLECTAR-SUBMISSION-ID IN-REPLY-TO REFERENCES SUBJECT FROM TO CC BCC DATE LIST-ID LIST-UNSUBSCRIBE LIST-UNSUBSCRIBE-POST PRECEDENCE AUTO-SUBMITTED AUTHENTICATION-RESULTS)]";
 
 /// Fetch envelope headers + flags for a UID set (e.g. "100:200" or "5,7,9").
 pub async fn fetch_headers(session: &mut Session, uid_set: &str) -> Result<Vec<FetchedHeader>> {
@@ -1005,6 +1005,22 @@ pub async fn uid_search_after(session: &mut Session, last_seen: u32) -> Result<V
         METADATA_TIMEOUT,
         uid_search_after_inner(session, last_seen),
     )
+    .await
+}
+
+/// The highest UID below `below`, so history can skip a range the server has
+/// no mail in.
+pub async fn uid_search_highest_below(session: &mut Session, below: u32) -> Result<Option<u32>> {
+    if below <= 1 {
+        return Ok(None);
+    }
+    with_deadline("UID SEARCH older messages", METADATA_TIMEOUT, async {
+        let set = session
+            .uid_search(format!("UID 1:{}", below - 1))
+            .await
+            .map_err(|e| CoreError::Imap(e.to_string()))?;
+        Ok(set.into_iter().filter(|uid| *uid < below).max())
+    })
     .await
 }
 

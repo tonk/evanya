@@ -19,6 +19,9 @@ export { AppTheme, MotionSettings, ThemeUtilities } from "design-system.slint";
 import { AppTheme, LayoutMetrics } from "design-system.slint";
 import { Button } from "components/button.slint";
 import { LoadingSkeletonBlock } from "components/loading-skeleton.slint";
+import { StatusBar } from "components/status-bar.slint";
+export { SyncStatusLine } from "components/status-bar.slint";
+import { SyncStatusLine } from "components/status-bar.slint";
 import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow, AreaFontRow } from "models.slint";
 export { EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
 export { MailListNavigation, MailNavigationTarget } from "models.slint";
@@ -539,6 +542,8 @@ export global I18n {
         if (key == "Could not delete label: {}") { return @tr("Could not delete label: {}", argument); }
         if (key == "Folder created.") { return @tr("Folder created."); }
         if (key == "Folder renamed.") { return @tr("Folder renamed."); }
+        if (key == "Unread counts preference saved.") { return @tr("Unread counts preference saved."); }
+        if (key == "Could not save unread counts preference: {}") { return @tr("Could not save unread counts preference: {}", argument); }
         if (key == "Folder deleted.") { return @tr("Folder deleted."); }
         if (key == "Could not create folder: {}") { return @tr("Could not create folder: {}", argument); }
         if (key == "Could not rename folder: {}") { return @tr("Could not rename folder: {}", argument); }
@@ -684,6 +689,8 @@ export component AppWindow inherits Window {
     callback save_custom_theme(color, color, color, color, color, color, color, color, color, color) -> bool;
     callback save_avatar_visibility(bool);
     callback save_show_tabs(bool);
+    callback save_show_status_bar(bool);
+    callback save_folder_unread_counts(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
     // Fonts per part: the font names to choose from (the first is the app's
@@ -703,7 +710,7 @@ export component AppWindow inherits Window {
     in property <bool> spellcheck_dictionaries_found: true;
     callback save_mail_list_layout(string);
     callback sort_mail_list(string);
-    callback save_mail_columns(length, length);
+    callback save_mail_columns(length, length, string);
     callback save_group_mail_by_date(bool);
     callback choose_download_directory();
     callback clear_download_directory();
@@ -1089,6 +1096,11 @@ export component AppWindow inherits Window {
     in-out property <bool> show_avatars: true;
     // Show tabs: the desktop tab strip, or the compact tab switcher.
     in-out property <bool> show_tabs: true;
+    // The status line along the bottom of the window, with sync progress.
+    in-out property <bool> show_status_bar: true;
+    // Unread counts beside every folder in the sidebar.
+    in-out property <bool> show_folder_unread_counts: false;
+    in property <[SyncStatusLine]> sync_status_lines;
     in-out property <bool> group_mail_by_date: true;
     // Group replies into conversations; off lists each message on its own.
     in-out property <bool> conversation_view: true;
@@ -1109,6 +1121,7 @@ export component AppWindow inherits Window {
     in-out property <string> mail_sort: "date-desc";
     in-out property <length> mail_sender_column_width: 220px;
     in-out property <length> mail_date_column_width: 130px;
+    in-out property <string> mail_column_order: "sender,subject,date";
     in property <string> time_format_sample: "13:30";
     in-out property <bool> monochrome_sidebar_icons: false;
     in-out property <bool> notifications_enabled: true;
@@ -1299,7 +1312,9 @@ export component AppWindow inherits Window {
     private property <length> content-x: root.safe-area-insets.left;
     private property <length> content-y: root.safe-area-insets.top + (root.top-bar ? WindowChrome.band-height : 0px);
     private property <length> content-width: root.width - root.safe-area-insets.left - root.safe-area-insets.right;
-    private property <length> content-height: root.height - root.content-y - root.safe-area-insets.bottom;
+    private property <bool> status-bar-shown: root.show_status_bar && root.has-mail && !root.compact-layout;
+    private property <length> status-bar-height: root.status-bar-shown ? 22px : 0px;
+    private property <length> content-height: root.height - root.content-y - root.safe-area-insets.bottom - root.status-bar-height;
     // Linux draws the whole frame, so it also provides the resize border and
     // window outline that the window manager would otherwise draw.
     private property <bool> client-frame: root.no-frame && !root.maximized && !root.full-screen;
@@ -1523,6 +1538,19 @@ export component AppWindow inherits Window {
         height: WindowChrome.band-height;
     }
 
+    if root.status-bar-shown : StatusBar {
+        x: root.content-x;
+        y: root.content-y + root.content-height;
+        width: root.content-width;
+        height: root.status-bar-height;
+        lines: root.sync_status_lines;
+        has-accounts: root.has-mail;
+        background-color: root.sidebar-bg;
+        line-color: root.border-subtle;
+        text-color: root.muted-text;
+        warning-color: AppTheme.destructive;
+    }
+
     // Account discovery is asynchronous. Paint a small initial view while
     // neither the cached mailbox nor the onboarding decision is available.
     if !root.startup_ready && !root.startup_failed && !root.has-mail : Rectangle {
@@ -1620,8 +1648,9 @@ export component AppWindow inherits Window {
             mail-sort: root.mail_sort;
             sender-column-width <=> root.mail_sender_column_width;
             date-column-width <=> root.mail_date_column_width;
+            column-order <=> root.mail_column_order;
             sort-mail(key) => { root.sort_mail_list(key); }
-            mail-columns-committed => { root.save_mail_columns(root.mail_sender_column_width, root.mail_date_column_width); }
+            mail-columns-committed => { root.save_mail_columns(root.mail_sender_column_width, root.mail_date_column_width, root.mail_column_order); }
             bottom-list-fraction <=> root.reading_pane_bottom_fraction;
             sidebar-width <=> root.mail_sidebar_width;
             sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
@@ -2159,6 +2188,8 @@ export component AppWindow inherits Window {
             theme_mode <=> root.theme_mode;
             show_avatars <=> root.show_avatars;
             show_tabs <=> root.show_tabs;
+            show_status_bar <=> root.show_status_bar;
+            show_folder_unread_counts <=> root.show_folder_unread_counts;
             group_mail_by_date <=> root.group_mail_by_date;
             conversation_view <=> root.conversation_view;
             compose_plain_text <=> root.compose_plain_text_default;
@@ -2263,6 +2294,8 @@ export component AppWindow inherits Window {
             }
             save_avatar_visibility(enabled) => { root.save_avatar_visibility(enabled); }
             save_show_tabs(enabled) => { root.save_show_tabs(enabled); }
+            save_show_status_bar(enabled) => { root.save_show_status_bar(enabled); }
+            save_folder_unread_counts(enabled) => { root.save_folder_unread_counts(enabled); }
             prepare_profile_members(profile-id, account-id) => {
                 root.prepare_profile_members(profile-id, account-id);
             }

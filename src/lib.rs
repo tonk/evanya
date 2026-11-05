@@ -1,3 +1,6 @@
+// The preferences backup is one large `serde_json::json!` literal.
+#![recursion_limit = "256"]
+
 // The application implementation is one compilation unit, exposed to the
 // thin desktop and mobile platform launchers.
 pub use evanya_core;
@@ -69,6 +72,7 @@ mod single_instance;
 mod spellcheck;
 mod startup;
 mod startup_metrics;
+mod status_line;
 mod tabs;
 mod theme;
 mod ui_dispatch;
@@ -76,11 +80,9 @@ mod ui_message;
 mod window_chrome;
 mod window_controller;
 
-slint::include_modules!();
-
-mod tray_ui {
-    include!(concat!(env!("OUT_DIR"), "/tray.rs"));
-}
+// The interface is generated in its own crate, so a change to the Rust code
+// here does not recompile it. Its types are used as if they were defined here.
+pub use evanya_ui::*;
 
 use account_controller::*;
 #[cfg(test)]
@@ -3764,6 +3766,40 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         });
     });
 
+    let unread_counts_state = Rc::clone(&state);
+    let unread_counts_runtime = Rc::clone(&runtime);
+    let unread_counts_updates = folder_tx.clone();
+    app.on_save_folder_unread_counts(move |enabled| {
+        crate::mail::set_folder_unread_counts(enabled);
+        let Some(core) = unread_counts_state.borrow().core.clone() else {
+            return;
+        };
+        let scope = unread_counts_state.borrow().scope;
+        let updates = unread_counts_updates.clone();
+        unread_counts_runtime.spawn(async move {
+            let saved = core
+                .update_settings(|settings| settings.show_folder_unread_counts = enabled)
+                .await;
+            // Reload the sidebar so the counts appear or go at once.
+            let metadata = core.load_mail_metadata(scope).await.ok();
+            let message = match saved {
+                Ok(_) => UiMessage::plain("Unread counts preference saved."),
+                Err(error) => {
+                    UiMessage::detail("Could not save unread counts preference: {}", error)
+                }
+            };
+            let _ = updates
+                .send(FolderMutationUpdate {
+                    message,
+                    metadata,
+                    reveal_parent_id: None,
+                    issued_scope: scope,
+                    removed_folders: Vec::new(),
+                })
+                .await;
+        });
+    });
+
     let rename_folder_state = Rc::clone(&state);
     let rename_folder_runtime = Rc::clone(&runtime);
     let rename_folder_updates = folder_tx.clone();
@@ -4031,6 +4067,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let contacts_loaded_for_core = Rc::clone(&contacts_loaded);
     let contacts_loading_for_core = Rc::clone(&contacts_loading);
     let contact_state_for_core_updates = Rc::clone(&contact_state);
+    let status_line = RefCell::new(status_line::StatusLine::default());
     app.on_drain_core_updates(move || {
         let pending = {
             let mut pending = pending_core_updates_for_ui
@@ -4122,6 +4159,16 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             && let Some(app) = mail_update_app.upgrade()
         {
             apply_account_states(&app, &mail_update_state, &pending.account_states);
+        }
+        let status_changed = status_line
+            .borrow_mut()
+            .merge(pending.sync_statuses, pending.sync_folders);
+        if (status_changed || !pending.account_states.is_empty())
+            && let Some(app) = mail_update_app.upgrade()
+        {
+            status_line
+                .borrow()
+                .apply(&app, &mail_update_state.borrow());
         }
         if let Some(error) = pending.action_error
             && let Some(app) = mail_update_app.upgrade()

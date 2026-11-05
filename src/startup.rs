@@ -582,6 +582,10 @@ pub(crate) struct PendingCoreUpdates {
     pub(crate) changed_threads: HashSet<i64>,
     pub(crate) all_mail_changed: bool,
     pub(crate) account_states: HashMap<i64, (String, Option<String>)>,
+    /// The latest sync snapshot per account, for the status line.
+    pub(crate) sync_statuses: HashMap<i64, evanya_core::models::SyncStatus>,
+    /// The folder each account's sync last reported working on.
+    pub(crate) sync_folders: HashMap<i64, String>,
     pub(crate) action_error: Option<String>,
     pub(crate) calendar_changed: bool,
     pub(crate) contacts_changed: bool,
@@ -701,6 +705,27 @@ pub(crate) fn spawn_core_event_listener(
     wake: UiWake,
 ) {
     let mut events = core.subscribe_events();
+    {
+        // Seed the status line; later changes arrive as events.
+        let core = core.clone();
+        let pending = Arc::clone(&pending);
+        let wake = wake.clone();
+        runtime.spawn(async move {
+            if let Ok(statuses) = core.sync_statuses().await {
+                let mut pending = pending
+                    .lock()
+                    .unwrap_or_else(|poisoned| poisoned.into_inner());
+                for status in statuses {
+                    pending
+                        .sync_statuses
+                        .entry(status.account_id)
+                        .or_insert(status);
+                }
+                drop(pending);
+                wake.wake();
+            }
+        });
+    }
     runtime.spawn(async move {
         use tokio::sync::broadcast::error::RecvError;
 
@@ -724,6 +749,25 @@ pub(crate) fn spawn_core_event_listener(
                         .account_states
                         .insert(account_id, (sync_state, sync_error));
                     true
+                }
+                Ok(CoreEvent::SyncStatus(status)) => {
+                    pending
+                        .lock()
+                        .unwrap_or_else(|poisoned| poisoned.into_inner())
+                        .sync_statuses
+                        .insert(status.account_id, status);
+                    true
+                }
+                Ok(CoreEvent::SyncProgress(progress)) if !progress.folder.is_empty() => {
+                    let mut pending = pending
+                        .lock()
+                        .unwrap_or_else(|poisoned| poisoned.into_inner());
+                    let changed =
+                        pending.sync_folders.get(&progress.account_id) != Some(&progress.folder);
+                    pending
+                        .sync_folders
+                        .insert(progress.account_id, progress.folder);
+                    changed
                 }
                 Ok(CoreEvent::ActionState {
                     state,
@@ -818,6 +862,9 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_show_avatars(settings.show_avatars);
     app.set_group_mail_by_date(settings.group_mail_by_date);
     app.set_show_tabs(settings.show_tabs);
+    app.set_show_status_bar(settings.show_status_bar);
+    crate::mail::set_folder_unread_counts(settings.show_folder_unread_counts);
+    app.set_show_folder_unread_counts(settings.show_folder_unread_counts);
     app.set_conversation_view(settings.conversation_view);
     app.set_compose_plain_text_default(settings.compose_plain_text);
     crate::settings_controller::apply_spellcheck(app, settings);
@@ -836,6 +883,10 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_mail_sort(crate::mail::mail_sort_key(sort).into());
     app.set_mail_sender_column_width(settings.mail_table_sender_width.clamp(80, 2000) as f32);
     app.set_mail_date_column_width(settings.mail_table_date_width.clamp(60, 260) as f32);
+    app.set_mail_column_order(
+        evanya_core::models::normalized_mail_table_column_order(&settings.mail_table_column_order)
+            .into(),
+    );
     app.set_show_account_markers(settings.show_account_badges);
     app.set_workspace_layout(
         match settings.workspace_layout.as_str() {

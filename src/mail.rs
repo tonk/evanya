@@ -471,6 +471,13 @@ impl CoreMailSource {
             .clone()
     }
 
+    pub async fn sync_statuses(&self) -> Result<Vec<evanya_core::models::SyncStatus>, String> {
+        self.core
+            .get_sync_status()
+            .await
+            .map_err(|error| error.to_string())
+    }
+
     pub async fn load_local_mail(&self) -> Result<Option<evanya_core::models::LocalMail>, String> {
         self.core
             .local_mail()
@@ -669,6 +676,14 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())?;
         // Unified totals add up the shown accounts only.
         badges.retain(|counts| profile_shows(profile, counts.account_id));
+        let folder_counts = if folder_unread_counts_enabled() {
+            self.core
+                .folder_unread_counts()
+                .await
+                .map_err(|error| error.to_string())?
+        } else {
+            std::collections::HashMap::new()
+        };
         Ok(MailMetadata {
             account_revision: self.account_revision(),
             scope,
@@ -676,7 +691,13 @@ impl CoreMailSource {
                 .iter()
                 .map(|counts| counts.inbox.max(0) as usize)
                 .sum(),
-            mailboxes: mailbox_entries_with_counts(accounts, folders, local_mail, &badges),
+            mailboxes: mailbox_entries_with_counts(
+                accounts,
+                folders,
+                local_mail,
+                &badges,
+                &folder_counts,
+            ),
             unified_mailboxes: unified_mailbox_entries(&badges),
             local_mail,
         })
@@ -2718,9 +2739,20 @@ fn mailbox_entries_with_counts(
     folders: &[FolderInfo],
     local_mail: Option<i64>,
     badges: &[MailboxBadgeCounts],
+    folder_counts: &std::collections::HashMap<i64, i64>,
 ) -> Vec<MailboxEntry> {
     let mut entries = mailbox_entries(accounts, folders, local_mail);
     for entry in &mut entries {
+        // Folders without a badge of their own show their unread messages
+        // when that is switched on.
+        if entry.folder_id >= 0
+            && !entry.is_account
+            && let Some(count) = folder_counts
+                .get(&entry.folder_id)
+                .filter(|count| **count > 0)
+        {
+            entry.count = count.to_string();
+        }
         // Badges belong to the standard mailboxes, not to custom folders that
         // merely share a name with one.
         let Some(Scope::Account { mailbox, .. }) = entry.scope else {
@@ -2732,7 +2764,11 @@ fn mailbox_entries_with_counts(
         else {
             continue;
         };
-        entry.count = mailbox_badge(mailbox, counts);
+        // Sent, Archive, Spam and Trash have no badge; keep a folder count.
+        let badge = mailbox_badge(mailbox, counts);
+        if !badge.is_empty() || !folder_unread_counts_enabled() {
+            entry.count = badge;
+        }
     }
     entries
 }
@@ -3223,6 +3259,18 @@ pub(crate) fn set_account_names(names: &std::collections::HashMap<String, String
     *account_names()
         .write()
         .unwrap_or_else(std::sync::PoisonError::into_inner) = names;
+}
+
+static FOLDER_UNREAD_COUNTS: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+/// Whether every folder in the sidebar shows its number of unread messages.
+pub(crate) fn set_folder_unread_counts(enabled: bool) {
+    FOLDER_UNREAD_COUNTS.store(enabled, std::sync::atomic::Ordering::Relaxed);
+}
+
+fn folder_unread_counts_enabled() -> bool {
+    FOLDER_UNREAD_COUNTS.load(std::sync::atomic::Ordering::Relaxed)
 }
 
 /// The name the user gave this account, if any.

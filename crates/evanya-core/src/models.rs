@@ -1932,6 +1932,14 @@ pub struct Settings {
     /// switcher in compact layouts. Saved tabs are kept while they are hidden.
     #[serde(default = "default_true")]
     pub show_tabs: bool,
+    /// Show a status line along the bottom of the window with the progress
+    /// of mail synchronization.
+    #[serde(default = "default_true")]
+    pub show_status_bar: bool,
+    /// Show the number of unread messages beside every folder in the
+    /// sidebar, not only beside Inbox, Starred and Drafts.
+    #[serde(default)]
+    pub show_folder_unread_counts: bool,
     /// Group replies with the messages they answer into conversations. Off
     /// lists, opens and acts on every message on its own.
     #[serde(default = "default_true")]
@@ -1988,6 +1996,9 @@ pub struct Settings {
     pub mail_table_sender_width: i64,
     #[serde(default = "default_mail_table_date_width")]
     pub mail_table_date_width: i64,
+    /// The table's columns from left to right, such as "sender,subject,date".
+    #[serde(default = "default_mail_table_column_order")]
+    pub mail_table_column_order: String,
     /// Shared logical-pixel width of the mail, contacts, and files list pane.
     /// The established layout width remains the default and hard minimum.
     #[serde(default = "default_workspace_list_pane_width")]
@@ -2285,6 +2296,29 @@ fn default_mail_sort() -> String {
 fn default_mail_table_sender_width() -> i64 {
     220
 }
+fn default_mail_table_column_order() -> String {
+    "sender,subject,date".into()
+}
+
+/// `order` when it lists the sender, subject and date columns once each,
+/// otherwise the default order.
+pub fn normalized_mail_table_column_order(order: &str) -> String {
+    let mut columns: Vec<&str> = order.split(',').map(str::trim).collect();
+    let valid = columns.len() == 3 && {
+        columns.sort_unstable();
+        columns == ["date", "sender", "subject"]
+    };
+    if valid {
+        order
+            .split(',')
+            .map(str::trim)
+            .collect::<Vec<_>>()
+            .join(",")
+    } else {
+        default_mail_table_column_order()
+    }
+}
+
 fn default_mail_table_date_width() -> i64 {
     130
 }
@@ -2349,6 +2383,8 @@ impl Default for Settings {
             show_avatars: true,
             group_mail_by_date: true,
             show_tabs: true,
+            show_status_bar: true,
+            show_folder_unread_counts: false,
             conversation_view: true,
             workspace_layout: default_workspace_layout(),
             unified_mailbox: true,
@@ -2363,6 +2399,7 @@ impl Default for Settings {
             mail_sort: default_mail_sort(),
             mail_table_sender_width: default_mail_table_sender_width(),
             mail_table_date_width: default_mail_table_date_width(),
+            mail_table_column_order: default_mail_table_column_order(),
             mail_sidebar_width: default_mail_sidebar_width(),
             workspace_list_pane_width: default_workspace_list_pane_width(),
             window_frame: default_window_frame(),
@@ -2668,6 +2705,25 @@ pub fn now_ms() -> i64 {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn mail_table_column_order_is_validated() {
+        assert_eq!(
+            super::normalized_mail_table_column_order("date, sender,subject"),
+            "date,sender,subject"
+        );
+        for broken in [
+            "",
+            "sender,subject",
+            "sender,sender,date",
+            "sender,subject,date,size",
+        ] {
+            assert_eq!(
+                super::normalized_mail_table_column_order(broken),
+                "sender,subject,date"
+            );
+        }
+    }
+
     use super::*;
 
     #[test]
