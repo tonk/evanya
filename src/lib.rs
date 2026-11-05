@@ -11,6 +11,7 @@ mod attachment_controller;
 #[cfg(desktop)]
 mod autostart;
 mod browser;
+mod bundled_fonts;
 pub use browser::ExternalUrlOpener;
 mod calendar;
 mod compose_controller;
@@ -1751,6 +1752,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
 
     // Register the deterministic emoji face before any initial text is measured.
     configure_emoji_font_fallback()?;
+    bundled_fonts::register_for_interface();
 
     // Construct the window before opening or migrating either database. Seed
     // the presentation preferences visible in the inert mailbox shell from

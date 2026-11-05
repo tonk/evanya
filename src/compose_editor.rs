@@ -161,6 +161,7 @@ impl Default for CosmicComposeEditor {
         font_system
             .db_mut()
             .load_font_source(Source::Binary(Arc::new(UI_FONT_DATA)));
+        crate::bundled_fonts::register_for_editor(font_system.db_mut());
         // OpenHarmony ships no Fontconfig, so fontdb's system scan finds
         // nothing; load the platform font directory explicitly. Without it
         // the composer falls back to the bundled UI font alone, which has no

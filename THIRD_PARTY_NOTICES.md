@@ -131,6 +131,22 @@ Renderer regression tests also use a subset of Noto Color Emoji under SIL OFL
 1.1. Its license and reproduction instructions are retained in
 [`resources/test-fonts`](resources/test-fonts).
 
+## SauceCodePro Nerd Font
+
+The bundled SauceCodePro Nerd Font, the Nerd Fonts build of Adobe's Source
+Code Pro, is distributed under the SIL Open Font License 1.1. Its license,
+provenance, and checksums are retained in
+[`resources/fonts/sauce-code-pro-nerd-font`](resources/fonts/sauce-code-pro-nerd-font).
+
+## GNU FreeFont
+
+The bundled FreeSans, FreeSerif and FreeMono fonts of GNU FreeFont are
+distributed under the GNU General Public License version 3 or later with the
+GNU FreeFont font exception. The license text is in
+[`LICENSES/GPL-3.0-only.txt`](LICENSES/GPL-3.0-only.txt); the exception,
+provenance, and checksums are retained in
+[`resources/fonts/gnu-freefont`](resources/fonts/gnu-freefont).
+
 ## Android instrumentation tests
 
 Device tests use AndroidX Test Runner 1.7.0 and AndroidX Test JUnit 1.3.0
