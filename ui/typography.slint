@@ -19,3 +19,23 @@ export global TypeScale {
     out property <relative-font-size> display: 2rem;
     out property <relative-font-size> display-large: 2.08rem;
 }
+
+// The font and size of each part of the workspace, as chosen in Settings.
+// A scale multiplies the type ramp, so headings and captions keep their
+// proportions and the platform's text size still applies.
+export global AreaFonts {
+    in-out property <string> sidebar-family: "Google Sans Flex";
+    in-out property <float> sidebar-scale: 1;
+    in-out property <string> list-family: "Google Sans Flex";
+    in-out property <float> list-scale: 1;
+    in-out property <string> reader-family: "Google Sans Flex";
+    in-out property <float> reader-scale: 1;
+    in-out property <string> calendar-family: "Google Sans Flex";
+    in-out property <float> calendar-scale: 1;
+    in-out property <string> contacts-family: "Google Sans Flex";
+    in-out property <float> contacts-scale: 1;
+    in-out property <string> files-family: "Google Sans Flex";
+    in-out property <float> files-scale: 1;
+    in-out property <string> composer-family: "Google Sans Flex";
+    in-out property <float> composer-scale: 1;
+}

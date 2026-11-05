@@ -1,6 +1,6 @@
 import { ComposeContact } from "../models.slint";
 import { Avatar } from "avatar.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 
 export component ComposerContactMenu inherits Rectangle {
     in property <[ComposeContact]> contacts: [];
@@ -50,7 +50,7 @@ export component ComposerContactMenu inherits Rectangle {
             height: max(18px, self.preferred-height);
             text: contact.name == "" ? contact.email : contact.name;
             color: root.title-color;
-            font-size: TypeScale.secondary;
+            font-family: AreaFonts.composer-family; font-size: TypeScale.secondary * AreaFonts.composer-scale;
             font-weight: 600;
             overflow: elide;
         }
@@ -63,7 +63,7 @@ export component ComposerContactMenu inherits Rectangle {
             visible: contact.name != "";
             text: contact.email;
             color: root.muted-color;
-            font-size: TypeScale.caption;
+            font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
             overflow: elide;
         }
 

@@ -1164,6 +1164,21 @@ pub struct ThreadDetail {
     pub messages: Vec<MessageDetail>,
 }
 
+/// The font of one part of the workspace: a family name (empty for the
+/// app's own) and a size scale (1 is the normal size).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AreaFont {
+    #[serde(default)]
+    pub family: String,
+    #[serde(default = "default_area_font_scale")]
+    pub scale: f32,
+}
+
+fn default_area_font_scale() -> f32 {
+    1.0
+}
+
 /// What the mail list is ordered by.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -1945,6 +1960,11 @@ pub struct Settings {
     /// HTML. Holding Shift while opening the composer picks the other one.
     #[serde(default)]
     pub compose_plain_text: bool,
+    /// Font and size per part of the workspace ("sidebar", "list", "reader",
+    /// "calendar", "contacts", "files", "composer"). Missing parts use the
+    /// app's font at its normal size.
+    #[serde(default)]
+    pub area_fonts: std::collections::HashMap<String, AreaFont>,
     /// Check spelling while writing.
     #[serde(default = "default_true")]
     pub spellcheck_enabled: bool,
@@ -2335,6 +2355,7 @@ impl Default for Settings {
             reading_pane_position: default_reading_pane_position(),
             reading_pane_bottom_percent: default_reading_pane_bottom_percent(),
             compose_plain_text: false,
+            area_fonts: std::collections::HashMap::new(),
             spellcheck_enabled: true,
             spellcheck_languages: Vec::new(),
             spellcheck_words: Vec::new(),

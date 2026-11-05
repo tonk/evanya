@@ -1,9 +1,10 @@
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 import { LayoutMetrics } from "../design-system.slint";
 
 // Navigation labels share the body type scale so OS text preferences apply.
 export global SidebarStyle {
-    out property <relative-font-size> label-size: TypeScale.body;
+    out property <relative-font-size> label-size: TypeScale.body * AreaFonts.sidebar-scale;
+    out property <string> label-family: AreaFonts.sidebar-family;
     out property <length> icon-size: LayoutMetrics.icon-size;
     out property <length> icon-left: 22px;
     out property <length> label-offset: 30px;

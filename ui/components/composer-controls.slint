@@ -1,4 +1,4 @@
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 
 export component RecipientRow inherits Rectangle {
     in-out property <string> text;
@@ -31,13 +31,13 @@ export component RecipientRow inherits Rectangle {
     line-probe := Text {
         visible: false;
         text: "Ag";
-        font-size: TypeScale.body;
+        font-family: AreaFonts.composer-family; font-size: TypeScale.body * AreaFonts.composer-scale;
     }
 
     five-line-probe := Text {
         visible: false;
         text: "Ag\nAg\nAg\nAg\nAg";
-        font-size: TypeScale.body;
+        font-family: AreaFonts.composer-family; font-size: TypeScale.body * AreaFonts.composer-scale;
     }
 
     row-label := Text {
@@ -47,7 +47,7 @@ export component RecipientRow inherits Rectangle {
         height: 40px;
         text: root.label;
         color: field.has-focus ? root.focus-color : root.label-color;
-        font-size: TypeScale.secondary;
+        font-family: AreaFonts.composer-family; font-size: TypeScale.secondary * AreaFonts.composer-scale;
         font-weight: 600;
         vertical-alignment: center;
     }
@@ -60,7 +60,7 @@ export component RecipientRow inherits Rectangle {
         visible: root.text == "";
         text: root.placeholder-text;
         color: root.placeholder-color;
-        font-size: TypeScale.body;
+        font-family: AreaFonts.composer-family; font-size: TypeScale.body * AreaFonts.composer-scale;
         vertical-alignment: center;
         overflow: elide;
     }
@@ -79,7 +79,7 @@ export component RecipientRow inherits Rectangle {
             color: root.text-color;
             selection-background-color: root.focus-color;
             selection-foreground-color: white;
-            font-size: TypeScale.body;
+            font-family: AreaFonts.composer-family; font-size: TypeScale.body * AreaFonts.composer-scale;
             single-line: false;
             wrap: word-wrap;
             edited => {
@@ -141,7 +141,7 @@ export component FormatButton inherits Rectangle {
     Text {
         text: root.label;
         color: root.selected ? root.selected-color : root.text-color;
-        font-size: TypeScale.body;
+        font-family: AreaFonts.composer-family; font-size: TypeScale.body * AreaFonts.composer-scale;
         font-weight: root.emphasized ? 800 : 500;
         font-italic: root.italic;
         horizontal-alignment: center;
@@ -186,7 +186,7 @@ export component FormatButton inherits Rectangle {
         tip := Text {
             text: root.tooltip-text;
             color: white;
-            font-size: TypeScale.caption;
+            font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
             horizontal-alignment: center;
             vertical-alignment: center;
         }
@@ -211,7 +211,7 @@ export component ModeButton inherits Rectangle {
     mode-label := Text {
         text: root.text;
         color: root.selected ? root.selected-text-color : root.text-color;
-        font-size: TypeScale.caption;
+        font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
         font-weight: root.selected ? 700 : 500;
         horizontal-alignment: center;
         vertical-alignment: center;

@@ -18,6 +18,40 @@ use std::{
 const FONT_SIZE_LOGICAL: f32 = 13.0;
 const LINE_HEIGHT_LOGICAL: f32 = 18.0;
 pub(crate) const UI_FONT_FAMILY: &str = "Google Sans Flex";
+
+/// The composer body's font and size scale, as chosen in Settings.
+static BODY_FONT: std::sync::RwLock<(&'static str, f32)> =
+    std::sync::RwLock::new((UI_FONT_FAMILY, 1.0));
+/// Changes with the body font, so laid-out text is drawn again.
+static BODY_FONT_EPOCH: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
+/// Write the composer body in `family` (empty: the app's font) at `scale`
+/// times the normal size.
+pub(crate) fn set_body_font(family: &str, scale: f32) {
+    let family = family.trim();
+    let mut current = BODY_FONT
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    let family: &'static str = if family.is_empty() || family == UI_FONT_FAMILY {
+        UI_FONT_FAMILY
+    } else if family == current.0 {
+        current.0
+    } else {
+        // Font names change only when the user picks another one.
+        Box::leak(family.to_owned().into_boxed_str())
+    };
+    let scale = scale.clamp(0.5, 3.0);
+    if *current != (family, scale) {
+        *current = (family, scale);
+        BODY_FONT_EPOCH.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+    }
+}
+
+fn body_font() -> (&'static str, f32) {
+    *BODY_FONT
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
 pub(crate) const UI_FONT_DATA: &[u8] = include_bytes!(
     "../resources/fonts/google-sans-flex/GoogleSansFlex-VariableFont_GRAD,ROND,opsz,slnt,wdth,wght.ttf"
 );
@@ -59,6 +93,8 @@ struct LayoutKey {
     revision: u64,
     /// Spelling marks change when dictionaries load or a word is added.
     spell_epoch: u64,
+    /// The body font and size changed in Settings.
+    font_epoch: u64,
     physical_width: u32,
     scale_bits: u32,
     text_color: u32,
@@ -426,6 +462,7 @@ impl CosmicComposeEditor {
         let key = LayoutKey {
             revision: document.revision(),
             spell_epoch: crate::spellcheck::epoch(),
+            font_epoch: BODY_FONT_EPOCH.load(std::sync::atomic::Ordering::Acquire),
             physical_width,
             scale_bits: scale_factor.to_bits(),
             text_color: style.text.as_argb_encoded(),
@@ -439,12 +476,13 @@ impl CosmicComposeEditor {
             return false;
         }
 
+        let (family, size_scale) = body_font();
         let metrics = Metrics::new(
-            FONT_SIZE_LOGICAL * scale_factor,
-            LINE_HEIGHT_LOGICAL * scale_factor,
+            FONT_SIZE_LOGICAL * size_scale * scale_factor,
+            LINE_HEIGHT_LOGICAL * size_scale * scale_factor,
         );
         let default_attrs = Attrs::new()
-            .family(Family::Name(UI_FONT_FAMILY))
+            .family(Family::Name(family))
             .color(cosmic_color(style.text));
         // While an input method composes, its text sits between document
         // offsets; spelling marks wait until it is committed.

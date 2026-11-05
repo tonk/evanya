@@ -533,6 +533,13 @@ pub(super) fn restore_account_backup(
             {
                 settings.calendar_week_start = week_start.to_owned();
             }
+            if let Some(fonts) = preferences
+                .get("areaFonts")
+                .cloned()
+                .and_then(|value| serde_json::from_value(value).ok())
+            {
+                settings.area_fonts = fonts;
+            }
             if let Some(zoom) = preferences
                 .get("calendarZoom")
                 .and_then(|value| value.as_f64())
@@ -694,6 +701,7 @@ pub(super) fn restore_account_backup(
         crate::mail::normalized_list_date_format(&settings.list_date_format).into(),
     );
     apply_language(app, &settings.language);
+    crate::settings_controller::apply_area_fonts(app, &settings);
     state.borrow_mut().account_presentation = AccountPresentationSettings::from_settings(&settings);
     // Imported profiles can change which accounts the mail view shows.
     app.invoke_mail_profile_changed();
@@ -1403,6 +1411,7 @@ pub(super) fn register_data_management_callbacks(
                     "listDateFormat": settings.list_date_format,
                     "calendarWeekStart": settings.calendar_week_start,
                     "calendarZoom": settings.calendar_zoom,
+                    "areaFonts": settings.area_fonts,
                     "loadRemoteImages": settings.load_remote_images,
                     "markReadOnOpen": settings.mark_read_on_open,
                     "collectOutgoingContacts": settings.collect_outgoing_contacts,
@@ -1729,6 +1738,10 @@ pub(super) fn register_data_management_callbacks(
                     app.set_list_date_format("smart".into());
                     app.set_mail_list_layout("cards".into());
                     app.set_calendar_zoom(1.0);
+                    crate::settings_controller::apply_area_fonts(
+                        &app,
+                        &flectar_mail_core::models::Settings::default(),
+                    );
                     crate::mail::set_mail_sort(Default::default());
                     app.set_mail_sort("date-desc".into());
                     app.set_mail_sender_column_width(220.0);

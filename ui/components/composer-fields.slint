@@ -4,7 +4,7 @@ import { Avatar } from "avatar.slint";
 import { IconButton } from "controls.slint";
 import { ModeButton, RecipientRow } from "composer-controls.slint";
 import { ComposerContactMenu } from "composer-contact-menu.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 import { WindowControlsClearance } from "../window-chrome.slint";
 
 export component ComposerHeader inherits Rectangle {
@@ -56,7 +56,7 @@ export component ComposerHeader inherits Rectangle {
                     : root.mode == "draft" ? @tr("Edit draft")
                     : @tr("New message");
                 color: root.title-color;
-                font-size: TypeScale.heading-small;
+                font-family: AreaFonts.composer-family; font-size: TypeScale.heading-small * AreaFonts.composer-scale;
                 font-weight: 700;
                 vertical-alignment: center;
             }
@@ -113,7 +113,7 @@ export component ComposerFromRow inherits Rectangle {
                 height: parent.height;
                 text: @tr("Account");
                 color: root.muted-color;
-                font-size: TypeScale.caption;
+                font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
                 font-weight: 600;
                 vertical-alignment: center;
             }
@@ -134,7 +134,7 @@ export component ComposerFromRow inherits Rectangle {
                     height: parent.height;
                     text: root.from-label;
                     color: root.accounts.length > 0 ? root.title-color : root.muted-color;
-                    font-size: TypeScale.caption;
+                    font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
                     font-weight: root.accounts.length > 0 ? 600 : 500;
                     vertical-alignment: center;
                     overflow: elide;
@@ -180,8 +180,8 @@ export component ComposerFromRow inherits Rectangle {
                 }
             }
 
-            account-name-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.secondary; font-weight: 600; }
-            account-email-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.caption; }
+            account-name-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.composer-family; font-size: TypeScale.secondary * AreaFonts.composer-scale; font-weight: 600; }
+            account-email-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale; }
 
             account-popup := PopupWindow {
                 x: 50px;
@@ -251,7 +251,7 @@ export component ComposerFromRow inherits Rectangle {
                                 height: max(18px, self.preferred-height);
                                 text: account.name;
                                 color: root.title-color;
-                                font-size: TypeScale.secondary;
+                                font-family: AreaFonts.composer-family; font-size: TypeScale.secondary * AreaFonts.composer-scale;
                                 font-weight: 600;
                                 overflow: elide;
                             }
@@ -263,7 +263,7 @@ export component ComposerFromRow inherits Rectangle {
                                 height: max(16px, self.preferred-height);
                                 text: account.email;
                                 color: root.muted-color;
-                                font-size: TypeScale.caption;
+                                font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
                                 overflow: elide;
                             }
 
@@ -421,8 +421,8 @@ export component ComposerRecipients inherits Rectangle {
                 }
             }
 
-            suggestion-name-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.secondary; font-weight: 600; }
-            suggestion-email-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.caption; }
+            suggestion-name-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.composer-family; font-size: TypeScale.secondary * AreaFonts.composer-scale; font-weight: 600; }
+            suggestion-email-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale; }
 
             contact-popup := PopupWindow {
                 x: 44px;
@@ -472,7 +472,7 @@ export component ComposerSubject inherits Rectangle {
                 height: parent.height;
                 text: @tr("Subject");
                 color: subject-input.has-focus ? root.accent-color : root.muted-color;
-                font-size: TypeScale.caption;
+                font-family: AreaFonts.composer-family; font-size: TypeScale.caption * AreaFonts.composer-scale;
                 font-weight: 600;
                 vertical-alignment: center;
             }
@@ -484,7 +484,7 @@ export component ComposerSubject inherits Rectangle {
                 visible: root.subject == "";
                 text: @tr("What is this email about?");
                 color: root.muted-color;
-                font-size: TypeScale.body;
+                font-family: AreaFonts.composer-family; font-size: TypeScale.body * AreaFonts.composer-scale;
                 vertical-alignment: center;
                 overflow: elide;
             }
@@ -497,7 +497,7 @@ export component ComposerSubject inherits Rectangle {
                 color: root.title-color;
                 selection-background-color: root.accent-color;
                 selection-foreground-color: white;
-                font-size: TypeScale.body-large;
+                font-family: AreaFonts.composer-family; font-size: TypeScale.body-large * AreaFonts.composer-scale;
                 font-weight: 600;
                 single-line: true;
                 vertical-alignment: center;

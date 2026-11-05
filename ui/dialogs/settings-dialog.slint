@@ -7,7 +7,7 @@ import { MessageColors } from "../message-colors.slint";
 import { MailPorts, MailSecurityFields } from "../components/mail-security-fields.slint";
 import { OAuthBrowserHelp } from "../components/oauth-browser-help.slint";
 import { HorizontalBox, ScrollView, VerticalBox } from "std-widgets.slint";
-import { AccountRow, CalendarConnectionRow, MailProfileRow, ProfileMemberRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow } from "../models.slint";
+import { AccountRow, AreaFontRow, CalendarConnectionRow, MailProfileRow, ProfileMemberRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow } from "../models.slint";
 import { AccountCalendars } from "../components/account-calendars.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
@@ -17,7 +17,7 @@ import { CopyableDiagnostic } from "../components/copyable-diagnostic.slint";
 import { FocusVisibleScope } from "../components/focus-visible-scope.slint";
 import { OnScreenSurface } from "../components/on-screen-surface.slint";
 import { ProviderButton } from "../components/provider-button.slint";
-import { FormField, SettingsCard, SettingsLinkRow, SettingsNavItem, SettingsSelectRow, SettingsSwitchRow, ShortcutRow, ShortcutSection } from "../components/settings-components.slint";
+import { FormField, SettingsCard, SettingsLinkRow, SettingsNavItem, SettingsSelect, SettingsSelectRow, SettingsSwitchRow, ShortcutRow, ShortcutSection } from "../components/settings-components.slint";
 import { Shortcuts } from "../shortcuts.slint";
 import { TabsUi } from "../components/workspace-navigation.slint";
 import { AccountProfilePicker, ProfileColorChoice, ProfileMemberChoice, ProfilePalette } from "../components/profile-controls.slint";
@@ -618,6 +618,20 @@ export component SettingsDialog inherits Rectangle {
     callback save_group_mail_by_date(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
+    in property <[string]> font_family_names: [];
+    in property <[AreaFontRow]> area_font_rows: [];
+    callback save_area_font(string, string, float);
+    private property <[string]> font-scale-names: ["80%", "90%", "100%", "110%", "125%", "150%", "175%", "200%"];
+    private property <[float]> font-scales: [0.8, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2];
+    pure function font-area-title(key: string) -> string {
+        if key == "sidebar" { return @tr("Sidebars"); }
+        if key == "list" { return @tr("Message list"); }
+        if key == "reader" { return @tr("Reading pane"); }
+        if key == "calendar" { return @tr("Calendar"); }
+        if key == "contacts" { return @tr("Contacts"); }
+        if key == "files" { return @tr("Files"); }
+        return @tr("Writing messages");
+    }
     callback save_spellcheck(string, string);
     in property <bool> spellcheck_enabled: true;
     in property <bool> spellcheck_automatic: true;
@@ -1372,6 +1386,53 @@ export component SettingsDialog inherits Rectangle {
                                         selected(index, value) => {
                                             root.list_date_format = root.list-date-values[index];
                                             root.save_list_date_format(root.list_date_format);
+                                        }
+                                    }
+                                }
+                            }
+
+                            Rectangle {
+                                height: max(100px, self.preferred-height);
+                                background: root.surface;
+                                border-radius: 8px;
+                                border-width: 1px;
+                                border-color: root.border-subtle;
+                                VerticalBox {
+                                    padding-top: 15px;
+                                    padding-right: 20px;
+                                    padding-bottom: 15px;
+                                    padding-left: 20px;
+                                    spacing: 6px;
+                                    Text { text: @tr("Fonts"); color: root.heading; font-size: TypeScale.subtitle; font-weight: 700; wrap: word-wrap; }
+                                    Text { text: @tr("Choose a font and size for each part. The message itself keeps the fonts its sender chose."); color: root.faint-text; font-size: TypeScale.caption; wrap: word-wrap; }
+                                    for row in root.area_font_rows : HorizontalLayout {
+                                        height: 40px;
+                                        spacing: 10px;
+                                        Text {
+                                            horizontal-stretch: 1;
+                                            min-width: 90px;
+                                            text: root.font-area-title(row.key);
+                                            color: root.body-text;
+                                            font-size: TypeScale.body;
+                                            font-weight: 600;
+                                            vertical-alignment: center;
+                                            overflow: elide;
+                                        }
+                                        SettingsSelect {
+                                            width: root.compact ? 150px : 240px;
+                                            choices: root.font_family_names;
+                                            selected-index: row.family_index;
+                                            selection-changed(index, value) => {
+                                                root.save_area_font(row.key, index == 0 ? "" : value, root.font-scales[row.scale_index]);
+                                            }
+                                        }
+                                        SettingsSelect {
+                                            width: 92px;
+                                            choices: root.font-scale-names;
+                                            selected-index: row.scale_index;
+                                            selection-changed(index, value) => {
+                                                root.save_area_font(row.key, row.family_index == 0 ? "" : root.font_family_names[row.family_index], root.font-scales[index]);
+                                            }
                                         }
                                     }
                                 }

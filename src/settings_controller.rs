@@ -8,6 +8,100 @@
 use super::*;
 use flectar_mail_core::models::CustomTheme;
 
+/// The parts of the workspace with a font of their own, in Settings order.
+const FONT_AREAS: [&str; 7] = [
+    "sidebar", "list", "reader", "calendar", "contacts", "files", "composer",
+];
+/// The size scales offered, as the Fonts settings list them.
+const FONT_SCALES: [f32; 8] = [0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0];
+
+/// The installed font families, sorted, read once.
+fn installed_font_families() -> Vec<String> {
+    thread_local! {
+        static FAMILIES: std::cell::OnceCell<Vec<String>> = const { std::cell::OnceCell::new() };
+    }
+    FAMILIES.with(|families| {
+        families
+            .get_or_init(|| {
+                let mut collection = slint::fontique_011::shared_collection();
+                let mut names = collection
+                    .family_names()
+                    .filter(|name| !name.trim().is_empty() && !name.starts_with('.'))
+                    .map(str::to_owned)
+                    .collect::<Vec<_>>();
+                names.sort_by_key(|name| name.to_lowercase());
+                names.dedup();
+                names
+            })
+            .clone()
+    })
+}
+
+/// Show each part of the workspace in its chosen font and size.
+pub(crate) fn apply_area_fonts(app: &AppWindow, settings: &flectar_mail_core::models::Settings) {
+    let families = installed_font_families();
+    let fonts = app.global::<AreaFonts>();
+    let mut rows = Vec::new();
+    for area in FONT_AREAS {
+        let chosen = settings.area_fonts.get(area);
+        let family = chosen
+            .map(|font| font.family.trim())
+            .filter(|family| !family.is_empty() && families.iter().any(|known| known == family));
+        let scale = chosen.map_or(1.0, |font| font.scale).clamp(0.5, 3.0);
+        let shown = slint::SharedString::from(family.unwrap_or(compose_editor::UI_FONT_FAMILY));
+        match area {
+            "sidebar" => {
+                fonts.set_sidebar_family(shown);
+                fonts.set_sidebar_scale(scale);
+            }
+            "list" => {
+                fonts.set_list_family(shown);
+                fonts.set_list_scale(scale);
+            }
+            "reader" => {
+                fonts.set_reader_family(shown);
+                fonts.set_reader_scale(scale);
+            }
+            "calendar" => {
+                fonts.set_calendar_family(shown);
+                fonts.set_calendar_scale(scale);
+            }
+            "contacts" => {
+                fonts.set_contacts_family(shown);
+                fonts.set_contacts_scale(scale);
+            }
+            "files" => {
+                fonts.set_files_family(shown);
+                fonts.set_files_scale(scale);
+            }
+            _ => {
+                fonts.set_composer_family(shown);
+                fonts.set_composer_scale(scale);
+                compose_editor::set_body_font(family.unwrap_or_default(), scale);
+            }
+        }
+        let family_index = family
+            .and_then(|family| families.iter().position(|known| known == family))
+            .map_or(0, |index| index + 1);
+        let scale_index = FONT_SCALES
+            .iter()
+            .position(|known| (known - scale).abs() < 0.01)
+            .unwrap_or(2);
+        rows.push(AreaFontRow {
+            key: area.into(),
+            family_index: i32::try_from(family_index).unwrap_or_default(),
+            scale_index: i32::try_from(scale_index).unwrap_or(2),
+        });
+    }
+    let mut names = vec![translated(
+        app,
+        &UiMessage::detail("App font ({})", compose_editor::UI_FONT_FAMILY),
+    )];
+    names.extend(families.into_iter().map(slint::SharedString::from));
+    app.set_font_family_names(ModelRc::new(VecModel::from(names)));
+    app.set_area_font_rows(ModelRc::new(VecModel::from(rows)));
+}
+
 /// Load the spelling dictionaries these settings ask for and show the
 /// choice in Settings.
 pub(crate) fn apply_spellcheck(app: &AppWindow, settings: &flectar_mail_core::models::Settings) {
@@ -1020,6 +1114,37 @@ pub(super) fn register_settings_preference_callbacks(
             if let Some(scope) = next {
                 app.invoke_select_scope(scope.to_string().into());
             }
+        }
+    });
+
+    // A font or size for one part of the workspace.
+    let app_weak = app.as_weak();
+    let state_for_fonts = Rc::clone(state);
+    let runtime_for_fonts = Rc::clone(runtime);
+    app.on_save_area_font(move |area, family, scale| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = state_for_fonts.borrow().core.clone() else {
+            return;
+        };
+        let area = area.to_string();
+        let family = family.trim().to_owned();
+        let result = runtime_for_fonts.block_on(core.update_settings(|settings| {
+            if family.is_empty() && (scale - 1.0).abs() < 0.01 {
+                settings.area_fonts.remove(&area);
+            } else {
+                settings
+                    .area_fonts
+                    .insert(area, flectar_mail_core::models::AreaFont { family, scale });
+            }
+        }));
+        match result.and(runtime_for_fonts.block_on(core.load_settings())) {
+            Ok(settings) => apply_area_fonts(&app, &settings),
+            Err(error) => app.set_sync_status(UiMessage::detail(
+                "Could not save the font settings: {}",
+                error,
+            )),
         }
     });
 

@@ -12,7 +12,7 @@ import {
 } from "workspace-layout.slint";
 import { LayoutMetrics, MailIconPalette, MotionSettings } from "../design-system.slint";
 import { LocalMailUi } from "../local-mail.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 
 // The profile switcher across a sidebar, as tall as its buttons.
 component SidebarProfileSwitcher inherits Rectangle {
@@ -88,7 +88,7 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
         + max(20px, account-name-probe.preferred-height)
         + max(15px, account-detail-probe.preferred-height);
     account-name-probe := Text { visible: false; text: "Ag"; font-size: SidebarStyle.label-size; font-weight: SidebarStyle.selected-weight; }
-    account-detail-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.caption; }
+    account-detail-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.sidebar-family; font-size: TypeScale.caption * AreaFonts.sidebar-scale; }
 
     if !root.collapsed: VerticalBox {
         x: LayoutMetrics.sidebar-inset;
@@ -170,7 +170,7 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
                     height: parent.height;
                     text: @tr("Find folder or label");
                     color: root.muted-color;
-                    font-size: TypeScale.caption;
+                    font-family: AreaFonts.sidebar-family; font-size: TypeScale.caption * AreaFonts.sidebar-scale;
                     vertical-alignment: center;
                     overflow: elide;
                 }
@@ -707,7 +707,7 @@ export component MailSidebar inherits CollapsibleWorkspaceSidebar {
                 width: parent.width - 24px;
                 text: @tr("No folders found");
                 color: root.muted-color;
-                font-size: TypeScale.caption;
+                font-family: AreaFonts.sidebar-family; font-size: TypeScale.caption * AreaFonts.sidebar-scale;
                 horizontal-alignment: center;
                 wrap: word-wrap;
             }

@@ -1,7 +1,7 @@
 import { ListView, HorizontalBox, VerticalBox } from "std-widgets.slint";
 import { CalendarAgendaRow, CalendarAgendaFilterRow, CalendarEventRow } from "../models.slint";
 import { AppTheme, LayoutMetrics } from "../design-system.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 import { Button } from "button.slint";
 import { ToolbarIconButton } from "controls.slint";
 import { FocusVisibleScope } from "focus-visible-scope.slint";
@@ -64,10 +64,10 @@ export component CalendarAgendaFilter inherits Rectangle {
                     HorizontalBox {
                         padding: 0px;
                         spacing: 8px;
-                        Text { text: @tr("Show calendars"); color: AppTheme.heading; font-size: TypeScale.body; font-weight: 600; horizontal-stretch: 1; }
+                        Text { text: @tr("Show calendars"); color: AppTheme.heading; font-family: AreaFonts.calendar-family; font-size: TypeScale.body * AreaFonts.calendar-scale; font-weight: 600; horizontal-stretch: 1; }
                         Button { text: @tr("Reset"); enabled: root.filter-count > 0; clicked => { root.cleared(); } }
                     }
-                    Text { text: @tr("Filters only affect this agenda."); color: AppTheme.secondary; font-size: TypeScale.caption; }
+                    Text { text: @tr("Filters only affect this agenda."); color: AppTheme.secondary; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
                     filter-list := ListView {
                         content-width: self.visible-width;
                         horizontal-scrollbar-policy: always-off;
@@ -97,8 +97,8 @@ export component CalendarAgendaFilter inherits Rectangle {
                                 background: filter.checked ? filter.color : transparent;
                                 Image { visible: filter.checked; x: 3px; y: 3px; width: 12px; height: 12px; source: @image-url("../icons/lucide/outline/check.svg"); colorize: white; }
                             }
-                            filter-name := Text { x: 36px; y: filter.account == "" ? max(14px, (52px - self.height) / 2) : 6px; width: parent.width - 44px; height: max(24px, self.preferred-height); text: filter.name; color: AppTheme.heading; font-size: TypeScale.body; overflow: elide; vertical-alignment: center; }
-                            filter-account := Text { x: 36px; y: filter-name.y + filter-name.height - 1px; width: parent.width - 44px; height: max(17px, self.preferred-height); text: filter.account; color: AppTheme.secondary; font-size: TypeScale.caption; overflow: elide; }
+                            filter-name := Text { x: 36px; y: filter.account == "" ? max(14px, (52px - self.height) / 2) : 6px; width: parent.width - 44px; height: max(24px, self.preferred-height); text: filter.name; color: AppTheme.heading; font-family: AreaFonts.calendar-family; font-size: TypeScale.body * AreaFonts.calendar-scale; overflow: elide; vertical-alignment: center; }
+                            filter-account := Text { x: 36px; y: filter-name.y + filter-name.height - 1px; width: parent.width - 44px; height: max(17px, self.preferred-height); text: filter.account; color: AppTheme.secondary; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; overflow: elide; }
                             filter-keyboard := FocusVisibleScope {
                                 key-pressed(event) => {
                                     if event.text == Key.Return || event.text == Key.Space { root.toggled(filter.id, !filter.checked); return accept; }
@@ -203,15 +203,15 @@ export component CalendarAgenda inherits Rectangle {
                     padding-right: parent.inset;
                     spacing: 8px;
                     cross-axis-alignment: center;
-                    Text { text: row.date-label; color: row.is-today ? AppTheme.accent : AppTheme.heading; font-size: TypeScale.secondary; font-weight: 600; overflow: elide; horizontal-stretch: 1; }
+                    Text { text: row.date-label; color: row.is-today ? AppTheme.accent : AppTheme.heading; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; font-weight: 600; overflow: elide; horizontal-stretch: 1; }
                     if row.is-today: Rectangle {
                         width: max(48px, today-label.preferred-width + 12px);
                         height: max(22px, today-label.preferred-height + 4px);
                         border-radius: self.height / 2;
                         background: AppTheme.accent-soft;
-                        today-label := Text { text: @tr("Today"); color: AppTheme.accent; font-size: TypeScale.caption; font-weight: 600; horizontal-alignment: center; vertical-alignment: center; }
+                        today-label := Text { text: @tr("Today"); color: AppTheme.accent; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 600; horizontal-alignment: center; vertical-alignment: center; }
                     }
-                    Text { text: @tr("{n} event" | "{n} events" % row.count); color: AppTheme.muted; font-size: TypeScale.caption; }
+                    Text { text: @tr("{n} event" | "{n} events" % row.count); color: AppTheme.muted; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
                 }
                 if row.kind == "day": Rectangle { y: parent.height - 1px; height: 1px; width: parent.width; background: AppTheme.border-subtle; }
                 if row.kind == "event": HorizontalBox {
@@ -223,18 +223,18 @@ export component CalendarAgenda inherits Rectangle {
                         width: max(root.compact ? 62px : 82px, max(agenda-start.preferred-width, agenda-end.preferred-width));
                         padding: 0px;
                         spacing: 3px;
-                        agenda-start := Text { text: row.time-label; color: AppTheme.body; font-size: TypeScale.secondary; font-weight: 600; overflow: elide; }
-                        agenda-end := Text { text: row.end-label; color: AppTheme.muted; font-size: TypeScale.caption; }
+                        agenda-start := Text { text: row.time-label; color: AppTheme.body; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; font-weight: 600; overflow: elide; }
+                        agenda-end := Text { text: row.end-label; color: AppTheme.muted; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
                     }
                     Rectangle { width: 3px; height: 36px; border-radius: 2px; background: row.event.color; opacity: agenda-row.cancelled ? 0.5 : 1; }
                     VerticalBox {
                         horizontal-stretch: 1;
                         padding: 0px;
                         spacing: 3px;
-                        Text { text: row.event.title; color: agenda-row.cancelled ? AppTheme.muted : AppTheme.heading; font-size: TypeScale.body; font-weight: 600; overflow: elide; }
-                        Text { text: root.compact ? (row.event.calendar != "" ? row.event.calendar : @tr("Local calendar")) + (row.event.location != "" ? " · " + row.event.location : "") : row.event.location != "" ? row.event.location : row.event.account; color: AppTheme.secondary; font-size: TypeScale.caption; overflow: elide; }
+                        Text { text: row.event.title; color: agenda-row.cancelled ? AppTheme.muted : AppTheme.heading; font-family: AreaFonts.calendar-family; font-size: TypeScale.body * AreaFonts.calendar-scale; font-weight: 600; overflow: elide; }
+                        Text { text: root.compact ? (row.event.calendar != "" ? row.event.calendar : @tr("Local calendar")) + (row.event.location != "" ? " · " + row.event.location : "") : row.event.location != "" ? row.event.location : row.event.account; color: AppTheme.secondary; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; overflow: elide; }
                     }
-                    if agenda-row.cancelled: Text { text: @tr("Cancelled"); color: AppTheme.muted; font-size: TypeScale.caption; }
+                    if agenda-row.cancelled: Text { text: @tr("Cancelled"); color: AppTheme.muted; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
                     if !root.compact: Rectangle {
                         width: min(160px, max(80px, agenda-list.visible-width / 5));
                         height: 26px;
@@ -246,7 +246,7 @@ export component CalendarAgenda inherits Rectangle {
                             spacing: 6px;
                             cross-axis-alignment: center;
                             Image { width: 12px; height: 12px; source: @image-url("../icons/lucide/outline/calendar.svg"); colorize: row.event.color; }
-                            Text { text: row.event.calendar != "" ? row.event.calendar : @tr("Local calendar"); color: AppTheme.body; font-size: TypeScale.caption; overflow: elide; horizontal-stretch: 1; }
+                            Text { text: row.event.calendar != "" ? row.event.calendar : @tr("Local calendar"); color: AppTheme.body; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; overflow: elide; horizontal-stretch: 1; }
                         }
                     }
                 }
@@ -265,10 +265,10 @@ export component CalendarAgenda inherits Rectangle {
                     spacing: 8px;
                     cross-axis-alignment: center;
                     Rectangle { width: 6px; height: 6px; border-radius: 3px; background: AppTheme.destructive; }
-                    Text { text: @tr("Now · {}", row.time-label); color: AppTheme.destructive; font-size: TypeScale.caption; font-weight: 600; }
+                    Text { text: @tr("Now · {}", row.time-label); color: AppTheme.destructive; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 600; }
                     Rectangle { height: 1px; background: AppTheme.destructive; horizontal-stretch: 1; }
                 }
-                if row.kind == "end": Text { x: parent.inset; width: parent.width - 2 * parent.inset; height: parent.height; text: @tr("Nothing else is scheduled this month."); color: AppTheme.muted; font-size: TypeScale.secondary; vertical-alignment: center; }
+                if row.kind == "end": Text { x: parent.inset; width: parent.width - 2 * parent.inset; height: parent.height; text: @tr("Nothing else is scheduled this month."); color: AppTheme.muted; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; vertical-alignment: center; }
             }
         }
     }
@@ -282,8 +282,8 @@ export component CalendarAgenda inherits Rectangle {
             alignment: center;
             Image { width: 36px; height: 36px; source: @image-url("../icons/lucide/outline/calendar.svg"); colorize: AppTheme.muted; }
         }
-        Text { text: root.filter-count > 0 ? @tr("No events match your filters") : @tr("No events this month"); color: AppTheme.heading; font-size: TypeScale.body-large; font-weight: 600; horizontal-alignment: center; }
-        Text { text: root.filter-count > 0 ? @tr("Show more calendars to see their events.") : @tr("Create an event to start planning your month."); color: AppTheme.secondary; font-size: TypeScale.secondary; horizontal-alignment: center; wrap: word-wrap; }
+        Text { text: root.filter-count > 0 ? @tr("No events match your filters") : @tr("No events this month"); color: AppTheme.heading; font-family: AreaFonts.calendar-family; font-size: TypeScale.body-large * AreaFonts.calendar-scale; font-weight: 600; horizontal-alignment: center; }
+        Text { text: root.filter-count > 0 ? @tr("Show more calendars to see their events.") : @tr("Create an event to start planning your month."); color: AppTheme.secondary; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; horizontal-alignment: center; wrap: word-wrap; }
         HorizontalBox {
             padding: 0px;
             alignment: center;

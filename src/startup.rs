@@ -821,6 +821,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_conversation_view(settings.conversation_view);
     app.set_compose_plain_text_default(settings.compose_plain_text);
     crate::settings_controller::apply_spellcheck(app, settings);
+    crate::settings_controller::apply_area_fonts(app, settings);
     app.set_calendar_zoom(settings.calendar_zoom.clamp(0.4, 4.0));
     app.set_mail_list_layout(
         if settings.mail_list_layout == "table" {

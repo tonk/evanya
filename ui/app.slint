@@ -19,7 +19,7 @@ export { AppTheme, MotionSettings, ThemeUtilities } from "design-system.slint";
 import { AppTheme, LayoutMetrics } from "design-system.slint";
 import { Button } from "components/button.slint";
 import { LoadingSkeletonBlock } from "components/loading-skeleton.slint";
-import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow } from "models.slint";
+import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow, AreaFontRow } from "models.slint";
 export { EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
 export { MailListNavigation, MailNavigationTarget } from "models.slint";
 export { ThreadMessageRow, StorageUsageRow } from "models.slint";
@@ -45,6 +45,7 @@ export { ThemeDraft } from "components/theme-editor.slint";
 import { ThemeDraft } from "components/theme-editor.slint";
 import { MailView } from "views/mail-view.slint";
 export { MessageColors } from "message-colors.slint";
+export { AreaFonts } from "typography.slint";
 export { FilesUi, FileRow, OperationRow } from "views/files-view.slint";
 import { FilesView, FilesUi } from "views/files-view.slint";
 import { ContactsView } from "views/contacts-view.slint";
@@ -389,6 +390,8 @@ export global I18n {
         if (key == "Could not copy the messages: {}") { return @tr("Could not copy the messages: {}", argument); }
         if (key == "Calendar color saved.") { return @tr("Calendar color saved."); }
         if (key == "Add a language…") { return @tr("Add a language…"); }
+        if (key == "App font ({})") { return @tr("App font ({})", argument); }
+        if (key == "Could not save the font settings: {}") { return @tr("Could not save the font settings: {}", argument); }
         if (key == "Could not save the spelling settings: {}") { return @tr("Could not save the spelling settings: {}", argument); }
         if (key == "Account name saved.") { return @tr("Account name saved."); }
         if (key == "Account names require local mail data.") { return @tr("Account names require local mail data."); }
@@ -683,6 +686,12 @@ export component AppWindow inherits Window {
     callback save_show_tabs(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
+    // Fonts per part: the font names to choose from (the first is the app's
+    // own font), the parts with their choices, and a choice to save as part
+    // key, family name (empty for the app's font) and size scale.
+    in property <[string]> font_family_names: [];
+    in property <[AreaFontRow]> area_font_rows: [];
+    callback save_area_font(string, string, float);
     // Spelling: "on", "off", "add" or "remove" a language code, or
     // "automatic" to follow the interface language again.
     callback save_spellcheck(string, string);
@@ -2285,6 +2294,9 @@ export component AppWindow inherits Window {
             save_group_mail_by_date(enabled) => { root.save_group_mail_by_date(enabled); }
             save_conversation_view(enabled) => { root.save_conversation_view(enabled); }
             save_compose_plain_text(enabled) => { root.save_compose_plain_text(enabled); }
+            font_family_names: root.font_family_names;
+            area_font_rows: root.area_font_rows;
+            save_area_font(area, family, scale) => { root.save_area_font(area, family, scale); }
             save_mail_list_layout(layout) => { root.save_mail_list_layout(layout); }
             save_contact_discovery_settings(outgoing, incoming, all-accounts, suggest) => {
                 root.save_contact_discovery_settings(outgoing, incoming, all-accounts, suggest);

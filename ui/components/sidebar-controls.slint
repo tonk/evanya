@@ -1,7 +1,7 @@
 import { SidebarRowSurface, SidebarStyle } from "sidebar-row.slint";
 import { MailDragApi } from "../models.slint";
 import { Avatar } from "avatar.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 
 component SidebarIcon {
     in property <image> icon;
@@ -43,7 +43,7 @@ component SidebarCountBadge inherits Rectangle {
     count-label := Text {
         text: root.count;
         color: root.selected ? root.accent-color : root.muted-color;
-        font-size: TypeScale.caption;
+        font-family: AreaFonts.sidebar-family; font-size: TypeScale.caption * AreaFonts.sidebar-scale;
         font-weight: 600;
         horizontal-alignment: center;
         vertical-alignment: center;
@@ -136,7 +136,7 @@ export component SidebarItem inherits SidebarRowSurface {
         color: root.body-color;
         font-size: SidebarStyle.label-size;
         font-weight: root.selected ? SidebarStyle.selected-weight : SidebarStyle.normal-weight;
-        font-family: root.label-has-emoji ? "Noto Emoji" : "";
+        font-family: root.label-has-emoji ? "Noto Emoji" : SidebarStyle.label-family;
         vertical-alignment: center;
         overflow: elide;
     }
@@ -349,6 +349,7 @@ export component SidebarSectionHeader inherits SidebarRowSurface {
         text: root.label;
         color: root.body-color;
         font-size: SidebarStyle.label-size;
+        font-family: SidebarStyle.label-family;
         font-weight: root.label-font-weight;
         vertical-alignment: center;
         overflow: elide;
@@ -362,7 +363,7 @@ export component SidebarSectionHeader inherits SidebarRowSurface {
         height: max(15px, self.preferred-height);
         text: root.detail;
         color: root.muted-color;
-        font-size: TypeScale.caption;
+        font-family: AreaFonts.sidebar-family; font-size: TypeScale.caption * AreaFonts.sidebar-scale;
         vertical-alignment: center;
         overflow: elide;
     }

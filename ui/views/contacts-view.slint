@@ -7,7 +7,7 @@ import { DetailEmptyState } from "../components/detail-empty-state.slint";
 import { FloatingActionButton, LineEdit, TextEdit, ToolbarIconButton } from "../components/controls.slint";
 import { SidebarItem, SidebarSectionHeader } from "../components/sidebar-controls.slint";
 import { SidebarStyle } from "../components/sidebar-row.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 import { LayoutMetrics } from "../design-system.slint";
 import { ScrollFade } from "../components/scroll-fade.slint";
 import { CollapsibleWorkspaceSidebar, WorkspaceMiniHeading, WorkspacePaneResizeHandle, WorkspaceSearchToolbar } from "../components/workspace-layout.slint";
@@ -19,7 +19,7 @@ component FieldLabel inherits Text {
     text: root.label;
     height: max(18px, self.preferred-height);
     color: #7a7b78;
-    font-size: TypeScale.caption;
+    font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
     font-weight: 700;
     vertical-alignment: bottom;
 }
@@ -195,12 +195,12 @@ export component ContactsView inherits Rectangle {
 
                     // Account and hint rows grow with the platform font.
                     account-name-line := Text { visible: false; text: "Ag"; font-size: SidebarStyle.label-size; font-weight: SidebarStyle.selected-weight; }
-                    account-detail-line := Text { visible: false; text: "Ag"; font-size: TypeScale.caption; }
+                    account-detail-line := Text { visible: false; text: "Ag"; font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale; }
                     hint-measure := Text {
                         visible: false;
                         width: max(0px, contact-nav-scroll.visible-width - LayoutMetrics.sidebar-scrollbar-gutter);
                         text: @tr("Suggested people stay local and separate until you save them as contacts.");
-                        font-size: TypeScale.caption;
+                        font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                         wrap: word-wrap;
                     }
 
@@ -279,7 +279,7 @@ export component ContactsView inherits Rectangle {
                                 height: max(54px, self.preferred-height);
                                 text: @tr("Suggested people stay local and separate until you save them as contacts.");
                                 color: root.muted-text;
-                                font-size: TypeScale.caption;
+                                font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                                 wrap: word-wrap;
                             }
                         }
@@ -415,7 +415,7 @@ export component ContactsView inherits Rectangle {
                                         height: max(22px, self.preferred-height);
                                         text: contact.name == "" ? contact.email : contact.name;
                                         color: root.heading;
-                                        font-size: TypeScale.body-large;
+                                        font-family: AreaFonts.contacts-family; font-size: TypeScale.body-large * AreaFonts.contacts-scale;
                                         font-weight: contact.selected ? 700 : 500;
                                         overflow: elide;
                                         vertical-alignment: center;
@@ -438,7 +438,7 @@ export component ContactsView inherits Rectangle {
                                         height: max(20px, self.preferred-height);
                                         text: contact.email != "" ? contact.email : contact.source != "" ? contact.source : @tr("Local contacts");
                                         color: root.body-text;
-                                        font-size: TypeScale.secondary;
+                                        font-family: AreaFonts.contacts-family; font-size: TypeScale.secondary * AreaFonts.contacts-scale;
                                         overflow: elide;
                                         vertical-alignment: center;
                                     }
@@ -450,7 +450,7 @@ export component ContactsView inherits Rectangle {
                                         text: contact.suggested ? @tr("Suggested from mail")
                                             : contact.detail != "" ? contact.detail : contact.last_contacted;
                                         color: root.muted-text;
-                                        font-size: TypeScale.caption;
+                                        font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                                         overflow: elide;
                                         vertical-alignment: center;
                                     }
@@ -499,7 +499,7 @@ export component ContactsView inherits Rectangle {
                             : root.selected-scope == "Suggestions" ? @tr("No suggested people yet. People you email can appear here for faster addressing.")
                             : @tr("No contacts yet. Create one or connect an address book.");
                         color: root.muted-text;
-                        font-size: TypeScale.secondary;
+                        font-family: AreaFonts.contacts-family; font-size: TypeScale.secondary * AreaFonts.contacts-scale;
                         wrap: word-wrap;
                         horizontal-alignment: center;
                         vertical-alignment: center;
@@ -597,7 +597,7 @@ export component ContactsView inherits Rectangle {
                             text: root.is-suggested ? @tr("Suggested person")
                                 : root.selected-id != 0 ? @tr("Contact details") : @tr("New contact");
                             color: root.secondary-text;
-                            font-size: TypeScale.caption;
+                            font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                             font-weight: 700;
                             vertical-alignment: center;
                         }
@@ -616,7 +616,7 @@ export component ContactsView inherits Rectangle {
                         if root.delete-confirming : Text {
                             text: root.is-suggested ? @tr("Remove this suggestion?") : @tr("Delete this contact?");
                             color: root.body-text;
-                            font-size: TypeScale.caption;
+                            font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                             font-weight: 700;
                             vertical-alignment: center;
                         }
@@ -678,7 +678,7 @@ export component ContactsView inherits Rectangle {
                                     height: max(30px, self.preferred-height);
                                     text: root.edit-name != "" ? root.edit-name : root.email-values.length > 0 && root.email-values[0].value != "" ? root.email-values[0].value : @tr("New contact");
                                     color: root.title-color;
-                                    font-size: TypeScale.display;
+                                    font-family: AreaFonts.contacts-family; font-size: TypeScale.display * AreaFonts.contacts-scale;
                                     font-weight: 700;
                                     overflow: elide;
                                     vertical-alignment: center;
@@ -687,7 +687,7 @@ export component ContactsView inherits Rectangle {
                                     height: max(22px, self.preferred-height);
                                     text: root.interaction-label;
                                     color: root.muted-text;
-                                    font-size: TypeScale.caption;
+                                    font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                                     vertical-alignment: center;
                                 }
                             }
@@ -712,7 +712,7 @@ export component ContactsView inherits Rectangle {
                                 suggested-note := Text {
                                     text: @tr("Learned from mail. Save this person to add them to your address book.");
                                     color: root.body-text;
-                                    font-size: TypeScale.secondary;
+                                    font-family: AreaFonts.contacts-family; font-size: TypeScale.secondary * AreaFonts.contacts-scale;
                                     wrap: word-wrap;
                                     vertical-alignment: center;
                                 }
@@ -721,7 +721,7 @@ export component ContactsView inherits Rectangle {
                         Text {
                             text: (root.source-name == "" ? @tr("Local contacts") : root.source-name) + (root.read-only ? " · " + @tr("Read-only") : "");
                             color: root.secondary-text;
-                            font-size: TypeScale.caption;
+                            font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                             wrap: word-wrap;
                         }
                         if root.sync != ContactSyncState.local : Text {
@@ -732,7 +732,7 @@ export component ContactsView inherits Rectangle {
                                 : root.sync == ContactSyncState.detached ? @tr("Address book removed before these changes synced; they are kept on this device")
                                 : @tr("Could not sync: {}", root.sync-detail);
                             color: root.secondary-text;
-                            font-size: TypeScale.caption;
+                            font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                             wrap: word-wrap;
                         }
                         if root.conflict : VerticalLayout {
@@ -831,7 +831,7 @@ export component ContactsView inherits Rectangle {
                         if root.status != "" : Text {
                             text: root.status;
                             color: root.muted-text;
-                            font-size: TypeScale.caption;
+                            font-family: AreaFonts.contacts-family; font-size: TypeScale.caption * AreaFonts.contacts-scale;
                             wrap: word-wrap;
                         }
                         HorizontalBox {

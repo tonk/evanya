@@ -13,7 +13,7 @@ import { FocusVisibleScope } from "../components/focus-visible-scope.slint";
 import { LabelChip } from "../components/label-chip.slint";
 import { LoadingSkeletonBlock } from "../components/loading-skeleton.slint";
 import { RenderingInfoDialog } from "../dialogs/rendering-info-dialog.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 import { AppTheme, LayoutMetrics, MailIconPalette, MotionSettings } from "../design-system.slint";
 import { MessageColors } from "../message-colors.slint";
 import { WindowChrome, WindowControlsClearance } from "../window-chrome.slint";
@@ -146,7 +146,7 @@ component MessageLoadingSkeleton inherits Rectangle {
         height: 24px;
         text: @tr("Rendering message…");
         color: root.text-color;
-        font-size: TypeScale.secondary;
+        font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
         vertical-alignment: center;
         accessible-role: text;
     }
@@ -219,7 +219,7 @@ component ThreadMessageHeader inherits Rectangle {
         height: root.sender-height;
         text: root.outgoing ? @tr("You") : root.sender;
         color: root.heading;
-        font-size: TypeScale.body;
+        font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale;
         font-weight: root.selected || root.unread ? 700 : 600;
         overflow: elide;
         vertical-alignment: center;
@@ -247,7 +247,7 @@ component ThreadMessageHeader inherits Rectangle {
         height: root.sender-height;
         text: root.time;
         color: root.secondary-text;
-        font-size: TypeScale.caption;
+        font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale;
         overflow: elide;
         horizontal-alignment: right;
         vertical-alignment: center;
@@ -261,7 +261,7 @@ component ThreadMessageHeader inherits Rectangle {
             ? root.address + (root.to == "" ? "" : " · " + @tr("to {}", root.to))
             : root.body-pending ? @tr("Loading message…") : root.preview;
         color: root.body-pending ? root.accent : root.secondary-text;
-        font-size: TypeScale.secondary;
+        font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
         overflow: elide;
         vertical-alignment: center;
     }
@@ -475,11 +475,11 @@ export component MailReadingPane inherits FocusScope {
     private property <length> thread-sender-height: max(23px, thread-sender-probe.preferred-height);
     private property <length> thread-detail-height: max(24px, thread-detail-probe.preferred-height);
     private property <length> thread-header-height: 17px + root.thread-sender-height + root.thread-detail-height;
-    thread-sender-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.body; font-weight: 700; }
-    thread-detail-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.secondary; }
+    thread-sender-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale; font-weight: 700; }
+    thread-detail-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale; }
     attachment-heading-probe := Text { visible: false; text: "Ag"; font-weight: 600; }
-    attachment-name-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.body; font-weight: 600; }
-    attachment-detail-probe := Text { visible: false; text: "Ag"; font-size: TypeScale.caption; }
+    attachment-name-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale; font-weight: 600; }
+    attachment-detail-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale; }
     private property <length> thread-item-stride: root.thread-header-height + root.thread-item-gap;
     private property <int> accordion-message-count: max(1, root.thread-messages.length);
     private property <int> accordion-selected-index: min(max(0, root.selected-thread-index), root.accordion-message-count - 1);
@@ -857,7 +857,7 @@ export component MailReadingPane inherits FocusScope {
                                                 height: 28px;
                                                 text: @tr("Labels");
                                                 color: root.title-color;
-                                                font-size: TypeScale.subtitle;
+                                                font-family: AreaFonts.reader-family; font-size: TypeScale.subtitle * AreaFonts.reader-scale;
                                                 font-weight: 700;
                                                 vertical-alignment: center;
                                             }
@@ -910,9 +910,9 @@ export component MailReadingPane inherits FocusScope {
                                                             height: max(20px, self.preferred-height);
                                                             text: label.name;
                                                             color: root.heading;
-                                                            font-size: TypeScale.body;
+                                                            font-size: TypeScale.body * AreaFonts.reader-scale;
                                                             font-weight: label.applied ? 600 : 500;
-                                                            font-family: label.name_has_emoji ? "Noto Emoji" : "";
+                                                            font-family: label.name_has_emoji ? "Noto Emoji" : AreaFonts.reader-family;
                                                             overflow: elide;
                                                             vertical-alignment: center;
                                                         }
@@ -923,7 +923,7 @@ export component MailReadingPane inherits FocusScope {
                                                             height: max(16px, self.preferred-height);
                                                             text: label.is_auto ? @tr("Smart category") : label.account_name;
                                                             color: root.muted-text;
-                                                            font-size: TypeScale.caption;
+                                                            font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale;
                                                             overflow: elide;
                                                             vertical-alignment: center;
                                                         }
@@ -981,7 +981,7 @@ export component MailReadingPane inherits FocusScope {
                                                     height: 64px;
                                                     text: @tr("No matching labels");
                                                     color: root.muted-text;
-                                                    font-size: TypeScale.body;
+                                                    font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale;
                                                     horizontal-alignment: center;
                                                     vertical-alignment: center;
                                                 }
@@ -1087,7 +1087,8 @@ export component MailReadingPane inherits FocusScope {
                             height: min(self.preferred-height, 3 * (self.font-metrics.ascent - self.font-metrics.descent));
                             text: root.display-subject;
                             color: root.title-color;
-                            font-size: root.compact ? TypeScale.title-small : TypeScale.title;
+                            font-family: AreaFonts.reader-family;
+                            font-size: (root.compact ? TypeScale.title-small : TypeScale.title) * AreaFonts.reader-scale;
                             font-weight: 600;
                             letter-spacing: -0.3px;
                             wrap: word-wrap;
@@ -1281,7 +1282,7 @@ export component MailReadingPane inherits FocusScope {
                                     }
                                     if EmailReader.notice != "" : Text {
                                         height: self.preferred-height;
-                                        text: EmailReader.notice; wrap: word-wrap; color: root.secondary-text; font-size: TypeScale.secondary;
+                                        text: EmailReader.notice; wrap: word-wrap; color: root.secondary-text; font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                         accessible-role: text;
                                     }
                                 }
@@ -1341,7 +1342,7 @@ export component MailReadingPane inherits FocusScope {
                                             Text {
                                                 text: @tr("Remote images were blocked to protect your privacy.");
                                                 color: root.secondary-text;
-                                                font-size: TypeScale.secondary;
+                                                font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                                 vertical-alignment: center;
                                                 horizontal-stretch: 1;
                                                 overflow: elide;
@@ -1387,7 +1388,7 @@ export component MailReadingPane inherits FocusScope {
                                         Text {
                                             x: 4px; y: 2px; width: max(0px,parent.width - 8px); height: max(0px,parent.height - 4px);
                                             text: missing.alt != "" ? missing.alt : missing.state == "loading" ? @tr("Loading image…") : missing.state == "blocked" ? @tr("Blocked image") : missing.state == "limited" ? @tr("Image exceeds limits") : @tr("Image unavailable");
-                                            wrap: word-wrap; color: root.secondary-text; font-size: TypeScale.caption;
+                                            wrap: word-wrap; color: root.secondary-text; font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale;
                                         }
                                     }
 
@@ -1524,7 +1525,7 @@ export component MailReadingPane inherits FocusScope {
                                         read-only: true;
                                         text-color: MessageColors.foreground;
                                         background-color: MessageColors.background;
-                                        font-size: TypeScale.body-large;
+                                        font-size: TypeScale.body-large * AreaFonts.reader-scale;
                                     }
 
                                     if root.text_mode : Button {
@@ -1544,7 +1545,7 @@ export component MailReadingPane inherits FocusScope {
                                         height: parent.height - 80px;
                                         text: root.selected_source;
                                         read-only: true;
-                                        font-size: TypeScale.secondary;
+                                        font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                     }
 
                                     if root.source_mode : HorizontalBox {
@@ -1557,7 +1558,7 @@ export component MailReadingPane inherits FocusScope {
                                         Text {
                                             text: @tr("Copy this HTML into your GitHub rendering issue.");
                                             color: root.secondary-text;
-                                            font-size: TypeScale.secondary;
+                                            font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                             horizontal-stretch: 1;
                                             overflow: elide;
                                         }
@@ -1727,7 +1728,7 @@ export component MailReadingPane inherits FocusScope {
                                                     height: attachment.detail == "" ? parent.height : root.attachment-name-line;
                                                     text: attachment.name;
                                                     color: root.heading;
-                                                    font-size: TypeScale.body;
+                                                    font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale;
                                                     font-weight: attachment-focus.focus-visible ? 600 : 500;
                                                     overflow: elide;
                                                     vertical-alignment: center;
@@ -1739,7 +1740,7 @@ export component MailReadingPane inherits FocusScope {
                                                     height: root.attachment-detail-line;
                                                     text: attachment.detail;
                                                     color: root.secondary-text;
-                                                    font-size: TypeScale.caption;
+                                                    font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale;
                                                     overflow: elide;
                                                     vertical-alignment: center;
                                                 }
@@ -1902,7 +1903,7 @@ export component MailReadingPane inherits FocusScope {
                         }
                         Text {
                             height: EmailReader.destination == "" ? 0px : 20px;
-                            text: EmailReader.destination; overflow: elide; color: root.secondary-text; font-size: TypeScale.caption;
+                            text: EmailReader.destination; overflow: elide; color: root.secondary-text; font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale;
                         }
                         Rectangle { height: root.compact ? 10px : 12px; }
 
@@ -1975,7 +1976,7 @@ export component MailReadingPane inherits FocusScope {
                             Text {
                                 text: root.label-editor-id < 0 ? @tr("Create label") : @tr("Edit label");
                                 color: root.title-color;
-                                font-size: TypeScale.heading;
+                                font-family: AreaFonts.reader-family; font-size: TypeScale.heading * AreaFonts.reader-scale;
                                 font-weight: 700;
                             }
                             LineEdit {
@@ -1990,7 +1991,7 @@ export component MailReadingPane inherits FocusScope {
                                     height: max(16px, self.preferred-height);
                                     text: @tr("Color");
                                     color: root.muted-text;
-                                    font-size: TypeScale.caption;
+                                    font-family: AreaFonts.reader-family; font-size: TypeScale.caption * AreaFonts.reader-scale;
                                     font-weight: 600;
                                     vertical-alignment: center;
                                 }

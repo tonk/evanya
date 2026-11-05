@@ -5,7 +5,7 @@ import { IconButton, ToolbarIconButton } from "controls.slint";
 import { CalendarDetailsDialog } from "../dialogs/calendar-details-dialog.slint";
 import { ConfirmationDialog } from "confirmation-dialog.slint";
 import { HorizontalBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
-import { TypeScale } from "../typography.slint";
+import { AreaFonts, TypeScale } from "../typography.slint";
 import { LayoutMetrics } from "../design-system.slint";
 import { CollapsibleWorkspaceSidebar, CompactPageHeader, WorkspaceMiniHeading, WorkspacePaneResizeHandle } from "workspace-layout.slint";
 import { CalendarAgenda, CalendarAgendaFilter } from "calendar-agenda.slint";
@@ -45,7 +45,8 @@ export component CalendarEvent inherits Rectangle {
         height: root.compact ? parent.height - 6px : max(18px, self.preferred-height);
         text: root.title;
         color: root.title-color;
-        font-size: root.compact ? TypeScale.caption : TypeScale.secondary;
+        font-family: AreaFonts.calendar-family;
+        font-size: (root.compact ? TypeScale.caption : TypeScale.secondary) * AreaFonts.calendar-scale;
         font-weight: 700;
         overflow: elide;
         vertical-alignment: center;
@@ -58,7 +59,7 @@ export component CalendarEvent inherits Rectangle {
         height: max(15px, self.preferred-height);
         text: root.detail;
         color: root.detail-color;
-        font-size: TypeScale.caption;
+        font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
         overflow: elide;
     }
     event-hit := TouchArea {
@@ -126,7 +127,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
             height: 30px;
             text: root.month-title;
             color: root.title-color;
-            font-size: TypeScale.body-large;
+            font-family: AreaFonts.calendar-family; font-size: TypeScale.body-large * AreaFonts.calendar-scale;
             font-weight: 700;
             vertical-alignment: center;
         }
@@ -174,7 +175,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
             height: max(18px, self.preferred-height);
             text: name;
             color: root.muted-color;
-            font-size: TypeScale.caption;
+            font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
             font-weight: 700;
             horizontal-alignment: center;
             vertical-alignment: center;
@@ -194,7 +195,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
                 Text {
                     text: day.day;
                     color: day.is-selected ? white : day.outside-month ? root.muted-color : root.body-color;
-                    font-size: TypeScale.caption;
+                    font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
                     font-weight: day.is-today || day.is-selected ? 700 : 500;
                     horizontal-alignment: center;
                     vertical-alignment: center;
@@ -257,7 +258,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
                     height: 18px;
                     text: calendar.email != "" ? calendar.email : calendar.account-name;
                     color: root.muted-color;
-                    font-size: TypeScale.micro;
+                    font-family: AreaFonts.calendar-family; font-size: TypeScale.micro * AreaFonts.calendar-scale;
                     font-weight: 600;
                     overflow: elide;
                     vertical-alignment: center;
@@ -285,6 +286,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
                         color: root.body-color;
                         opacity: calendar.enabled ? 1 : 0.55;
                         font-size: SidebarStyle.label-size;
+                        font-family: SidebarStyle.label-family;
                         font-weight: calendar.is-default ? SidebarStyle.selected-weight : SidebarStyle.normal-weight;
                         overflow: elide;
                         vertical-alignment: center;
@@ -297,7 +299,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
                         height: parent.height;
                         text: "⋯";
                         color: root.muted-color;
-                        font-size: TypeScale.secondary;
+                        font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale;
                         horizontal-alignment: center;
                         vertical-alignment: center;
                     }
@@ -353,7 +355,7 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
                 height: parent.height;
                 text: @tr("No calendars yet. Connect Google Calendar, Outlook or any CalDAV server in Settings.");
                 color: root.muted-color;
-                font-size: TypeScale.secondary;
+                font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale;
                 wrap: word-wrap;
                 horizontal-alignment: center;
                 vertical-alignment: center;
@@ -534,10 +536,10 @@ export component FunctionalCalendarView inherits Rectangle {
     }
     background: root.background-color;
 
-    local-label-width := Text { visible: false; text: @tr("LOCAL"); font-size: TypeScale.caption; }
-    all-day-label-width := Text { visible: false; text: @tr("ALL DAY"); font-size: TypeScale.caption; }
-    all-day-line := Text { visible: false; text: "Ag"; font-size: TypeScale.caption; font-weight: 700; }
-    hour-label-width := Text { visible: false; text: root.hour-labels[2]; font-size: TypeScale.caption; }
+    local-label-width := Text { visible: false; text: @tr("LOCAL"); font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
+    all-day-label-width := Text { visible: false; text: @tr("ALL DAY"); font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
+    all-day-line := Text { visible: false; text: "Ag"; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 700; }
+    hour-label-width := Text { visible: false; text: root.hour-labels[2]; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
 
     calendar-sidebar := FunctionalCalendarSidebar {
         active: root.active && !root.compact;
@@ -621,8 +623,8 @@ export component FunctionalCalendarView inherits Rectangle {
                     accessible-id: "calendar-sidebar-button";
                     clicked => { root.sidebar-collapsed = !root.sidebar-collapsed; }
                 }
-                Text { horizontal-stretch: 1; min-width: root.toolbar-roomy ? 120px : 0px; text: root.period-title; color: root.title-color; font-size: TypeScale.heading-small; font-weight: 600; vertical-alignment: center; overflow: elide; }
-                Text { visible: root.view-mode == "week" && root.toolbar-roomy; width: self.visible ? max(42px, self.preferred-width) : 0px; text: root.week-label; color: root.muted-color; font-size: TypeScale.caption; font-weight: 700; vertical-alignment: center; }
+                Text { horizontal-stretch: 1; min-width: root.toolbar-roomy ? 120px : 0px; text: root.period-title; color: root.title-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.heading-small * AreaFonts.calendar-scale; font-weight: 600; vertical-alignment: center; overflow: elide; }
+                Text { visible: root.view-mode == "week" && root.toolbar-roomy; width: self.visible ? max(42px, self.preferred-width) : 0px; text: root.week-label; color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 700; vertical-alignment: center; }
                 ToolbarIconButton {
                     visible: root.sidebar-collapsed;
                     width: root.sidebar-collapsed ? LayoutMetrics.desktop-icon-button-size : 0px;
@@ -654,7 +656,7 @@ export component FunctionalCalendarView inherits Rectangle {
                     zoom-label-text := Text {
                         text: round(root.zoom * 100) + "%";
                         color: root.secondary-color;
-                        font-size: TypeScale.caption;
+                        font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
                         horizontal-alignment: center;
                         vertical-alignment: center;
                     }
@@ -687,8 +689,8 @@ export component FunctionalCalendarView inherits Rectangle {
             padding-right: LayoutMetrics.content-inset;
             spacing: 10px;
             cross-axis-alignment: center;
-            Text { text: @tr("Local time · {}", root.timezone); color: root.muted-color; font-size: TypeScale.caption; overflow: elide; horizontal-stretch: 1; }
-            Text { text: @tr("{n} event" | "{n} events" % root.agenda-event-count); color: root.secondary-color; font-size: TypeScale.caption; }
+            Text { text: @tr("Local time · {}", root.timezone); color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; overflow: elide; horizontal-stretch: 1; }
+            Text { text: @tr("{n} event" | "{n} events" % root.agenda-event-count); color: root.secondary-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; }
             CalendarAgendaFilter {
                 filters: root.agenda-filters;
                 filter-count: root.agenda-filter-count;
@@ -709,13 +711,13 @@ export component FunctionalCalendarView inherits Rectangle {
                 y: 0px;
                 height: 48px;
                 width: parent.width;
-                Text { x: 12px; width: root.time-gutter - 14px; height: parent.height; text: @tr("LOCAL"); color: root.muted-color; font-size: TypeScale.caption; vertical-alignment: center; }
+                Text { x: 12px; width: root.time-gutter - 14px; height: parent.height; text: @tr("LOCAL"); color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; vertical-alignment: center; }
                 for day[index] in root.week-days : Rectangle {
                     x: root.time-gutter + index * root.column-width;
                     width: root.column-width;
                     height: parent.height;
                     background: day.is-today ? root.accent-background : transparent;
-                    Text { text: day.weekday + "\n" + day.day; color: day.is-today ? root.accent-color : root.secondary-color; font-size: TypeScale.caption; font-weight: day.is-today ? 700 : 600; horizontal-alignment: center; vertical-alignment: center; }
+                    Text { text: day.weekday + "\n" + day.day; color: day.is-today ? root.accent-color : root.secondary-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: day.is-today ? 700 : 600; horizontal-alignment: center; vertical-alignment: center; }
                     TouchArea { accessible-role: button; accessible-label: @tr("Select {}", day.date-label); accessible-action-default => { root.select-date(day.iso-date); } clicked => { root.select-date(day.iso-date); } mouse-cursor: pointer; }
                 }
             }
@@ -725,7 +727,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 y: 48px;
                 width: parent.width;
                 height: root.all-day-height;
-                Text { x: 12px; width: root.time-gutter - 14px; height: parent.height; text: @tr("ALL DAY"); color: root.muted-color; font-size: TypeScale.caption; vertical-alignment: center; }
+                Text { x: 12px; width: root.time-gutter - 14px; height: parent.height; text: @tr("ALL DAY"); color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; vertical-alignment: center; }
                 for event in root.events : CalendarEvent {
                     visible: event.all-day;
                     x: root.time-gutter + event.day-index * root.column-width + 4px;
@@ -792,7 +794,7 @@ export component FunctionalCalendarView inherits Rectangle {
                         height: 1px;
                         background: root.subtle-border-color;
                         // Labels center on their line; the first stays inside the grid.
-                        Text { x: 10px; y: index == 0 ? 2px : -self.height / 2; width: root.time-gutter - 20px; height: max(16px, self.preferred-height); text: hour; color: root.muted-color; font-size: TypeScale.caption; horizontal-alignment: right; vertical-alignment: center; }
+                        Text { x: 10px; y: index == 0 ? 2px : -self.height / 2; width: root.time-gutter - 20px; height: max(16px, self.preferred-height); text: hour; color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; horizontal-alignment: right; vertical-alignment: center; }
                     }
                     for marker in [0, 1, 2, 3, 4, 5, 6, 7] : Rectangle { x: root.time-gutter + marker * root.column-width; width: 1px; height: parent.height; background: root.subtle-border-color; }
                     for event in root.events : CalendarEvent {
@@ -834,7 +836,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 height: 34px;
                 text: name;
                 color: root.muted-color;
-                font-size: TypeScale.caption;
+                font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
                 font-weight: 700;
                 horizontal-alignment: center;
                 vertical-alignment: center;
@@ -847,7 +849,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 border-width: 1px;
                 border-color: root.subtle-border-color;
                 background: day.is-selected ? root.accent-background : root.surface-color;
-                Text { x: 9px; y: 6px; width: 28px; height: 24px; text: day.day; color: day.is-today ? root.accent-color : day.outside-month ? root.muted-color : root.body-color; font-size: TypeScale.secondary; font-weight: day.is-today ? 700 : 500; }
+                Text { x: 9px; y: 6px; width: 28px; height: 24px; text: day.day; color: day.is-today ? root.accent-color : day.outside-month ? root.muted-color : root.body-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; font-weight: day.is-today ? 700 : 500; }
                 Rectangle { visible: day.is-today; x: 7px; y: 5px; width: 25px; height: 25px; border-radius: 13px; border-width: 1px; border-color: root.accent-color; background: transparent; }
                 TouchArea { accessible-role: button; accessible-label: @tr("Select {}", day.date-label); accessible-checked: day.is-selected; accessible-action-default => { root.select-date(day.iso-date); } clicked => { root.select-date(day.iso-date); } mouse-cursor: pointer; }
             }
@@ -858,7 +860,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 height: max(20px, chip-title.preferred-height);
                 border-radius: 4px;
                 background: root.event-fill(event.color);
-                chip-title := Text { x: 6px; width: parent.width - 10px; height: parent.height; text: event.title; color: root.body-color; font-size: TypeScale.caption; font-weight: 600; overflow: elide; vertical-alignment: center; }
+                chip-title := Text { x: 6px; width: parent.width - 10px; height: parent.height; text: event.title; color: root.body-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 600; overflow: elide; vertical-alignment: center; }
                 TouchArea {
                     accessible-role: button;
                     accessible-label: @tr("View details for {}", event.title);
@@ -918,7 +920,7 @@ export component FunctionalCalendarView inherits Rectangle {
             padding: 0px;
             spacing: 8px;
             cross-axis-alignment: center;
-            Text { text: @tr("Local time · {}", root.timezone); color: root.muted-color; font-size: TypeScale.caption; overflow: elide; horizontal-stretch: 1; }
+            Text { text: @tr("Local time · {}", root.timezone); color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; overflow: elide; horizontal-stretch: 1; }
             CalendarAgendaFilter {
                 compact: true;
                 filters: root.agenda-filters;
@@ -943,7 +945,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 height: 24px;
                 text: name;
                 color: root.muted-color;
-                font-size: TypeScale.caption;
+                font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
                 font-weight: 700;
                 horizontal-alignment: center;
                 vertical-alignment: center;
@@ -961,7 +963,7 @@ export component FunctionalCalendarView inherits Rectangle {
                     height: 36px;
                     border-radius: 18px;
                     background: day.is-selected ? root.accent-color : day-hit.has-hover ? root.accent-background : transparent;
-                    Text { text: day.day; color: day.is-selected ? white : day.outside-month ? root.muted-color : day.is-today ? root.accent-color : root.body-color; font-size: TypeScale.body; font-weight: day.is-selected || day.is-today ? 700 : 500; horizontal-alignment: center; vertical-alignment: center; }
+                    Text { text: day.day; color: day.is-selected ? white : day.outside-month ? root.muted-color : day.is-today ? root.accent-color : root.body-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.body * AreaFonts.calendar-scale; font-weight: day.is-selected || day.is-today ? 700 : 500; horizontal-alignment: center; vertical-alignment: center; }
                     Rectangle { visible: day.has-events && !day.is-selected; x: 16px; y: 31px; width: 4px; height: 4px; border-radius: 2px; background: root.accent-color; }
                     day-hit := TouchArea {
                         mouse-cursor: pointer;
@@ -977,7 +979,7 @@ export component FunctionalCalendarView inherits Rectangle {
         }
 
         Rectangle { x: 14px; y: 270px; width: parent.width - 28px; height: 1px; background: root.subtle-border-color; }
-        Text { x: 16px; y: 278px; width: parent.width - 32px; height: 28px; text: @tr("Agenda · {}", root.selected-date-label); color: root.secondary-color; font-size: TypeScale.secondary; font-weight: 700; vertical-alignment: center; }
+        Text { x: 16px; y: 278px; width: parent.width - 32px; height: 28px; text: @tr("Agenda · {}", root.selected-date-label); color: root.secondary-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; font-weight: 700; vertical-alignment: center; }
 
         agenda-scroll := ScrollView {
             x: 8px;
@@ -999,8 +1001,8 @@ export component FunctionalCalendarView inherits Rectangle {
                     border-color: event.color;
                     background: root.event-fill(event.color);
                     Rectangle { x: 0px; width: 4px; height: parent.height; border-radius: 2px; background: parent.border-color; }
-                    agenda-title := Text { x: 14px; y: 8px; width: parent.width - 28px; height: max(24px, self.preferred-height); text: event.title; color: root.title-color; font-size: TypeScale.body-large; font-weight: 700; overflow: elide; vertical-alignment: center; }
-                    agenda-detail := Text { x: 14px; y: agenda-title.y + agenda-title.height + 2px; width: parent.width - 28px; height: max(20px, self.preferred-height); text: event.detail; color: root.secondary-color; font-size: TypeScale.secondary; overflow: elide; vertical-alignment: center; }
+                    agenda-title := Text { x: 14px; y: 8px; width: parent.width - 28px; height: max(24px, self.preferred-height); text: event.title; color: root.title-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.body-large * AreaFonts.calendar-scale; font-weight: 700; overflow: elide; vertical-alignment: center; }
+                    agenda-detail := Text { x: 14px; y: agenda-title.y + agenda-title.height + 2px; width: parent.width - 28px; height: max(20px, self.preferred-height); text: event.detail; color: root.secondary-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.secondary * AreaFonts.calendar-scale; overflow: elide; vertical-alignment: center; }
                     TouchArea {
                         accessible-role: button;
                         accessible-label: @tr("View details for {}", event.title);
@@ -1012,7 +1014,7 @@ export component FunctionalCalendarView inherits Rectangle {
                 Rectangle {
                     visible: !root.selected-date-has-events;
                     height: 110px;
-                    Text { x: 20px; width: parent.width - 40px; height: parent.height; text: @tr("No events for this date"); color: root.muted-color; font-size: TypeScale.body; horizontal-alignment: center; vertical-alignment: center; }
+                    Text { x: 20px; width: parent.width - 40px; height: parent.height; text: @tr("No events for this date"); color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.body * AreaFonts.calendar-scale; horizontal-alignment: center; vertical-alignment: center; }
                 }
             }
         }

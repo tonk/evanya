@@ -547,3 +547,11 @@ export struct SpellLanguageRow {
     code: string,
     name: string,
 }
+
+// One part of the workspace in the Fonts settings: its key, and the chosen
+// entries of the font and size lists.
+export struct AreaFontRow {
+    key: string,
+    family_index: int,
+    scale_index: int,
+}
