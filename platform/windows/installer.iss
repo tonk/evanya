@@ -8,21 +8,21 @@
 
 [Setup]
 AppId={{B3F4C53F-77C7-4639-9938-C01A21F4A0B9}
-AppName=Flectar Mail
+AppName=Evanya
 AppVersion={#AppVersion}
 VersionInfoVersion={#NativeVersion}
 AppPublisher=Flectar
 AppPublisherURL=https://flectar.com
-DefaultDirName={localappdata}\Programs\Flectar Mail
+DefaultDirName={localappdata}\Programs\Evanya
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 DisableProgramGroupPage=yes
-UninstallDisplayIcon={app}\flectar-mail.exe
+UninstallDisplayIcon={app}\evanya.exe
 SetupIconFile=..\..\resources\app-icon\flectar-mail.ico
 OutputDir=..\..\target
-OutputBaseFilename=flectar-mail-windows-x64-setup
+OutputBaseFilename=evanya-windows-x64-setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -32,10 +32,10 @@ CloseApplications=yes
 Source: "..\..\target\package\windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{userprograms}\Flectar Mail"; Filename: "{app}\flectar-mail.exe"
+Name: "{userprograms}\Evanya"; Filename: "{app}\evanya.exe"
 
 [Run]
-Filename: "{app}\flectar-mail.exe"; Description: "Open Flectar Mail"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\evanya.exe"; Description: "Open Evanya"; Flags: nowait postinstall skipifsilent
 
 [Code]
 // The app registers its own per-user sign-in entry; remove it with the app so
@@ -44,7 +44,7 @@ procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usPostUninstall then
   begin
-    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Flectar Mail');
-    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run', 'Flectar Mail');
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'Evanya');
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run', 'Evanya');
   end;
 end;

@@ -1,4 +1,4 @@
-//! Start Flectar Mail when the user signs in.
+//! Start Evanya when the user signs in.
 //!
 //! The operating system's startup list is the source of truth. Users can also
 //! remove or disable the entry from their desktop settings, Task Manager or
@@ -100,7 +100,7 @@ fn launch_executable() -> io::Result<PathBuf> {
         .any(|component| component.as_os_str() == "AppTranslocation")
     {
         return Err(io::Error::other(
-            "move Flectar Mail to the Applications folder first",
+            "move Evanya to the Applications folder first",
         ));
     }
     Ok(executable)
@@ -131,7 +131,9 @@ mod xdg {
         path::{Path, PathBuf},
     };
 
-    const FILE_NAME: &str = "com.flectar.mail.desktop";
+    const FILE_NAME: &str = "com.evanya.mail.desktop";
+    /// The entry Flectar Mail wrote before the app was renamed to Evanya.
+    const LEGACY_FILE_NAME: &str = "com.flectar.mail.desktop";
     /// Records the launched executable without parsing the quoted `Exec` line.
     const EXECUTABLE_KEY: &str = "X-Flectar-Executable";
 
@@ -154,11 +156,28 @@ mod xdg {
         Ok(config.join("autostart").join(FILE_NAME))
     }
 
+    /// Carry an enabled Flectar Mail entry over to Evanya's, once, so the
+    /// app keeps starting at sign-in without starting twice.
+    fn migrate_legacy_entry() -> io::Result<()> {
+        let path = entry_path()?;
+        let legacy = path.with_file_name(LEGACY_FILE_NAME);
+        if !legacy.exists() {
+            return Ok(());
+        }
+        if !path.exists() && read_from(&legacy)?.is_some_and(|entry| entry.enabled) {
+            write_to(&path, &super::launch_executable()?)?;
+        }
+        remove_from(&legacy)
+    }
+
     pub(super) fn supported() -> bool {
         true
     }
 
     pub(super) fn read() -> io::Result<Option<Entry>> {
+        if let Err(error) = migrate_legacy_entry() {
+            tracing::warn!(%error, "could not move the Flectar Mail sign-in entry");
+        }
         read_from(&entry_path()?)
     }
 
@@ -212,9 +231,9 @@ mod xdg {
         let contents = format!(
             "[Desktop Entry]\n\
              Type=Application\n\
-             Name=Flectar Mail\n\
-             Comment=Start Flectar Mail when you sign in\n\
-             Icon=com.flectar.mail\n\
+             Name=Evanya\n\
+             Comment=Start Evanya when you sign in\n\
+             Icon=com.evanya.mail\n\
              TryExec={try_exec}\n\
              Exec={exec} {BACKGROUND_ARGUMENT}\n\
              Terminal=false\n\
@@ -375,7 +394,7 @@ mod registry {
     const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
     const APPROVED_KEY: &str =
         r"Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run";
-    const VALUE_NAME: &str = "Flectar Mail";
+    const VALUE_NAME: &str = "Evanya";
 
     pub(super) fn supported() -> bool {
         true
@@ -550,7 +569,7 @@ use login_item as imp;
 /// `SMAppService`. macOS lists it under Login Items attributed to Flectar
 /// Mail, may ask the user to approve it, and reports when the user turns it
 /// off there. `scripts/package-macos.sh` installs
-/// `platform/macos/com.flectar.mail.login.plist` into
+/// `platform/macos/com.evanya.mail.login.plist` into
 /// `Contents/Library/LaunchAgents`, so it can only be registered from a
 /// bundle.
 #[cfg(target_os = "macos")]
@@ -561,7 +580,7 @@ mod login_item {
     use objc2_service_management::{SMAppService, SMAppServiceStatus};
     use std::{io, path::Path};
 
-    const AGENT: &str = "com.flectar.mail.login.plist";
+    const AGENT: &str = "com.evanya.mail.login.plist";
 
     fn service() -> Retained<SMAppService> {
         // SAFETY: the name refers to a property list in the bundle's
@@ -657,9 +676,9 @@ mod portal {
     /// Called on the blocking pool, outside any async task.
     fn request(auto_start: bool) -> io::Result<bool> {
         let request = Background::request()
-            .reason("Start Flectar Mail when you sign in")
+            .reason("Start Evanya when you sign in")
             .auto_start(auto_start)
-            .command(["flectar-mail", BACKGROUND_ARGUMENT])
+            .command(["evanya", BACKGROUND_ARGUMENT])
             .dbus_activatable(false);
         let response =
             tokio::runtime::Handle::current().block_on(async { request.send().await?.response() });

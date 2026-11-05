@@ -1,7 +1,7 @@
 <div align="center">
   <img src="resources/app-icon/flectar-mail-masked.png" width="88" alt="Flectar Mail logo">
   <h1 align="center">
-    Flectar Mail
+    Evanya
   </h1>
   <p>
     <strong>English</strong> · <a href="docs/readme/README.es.md">Español</a> · <a href="docs/readme/README.de.md">Deutsch</a> ·
@@ -10,7 +10,7 @@
   </p>
   <div align="center">
     <h3>Email, made fast again</h3>
-    <p>Built from the ground up for speed. Flectar Mail delivers native performance, instant startup, and about 20 MB of private memory at idle.</p>
+    <p>Built from the ground up for speed. Evanya delivers native performance, instant startup, and about 20 MB of private memory at idle.</p>
   </div>
   <p>
     <a href="https://flectar.com">Website</a> ·
@@ -32,14 +32,19 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-light.png">
-  <img src="resources/screenshots/desktop-light.png" alt="Flectar Mail on macOS showing the unified inbox and message view">
+  <img src="resources/screenshots/desktop-light.png" alt="Evanya on macOS showing the unified inbox and message view">
 </picture>
 
-Flectar Mail is a lightweight, native home for your email, calendars, and
+Evanya is a lightweight, native home for your email, calendars, and
 contacts. It is engineered to open instantly, stay responsive, and use a
 fraction of the memory of a typical web-based mail client.
 
-## ❓ Why Flectar Mail?
+> [!NOTE]
+> Evanya is based on [Flectar Mail](https://github.com/flectar/mail), made by
+> Flectar and its contributors. Their copyright notices and licenses are kept
+> unchanged, and Evanya remains licensed under the GNU AGPL v3.
+
+## ❓ Why Evanya?
 
 | Benefit | Details |
 | --- | --- |
@@ -56,7 +61,7 @@ fraction of the memory of a typical web-based mail client.
 
 ## ⚡ Performance
 
-| Idle, same mailbox | Flectar Mail | Thunderbird 159 |
+| Idle, same mailbox | Evanya | Thunderbird 159 |
 | --- | ---: | ---: |
 | Private memory | **~20 MB** | ~250 MB |
 | Including code and libraries (PSS) | **~85 MB** | ~435 MB |
@@ -73,7 +78,7 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
 
 | Email client | Interface | Renders email with | Platforms |
 | --- | --- | --- | --- |
-| **Flectar Mail** | Native Rust app | Blitz, a Rust HTML/CSS renderer; no WebView | Windows, macOS, Linux, Android; iOS coming soon |
+| **Evanya** | Native Rust app | Blitz, a Rust HTML/CSS renderer; no WebView | Windows, macOS, Linux, Android; iOS coming soon |
 | Thunderbird | Gecko-based desktop app | Gecko | Windows, macOS, Linux, Android |
 | Outlook for Windows | Windows shell with a web UI | Microsoft Edge WebView2 | Windows |
 | Spark | Electron app | Chromium | macOS, Windows, iOS, Android |
@@ -110,14 +115,14 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-light.png">
-          <img src="resources/screenshots/desktop-light.png" alt="Flectar Mail full desktop workspace" width="100%">
+          <img src="resources/screenshots/desktop-light.png" alt="Evanya full desktop workspace" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-minimal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-minimal-light.png">
-          <img src="resources/screenshots/desktop-minimal-light.png" alt="Flectar Mail minimal desktop workspace" width="100%">
+          <img src="resources/screenshots/desktop-minimal-light.png" alt="Evanya minimal desktop workspace" width="100%">
         </picture>
       </td>
     </tr>
@@ -140,21 +145,21 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-tabs-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-tabs-light.png">
-          <img src="resources/screenshots/desktop-tabs-light.png" alt="Flectar Mail with tabs for several conversations, the calendar, contacts, and files" width="100%">
+          <img src="resources/screenshots/desktop-tabs-light.png" alt="Evanya with tabs for several conversations, the calendar, contacts, and files" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-thread-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-thread-light.png">
-          <img src="resources/screenshots/desktop-thread-light.png" alt="Flectar Mail conversation with incoming and replied messages" width="100%">
+          <img src="resources/screenshots/desktop-thread-light.png" alt="Evanya conversation with incoming and replied messages" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-profiles-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-profiles-light.png">
-          <img src="resources/screenshots/desktop-profiles-light.png" alt="Flectar Mail unified inbox with purple and orange profile color markers" width="100%">
+          <img src="resources/screenshots/desktop-profiles-light.png" alt="Evanya unified inbox with purple and orange profile color markers" width="100%">
         </picture>
       </td>
     </tr>
@@ -178,28 +183,28 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-teal-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-teal-light.png">
-          <img src="resources/screenshots/desktop-teal-light.png" alt="Flectar Mail teal palette" width="100%">
+          <img src="resources/screenshots/desktop-teal-light.png" alt="Evanya teal palette" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-green-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-green-light.png">
-          <img src="resources/screenshots/desktop-green-light.png" alt="Flectar Mail green palette" width="100%">
+          <img src="resources/screenshots/desktop-green-light.png" alt="Evanya green palette" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-purple-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-purple-light.png">
-          <img src="resources/screenshots/desktop-purple-light.png" alt="Flectar Mail purple palette" width="100%">
+          <img src="resources/screenshots/desktop-purple-light.png" alt="Evanya purple palette" width="100%">
         </picture>
       </td>
       <td width="25%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-light.png">
-          <img src="resources/screenshots/desktop-light.png" alt="Flectar Mail custom palette" width="100%">
+          <img src="resources/screenshots/desktop-light.png" alt="Evanya custom palette" width="100%">
         </picture>
       </td>
     </tr>
@@ -219,14 +224,14 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/frameless/macos-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/frameless/macos-light.png">
-          <img src="resources/screenshots/frameless/macos-light.png" alt="Flectar Mail frameless window on macOS" width="100%">
+          <img src="resources/screenshots/frameless/macos-light.png" alt="Evanya frameless window on macOS" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/frameless/windows-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/frameless/windows-light.png">
-          <img src="resources/screenshots/frameless/windows-light.png" alt="Flectar Mail frameless window on Windows" width="100%">
+          <img src="resources/screenshots/frameless/windows-light.png" alt="Evanya frameless window on Windows" width="100%">
         </picture>
       </td>
     </tr>
@@ -239,14 +244,14 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/frameless/linux-gnome-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/frameless/linux-gnome-light.png">
-          <img src="resources/screenshots/frameless/linux-gnome-light.png" alt="Flectar Mail frameless window on GNOME" width="100%">
+          <img src="resources/screenshots/frameless/linux-gnome-light.png" alt="Evanya frameless window on GNOME" width="100%">
         </picture>
       </td>
       <td width="50%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/frameless/linux-kde-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/frameless/linux-kde-light.png">
-          <img src="resources/screenshots/frameless/linux-kde-light.png" alt="Flectar Mail frameless window on KDE Plasma" width="100%">
+          <img src="resources/screenshots/frameless/linux-kde-light.png" alt="Evanya frameless window on KDE Plasma" width="100%">
         </picture>
       </td>
     </tr>
@@ -269,21 +274,21 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-calendar-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-calendar-light.png">
-          <img src="resources/screenshots/desktop-calendar-light.png" alt="Flectar Mail calendar" width="100%">
+          <img src="resources/screenshots/desktop-calendar-light.png" alt="Evanya calendar" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-contacts-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-contacts-light.png">
-          <img src="resources/screenshots/desktop-contacts-light.png" alt="Flectar Mail contacts" width="100%">
+          <img src="resources/screenshots/desktop-contacts-light.png" alt="Evanya contacts" width="100%">
         </picture>
       </td>
       <td width="33.33%">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="resources/screenshots/desktop-files-dark.png">
           <source media="(prefers-color-scheme: light)" srcset="resources/screenshots/desktop-files-light.png">
-          <img src="resources/screenshots/desktop-files-light.png" alt="Flectar Mail files" width="100%">
+          <img src="resources/screenshots/desktop-files-light.png" alt="Evanya files" width="100%">
         </picture>
       </td>
     </tr>
@@ -294,24 +299,25 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
 
 | Light | Dark |
 | --- | --- |
-| ![Flectar Mail mobile inbox in light mode](resources/screenshots/mobile-light.png) | ![Flectar Mail mobile inbox in dark mode](resources/screenshots/mobile-dark.png) |
+| ![Evanya mobile inbox in light mode](resources/screenshots/mobile-light.png) | ![Evanya mobile inbox in dark mode](resources/screenshots/mobile-dark.png) |
 
 ## 🧪 Experimental HTML rendering
 
 > [!WARNING]
-> HTML email rendering is currently the most experimental part of Flectar Mail.
+> HTML email rendering is currently the most experimental part of Evanya.
 > Some messages, especially those with complex or unusual markup and CSS, may
 > not render correctly yet.
 
-Flectar Mail renders email with [Blitz](https://github.com/DioxusLabs/blitz), a
+Evanya renders email with [Blitz](https://github.com/DioxusLabs/blitz), a
 Rust HTML/CSS renderer from the Dioxus team, instead of embedding a browser or
 WebView. If a message renders incorrectly, please
 [report it](https://github.com/flectar/mail/issues). Read more about
 [the renderer and the CPU and GPU options](docs/features.md#html-rendering).
 
-## 📥 Get Flectar Mail
+## 📥 Get Evanya
 
-Flectar Mail is in development and not yet stable. Preview builds are on
+Evanya is in development and not yet stable, and is built from source. Preview
+builds of the upstream Flectar Mail are on
 [GitHub Releases](https://github.com/flectar/mail/releases) with the
 **Pre-release** badge.
 
@@ -337,7 +343,7 @@ Microsoft app registration, or connect an IMAP, POP3, or JMAP account.
 
 The [installation guide](docs/install.md) covers install commands, the Linux
 keyring and desktop portal, Flatpak and RPM notes, verifying downloads, Android
-signing, and building from source with `cargo run --bin flectar-mail`.
+signing, and building from source with `cargo run --bin evanya`.
 
 ## 🤝 Get involved
 
@@ -351,11 +357,11 @@ signing, and building from source with `cargo run --bin flectar-mail`.
 
 ## 🫡 Acknowledgements
 
-Flectar Mail is made possible by the work of these projects and their
+Evanya is made possible by the work of these projects and their
 contributors:
 
-- [Slint](https://slint.dev/), the native UI toolkit that powers the Flectar
-  Mail interface.
+- [Slint](https://slint.dev/), the native UI toolkit that powers the Evanya
+  interface.
 - [Blitz](https://github.com/DioxusLabs/blitz), the Rust HTML/CSS renderer from
   the Dioxus team that powers the email reading experience.
 

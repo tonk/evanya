@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Exercise the packaged PDF worker without initializing UI or account databases.
 
-Usage: python3 scripts/test-pdf-preview.py target/debug/flectar-mail [output.png]
+Usage: python3 scripts/test-pdf-preview.py target/debug/evanya [output.png]
 Creates an original two-page vector/text fixture and checks page selection,
 colors, dimensions, malformed inputs and protocol limits. Requires staged PDFium.
 """

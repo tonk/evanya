@@ -102,7 +102,7 @@ export component AppIconPicker inherits Rectangle {
             }
             Text {
                 height: max(17px, self.preferred-height);
-                text: AppIcon.platform == "macos" ? @tr("Used for the Dock and the menu bar while Flectar Mail is running.")
+                text: AppIcon.platform == "macos" ? @tr("Used for the Dock and the menu bar while Evanya is running.")
                     : AppIcon.platform == "windows" ? @tr("Used for the taskbar, the window, and the system tray.")
                     : AppIcon.platform == "linux" ? @tr("Used for the app launcher, the window, and the system tray.")
                     : @tr("Used for the app icon on your home screen.");
@@ -113,7 +113,7 @@ export component AppIconPicker inherits Rectangle {
             if AppIcon.platform == "linux" || AppIcon.platform == "android" : Text {
                 height: max(16px, self.preferred-height);
                 text: AppIcon.platform == "android"
-                    ? @tr("The new icon appears after you leave Flectar Mail. Some launchers remove the old icon from the home screen.")
+                    ? @tr("The new icon appears after you leave Evanya. Some launchers remove the old icon from the home screen.")
                     : @tr("Some desktops update the launcher icon after you sign in again.");
                 color: AppTheme.faint;
                 font-size: TypeScale.caption;

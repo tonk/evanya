@@ -337,7 +337,7 @@ pub(super) struct BackupRestore {
     pub(super) preferences: bool,
 }
 
-/// Restores a Flectar Mail account backup: account settings, profiles,
+/// Restores an Evanya (or Flectar Mail) account backup: account settings, profiles,
 /// colors, and preferences. Existing accounts are kept unchanged.
 pub(super) fn restore_account_backup(
     app: &AppWindow,
@@ -354,7 +354,7 @@ pub(super) fn restore_account_backup(
         let backup: serde_json::Value =
             serde_json::from_slice(bytes).map_err(|error| format!("invalid JSON: {error}"))?;
         if backup.get("format").and_then(|value| value.as_str()) != Some(account_backup::FORMAT) {
-            return Err("this is not a Flectar Mail account backup".into());
+            return Err("this is not an Evanya account backup".into());
         }
         let Some(version) = backup.get("version").and_then(|value| value.as_u64()) else {
             return Err("this backup version is not supported".into());
@@ -776,7 +776,7 @@ fn backup_dialog(app: &AppWindow, title: UiMessage) -> documents::DocumentDialog
     documents::DocumentDialog {
         title: translated(app, &title).to_string(),
         filter: Some((
-            translated(app, &UiMessage::plain("Flectar Mail backup")).to_string(),
+            translated(app, &UiMessage::plain("Evanya backup")).to_string(),
             &["json"],
         )),
         directory: None,
@@ -791,7 +791,7 @@ async fn pick_database_snapshot_path(title: String) -> Option<PathBuf> {
         .await
         .map(|directory| {
             directory.path().join(format!(
-                "flectar-mail-snapshot-{}",
+                "evanya-snapshot-{}",
                 Local::now().format("%Y-%m-%d-%H%M%S")
             ))
         })
@@ -842,10 +842,7 @@ async fn stage_database_snapshot(
         tokio::fs::create_dir_all(&root)
             .await
             .map_err(|error| format!("creating {}: {error}", root.display()))?;
-        let name = format!(
-            "flectar-mail-snapshot-{}",
-            Local::now().format("%Y-%m-%d-%H%M%S")
-        );
+        let name = format!("evanya-snapshot-{}", Local::now().format("%Y-%m-%d-%H%M%S"));
         let directory = root.join(&name);
         core.create_database_snapshot(directory.clone())
             .await
@@ -1121,11 +1118,11 @@ fn register_mail_export(
         let name = match accounts.as_slice() {
             [] => return,
             [(_, email)] => format!(
-                "flectar-mail-{}-{}",
+                "evanya-{}-{}",
                 export_folder_name(email),
                 Local::now().format("%Y-%m-%d-%H%M%S")
             ),
-            _ => format!("flectar-mail-{}", Local::now().format("%Y-%m-%d-%H%M%S")),
+            _ => format!("evanya-{}", Local::now().format("%Y-%m-%d-%H%M%S")),
         };
         // Everything after the picker; the desktop picker hands it the folder.
         let start = {
@@ -1307,7 +1304,7 @@ pub(super) fn register_data_management_callbacks(
         let paths = storage_paths.clone();
         let weak = app.as_weak();
         let spawn = std::thread::Builder::new()
-            .name("flectar-storage-scan".into())
+            .name("evanya-storage-scan".into())
             .spawn(move || {
                 let Some(scan) = scan_storage(&paths, &worker_generation, ticket) else {
                     return;
@@ -1449,11 +1446,8 @@ pub(super) fn register_data_management_callbacks(
                 return;
             }
         };
-        let name = format!(
-            "flectar-mail-backup-{}.json",
-            Local::now().format("%Y-%m-%d")
-        );
-        let dialog = backup_dialog(&app, UiMessage::plain("Export Flectar Mail account backup"));
+        let name = format!("evanya-backup-{}.json", Local::now().format("%Y-%m-%d"));
+        let dialog = backup_dialog(&app, UiMessage::plain("Export Evanya account backup"));
         let request = export_document_bytes(
             documents_for_backup.clone(),
             paths_for_backup.temp_dir(),
@@ -1767,9 +1761,7 @@ pub(super) fn register_data_management_callbacks(
                     app.set_storage_loaded(false);
                     app.set_storage_usage(ModelRc::default());
                     app.invoke_load_storage_usage();
-                    app.set_sync_status(UiMessage::plain(
-                        "All local Flectar Mail data was deleted.",
-                    ));
+                    app.set_sync_status(UiMessage::plain("All local Evanya data was deleted."));
                 }
                 Err(error) => app.set_sync_status(UiMessage::detail(
                     "Could not delete all local data: {}",

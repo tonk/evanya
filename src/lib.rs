@@ -1542,7 +1542,7 @@ fn startup_diagnostic_id(error: &str) -> String {
 
 fn startup_diagnostics(paths: &Paths, diagnostic_id: &str, error: &str) -> String {
     format!(
-        "Flectar Mail {}\nplatform={}\nabi={}\ndiagnostic_id={}\nmail_db={}\ncalendar_db={}\nmail_db_exists={}\ncalendar_db_exists={}\nstartup_error={}\n",
+        "Evanya {}\nplatform={}\nabi={}\ndiagnostic_id={}\nmail_db={}\ncalendar_db={}\nmail_db_exists={}\ncalendar_db_exists={}\nstartup_error={}\n",
         env!("CARGO_PKG_VERSION"),
         std::env::consts::OS,
         std::env::consts::ARCH,
@@ -1690,13 +1690,12 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             Ok(Acquired::Primary(primary)) => Some(primary),
             Ok(Acquired::Forwarded) => return Ok(()),
             Ok(Acquired::Unresponsive(error)) => {
-                return Err(format!(
-                    "Flectar Mail is already running but did not respond: {error}"
-                )
-                .into());
+                return Err(
+                    format!("Evanya is already running but did not respond: {error}").into(),
+                );
             }
             Err(error) => {
-                eprintln!("could not coordinate with other Flectar Mail processes: {error}");
+                eprintln!("could not coordinate with other Evanya processes: {error}");
                 None
             }
         }
@@ -1745,10 +1744,10 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         })
     );
 
-    // Match resources/com.flectar.mail.desktop so Wayland compositors and XDG
+    // Match resources/com.evanya.mail.desktop so Wayland compositors and XDG
     // window managers can associate the native window with the installed icon.
     #[cfg(all(unix, not(any(mobile, target_os = "macos"))))]
-    slint::set_xdg_app_id("com.flectar.mail")?;
+    slint::set_xdg_app_id("com.evanya.mail")?;
 
     // Register the deterministic emoji face before any initial text is measured.
     configure_emoji_font_fallback()?;
@@ -3245,7 +3244,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             .cloned();
         let Some(event) = event else {
             app.set_sync_status(UiMessage::plain(
-                "Only events created in Flectar Mail can be edited.",
+                "Only events created in Evanya can be edited.",
             ));
             return;
         };
@@ -3292,7 +3291,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             .any(|event| event.id == event_id && event.is_local);
         if !is_local {
             app.set_sync_status(UiMessage::plain(
-                "Only events created in Flectar Mail can be deleted.",
+                "Only events created in Evanya can be deleted.",
             ));
             return;
         }

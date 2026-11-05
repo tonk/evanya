@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Cross-compile the Windows x64 executable from Linux for local testing.
 # Produces the same layout as the release workflow's portable ZIP:
-#   target/windows/flectar-mail/          (run flectar-mail.exe from here)
-#   target/windows/flectar-mail-windows-x64.zip
+#   target/windows/evanya/          (run evanya.exe from here)
+#   target/windows/evanya-windows-x64.zip
 #
 # One-time setup:
 #   sudo apt install clang lld llvm
@@ -15,8 +15,8 @@ set -euo pipefail
 project_dir="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 target=x86_64-pc-windows-msvc
 build_dir="$project_dir/target/windows"
-package_dir="$build_dir/flectar-mail"
-zip_path="$build_dir/flectar-mail-windows-x64.zip"
+package_dir="$build_dir/evanya"
+zip_path="$build_dir/evanya-windows-x64.zip"
 
 # Debian and Ubuntu install clang-cl, lld-link, llvm-lib and llvm-rc only
 # under the versioned LLVM prefix.
@@ -37,7 +37,7 @@ done
 # VC++ redistributable. RUSTFLAGS replaces .cargo/config.toml, so retain its
 # stack setting.
 export RUSTFLAGS="-C target-feature=+crt-static -C link-arg=/STACK:8000000"
-build_args=(--locked --release --target "$target" --bin flectar-mail --manifest-path "$project_dir/Cargo.toml" --no-default-features --features remote-content,gpu-renderer)
+build_args=(--locked --release --target "$target" --bin evanya --manifest-path "$project_dir/Cargo.toml" --no-default-features --features remote-content,gpu-renderer)
 if [[ -n "${FLECTAR_APP_FEATURES:-}" ]]; then
   build_args+=(--features "$FLECTAR_APP_FEATURES")
 fi
@@ -46,7 +46,7 @@ if [[ "${FLECTAR_SKIP_BUILD:-0}" != "1" ]]; then
   cargo xwin build "${build_args[@]}" "$@"
 fi
 
-executable="$project_dir/target/$target/release/flectar-mail.exe"
+executable="$project_dir/target/$target/release/evanya.exe"
 if [[ ! -f "$executable" ]]; then
   printf 'The Windows executable was not built: %s\n' "$executable" >&2
   exit 1
@@ -62,4 +62,4 @@ cp "$project_dir"/resources/fonts/noto-emoji/{OFL.txt,README.md} "$package_dir/L
 
 rm -f "$zip_path"
 (cd "$package_dir" && python3 -m zipfile -c "$zip_path" *)
-printf 'Windows build ready:\n  %s\n  %s\n' "$package_dir/flectar-mail.exe" "$zip_path"
+printf 'Windows build ready:\n  %s\n  %s\n' "$package_dir/evanya.exe" "$zip_path"

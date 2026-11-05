@@ -1,7 +1,7 @@
-# Build the Flectar mailer. Cargo options come from .cargo/config.toml
+# Build Evanya. Cargo options come from .cargo/config.toml
 # (single build tree in ./target, jobs = 8). Override with e.g. `make JOBS=4`.
 
-BIN      := flectar-mail
+BIN      := evanya
 PREFIX   ?= /usr/local
 DESTDIR  ?=
 JOBS     ?=

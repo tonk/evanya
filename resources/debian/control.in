@@ -1,4 +1,4 @@
-Package: flectar-mail
+Package: evanya
 Version: @VERSION@
 Section: mail
 Priority: optional
@@ -8,4 +8,4 @@ Depends: @DEPENDS@
 Recommends: xdg-desktop-portal, gnome-keyring, gnupg, pinentry-gnome3 | pinentry-qt
 Homepage: https://flectar.com
 Description: Native Slint mail client
- Flectar Mail is a native desktop mail client built with Rust and Slint.
+ Evanya is a native desktop mail client built with Rust and Slint.

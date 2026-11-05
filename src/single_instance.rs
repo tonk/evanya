@@ -3,7 +3,7 @@
 //! The first process owns the profile and listens on a private local endpoint:
 //! a Unix socket guarded by an advisory lock, or a named pipe whose first
 //! instance is exclusive on Windows. A later launch asks that process to show
-//! its window and exits, so opening Flectar Mail from a launcher while it runs
+//! its window and exits, so opening Evanya from a launcher while it runs
 //! in the tray restores the existing window instead of starting a second sync
 //! engine on the same database. A sign-in launch that finds the application
 //! already running exits without disturbing it.
@@ -232,7 +232,7 @@ mod imp {
             .map(PathBuf::from)
             .filter(|directory| directory.is_absolute() && directory.is_dir())
             .map(|directory| {
-                directory.join(format!("com.flectar.mail-{}.sock", profile_key(data_dir)))
+                directory.join(format!("com.evanya.mail-{}.sock", profile_key(data_dir)))
             })
             .unwrap_or_else(|| data_dir.join("instance.sock"))
     }
@@ -356,7 +356,7 @@ mod imp {
     }
 
     fn pipe_name(data_dir: &Path) -> String {
-        format!(r"\\.\pipe\com.flectar.mail-{}", profile_key(data_dir))
+        format!(r"\\.\pipe\com.evanya.mail-{}", profile_key(data_dir))
     }
 
     fn pipe(name: &str, first: bool) -> io::Result<NamedPipeServer> {

@@ -323,13 +323,13 @@ export global I18n {
         if (key == "System tray behavior is unavailable in this package.") { return @tr("System tray behavior is unavailable in this package."); }
         if (key == "Close-to-tray is active for this session.") { return @tr("Close-to-tray is active for this session."); }
         if (key == "Saving close behavior…") { return @tr("Saving close behavior…"); }
-        if (key == "Closing the window will now keep Flectar Mail in the tray.") { return @tr("Closing the window will now keep Flectar Mail in the tray."); }
-        if (key == "Closing the window will now quit Flectar Mail.") { return @tr("Closing the window will now quit Flectar Mail."); }
+        if (key == "Closing the window will now keep Evanya in the tray.") { return @tr("Closing the window will now keep Evanya in the tray."); }
+        if (key == "Closing the window will now quit Evanya.") { return @tr("Closing the window will now quit Evanya."); }
         if (key == "Could not save close behavior: {}") { return @tr("Could not save close behavior: {}", argument); }
-        if (key == "Flectar Mail will start when you sign in.") { return @tr("Flectar Mail will start when you sign in."); }
-        if (key == "Flectar Mail will no longer start when you sign in.") { return @tr("Flectar Mail will no longer start when you sign in."); }
+        if (key == "Evanya will start when you sign in.") { return @tr("Evanya will start when you sign in."); }
+        if (key == "Evanya will no longer start when you sign in.") { return @tr("Evanya will no longer start when you sign in."); }
         if (key == "Could not change startup behavior: {}") { return @tr("Could not change startup behavior: {}", argument); }
-        if (key == "Allow Flectar Mail under Login Items in System Settings to finish.") { return @tr("Allow Flectar Mail under Login Items in System Settings to finish."); }
+        if (key == "Allow Evanya under Login Items in System Settings to finish.") { return @tr("Allow Evanya under Login Items in System Settings to finish."); }
         return "";
     }
 
@@ -414,8 +414,8 @@ export global I18n {
 
     ui-message-data(key, argument, second-argument, third-argument) => {
         if (key == "Connect an account before creating a backup.") { return @tr("Connect an account before creating a backup."); }
-        if (key == "Export Flectar Mail account backup") { return @tr("Export Flectar Mail account backup"); }
-        if (key == "Flectar Mail backup") { return @tr("Flectar Mail backup"); }
+        if (key == "Export Evanya account backup") { return @tr("Export Evanya account backup"); }
+        if (key == "Evanya backup") { return @tr("Evanya backup"); }
         if (key == "Import accounts and mail") { return @tr("Import accounts and mail"); }
         if (key == "Choose a Thunderbird profile or a folder of mail") { return @tr("Choose a Thunderbird profile or a folder of mail"); }
         if (key == "Imported messages") { return @tr("Imported messages"); }
@@ -424,7 +424,7 @@ export global I18n {
         if (key == "Could not export backup: {}") { return @tr("Could not export backup: {}", argument); }
         if (key == "Local data storage is unavailable. Retry startup.") { return @tr("Local data storage is unavailable. Retry startup."); }
         if (key == "Creating verified database snapshot…") { return @tr("Creating verified database snapshot…"); }
-        if (key == "All local Flectar Mail data was deleted.") { return @tr("All local Flectar Mail data was deleted."); }
+        if (key == "All local Evanya data was deleted.") { return @tr("All local Evanya data was deleted."); }
         if (key == "Could not delete all local data: {}") { return @tr("Could not delete all local data: {}", argument); }
         if (key == "Deleting local accounts and cached data…") { return @tr("Deleting local accounts and cached data…"); }
         return "";
@@ -464,8 +464,8 @@ export global I18n {
         if (key == "Calendar shown and syncing.") { return @tr("Calendar shown and syncing."); }
         if (key == "Calendar hidden and sync paused.") { return @tr("Calendar hidden and sync paused."); }
         if (key == "Calendar update failed: {}") { return @tr("Calendar update failed: {}", argument); }
-        if (key == "Only events created in Flectar Mail can be edited.") { return @tr("Only events created in Flectar Mail can be edited."); }
-        if (key == "Only events created in Flectar Mail can be deleted.") { return @tr("Only events created in Flectar Mail can be deleted."); }
+        if (key == "Only events created in Evanya can be edited.") { return @tr("Only events created in Evanya can be edited."); }
+        if (key == "Only events created in Evanya can be deleted.") { return @tr("Only events created in Evanya can be deleted."); }
         if (key == "Calendar storage is unavailable.") { return @tr("Calendar storage is unavailable."); }
         if (key == "Could not delete event: {}") { return @tr("Could not delete event: {}", argument); }
         if (key == "Event deleted, but refresh failed: {}") { return @tr("Event deleted, but refresh failed: {}", argument); }
@@ -635,7 +635,7 @@ export global I18n {
 }
 
 export component AppWindow inherits Window {
-    title: @tr("Flectar Mail");
+    title: @tr("Evanya");
     icon: AppIcon.window-image(AppIcon.variant);
     // Windows keeps its native frame and macOS its traffic lights in the
     // integrated frame; only Linux removes the window manager's decorations.
@@ -1541,7 +1541,7 @@ export component AppWindow inherits Window {
             y: (parent.height - self.height) / 2;
             spacing: 12px;
             Text {
-                text: "Flectar Mail";
+                text: "Evanya";
                 color: root.title-color;
                 font-size: TypeScale.heading;
                 font-weight: 600;
@@ -2672,7 +2672,7 @@ export component AppWindow inherits Window {
                 padding: parent.cramped ? 12px : 24px;
                 spacing: parent.cramped ? 8px : 12px;
                 Text {
-                    text: @tr("Flectar Mail could not open local storage");
+                    text: @tr("Evanya could not open local storage");
                     color: root.title-color;
                     font-size: TypeScale.heading;
                     font-weight: 700;

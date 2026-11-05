@@ -25,7 +25,7 @@ docker run --rm \
   --mount "type=bind,source=$PWD,target=/work,readonly" \
   --mount "type=bind,source=$PWD/target/rpm-test,target=/results" \
   fedora:43 \
-  bash /work/scripts/test-rpm.sh /work/target/rpm/flectar-mail.rpm /results
+  bash /work/scripts/test-rpm.sh /work/target/rpm/evanya.rpm /results
 ```
 
 Repeat with `fedora:44`. The test script changes system packages and creates a

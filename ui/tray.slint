@@ -10,8 +10,8 @@ export component FlectarTray inherits SystemTrayIcon {
     // with app.slint.
     in property <image> image: @image-url("../resources/app-icon/flectar-mail-tray.png");
     icon: root.image;
-    title: @tr("Flectar Mail");
-    tooltip: @tr("Flectar Mail");
+    title: @tr("Evanya");
+    tooltip: @tr("Evanya");
 
     callback show_window();
     callback quit_app();
@@ -20,7 +20,7 @@ export component FlectarTray inherits SystemTrayIcon {
 
     Menu {
         MenuItem {
-            title: @tr("Show Flectar Mail");
+            title: @tr("Show Evanya");
             activated => { root.show_window(); }
         }
         MenuItem {

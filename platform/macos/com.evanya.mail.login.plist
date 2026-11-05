@@ -5,12 +5,12 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.flectar.mail.login</string>
+  <string>com.evanya.mail.login</string>
   <key>BundleProgram</key>
-  <string>Contents/MacOS/flectar-mail</string>
+  <string>Contents/MacOS/evanya</string>
   <key>ProgramArguments</key>
   <array>
-    <string>flectar-mail</string>
+    <string>evanya</string>
     <string>--background</string>
   </array>
   <key>RunAtLoad</key>

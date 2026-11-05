@@ -8,7 +8,10 @@ use crate::error::{CoreError, Result};
 #[cfg(secret_service)]
 mod secret_service;
 
-const SERVICE: &str = "flectar-mail";
+const SERVICE: &str = "evanya";
+/// Where Flectar Mail kept secrets before the app was renamed to Evanya.
+/// They are read once and stored under [`SERVICE`]; the originals are kept.
+const LEGACY_SERVICE: &str = "flectar-mail";
 #[cfg(any(test, debug_assertions))]
 const MAX_INSECURE_CREDENTIAL_FILE_BYTES: u64 = 1024 * 1024;
 
@@ -54,8 +57,12 @@ impl From<keyring::Error> for CoreError {
 }
 
 fn entry(account_id: i64, slot: &Slot) -> Result<keyring::Entry> {
+    entry_in(SERVICE, account_id, slot)
+}
+
+fn entry_in(service: &str, account_id: i64, slot: &Slot) -> Result<keyring::Entry> {
     let user = format!("{account_id}:{}", slot.key());
-    keyring::Entry::new(SERVICE, &user).map_err(Into::into)
+    keyring::Entry::new(service, &user).map_err(Into::into)
 }
 
 /// Store `secret` in `entry`. A Secret Service session without a default
@@ -106,8 +113,17 @@ const GENERATION_CHUNK_MARKER: &str = "\u{0}flectar-mail-chunks:v2:";
 const MAX_CHUNKS: usize = 512;
 
 fn chunk_entry(account_id: i64, slot: &Slot, index: usize) -> Result<keyring::Entry> {
+    chunk_entry_in(SERVICE, account_id, slot, index)
+}
+
+fn chunk_entry_in(
+    service: &str,
+    account_id: i64,
+    slot: &Slot,
+    index: usize,
+) -> Result<keyring::Entry> {
     let user = format!("{account_id}:{}:c{index}", slot.key());
-    keyring::Entry::new(SERVICE, &user).map_err(Into::into)
+    keyring::Entry::new(service, &user).map_err(Into::into)
 }
 
 #[cfg(target_os = "windows")]
@@ -117,8 +133,19 @@ fn generation_chunk_entry(
     generation: u8,
     index: usize,
 ) -> Result<keyring::Entry> {
+    generation_chunk_entry_in(SERVICE, account_id, slot, generation, index)
+}
+
+#[cfg(target_os = "windows")]
+fn generation_chunk_entry_in(
+    service: &str,
+    account_id: i64,
+    slot: &Slot,
+    generation: u8,
+    index: usize,
+) -> Result<keyring::Entry> {
     let user = format!("{account_id}:{}:g{generation}:c{index}", slot.key());
-    keyring::Entry::new(SERVICE, &user).map_err(Into::into)
+    keyring::Entry::new(service, &user).map_err(Into::into)
 }
 
 fn parse_generation_chunk_header(head: &str) -> Result<Option<(u8, usize)>> {
@@ -403,12 +430,22 @@ fn system_load(account_id: i64, slot: Slot) -> Result<String> {
             .remove(&slot_key(account_id, &slot))
             .ok_or_else(|| CoreError::Auth("no stored credential".into()));
     }
-    load_current_secret(account_id, &slot)?
-        .ok_or_else(|| CoreError::Auth("no stored credential".into()))
+    if let Some(secret) = load_current_secret(account_id, &slot)? {
+        return Ok(secret);
+    }
+    // A secret Flectar Mail stored before the rename moves to Evanya's name.
+    let legacy = load_secret_in(LEGACY_SERVICE, account_id, &slot)?
+        .ok_or_else(|| CoreError::Auth("no stored credential".into()))?;
+    system_store(account_id, slot, &legacy)?;
+    Ok(legacy)
 }
 
 fn load_current_secret(account_id: i64, slot: &Slot) -> Result<Option<String>> {
-    let head = match entry(account_id, slot)?.get_password() {
+    load_secret_in(SERVICE, account_id, slot)
+}
+
+fn load_secret_in(service: &str, account_id: i64, slot: &Slot) -> Result<Option<String>> {
+    let head = match entry_in(service, account_id, slot)?.get_password() {
         Ok(secret) => secret,
         Err(error) if is_absent(&error) => return Ok(None),
         Err(error) => return Err(error.into()),
@@ -418,7 +455,9 @@ fn load_current_secret(account_id: i64, slot: &Slot) -> Result<Option<String>> {
         {
             let mut out = String::new();
             for index in 0..count {
-                match generation_chunk_entry(account_id, slot, generation, index)?.get_password() {
+                match generation_chunk_entry_in(service, account_id, slot, generation, index)?
+                    .get_password()
+                {
                     Ok(secret) => out.push_str(&secret),
                     Err(keyring::Error::NoEntry) => {
                         return Err(CoreError::Auth("no stored credential".into()));
@@ -448,7 +487,7 @@ fn load_current_secret(account_id: i64, slot: &Slot) -> Result<Option<String>> {
     }
     let mut out = String::new();
     for index in 0..count {
-        let chunk = chunk_entry(account_id, slot, index)?;
+        let chunk = chunk_entry_in(service, account_id, slot, index)?;
         match chunk.get_password() {
             Ok(s) => out.push_str(&s),
             Err(e) if is_absent(&e) => {

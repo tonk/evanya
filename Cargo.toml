@@ -39,7 +39,7 @@ autobins = false
 path = "src/lib.rs"
 
 [[bin]]
-name = "flectar-mail"
+name = "evanya"
 path = "src/desktop.rs"
 
 [features]

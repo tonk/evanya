@@ -14,16 +14,16 @@ command -v "$appstream" >/dev/null || { printf 'AppStream validator is missing: 
 python3 -c 'import sys; assert sys.version_info >= (3, 11), "Python 3.11+ is required"'
 python3 scripts/release-metadata.py "$@"
 GITHUB_OUTPUT= python3 scripts/test-release.py
-desktop-file-validate resources/com.flectar.mail.desktop
+desktop-file-validate resources/com.evanya.mail.desktop
 "$appstream" --version
-"$appstream" validate --no-net resources/com.flectar.mail.metainfo.xml
+"$appstream" validate --no-net resources/com.evanya.mail.metainfo.xml
 
 # Validate the metadata that packaging will embed, as well as its source files.
 metadata_dir="$(mktemp -d)"
 trap 'rm -rf "$metadata_dir"' EXIT
 python3 scripts/stage-linux-metadata.py "$metadata_dir"
-desktop-file-validate "$metadata_dir/usr/share/applications/com.flectar.mail.desktop"
-"$appstream" validate --no-net "$metadata_dir/usr/share/metainfo/com.flectar.mail.metainfo.xml"
+desktop-file-validate "$metadata_dir/usr/share/applications/com.evanya.mail.desktop"
+"$appstream" validate --no-net "$metadata_dir/usr/share/metainfo/com.evanya.mail.metainfo.xml"
 
 python3 - <<'PY'
 import ast

@@ -10,6 +10,36 @@ pub struct Paths {
     pub cache_dir: PathBuf,
 }
 
+/// The application's directory name under the platform's data and cache
+/// directories.
+#[cfg(desktop)]
+const DIR_NAME: &str = "evanya";
+/// The name before the app was renamed from Flectar Mail to Evanya.
+#[cfg(desktop)]
+const LEGACY_DIR_NAME: &str = "flectar-mail";
+
+/// `root/name`, moving the directory of an earlier name there first. When the
+/// move fails the earlier directory is used as it is, so existing mail,
+/// accounts and settings are never left behind.
+#[cfg(desktop)]
+fn renamed_dir(root: &std::path::Path, legacy: &str, name: &str) -> PathBuf {
+    let current = root.join(name);
+    let earlier = root.join(legacy);
+    if current.exists() || !earlier.is_dir() {
+        return current;
+    }
+    match std::fs::rename(&earlier, &current) {
+        Ok(()) => {
+            tracing::info!(from = %earlier.display(), to = %current.display(), "moved the app directory to its new name");
+            current
+        }
+        Err(error) => {
+            tracing::warn!(%error, directory = %earlier.display(), "could not rename the app directory; using it as it is");
+            earlier
+        }
+    }
+}
+
 impl Paths {
     /// Resolve desktop directories. Mobile hosts inject their sandbox paths
     /// through `Paths::new`; silently using the process working directory is
@@ -27,8 +57,8 @@ impl Paths {
             )
         })?;
         Ok(Self::new(
-            data_root.join("flectar-mail"),
-            cache_root.join("flectar-mail"),
+            renamed_dir(&data_root, LEGACY_DIR_NAME, DIR_NAME),
+            renamed_dir(&cache_root, LEGACY_DIR_NAME, DIR_NAME),
         ))
     }
 
@@ -166,5 +196,33 @@ mod tests {
         );
         assert_eq!(paths.attachments_dir(7), root.join("cache/attachments/7"));
         assert_eq!(paths.temp_dir(), root.join("cache/tmp"));
+    }
+}
+
+#[cfg(all(test, desktop))]
+mod rename_tests {
+    use super::renamed_dir;
+
+    #[test]
+    fn the_earlier_directory_moves_once_and_is_never_lost() {
+        let root = tempfile::tempdir().unwrap();
+        std::fs::create_dir(root.path().join("old")).unwrap();
+        std::fs::write(root.path().join("old/mail.db"), b"mail").unwrap();
+        let moved = renamed_dir(root.path(), "old", "new");
+        assert_eq!(moved, root.path().join("new"));
+        assert_eq!(std::fs::read(moved.join("mail.db")).unwrap(), b"mail");
+        assert!(!root.path().join("old").exists());
+        // Later runs use the new directory, even when the old name returns.
+        std::fs::create_dir(root.path().join("old")).unwrap();
+        assert_eq!(
+            renamed_dir(root.path(), "old", "new"),
+            root.path().join("new")
+        );
+        // Without either, the new name is used.
+        let fresh = tempfile::tempdir().unwrap();
+        assert_eq!(
+            renamed_dir(fresh.path(), "old", "new"),
+            fresh.path().join("new")
+        );
     }
 }

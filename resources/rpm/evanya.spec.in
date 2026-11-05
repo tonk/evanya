@@ -1,6 +1,6 @@
 %global debug_package %{nil}
 
-Name:           flectar-mail
+Name:           evanya
 Version:        @RPM_VERSION@
 Release:        @RPM_RELEASE@%{?dist}
 Summary:        Native, offline-first email client
@@ -8,13 +8,13 @@ License:        AGPL-3.0-only
 URL:            https://flectar.com
 ExclusiveArch:  x86_64
 
-Source0:        flectar-mail
+Source0:        evanya
 Source1:        libpdfium.so
 Source2:        pdfium-licenses.tar.gz
-Source3:        com.flectar.mail.desktop
-Source4:        com.flectar.mail.metainfo.xml
-Source5:        com.flectar.mail.png
-Source6:        com.flectar.mail.svg
+Source3:        com.evanya.mail.desktop
+Source4:        com.evanya.mail.metainfo.xml
+Source5:        com.evanya.mail.png
+Source6:        com.evanya.mail.svg
 Source7:        LICENSE
 Source8:        LICENSES.tar.gz
 Source9:        THIRD_PARTY_NOTICES.md
@@ -39,7 +39,7 @@ Recommends:     pinentry
 Recommends:     xdg-desktop-portal
 
 %description
-Flectar Mail is a native Rust and Slint mail client with offline-first
+Evanya is a native Rust and Slint mail client with offline-first
 storage, Gmail and Microsoft account support, contacts, and calendars.
 
 %prep
@@ -47,12 +47,12 @@ storage, Gmail and Microsoft account support, contacts, and calendars.
 %build
 
 %install
-install -Dm0755 %{SOURCE0} %{buildroot}%{_bindir}/flectar-mail
-install -Dm0755 %{SOURCE1} %{buildroot}%{_libdir}/flectar-mail/libpdfium.so
-install -Dm0644 %{SOURCE3} %{buildroot}%{_datadir}/applications/com.flectar.mail.desktop
-install -Dm0644 %{SOURCE4} %{buildroot}%{_datadir}/metainfo/com.flectar.mail.metainfo.xml
-install -Dm0644 %{SOURCE5} %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/com.flectar.mail.png
-install -Dm0644 %{SOURCE6} %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/com.flectar.mail.svg
+install -Dm0755 %{SOURCE0} %{buildroot}%{_bindir}/evanya
+install -Dm0755 %{SOURCE1} %{buildroot}%{_libdir}/evanya/libpdfium.so
+install -Dm0644 %{SOURCE3} %{buildroot}%{_datadir}/applications/com.evanya.mail.desktop
+install -Dm0644 %{SOURCE4} %{buildroot}%{_datadir}/metainfo/com.evanya.mail.metainfo.xml
+install -Dm0644 %{SOURCE5} %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/com.evanya.mail.png
+install -Dm0644 %{SOURCE6} %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/com.evanya.mail.svg
 install -Dm0644 %{SOURCE7} %{buildroot}%{_licensedir}/%{name}/LICENSE
 mkdir -p %{buildroot}%{_licensedir}/%{name}/LICENSES
 tar -xzf %{SOURCE8} -C %{buildroot}%{_licensedir}/%{name}/LICENSES
@@ -63,19 +63,19 @@ mkdir -p %{buildroot}%{_licensedir}/%{name}/pdfium
 tar -xzf %{SOURCE2} -C %{buildroot}%{_licensedir}/%{name}/pdfium
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/com.flectar.mail.desktop
-appstreamcli validate --no-net %{buildroot}%{_datadir}/metainfo/com.flectar.mail.metainfo.xml
+desktop-file-validate %{buildroot}%{_datadir}/applications/com.evanya.mail.desktop
+appstreamcli validate --no-net %{buildroot}%{_datadir}/metainfo/com.evanya.mail.metainfo.xml
 
 %files
-%{_bindir}/flectar-mail
-%{_libdir}/flectar-mail/
-%{_datadir}/applications/com.flectar.mail.desktop
-%{_datadir}/metainfo/com.flectar.mail.metainfo.xml
-%{_datadir}/icons/hicolor/512x512/apps/com.flectar.mail.png
-%{_datadir}/icons/hicolor/scalable/apps/com.flectar.mail.svg
+%{_bindir}/evanya
+%{_libdir}/evanya/
+%{_datadir}/applications/com.evanya.mail.desktop
+%{_datadir}/metainfo/com.evanya.mail.metainfo.xml
+%{_datadir}/icons/hicolor/512x512/apps/com.evanya.mail.png
+%{_datadir}/icons/hicolor/scalable/apps/com.evanya.mail.svg
 %license %{_licensedir}/%{name}
 %doc %{_docdir}/%{name}
 
 %changelog
 * @RPM_CHANGELOG_DATE@ Flectar <flectar@users.noreply.github.com> - @RPM_VERSION@-@RPM_RELEASE@
-- Package the Flectar Mail preview for RPM-based test systems
+- Package the Evanya preview for RPM-based test systems

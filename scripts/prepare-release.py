@@ -13,16 +13,16 @@ def prepare(source: Path, destination: Path, version: str) -> None:
     # the package's internal Debian version keeps '~' for prerelease ordering.
     deb_filename_version = deb_version.replace("~", ".")
     packages = {
-        "flectar-mail.AppImage": f"flectar-mail-{version}-linux-x64.AppImage",
-        f"flectar-mail_{deb_version}_amd64.deb": f"flectar-mail_{deb_filename_version}_amd64.deb",
-        "flectar-mail.rpm": f"flectar-mail-{version}-linux-x64.rpm",
-        "flectar-mail.flatpak": f"flectar-mail-{version}-linux-x64.flatpak",
-        "flectar-mail-windows-x64.zip": f"flectar-mail-{version}-windows-x64.zip",
-        "flectar-mail-windows-x64-setup.exe": f"flectar-mail-{version}-windows-x64-setup.exe",
-        "flectar-mail-macos-arm64.zip": f"flectar-mail-{version}-macos-arm64.zip",
-        "flectar-mail-macos-arm64.dmg": f"flectar-mail-{version}-macos-arm64.dmg",
-        "flectar-mail-macos-x64.zip": f"flectar-mail-{version}-macos-x64.zip",
-        "flectar-mail-macos-x64.dmg": f"flectar-mail-{version}-macos-x64.dmg",
+        "evanya.AppImage": f"evanya-{version}-linux-x64.AppImage",
+        f"evanya_{deb_version}_amd64.deb": f"evanya_{deb_filename_version}_amd64.deb",
+        "evanya.rpm": f"evanya-{version}-linux-x64.rpm",
+        "evanya.flatpak": f"evanya-{version}-linux-x64.flatpak",
+        "evanya-windows-x64.zip": f"evanya-{version}-windows-x64.zip",
+        "evanya-windows-x64-setup.exe": f"evanya-{version}-windows-x64-setup.exe",
+        "evanya-macos-arm64.zip": f"evanya-{version}-macos-arm64.zip",
+        "evanya-macos-arm64.dmg": f"evanya-{version}-macos-arm64.dmg",
+        "evanya-macos-x64.zip": f"evanya-{version}-macos-x64.zip",
+        "evanya-macos-x64.dmg": f"evanya-{version}-macos-x64.dmg",
         "flectar-mail.apk": f"flectar-mail-{version}-android-arm64.apk",
     }
     # Validate every input before copying anything; unrelated benchmark files
@@ -59,7 +59,7 @@ def release_notes(version: str) -> str:
         "The x86_64 RPM supports Fedora 43 and 44. The same package is built "
         "on Fedora 43 and tested in clean containers on both releases, including "
         "PDF rendering and X11/Wayland startup. Other RPM distributions are not "
-        "yet tested. Install it with `sudo dnf install ./flectar-mail-"
+        "yet tested. Install it with `sudo dnf install ./evanya-"
         f"{version}-linux-x64.rpm`; if a graphical installer reports a conflict, "
         "this command shows the dependency details.\n\n"
         "Gmail and Outlook sign-in require a bundled OAuth registration or your own "

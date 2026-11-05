@@ -80,7 +80,7 @@ pub struct FaviconLoader {
 impl FaviconLoader {
     pub fn new(cache_root: &Path) -> Result<Self, String> {
         let client = Client::builder()
-            .user_agent("Flectar Mail native sender icon/0.1")
+            .user_agent("Evanya native sender icon/0.1")
             .connect_timeout(Duration::from_secs(3))
             .timeout(Duration::from_secs(8))
             .redirect(service_redirect_policy("twenty-icons.com"))
@@ -214,7 +214,7 @@ pub struct ProfileAvatarLoader {
 impl ProfileAvatarLoader {
     pub fn new(cache_root: &Path) -> Result<Self, String> {
         let client = Client::builder()
-            .user_agent("Flectar Mail native account avatar/0.1")
+            .user_agent("Evanya native account avatar/0.1")
             .connect_timeout(Duration::from_secs(3))
             .timeout(Duration::from_secs(8))
             .redirect(service_redirect_policy("googleusercontent.com"))

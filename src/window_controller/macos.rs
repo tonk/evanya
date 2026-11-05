@@ -1,4 +1,4 @@
-//! Show the window when the user opens Flectar Mail again from the Dock,
+//! Show the window when the user opens Evanya again from the Dock,
 //! Finder or Spotlight.
 //!
 //! macOS does not start a second process for an application that is already

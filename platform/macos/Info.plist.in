@@ -5,17 +5,17 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleDisplayName</key>
-  <string>Flectar Mail</string>
+  <string>Evanya</string>
   <key>CFBundleExecutable</key>
-  <string>flectar-mail</string>
+  <string>evanya</string>
   <key>CFBundleIdentifier</key>
-  <string>com.flectar.mail</string>
+  <string>com.evanya.mail</string>
   <key>CFBundleIconFile</key>
-  <string>FlectarMail</string>
+  <string>Evanya</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
-  <string>Flectar Mail</string>
+  <string>Evanya</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
@@ -27,6 +27,6 @@
   <key>NSHighResolutionCapable</key>
   <true/>
   <key>NSLocalNetworkUsageDescription</key>
-  <string>Flectar Mail connects to mail servers on your local network.</string>
+  <string>Evanya connects to mail servers on your local network.</string>
 </dict>
 </plist>

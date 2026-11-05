@@ -1,8 +1,8 @@
-# Installing Flectar Mail
+# Installing Evanya
 
-Flectar Mail is in development and isn't stable yet. Preview builds are
+Evanya is in development and isn't stable yet. Preview builds are
 published on [GitHub Releases](https://github.com/flectar/mail/releases) with
-the **Pre-release** badge. The [README](../README.md#-get-flectar-mail) lists
+the **Pre-release** badge. The [README](../README.md#-get-evanya) lists
 the files for each platform.
 
 ## Signing in to Gmail and Outlook
@@ -37,9 +37,9 @@ manually.
 ### Installing a package
 
 ```bash
-sudo dnf install ./flectar-mail-<version>-linux-x64.rpm
-flatpak install --user ./flectar-mail-<version>-linux-x64.flatpak
-flatpak run com.flectar.mail
+sudo dnf install ./evanya-<version>-linux-x64.rpm
+flatpak install --user ./evanya-<version>-linux-x64.flatpak
+flatpak run com.evanya.mail
 ```
 
 ### Fedora RPM
@@ -68,14 +68,14 @@ icon on the host.
 ### Keyring
 
 On Linux, passwords, OAuth tokens, and API keys are kept in the system keyring
-through the freedesktop Secret Service, never in Flectar Mail's database. Any
+through the freedesktop Secret Service, never in Evanya's database. Any
 Secret Service provider works, on any desktop or window manager, sway included:
 GNOME Keyring, KWallet, or KeePassXC with its Secret Service integration turned
 on. The Flatpak uses the same keyring as the rest of your session. If the
 session has no default keyring yet, adding the first account asks the provider
 to create one, and the provider asks you to choose its password. Without a
 provider, adding an account stops with an error that says what is missing,
-because Flectar Mail never stores secrets anywhere less safe.
+because Evanya never stores secrets anywhere less safe.
 
 ### Desktop portal
 
@@ -123,7 +123,7 @@ see [platform/ohos](../platform/ohos/README.md) to build it.
 Install the [Rust toolchain](https://rustup.rs/), then run:
 
 ```bash
-cargo run --bin flectar-mail
+cargo run --bin evanya
 ```
 
 On Linux, the app needs the keyring and desktop portal described above.

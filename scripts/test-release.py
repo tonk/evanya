@@ -168,11 +168,11 @@ class ReleaseTests(unittest.TestCase):
 
     def test_flatpak_pdfium_archive_keeps_expected_layout(self):
         manifest = (
-            SCRIPTS.parent / "packaging/flatpak/com.flectar.mail.yml"
+            SCRIPTS.parent / "packaging/flatpak/com.evanya.mail.yml"
         ).read_text()
         self.assertIn(
             "install -Dm0755 pdfium-runtime/lib/libpdfium.so "
-            "/app/lib/flectar-mail/libpdfium.so",
+            "/app/lib/evanya/libpdfium.so",
             manifest,
         )
         self.assertRegex(
@@ -292,7 +292,7 @@ class ReleaseTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "resources").mkdir()
-            for name in ("com.flectar.mail.desktop", "com.flectar.mail.metainfo.xml"):
+            for name in ("com.evanya.mail.desktop", "com.evanya.mail.metainfo.xml"):
                 shutil.copyfile(SCRIPTS.parent / "resources" / name, root / "resources" / name)
             for version in ("0.2.0-alpha.1", "0.2.0-beta.2", "0.2.0-rc.3", "0.2.0"):
                 with self.subTest(version=version):
@@ -300,9 +300,9 @@ class ReleaseTests(unittest.TestCase):
                     destination = root / version
                     with patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "1767225600"}):
                         stage_linux_metadata(root, destination)
-                    desktop = (destination / "usr/share/applications/com.flectar.mail.desktop").read_text()
+                    desktop = (destination / "usr/share/applications/com.evanya.mail.desktop").read_text()
                     self.assertIn(f"X-AppImage-Version={version}\n", desktop)
-                    release = ET.parse(destination / "usr/share/metainfo/com.flectar.mail.metainfo.xml").find("./releases/release")
+                    release = ET.parse(destination / "usr/share/metainfo/com.evanya.mail.metainfo.xml").find("./releases/release")
                     self.assertEqual(release.get("version"), version)
                     self.assertEqual(release.get("date"), "2026-01-01")
                     self.assertEqual(release.get("type"), "development" if "-" in version else "stable")
@@ -319,9 +319,9 @@ class ReleaseTests(unittest.TestCase):
                 flatpak = root / f"{version}-flatpak"
                 with patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "1767225600"}):
                     stage_linux_metadata(root, flatpak, flatpak=True)
-                desktop = (flatpak / "usr/share/applications/com.flectar.mail.desktop").read_text()
+                desktop = (flatpak / "usr/share/applications/com.evanya.mail.desktop").read_text()
                 self.assertNotIn("X-AppImage-", desktop)
-            for name in ("com.flectar.mail.desktop", "com.flectar.mail.metainfo.xml"):
+            for name in ("com.evanya.mail.desktop", "com.evanya.mail.metainfo.xml"):
                 self.assertEqual((root / "resources" / name).read_bytes(), (SCRIPTS.parent / "resources" / name).read_bytes())
 
     def test_linux_package_metadata(self):
@@ -333,7 +333,7 @@ class ReleaseTests(unittest.TestCase):
                 "scripts/build-deb.sh", "scripts/build-appimage.sh",
                 "scripts/stage-linux-metadata.py", "resources/AppRun",
                 "LICENSE", "THIRD_PARTY_NOTICES.md",
-                "resources/com.flectar.mail.desktop", "resources/com.flectar.mail.metainfo.xml",
+                "resources/com.evanya.mail.desktop", "resources/com.evanya.mail.metainfo.xml",
                 "resources/app-icon/flectar-mail-masked-512.png",
                 "resources/app-icon/flectar-mail-masked.svg",
                 "resources/fonts/google-sans-flex/OFL.txt",
@@ -347,7 +347,7 @@ class ReleaseTests(unittest.TestCase):
             shutil.copytree(SCRIPTS.parent / "LICENSES", root / "LICENSES")
             (root / "Cargo.toml").write_text('[package]\nversion = "0.1.0-alpha.1"\n')
             (root / "target/release").mkdir(parents=True)
-            shutil.copyfile("/bin/true", root / "target/release/flectar-mail")
+            shutil.copyfile("/bin/true", root / "target/release/evanya")
             # This test checks package metadata using fixture ELFs. Stub only
             # the download/renderer helpers in the disposable checkout; actual
             # native PDF rendering is exercised by the dedicated smoke tests.
@@ -377,14 +377,14 @@ class ReleaseTests(unittest.TestCase):
                 capture_output=True, text=True,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            package = root / "target/deb/flectar-mail_0.1.0~alpha.1_amd64.deb"
+            package = root / "target/deb/evanya_0.1.0~alpha.1_amd64.deb"
             self.assertTrue(package.is_file())
             version = subprocess.check_output(["dpkg-deb", "--field", str(package), "Version"], text=True)
             self.assertEqual(version.strip(), "0.1.0~alpha.1")
             extracted = root / "extracted"
             subprocess.run(["dpkg-deb", "--extract", str(package), str(extracted)], check=True)
-            desktop_path = "usr/share/applications/com.flectar.mail.desktop"
-            metainfo_path = "usr/share/metainfo/com.flectar.mail.metainfo.xml"
+            desktop_path = "usr/share/applications/com.evanya.mail.desktop"
+            metainfo_path = "usr/share/metainfo/com.evanya.mail.metainfo.xml"
             self.assertIn("X-AppImage-Version=0.1.0-alpha.1\n", (extracted / desktop_path).read_text())
             release = ET.parse(extracted / metainfo_path).find("./releases/release")
             self.assertEqual(release.get("version"), "0.1.0-alpha.1")
@@ -412,7 +412,7 @@ class ReleaseTests(unittest.TestCase):
                 "#!/usr/bin/env python3\n"
                 "import sys\n"
                 "assert sys.argv[1] == '-d'\n"
-                "runpath = '$ORIGIN/../lib' if sys.argv[2].endswith('/usr/bin/flectar-mail') else '$ORIGIN'\n"
+                "runpath = '$ORIGIN/../lib' if sys.argv[2].endswith('/usr/bin/evanya') else '$ORIGIN'\n"
                 "print(f' 0x000000000000001d (RUNPATH)            Library runpath: [{runpath}]')\n"
             )
             readelf.chmod(0o755)
@@ -424,7 +424,7 @@ library = pathlib.Path(sys.argv[sys.argv.index("--library") + 1])
 assert library.name == "libxkbcommon-x11.so.0"
 for name in ("libxkbcommon-x11.so.0", "libxkbcommon.so.0"):
     shutil.copyfile(library.parent / name, appdir / "usr/lib" / name)
-(appdir / "com.flectar.mail.desktop").symlink_to("usr/share/applications/com.flectar.mail.desktop")
+(appdir / "com.evanya.mail.desktop").symlink_to("usr/share/applications/com.evanya.mail.desktop")
 ''')
             pack = root / "bin/appimagetool"
             pack.write_text('''#!/usr/bin/env python3
@@ -432,8 +432,8 @@ import json, os, pathlib, sys
 appdir = pathlib.Path(sys.argv[1])
 pathlib.Path(sys.argv[2]).write_text(json.dumps({
     "version": os.environ.get("VERSION"),
-    "desktop": (appdir / "com.flectar.mail.desktop").read_text(),
-    "metainfo": (appdir / "usr/share/metainfo/com.flectar.mail.metainfo.xml").read_text(),
+    "desktop": (appdir / "com.evanya.mail.desktop").read_text(),
+    "metainfo": (appdir / "usr/share/metainfo/com.evanya.mail.metainfo.xml").read_text(),
 }))
 ''')
             deploy.chmod(0o755)
@@ -446,7 +446,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
                 capture_output=True, text=True,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            packaged = json.loads((root / "target/appimage/flectar-mail.AppImage").read_text())
+            packaged = json.loads((root / "target/appimage/evanya.AppImage").read_text())
             self.assertEqual(packaged["version"], "0.1.0-alpha.1")
             self.assertIn("X-AppImage-Version=0.1.0-alpha.1\n", packaged["desktop"])
             release = ET.fromstring(packaged["metainfo"]).find("./releases/release")
@@ -489,16 +489,16 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             source = root / "assets"
             source.mkdir()
             names = (
-                "linux/appimage/flectar-mail.AppImage",
-                "linux/deb/flectar-mail_0.1.0~beta.1_amd64.deb",
-                "linux/rpm/flectar-mail.rpm",
-                "linux/flatpak/flectar-mail.flatpak",
-                "windows/flectar-mail-windows-x64.zip",
-                "windows/flectar-mail-windows-x64-setup.exe",
-                "macos/flectar-mail-macos-arm64.zip",
-                "macos/flectar-mail-macos-arm64.dmg",
-                "macos/flectar-mail-macos-x64.zip",
-                "macos/flectar-mail-macos-x64.dmg",
+                "linux/appimage/evanya.AppImage",
+                "linux/deb/evanya_0.1.0~beta.1_amd64.deb",
+                "linux/rpm/evanya.rpm",
+                "linux/flatpak/evanya.flatpak",
+                "windows/evanya-windows-x64.zip",
+                "windows/evanya-windows-x64-setup.exe",
+                "macos/evanya-macos-arm64.zip",
+                "macos/evanya-macos-arm64.dmg",
+                "macos/evanya-macos-x64.zip",
+                "macos/evanya-macos-x64.dmg",
                 "android/flectar-mail.apk",
             )
             for name in names:
@@ -511,7 +511,7 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             self.assertEqual(len(list(dist.iterdir())), 12)
             self.assertTrue((dist / "flectar-mail-0.1.0-beta.1-android-arm64.apk").is_file())
             # GitHub must not rewrite a download name after we checksum it.
-            deb = dist / "flectar-mail_0.1.0.beta.1_amd64.deb"
+            deb = dist / "evanya_0.1.0.beta.1_amd64.deb"
             self.assertEqual(deb.read_bytes(), (source / names[1]).read_bytes())
             for path in dist.iterdir():
                 self.assertRegex(path.name, r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
@@ -535,13 +535,13 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
 
             # Stable releases also require exactly one signed Android APK.
             (source / missing.name).unlink()
-            (source / "linux/deb/flectar-mail_0.1.0~beta.1_amd64.deb").rename(
-                source / "linux/deb/flectar-mail_0.1.0_amd64.deb"
+            (source / "linux/deb/evanya_0.1.0~beta.1_amd64.deb").rename(
+                source / "linux/deb/evanya_0.1.0_amd64.deb"
             )
             stable_dist = root / "stable"
             prepare(source, stable_dist, "0.1.0")
             self.assertEqual(len(list(stable_dist.iterdir())), 12)
-            self.assertTrue((stable_dist / "flectar-mail_0.1.0_amd64.deb").is_file())
+            self.assertTrue((stable_dist / "evanya_0.1.0_amd64.deb").is_file())
             self.assertTrue((stable_dist / "flectar-mail-0.1.0-android-arm64.apk").is_file())
             missing.unlink()
             with self.assertRaises(ValueError):

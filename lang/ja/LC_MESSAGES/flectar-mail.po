@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: flectar-mail 0.1.0\n"
-"POT-Creation-Date: 2026-11-05 09:30+0000\n"
+"POT-Creation-Date: 2026-11-05 10:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -800,11 +800,11 @@ msgid "Saving close behavior…"
 msgstr ""
 
 #: ui/app.slint:326
-msgid "Closing the window will now keep Flectar Mail in the tray."
+msgid "Closing the window will now keep Evanya in the tray."
 msgstr ""
 
 #: ui/app.slint:327
-msgid "Closing the window will now quit Flectar Mail."
+msgid "Closing the window will now quit Evanya."
 msgstr ""
 
 #: ui/app.slint:328
@@ -812,11 +812,11 @@ msgid "Could not save close behavior: {}"
 msgstr ""
 
 #: ui/app.slint:329
-msgid "Flectar Mail will start when you sign in."
+msgid "Evanya will start when you sign in."
 msgstr ""
 
 #: ui/app.slint:330
-msgid "Flectar Mail will no longer start when you sign in."
+msgid "Evanya will no longer start when you sign in."
 msgstr ""
 
 #: ui/app.slint:331
@@ -824,7 +824,7 @@ msgid "Could not change startup behavior: {}"
 msgstr ""
 
 #: ui/app.slint:332
-msgid "Allow Flectar Mail under Login Items in System Settings to finish."
+msgid "Allow Evanya under Login Items in System Settings to finish."
 msgstr ""
 
 #: ui/app.slint:337
@@ -1135,11 +1135,11 @@ msgid "Connect an account before creating a backup."
 msgstr ""
 
 #: ui/app.slint:417
-msgid "Export Flectar Mail account backup"
+msgid "Export Evanya account backup"
 msgstr ""
 
 #: ui/app.slint:418
-msgid "Flectar Mail backup"
+msgid "Evanya backup"
 msgstr ""
 
 #: ui/app.slint:419 ui/dialogs/import-dialog.slint:407
@@ -1176,7 +1176,7 @@ msgid "Creating verified database snapshot…"
 msgstr ""
 
 #: ui/app.slint:427
-msgid "All local Flectar Mail data was deleted."
+msgid "All local Evanya data was deleted."
 msgstr ""
 
 #: ui/app.slint:428
@@ -1289,11 +1289,11 @@ msgid "Calendar update failed: {}"
 msgstr ""
 
 #: ui/app.slint:467
-msgid "Only events created in Flectar Mail can be edited."
+msgid "Only events created in Evanya can be edited."
 msgstr ""
 
 #: ui/app.slint:468
-msgid "Only events created in Flectar Mail can be deleted."
+msgid "Only events created in Evanya can be deleted."
 msgstr ""
 
 #: ui/app.slint:469
@@ -1878,7 +1878,7 @@ msgstr ""
 
 #: ui/app.slint:638 ui/components/workspace-navigation.slint:787
 #: ui/tray.slint:13 ui/tray.slint:14
-msgid "Flectar Mail"
+msgid "Evanya"
 msgstr ""
 
 #: ui/app.slint:1395 ui/app.slint:1408
@@ -1953,7 +1953,7 @@ msgid "Mailbox startup failed"
 msgstr ""
 
 #: ui/app.slint:2675
-msgid "Flectar Mail could not open local storage"
+msgid "Evanya could not open local storage"
 msgstr ""
 
 #: ui/app.slint:2688
@@ -2160,7 +2160,7 @@ msgstr ""
 #: ui/components/account-mail-preferences.slint:169
 msgid ""
 "Add an alias or another address your mail server lets you send from. The "
-"server decides when you send; Flectar shows whether it accepted the last "
+"server decides when you send; Evanya shows whether it accepted the last "
 "message."
 msgstr ""
 
@@ -2388,7 +2388,7 @@ msgid "App icon"
 msgstr ""
 
 #: ui/components/app-icon-picker.slint:105
-msgid "Used for the Dock and the menu bar while Flectar Mail is running."
+msgid "Used for the Dock and the menu bar while Evanya is running."
 msgstr ""
 
 #: ui/components/app-icon-picker.slint:106
@@ -2405,8 +2405,8 @@ msgstr ""
 
 #: ui/components/app-icon-picker.slint:116
 msgid ""
-"The new icon appears after you leave Flectar Mail. Some launchers remove the "
-"old icon from the home screen."
+"The new icon appears after you leave Evanya. Some launchers remove the old "
+"icon from the home screen."
 msgstr ""
 
 #: ui/components/app-icon-picker.slint:117
@@ -2578,7 +2578,7 @@ msgid "Default calendar"
 msgstr ""
 
 #: ui/components/calendar.slint:487
-msgid "Created in Flectar Mail"
+msgid "Created in Evanya"
 msgstr ""
 
 #: ui/components/calendar.slint:487
@@ -3109,7 +3109,7 @@ msgstr ""
 
 #: ui/components/oauth-browser-help.slint:73
 msgid ""
-"Flectar could not reach the system browser from this app environment. Open "
+"Evanya could not reach the system browser from this app environment. Open "
 "the link again or copy it into a browser on this device."
 msgstr ""
 
@@ -3807,7 +3807,7 @@ msgid "No incoming mail server is configured."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:132
-msgid "The incoming server {} uses a protocol Flectar Mail does not support."
+msgid "The incoming server {} uses a protocol Evanya does not support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:133
@@ -3815,7 +3815,7 @@ msgid "No outgoing mail server is configured."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:134
-msgid "The outgoing server {} uses a protocol Flectar Mail does not support."
+msgid "The outgoing server {} uses a protocol Evanya does not support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:135
@@ -3832,49 +3832,45 @@ msgstr ""
 
 #: ui/dialogs/import-dialog.slint:137
 msgid ""
-"{} keeps your password off its unencrypted connection, but Flectar Mail "
-"would send it in the clear. Turn on SSL/TLS or STARTTLS for this server "
-"first."
+"{} keeps your password off its unencrypted connection, but Evanya would send "
+"it in the clear. Turn on SSL/TLS or STARTTLS for this server first."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:139
 msgid ""
-"The incoming server connects without signing in, which Flectar Mail does not "
+"The incoming server connects without signing in, which Evanya does not "
 "support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:140
 msgid ""
-"The incoming server signs in with a client certificate, which Flectar Mail "
-"does not support."
+"The incoming server signs in with a client certificate, which Evanya does "
+"not support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:141
-msgid ""
-"The incoming server signs in with {}, which Flectar Mail does not support."
+msgid "The incoming server signs in with {}, which Evanya does not support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:142
 msgid ""
-"The outgoing server sends mail without signing in, which Flectar Mail does "
-"not support."
+"The outgoing server sends mail without signing in, which Evanya does not "
+"support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:143
 msgid ""
-"The outgoing server signs in with a client certificate, which Flectar Mail "
-"does not support."
+"The outgoing server signs in with a client certificate, which Evanya does "
+"not support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:144
-msgid ""
-"The outgoing server signs in with {}, which Flectar Mail does not support."
+msgid "The outgoing server signs in with {}, which Evanya does not support."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:145
 msgid ""
-"The outgoing server signs in as {}. Flectar Mail uses one sign-in for both "
-"servers."
+"The outgoing server signs in as {}. Evanya uses one sign-in for both servers."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:146
@@ -3910,8 +3906,7 @@ msgid ""
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:153
-msgid ""
-"Flectar Mail cannot use browser sign-in for {}. Sign in with an app password."
+msgid "Evanya cannot use browser sign-in for {}. Sign in with an app password."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:154
@@ -3976,7 +3971,7 @@ msgstr ""
 #: ui/dialogs/import-dialog.slint:170
 msgid ""
 "This is not a supported settings export or mail file. Choose a .k9s file, a "
-"Thunderbird profile export or prefs.js, a Flectar Mail backup, or mail saved "
+"Thunderbird profile export or prefs.js, an Evanya backup, or mail saved "
 "as .mbox or .eml files."
 msgstr ""
 
@@ -4142,8 +4137,8 @@ msgstr ""
 #: ui/dialogs/import-dialog.slint:492
 msgid ""
 "Bring your accounts from Thunderbird, Thunderbird for Android, K-9 Mail, or "
-"a Flectar Mail backup, and mail from Thunderbird or saved mail files. "
-"Passwords are never imported: you sign in to each account afterward."
+"an Evanya backup, and mail from Thunderbird or saved mail files. Passwords "
+"are never imported: you sign in to each account afterward."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:498
@@ -4161,7 +4156,7 @@ msgstr ""
 #: ui/dialogs/import-dialog.slint:575
 msgid ""
 "Supported: Thunderbird for Android and K-9 Mail settings (.k9s), Thunderbird "
-"profile exports (.zip), profile folders and prefs.js, Flectar Mail backups "
+"profile exports (.zip), profile folders and prefs.js, Evanya backups "
 "(.json), and mail saved as .mbox or .eml files, in maildir folders, or in "
 "ZIP archives of them."
 msgstr ""
@@ -4169,8 +4164,8 @@ msgstr ""
 #: ui/dialogs/import-dialog.slint:576
 msgid ""
 "Supported: Thunderbird for Android and K-9 Mail settings (.k9s), Thunderbird "
-"profile exports (.zip) and prefs.js, Flectar Mail backups (.json), and mail "
-"saved as .mbox or .eml files or in ZIP archives of them."
+"profile exports (.zip) and prefs.js, Evanya backups (.json), and mail saved "
+"as .mbox or .eml files or in ZIP archives of them."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:589
@@ -4201,7 +4196,7 @@ msgid "From Thunderbird. Existing accounts are never changed."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:688
-msgid "Already in Flectar Mail"
+msgid "Already in Evanya"
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:689
@@ -4255,9 +4250,8 @@ msgid "No accounts were imported."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:762
-msgid "One account was already in Flectar Mail and was left unchanged."
-msgid_plural ""
-"{n} accounts were already in Flectar Mail and were left unchanged."
+msgid "One account was already in Evanya and was left unchanged."
+msgid_plural "{n} accounts were already in Evanya and were left unchanged."
 msgstr[0] ""
 
 #: ui/dialogs/import-dialog.slint:768
@@ -4425,8 +4419,8 @@ msgstr ""
 
 #: ui/dialogs/rendering-info-dialog.slint:124
 msgid ""
-"Flectar Mail uses a completely new email renderer built in Rust. It is still "
-"in its early stages, so some emails may not render correctly."
+"Evanya uses a completely new email renderer built in Rust. It is still in "
+"its early stages, so some emails may not render correctly."
 msgstr ""
 
 #: ui/dialogs/rendering-info-dialog.slint:142
@@ -4484,7 +4478,7 @@ msgid "Calculating local storage…"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:240
-msgid "{} used by Flectar Mail"
+msgid "{} used by Evanya"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:241
@@ -4869,7 +4863,7 @@ msgid "Follow your device language when a translation is available."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1356
-msgid "Choose the language used throughout Flectar Mail."
+msgid "Choose the language used throughout Evanya."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1366
@@ -5019,7 +5013,7 @@ msgid "Keep running in system tray"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1627
-msgid "Closing the window hides Flectar Mail while mail continues syncing."
+msgid "Closing the window hides Evanya while mail continues syncing."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1628
@@ -5031,11 +5025,11 @@ msgid "Start automatically"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1655
-msgid "Starts Flectar Mail in the system tray when you sign in."
+msgid "Starts Evanya in the system tray when you sign in."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1655
-msgid "Opens Flectar Mail when you sign in."
+msgid "Opens Evanya when you sign in."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1656
@@ -5079,7 +5073,7 @@ msgid "Renderer"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1736
-msgid "Changes take effect after restarting Flectar Mail."
+msgid "Changes take effect after restarting Evanya."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1736
@@ -5322,7 +5316,7 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2470
 msgid ""
-"Choose who saves sent mail. Use Flectar if your server does not save a copy."
+"Choose who saves sent mail. Use Evanya if your server does not save a copy."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2471
@@ -5334,7 +5328,7 @@ msgid "Server saves a copy"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2471
-msgid "Flectar saves a copy"
+msgid "Evanya saves a copy"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2485
@@ -5342,7 +5336,7 @@ msgid "Keep mail on the server"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2489
-msgid "Flectar Mail never removes mail from the server."
+msgid "Evanya never removes mail from the server."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2490
@@ -5451,8 +5445,7 @@ msgid "Connect"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2629
-msgid ""
-"See what Flectar Mail stores locally and manage the data on this device."
+msgid "See what Evanya stores locally and manage the data on this device."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2655
@@ -5553,7 +5546,7 @@ msgid "Delete everything"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2719
-msgid "Choose how Flectar Mail gets your attention."
+msgid "Choose how Evanya gets your attention."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2746
@@ -5647,8 +5640,8 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2816
 msgid ""
-"Optional paid services from Flectar. Flectar Mail stays free and works "
-"without them."
+"Optional paid services from Flectar. Evanya stays free and works without "
+"them."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2821
@@ -5701,8 +5694,8 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2849
 msgid ""
-"Your messages stay with your mail provider. Sync only carries your Flectar "
-"Mail setup."
+"Your messages stay with your mail provider. Sync only carries your Evanya "
+"setup."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2864
@@ -5726,7 +5719,7 @@ msgid "Create and manage mailboxes for your team"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2870
-msgid "New mailboxes appear in Flectar Mail automatically"
+msgid "New mailboxes appear in Evanya automatically"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2872
@@ -5740,8 +5733,9 @@ msgid ""
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2903
-msgid "Flectar Mail, its makers, and its community."
+msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr ""
+"Evanya は Flectar とそのコミュニティによる Flectar Mail をもとにしています。"
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
 msgid "Flectar Mail logo"
@@ -5789,8 +5783,7 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2997
 msgid ""
-"Flectar Mail is released under the GNU Affero General Public License v3.0 "
-"only."
+"Evanya is released under the GNU Affero General Public License v3.0 only."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:3003
@@ -6057,7 +6050,7 @@ msgstr ""
 #: ui/dialogs/settings-dialog.slint:3693
 msgid ""
 "This removes every account, downloaded message, calendar, contact, "
-"preference, and credential stored by Flectar Mail on this device."
+"preference, and credential stored by Evanya on this device."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:3695
@@ -6167,7 +6160,7 @@ msgid "Keep calendar"
 msgstr ""
 
 #: ui/tray.slint:23
-msgid "Show Flectar Mail"
+msgid "Show Evanya"
 msgstr ""
 
 #: ui/tray.slint:27

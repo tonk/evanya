@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: flectar-mail 0.1.0\n"
-"POT-Creation-Date: 2026-11-05 09:30+0000\n"
+"POT-Creation-Date: 2026-11-05 10:31+0000\n"
 "PO-Revision-Date: 2026-09-15 12:00+0000\n"
 "Last-Translator: Flectar contributors\n"
 "Language-Team: Turkish\n"
@@ -804,35 +804,34 @@ msgid "Saving close behavior…"
 msgstr "Kapatma davranışı kaydediliyor…"
 
 #: ui/app.slint:326
-msgid "Closing the window will now keep Flectar Mail in the tray."
-msgstr ""
-"Pencere kapatıldığında Flectar Mail artık tepside çalışmaya devam edecek."
+msgid "Closing the window will now keep Evanya in the tray."
+msgstr "Pencere kapatıldığında Evanya artık tepside çalışmaya devam edecek."
 
 #: ui/app.slint:327
-msgid "Closing the window will now quit Flectar Mail."
-msgstr "Pencere kapatıldığında Flectar Mail artık kapanacak."
+msgid "Closing the window will now quit Evanya."
+msgstr "Pencere kapatıldığında Evanya artık kapanacak."
 
 #: ui/app.slint:328
 msgid "Could not save close behavior: {}"
 msgstr "Kapatma davranışı kaydedilemedi: {}"
 
 #: ui/app.slint:329
-msgid "Flectar Mail will start when you sign in."
-msgstr "Flectar Mail oturum açtığınızda başlatılacak."
+msgid "Evanya will start when you sign in."
+msgstr "Evanya oturum açtığınızda başlatılacak."
 
 #: ui/app.slint:330
-msgid "Flectar Mail will no longer start when you sign in."
-msgstr "Flectar Mail artık oturum açtığınızda başlatılmayacak."
+msgid "Evanya will no longer start when you sign in."
+msgstr "Evanya artık oturum açtığınızda başlatılmayacak."
 
 #: ui/app.slint:331
 msgid "Could not change startup behavior: {}"
 msgstr "Başlangıç davranışı değiştirilemedi: {}"
 
 #: ui/app.slint:332
-msgid "Allow Flectar Mail under Login Items in System Settings to finish."
+msgid "Allow Evanya under Login Items in System Settings to finish."
 msgstr ""
-"Tamamlamak için Sistem Ayarları'ndaki Giriş Öğeleri bölümünde Flectar Mail'e "
-"izin verin."
+"Tamamlamak için Sistem Ayarları'ndaki Giriş Öğeleri bölümünde Evanya'ya izin "
+"verin."
 
 #: ui/app.slint:337
 msgid "Database snapshot exported to {}."
@@ -1143,12 +1142,12 @@ msgid "Connect an account before creating a backup."
 msgstr "Yedek oluşturmadan önce bir hesap bağlayın."
 
 #: ui/app.slint:417
-msgid "Export Flectar Mail account backup"
-msgstr "Flectar Mail hesap yedeğini dışa aktar"
+msgid "Export Evanya account backup"
+msgstr "Evanya hesap yedeğini dışa aktar"
 
 #: ui/app.slint:418
-msgid "Flectar Mail backup"
-msgstr "Flectar Mail yedeği"
+msgid "Evanya backup"
+msgstr "Evanya yedeği"
 
 #: ui/app.slint:419 ui/dialogs/import-dialog.slint:407
 #: ui/views/onboarding-view.slint:232
@@ -1184,8 +1183,8 @@ msgid "Creating verified database snapshot…"
 msgstr "Doğrulanmış veritabanı anlık görüntüsü oluşturuluyor…"
 
 #: ui/app.slint:427
-msgid "All local Flectar Mail data was deleted."
-msgstr "Tüm yerel Flectar Mail verileri silindi."
+msgid "All local Evanya data was deleted."
+msgstr "Tüm yerel Evanya verileri silindi."
 
 #: ui/app.slint:428
 msgid "Could not delete all local data: {}"
@@ -1297,12 +1296,12 @@ msgid "Calendar update failed: {}"
 msgstr "Takvim güncellemesi başarısız: {}"
 
 #: ui/app.slint:467
-msgid "Only events created in Flectar Mail can be edited."
-msgstr "Yalnızca Flectar Mail'de oluşturulan etkinlikler düzenlenebilir."
+msgid "Only events created in Evanya can be edited."
+msgstr "Yalnızca Evanya'da oluşturulan etkinlikler düzenlenebilir."
 
 #: ui/app.slint:468
-msgid "Only events created in Flectar Mail can be deleted."
-msgstr "Yalnızca Flectar Mail'de oluşturulan etkinlikler silinebilir."
+msgid "Only events created in Evanya can be deleted."
+msgstr "Yalnızca Evanya'da oluşturulan etkinlikler silinebilir."
 
 #: ui/app.slint:469
 msgid "Calendar storage is unavailable."
@@ -1897,8 +1896,8 @@ msgstr "İleti yükleniyor…"
 
 #: ui/app.slint:638 ui/components/workspace-navigation.slint:787
 #: ui/tray.slint:13 ui/tray.slint:14
-msgid "Flectar Mail"
-msgstr "Flectar Mail"
+msgid "Evanya"
+msgstr "Evanya"
 
 #: ui/app.slint:1395 ui/app.slint:1408
 msgid "Global Labels (local only)"
@@ -1972,8 +1971,8 @@ msgid "Mailbox startup failed"
 msgstr "Posta kutusu başlatılamadı"
 
 #: ui/app.slint:2675
-msgid "Flectar Mail could not open local storage"
-msgstr "Flectar Mail yerel depolamayı açamadı"
+msgid "Evanya could not open local storage"
+msgstr "Evanya yerel depolamayı açamadı"
 
 #: ui/app.slint:2688
 msgid "Diagnostic ID: {}"
@@ -2182,7 +2181,7 @@ msgstr ""
 #: ui/components/account-mail-preferences.slint:169
 msgid ""
 "Add an alias or another address your mail server lets you send from. The "
-"server decides when you send; Flectar shows whether it accepted the last "
+"server decides when you send; Evanya shows whether it accepted the last "
 "message."
 msgstr ""
 
@@ -2435,7 +2434,7 @@ msgid "App icon"
 msgstr ""
 
 #: ui/components/app-icon-picker.slint:105
-msgid "Used for the Dock and the menu bar while Flectar Mail is running."
+msgid "Used for the Dock and the menu bar while Evanya is running."
 msgstr ""
 
 #: ui/components/app-icon-picker.slint:106
@@ -2452,8 +2451,8 @@ msgstr ""
 
 #: ui/components/app-icon-picker.slint:116
 msgid ""
-"The new icon appears after you leave Flectar Mail. Some launchers remove the "
-"old icon from the home screen."
+"The new icon appears after you leave Evanya. Some launchers remove the old "
+"icon from the home screen."
 msgstr ""
 
 #: ui/components/app-icon-picker.slint:117
@@ -2625,8 +2624,8 @@ msgid "Default calendar"
 msgstr "Varsayılan takvim"
 
 #: ui/components/calendar.slint:487
-msgid "Created in Flectar Mail"
-msgstr "Flectar Mail'de oluşturuldu"
+msgid "Created in Evanya"
+msgstr "Evanya'da oluşturuldu"
 
 #: ui/components/calendar.slint:487
 msgid "Synced provider event"
@@ -3159,10 +3158,10 @@ msgstr "Tarayıcıda oturum açmada sorun mu var?"
 
 #: ui/components/oauth-browser-help.slint:73
 msgid ""
-"Flectar could not reach the system browser from this app environment. Open "
+"Evanya could not reach the system browser from this app environment. Open "
 "the link again or copy it into a browser on this device."
 msgstr ""
-"Flectar bu uygulama ortamından sistem tarayıcısına ulaşamadı. Bağlantıyı "
+"Evanya bu uygulama ortamından sistem tarayıcısına ulaşamadı. Bağlantıyı "
 "yeniden açın veya bu cihazdaki bir tarayıcıya kopyalayın."
 
 #: ui/components/oauth-browser-help.slint:73
@@ -3867,20 +3866,18 @@ msgid "No incoming mail server is configured."
 msgstr "Gelen posta sunucusu yapılandırılmamış."
 
 #: ui/dialogs/import-dialog.slint:132
-msgid "The incoming server {} uses a protocol Flectar Mail does not support."
+msgid "The incoming server {} uses a protocol Evanya does not support."
 msgstr ""
-"Gelen posta sunucusu {}, Flectar Mail'in desteklemediği bir protokol "
-"kullanıyor."
+"Gelen posta sunucusu {}, Evanya'nın desteklemediği bir protokol kullanıyor."
 
 #: ui/dialogs/import-dialog.slint:133
 msgid "No outgoing mail server is configured."
 msgstr "Giden posta sunucusu yapılandırılmamış."
 
 #: ui/dialogs/import-dialog.slint:134
-msgid "The outgoing server {} uses a protocol Flectar Mail does not support."
+msgid "The outgoing server {} uses a protocol Evanya does not support."
 msgstr ""
-"Giden posta sunucusu {}, Flectar Mail'in desteklemediği bir protokol "
-"kullanıyor."
+"Giden posta sunucusu {}, Evanya'nın desteklemediği bir protokol kullanıyor."
 
 #: ui/dialogs/import-dialog.slint:135
 msgid ""
@@ -3896,62 +3893,55 @@ msgstr ""
 
 #: ui/dialogs/import-dialog.slint:137
 msgid ""
-"{} keeps your password off its unencrypted connection, but Flectar Mail "
-"would send it in the clear. Turn on SSL/TLS or STARTTLS for this server "
-"first."
+"{} keeps your password off its unencrypted connection, but Evanya would send "
+"it in the clear. Turn on SSL/TLS or STARTTLS for this server first."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:139
 msgid ""
-"The incoming server connects without signing in, which Flectar Mail does not "
+"The incoming server connects without signing in, which Evanya does not "
 "support."
 msgstr ""
-"Gelen posta sunucusu oturum açmadan bağlanıyor; Flectar Mail bunu "
-"desteklemiyor."
+"Gelen posta sunucusu oturum açmadan bağlanıyor; Evanya bunu desteklemiyor."
 
 #: ui/dialogs/import-dialog.slint:140
 msgid ""
-"The incoming server signs in with a client certificate, which Flectar Mail "
-"does not support."
+"The incoming server signs in with a client certificate, which Evanya does "
+"not support."
 msgstr ""
-"Gelen posta sunucusu bir istemci sertifikasıyla oturum açıyor; Flectar Mail "
-"bunu desteklemiyor."
+"Gelen posta sunucusu bir istemci sertifikasıyla oturum açıyor; Evanya bunu "
+"desteklemiyor."
 
 #: ui/dialogs/import-dialog.slint:141
-msgid ""
-"The incoming server signs in with {}, which Flectar Mail does not support."
-msgstr ""
-"Gelen posta sunucusu, Flectar Mail'in desteklemediği {} ile oturum açıyor."
+msgid "The incoming server signs in with {}, which Evanya does not support."
+msgstr "Gelen posta sunucusu, Evanya'nın desteklemediği {} ile oturum açıyor."
 
 #: ui/dialogs/import-dialog.slint:142
 msgid ""
-"The outgoing server sends mail without signing in, which Flectar Mail does "
-"not support."
+"The outgoing server sends mail without signing in, which Evanya does not "
+"support."
 msgstr ""
-"Giden posta sunucusu oturum açmadan posta gönderiyor; Flectar Mail bunu "
+"Giden posta sunucusu oturum açmadan posta gönderiyor; Evanya bunu "
 "desteklemiyor."
 
 #: ui/dialogs/import-dialog.slint:143
 msgid ""
-"The outgoing server signs in with a client certificate, which Flectar Mail "
-"does not support."
+"The outgoing server signs in with a client certificate, which Evanya does "
+"not support."
 msgstr ""
-"Giden posta sunucusu bir istemci sertifikasıyla oturum açıyor; Flectar Mail "
-"bunu desteklemiyor."
+"Giden posta sunucusu bir istemci sertifikasıyla oturum açıyor; Evanya bunu "
+"desteklemiyor."
 
 #: ui/dialogs/import-dialog.slint:144
-msgid ""
-"The outgoing server signs in with {}, which Flectar Mail does not support."
-msgstr ""
-"Giden posta sunucusu, Flectar Mail'in desteklemediği {} ile oturum açıyor."
+msgid "The outgoing server signs in with {}, which Evanya does not support."
+msgstr "Giden posta sunucusu, Evanya'nın desteklemediği {} ile oturum açıyor."
 
 #: ui/dialogs/import-dialog.slint:145
 msgid ""
-"The outgoing server signs in as {}. Flectar Mail uses one sign-in for both "
-"servers."
+"The outgoing server signs in as {}. Evanya uses one sign-in for both servers."
 msgstr ""
-"Giden posta sunucusu {} olarak oturum açıyor. Flectar Mail her iki sunucu "
-"için tek bir oturum açma kullanır."
+"Giden posta sunucusu {} olarak oturum açıyor. Evanya her iki sunucu için tek "
+"bir oturum açma kullanır."
 
 #: ui/dialogs/import-dialog.slint:146
 msgid "The incoming server has no user name."
@@ -3988,11 +3978,10 @@ msgstr ""
 "kendi adresiyle ekleyin."
 
 #: ui/dialogs/import-dialog.slint:153
-msgid ""
-"Flectar Mail cannot use browser sign-in for {}. Sign in with an app password."
+msgid "Evanya cannot use browser sign-in for {}. Sign in with an app password."
 msgstr ""
-"Flectar Mail, {} için tarayıcıyla oturum açmayı kullanamaz. Uygulama "
-"parolasıyla oturum açın."
+"Evanya, {} için tarayıcıyla oturum açmayı kullanamaz. Uygulama parolasıyla "
+"oturum açın."
 
 #: ui/dialogs/import-dialog.slint:154
 msgid "The provider's standard outgoing server replaces {}."
@@ -4066,7 +4055,7 @@ msgstr "Ayar dosyası çok büyük."
 #: ui/dialogs/import-dialog.slint:170
 msgid ""
 "This is not a supported settings export or mail file. Choose a .k9s file, a "
-"Thunderbird profile export or prefs.js, a Flectar Mail backup, or mail saved "
+"Thunderbird profile export or prefs.js, an Evanya backup, or mail saved "
 "as .mbox or .eml files."
 msgstr ""
 
@@ -4239,8 +4228,8 @@ msgstr "İçe aktarma tamamlandı"
 #: ui/dialogs/import-dialog.slint:492
 msgid ""
 "Bring your accounts from Thunderbird, Thunderbird for Android, K-9 Mail, or "
-"a Flectar Mail backup, and mail from Thunderbird or saved mail files. "
-"Passwords are never imported: you sign in to each account afterward."
+"an Evanya backup, and mail from Thunderbird or saved mail files. Passwords "
+"are never imported: you sign in to each account afterward."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:498
@@ -4258,7 +4247,7 @@ msgstr "{} (varsayılan profil)"
 #: ui/dialogs/import-dialog.slint:575
 msgid ""
 "Supported: Thunderbird for Android and K-9 Mail settings (.k9s), Thunderbird "
-"profile exports (.zip), profile folders and prefs.js, Flectar Mail backups "
+"profile exports (.zip), profile folders and prefs.js, Evanya backups "
 "(.json), and mail saved as .mbox or .eml files, in maildir folders, or in "
 "ZIP archives of them."
 msgstr ""
@@ -4266,8 +4255,8 @@ msgstr ""
 #: ui/dialogs/import-dialog.slint:576
 msgid ""
 "Supported: Thunderbird for Android and K-9 Mail settings (.k9s), Thunderbird "
-"profile exports (.zip) and prefs.js, Flectar Mail backups (.json), and mail "
-"saved as .mbox or .eml files or in ZIP archives of them."
+"profile exports (.zip) and prefs.js, Evanya backups (.json), and mail saved "
+"as .mbox or .eml files or in ZIP archives of them."
 msgstr ""
 
 #: ui/dialogs/import-dialog.slint:589
@@ -4301,8 +4290,8 @@ msgid "From Thunderbird. Existing accounts are never changed."
 msgstr "Thunderbird'den. Mevcut hesaplar asla değiştirilmez."
 
 #: ui/dialogs/import-dialog.slint:688
-msgid "Already in Flectar Mail"
-msgstr "Zaten Flectar Mail'de"
+msgid "Already in Evanya"
+msgstr "Zaten Evanya'da"
 
 #: ui/dialogs/import-dialog.slint:689
 msgid "Cannot be imported"
@@ -4358,11 +4347,10 @@ msgid "No accounts were imported."
 msgstr "Hiçbir hesap içe aktarılmadı."
 
 #: ui/dialogs/import-dialog.slint:762
-msgid "One account was already in Flectar Mail and was left unchanged."
-msgid_plural ""
-"{n} accounts were already in Flectar Mail and were left unchanged."
-msgstr[0] "Bir hesap zaten Flectar Mail'deydi ve değiştirilmedi."
-msgstr[1] "{n} hesap zaten Flectar Mail'deydi ve değiştirilmedi."
+msgid "One account was already in Evanya and was left unchanged."
+msgid_plural "{n} accounts were already in Evanya and were left unchanged."
+msgstr[0] "Bir hesap zaten Evanya'daydı ve değiştirilmedi."
+msgstr[1] "{n} hesap zaten Evanya'daydı ve değiştirilmedi."
 
 #: ui/dialogs/import-dialog.slint:768
 msgid ""
@@ -4539,10 +4527,10 @@ msgstr "E-posta görüntüleme hakkında"
 
 #: ui/dialogs/rendering-info-dialog.slint:124
 msgid ""
-"Flectar Mail uses a completely new email renderer built in Rust. It is still "
-"in its early stages, so some emails may not render correctly."
+"Evanya uses a completely new email renderer built in Rust. It is still in "
+"its early stages, so some emails may not render correctly."
 msgstr ""
-"Flectar Mail, Rust ile geliştirilmiş tamamen yeni bir e-posta görüntüleyici "
+"Evanya, Rust ile geliştirilmiş tamamen yeni bir e-posta görüntüleyici "
 "kullanır. Henüz erken aşamada olduğu için bazı e-postalar doğru "
 "görüntülenmeyebilir."
 
@@ -4604,8 +4592,8 @@ msgid "Calculating local storage…"
 msgstr "Yerel depolama hesaplanıyor…"
 
 #: ui/dialogs/settings-dialog.slint:240
-msgid "{} used by Flectar Mail"
-msgstr "Flectar Mail tarafından {} kullanılıyor"
+msgid "{} used by Evanya"
+msgstr "Evanya tarafından {} kullanılıyor"
 
 #: ui/dialogs/settings-dialog.slint:241
 msgid "Storage usage could not be calculated. Try again."
@@ -4994,8 +4982,8 @@ msgid "Follow your device language when a translation is available."
 msgstr "Bir çeviri mevcut olduğunda cihazınızın dilini kullanın."
 
 #: ui/dialogs/settings-dialog.slint:1356
-msgid "Choose the language used throughout Flectar Mail."
-msgstr "Flectar Mail genelinde kullanılacak dili seçin."
+msgid "Choose the language used throughout Evanya."
+msgstr "Evanya genelinde kullanılacak dili seçin."
 
 #: ui/dialogs/settings-dialog.slint:1366
 msgid "Time format"
@@ -5146,10 +5134,9 @@ msgid "Keep running in system tray"
 msgstr "Sistem tepsisinde çalışmayı sürdür"
 
 #: ui/dialogs/settings-dialog.slint:1627
-msgid "Closing the window hides Flectar Mail while mail continues syncing."
+msgid "Closing the window hides Evanya while mail continues syncing."
 msgstr ""
-"Pencere kapatıldığında Flectar Mail gizlenir; e-postalar eşitlenmeye devam "
-"eder."
+"Pencere kapatıldığında Evanya gizlenir; e-postalar eşitlenmeye devam eder."
 
 #: ui/dialogs/settings-dialog.slint:1628
 msgid "Disabled by default; Quit from the tray menu stops the app."
@@ -5162,12 +5149,12 @@ msgid "Start automatically"
 msgstr "Otomatik başlat"
 
 #: ui/dialogs/settings-dialog.slint:1655
-msgid "Starts Flectar Mail in the system tray when you sign in."
-msgstr "Oturum açtığınızda Flectar Mail'i sistem tepsisinde başlatır."
+msgid "Starts Evanya in the system tray when you sign in."
+msgstr "Oturum açtığınızda Evanya'yı sistem tepsisinde başlatır."
 
 #: ui/dialogs/settings-dialog.slint:1655
-msgid "Opens Flectar Mail when you sign in."
-msgstr "Oturum açtığınızda Flectar Mail'i açar."
+msgid "Opens Evanya when you sign in."
+msgstr "Oturum açtığınızda Evanya'yı açar."
 
 #: ui/dialogs/settings-dialog.slint:1656
 msgid "Disabled by default; also listed in your system's startup apps."
@@ -5212,8 +5199,8 @@ msgid "Renderer"
 msgstr "Görüntüleyici"
 
 #: ui/dialogs/settings-dialog.slint:1736
-msgid "Changes take effect after restarting Flectar Mail."
-msgstr "Değişiklikler Flectar Mail yeniden başlatıldığında etkili olur."
+msgid "Changes take effect after restarting Evanya."
+msgstr "Değişiklikler Evanya yeniden başlatıldığında etkili olur."
 
 #: ui/dialogs/settings-dialog.slint:1736
 msgid "GPU mode is unavailable in this build."
@@ -5476,10 +5463,10 @@ msgstr "Gönderilen kopyalar"
 
 #: ui/dialogs/settings-dialog.slint:2470
 msgid ""
-"Choose who saves sent mail. Use Flectar if your server does not save a copy."
+"Choose who saves sent mail. Use Evanya if your server does not save a copy."
 msgstr ""
 "Gönderilen postaları kimin kaydedeceğini seçin. Sunucunuz bir kopya "
-"kaydetmiyorsa Flectar kullanın."
+"kaydetmiyorsa Evanya kullanın."
 
 #: ui/dialogs/settings-dialog.slint:2471
 msgid "Provider default"
@@ -5490,15 +5477,15 @@ msgid "Server saves a copy"
 msgstr "Sunucu bir kopya kaydeder"
 
 #: ui/dialogs/settings-dialog.slint:2471
-msgid "Flectar saves a copy"
-msgstr "Flectar bir kopya kaydeder"
+msgid "Evanya saves a copy"
+msgstr "Evanya bir kopya kaydeder"
 
 #: ui/dialogs/settings-dialog.slint:2485
 msgid "Keep mail on the server"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2489
-msgid "Flectar Mail never removes mail from the server."
+msgid "Evanya never removes mail from the server."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2490
@@ -5611,11 +5598,10 @@ msgid "Connect"
 msgstr "Bağlan"
 
 #: ui/dialogs/settings-dialog.slint:2629
-msgid ""
-"See what Flectar Mail stores locally and manage the data on this device."
+msgid "See what Evanya stores locally and manage the data on this device."
 msgstr ""
-"Flectar Mail'in yerel olarak neleri depoladığını görün ve bu cihazdaki "
-"verileri yönetin."
+"Evanya'nın yerel olarak neleri depoladığını görün ve bu cihazdaki verileri "
+"yönetin."
 
 #: ui/dialogs/settings-dialog.slint:2655
 msgid "Mail on this device"
@@ -5725,8 +5711,8 @@ msgid "Delete everything"
 msgstr "Tümünü sil"
 
 #: ui/dialogs/settings-dialog.slint:2719
-msgid "Choose how Flectar Mail gets your attention."
-msgstr "Flectar Mail'in sizi nasıl uyaracağını seçin."
+msgid "Choose how Evanya gets your attention."
+msgstr "Evanya'nın sizi nasıl uyaracağını seçin."
 
 #: ui/dialogs/settings-dialog.slint:2746
 msgid "Notification sounds"
@@ -5819,8 +5805,8 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2816
 msgid ""
-"Optional paid services from Flectar. Flectar Mail stays free and works "
-"without them."
+"Optional paid services from Flectar. Evanya stays free and works without "
+"them."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2821
@@ -5873,8 +5859,8 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2849
 msgid ""
-"Your messages stay with your mail provider. Sync only carries your Flectar "
-"Mail setup."
+"Your messages stay with your mail provider. Sync only carries your Evanya "
+"setup."
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2864
@@ -5898,7 +5884,7 @@ msgid "Create and manage mailboxes for your team"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2870
-msgid "New mailboxes appear in Flectar Mail automatically"
+msgid "New mailboxes appear in Evanya automatically"
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2872
@@ -5912,8 +5898,9 @@ msgid ""
 msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:2903
-msgid "Flectar Mail, its makers, and its community."
-msgstr "Flectar Mail, onu geliştirenler ve topluluğu."
+msgid "Evanya is based on Flectar Mail, by Flectar and its community."
+msgstr ""
+"Evanya, Flectar ve topluluğu tarafından geliştirilen Flectar Mail'e dayanır."
 
 #: ui/dialogs/settings-dialog.slint:2919 ui/views/onboarding-view.slint:130
 msgid "Flectar Mail logo"
@@ -5961,11 +5948,9 @@ msgstr "Yalnızca AGPL-3.0."
 
 #: ui/dialogs/settings-dialog.slint:2997
 msgid ""
-"Flectar Mail is released under the GNU Affero General Public License v3.0 "
-"only."
+"Evanya is released under the GNU Affero General Public License v3.0 only."
 msgstr ""
-"Flectar Mail yalnızca GNU Affero Genel Kamu Lisansı v3.0 kapsamında "
-"yayımlanır."
+"Evanya yalnızca GNU Affero Genel Kamu Lisansı v3.0 kapsamında yayımlanır."
 
 #: ui/dialogs/settings-dialog.slint:3003
 msgid "Third-party components retain their own licenses and notices."
@@ -6235,9 +6220,9 @@ msgstr "Tüm yerel veriler silinsin mi?"
 #: ui/dialogs/settings-dialog.slint:3693
 msgid ""
 "This removes every account, downloaded message, calendar, contact, "
-"preference, and credential stored by Flectar Mail on this device."
+"preference, and credential stored by Evanya on this device."
 msgstr ""
-"Bu işlem Flectar Mail'in bu cihazda depoladığı tüm hesapları, indirilen "
+"Bu işlem Evanya'nın bu cihazda depoladığı tüm hesapları, indirilen "
 "iletileri, takvimleri, kişileri, tercihleri ve kimlik bilgilerini kaldırır."
 
 #: ui/dialogs/settings-dialog.slint:3695
@@ -6350,8 +6335,8 @@ msgid "Keep calendar"
 msgstr ""
 
 #: ui/tray.slint:23
-msgid "Show Flectar Mail"
-msgstr "Flectar Mail'i göster"
+msgid "Show Evanya"
+msgstr "Evanya'yı göster"
 
 #: ui/tray.slint:27
 msgid "Quit"

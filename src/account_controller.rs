@@ -696,7 +696,7 @@ pub(super) fn print_selected_message(state: &Rc<RefCell<InboxState>>) -> Result<
             .ok_or_else(|| "message body is not ready".to_owned())?
     };
     let printable = crate::email_document::export_html(&html, true);
-    open_temporary_html("flectar-mail-print-", &printable)
+    open_temporary_html("evanya-print-", &printable)
 }
 
 pub(super) fn open_selected_message_in_browser(
@@ -726,7 +726,7 @@ pub(super) fn open_selected_message_in_browser(
         })
     };
     open_temporary_html(
-        "flectar-mail-message-",
+        "evanya-message-",
         &crate::email_document::export_html(&html, false),
     )
 }
@@ -752,7 +752,7 @@ fn open_temporary_html(prefix: &str, html: &str) -> Result<(), String> {
         return Err(error.to_string());
     }
     let _ = std::thread::Builder::new()
-        .name("flectar-mail-temp-cleanup".into())
+        .name("evanya-temp-cleanup".into())
         .spawn(move || {
             std::thread::sleep(std::time::Duration::from_secs(10 * 60));
             let _ = std::fs::remove_file(path);

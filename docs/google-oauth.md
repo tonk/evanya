@@ -4,13 +4,13 @@ Builds without bundled OAuth keys keep Gmail sign-in disabled (see
 [Signing in to Gmail and Outlook](install.md#signing-in-to-gmail-and-outlook)).
 You can enable it with your own Google Cloud app registration: a free
 *Desktop app* OAuth client that only you, and up to 100 test users you
-name, can use. This guide creates one and configures Flectar Mail to use it.
+name, can use. This guide creates one and configures Evanya to use it.
 
 You need a Google account and about fifteen minutes. Google renames its
 console pages from time to time; if a name differs, look for the closest
 match.
 
-## What Flectar Mail asks Google for
+## What Evanya asks Google for
 
 | Feature | Scope | API to enable |
 |---|---|---|
@@ -21,7 +21,7 @@ match.
 Calendar and contacts are only requested when you connect them for an
 account, so a mail-only setup needs just the Gmail API.
 
-Sign-in uses the authorization-code flow with PKCE. Flectar Mail receives
+Sign-in uses the authorization-code flow with PKCE. Evanya receives
 Google's answer on a temporary local address (`http://127.0.0.1:<port>`),
 which Google allows for Desktop app clients without registering it.
 
@@ -32,7 +32,7 @@ which Google allows for Desktop app clients without registering it.
 1. Open the [Google Cloud console](https://console.cloud.google.com/) and
    sign in.
 2. Open the project picker at the top of the page and choose **New project**.
-3. Enter a name, for example `Flectar Mail`, and choose **Create**.
+3. Enter a name, for example `Evanya`, and choose **Create**.
 4. Make sure the new project is selected in the project picker.
 
 ### Step 2: enable the APIs
@@ -50,7 +50,7 @@ it, it walks you through these settings.
 
 1. Go to **APIs & Services → OAuth consent screen** (or **Google Auth
    Platform → Overview**) and choose **Get started**.
-2. **App information:** enter an app name, for example `Flectar Mail (personal)`,
+2. **App information:** enter an app name, for example `Evanya (personal)`,
    and your email address as the user support email.
 3. **Audience:** choose **External**, unless you have a Google Workspace
    organization and only its users will sign in; then choose **Internal**
@@ -71,7 +71,7 @@ it, it walks you through these settings.
 2. Choose **Create credentials → OAuth client ID** (or **Create client**).
 3. As **Application type**, choose **Desktop app**. Other types, such as Web
    application, fail with a `redirect_uri_mismatch` error.
-4. Enter a name, for example `Flectar Mail desktop`, and choose **Create**.
+4. Enter a name, for example `Evanya desktop`, and choose **Create**.
 5. Copy the **Client ID** (it ends in `.apps.googleusercontent.com`) and the
    **Client secret** (it starts with `GOCSPX-`). You can also choose
    **Download JSON** to keep them; you can look them up again later on the
@@ -84,20 +84,20 @@ cannot be kept hidden in an installed program. Still, don't publish it.
 
 A new app starts in **Testing** status. This works right away, but Google
 lets sign-ins with Gmail access expire after **7 days**, after which
-Flectar Mail asks you to reconnect the account.
+Evanya asks you to reconnect the account.
 
 To avoid the weekly sign-in, go to **Audience** and choose **Publish app**.
 Without Google's verification this is still fine for personal use:
 
 - Google shows a "Google hasn't verified this app" warning when you sign
-  in. Choose **Advanced → Go to Flectar Mail (unsafe)** to continue; it is
+  in. Choose **Advanced → Go to Evanya (unsafe)** to continue; it is
   your own app.
 - At most 100 users can sign in.
 
 Verification itself (including the security assessment Gmail access
 requires) is only needed if you want to offer the app to other people.
 
-## Part 2: configure Flectar Mail
+## Part 2: configure Evanya
 
 You can enter the key in the app, which is the usual way, or provide it
 through environment variables.
@@ -143,13 +143,13 @@ permission.
 ### With environment variables
 
 Instead of saving the key in the app you can provide it when you start
-Flectar Mail. Keys saved in the app and keys built into the app take
+Evanya. Keys saved in the app and keys built into the app take
 precedence over these.
 
 ```sh
 export FLECTAR_MAIL_GOOGLE_CLIENT_ID="1234567890-abc.apps.googleusercontent.com"
 export FLECTAR_MAIL_GOOGLE_CLIENT_SECRET="GOCSPX-..."
-flectar-mail
+evanya
 ```
 
 ### Built into your own build
@@ -179,4 +179,4 @@ yourself.
 | Sign-in works, but mail does not synchronize | The Gmail API is not enabled in this project (step 2). |
 | Connecting Google Calendar or contacts fails | Enable the Google Calendar API and CalDAV API, or the People API, in the same project. |
 | You have to sign in again every week | The app is in Testing status. Publish it (step 5). |
-| The browser does not return to Flectar Mail | A firewall or proxy blocks connections to `127.0.0.1`. Allow local connections for the browser, then try again. |
+| The browser does not return to Evanya | A firewall or proxy blocks connections to `127.0.0.1`. Allow local connections for the browser, then try again. |

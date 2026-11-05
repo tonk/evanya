@@ -7,8 +7,8 @@ project_dir="$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)"
 package="$(realpath "${1:?RPM path is required}")"
 results="$(realpath "${2:?Results directory is required}")"
 mkdir -p "$results"
-if rpm -q flectar-mail; then
-  printf 'Expected a clean container without Flectar Mail installed.\n' >&2
+if rpm -q evanya; then
+  printf 'Expected a clean container without Evanya installed.\n' >&2
   exit 1
 fi
 
@@ -17,9 +17,9 @@ rpm -qp --requires "$package" | tee "$results/requires.txt"
 # Resolve dependencies before adding any test tools. Build packages and weak
 # dependencies must not hide missing runtime requirements.
 dnf install -y --setopt=install_weak_deps=False "$package"
-rpm -V flectar-mail
-test -x /usr/bin/flectar-mail
-test -f /usr/lib64/flectar-mail/libpdfium.so
+rpm -V evanya
+test -x /usr/bin/evanya
+test -f /usr/lib64/evanya/libpdfium.so
 rpm -qa | sort > "$results/installed-packages.txt"
 
 # Exercise dynamically loaded libraries and the installed PDF worker before
@@ -39,17 +39,17 @@ PY
 useradd --create-home flectar-rpm-test
 chown flectar-rpm-test:flectar-rpm-test "$results"
 runuser -u flectar-rpm-test -- python3 "$project_dir/scripts/test-pdf-preview.py" \
-  /usr/bin/flectar-mail "$results/pdf-preview.png"
+  /usr/bin/evanya "$results/pdf-preview.png"
 
 dnf install -y --setopt=install_weak_deps=False \
   appstream desktop-file-utils dbus-daemon xorg-x11-server-Xvfb xorg-x11-xauth weston
-desktop-file-validate /usr/share/applications/com.flectar.mail.desktop
-appstreamcli validate --no-net /usr/share/metainfo/com.flectar.mail.metainfo.xml
+desktop-file-validate /usr/share/applications/com.evanya.mail.desktop
+appstreamcli validate --no-net /usr/share/metainfo/com.evanya.mail.metainfo.xml
 
 # Require an actual rendered frame and a successful exit, rather than treating
 # an application that hangs for 15 seconds as a successful launch.
 startup=(python3 "$project_dir/scripts/benchmark-startup.py"
-  --binary /usr/bin/flectar-mail --rounds 1 --settle-seconds 0 --idle-seconds 1)
+  --binary /usr/bin/evanya --rounds 1 --settle-seconds 0 --idle-seconds 1)
 runuser -u flectar-rpm-test -- dbus-run-session -- xvfb-run -a \
   "${startup[@]}" --output "$results/x11.json"
 
@@ -73,10 +73,10 @@ runuser -u flectar-rpm-test -- env -u DISPLAY \
   XDG_RUNTIME_DIR="$runtime_dir" WAYLAND_DISPLAY=wayland-rpm \
   dbus-run-session -- "${startup[@]}" --output "$results/wayland.json"
 
-dnf remove -y flectar-mail
-if rpm -q flectar-mail; then exit 1; fi
-test ! -e /usr/bin/flectar-mail
-test ! -e /usr/lib64/flectar-mail
-test ! -e /usr/share/applications/com.flectar.mail.desktop
-test ! -e /usr/share/metainfo/com.flectar.mail.metainfo.xml
+dnf remove -y evanya
+if rpm -q evanya; then exit 1; fi
+test ! -e /usr/bin/evanya
+test ! -e /usr/lib64/evanya
+test ! -e /usr/share/applications/com.evanya.mail.desktop
+test ! -e /usr/share/metainfo/com.evanya.mail.metainfo.xml
 printf 'RPM installation, PDF rendering, X11/Wayland startup and removal passed.\n'

@@ -162,7 +162,7 @@ jobs:
             runner: macos-15
             target: aarch64-apple-ios
             command: >-
-              cargo clippy --locked --target aarch64-apple-ios --bin flectar-mail
+              cargo clippy --locked --target aarch64-apple-ios --bin evanya
               --no-default-features --features remote-content,ios -- -D warnings
           - name: Android
             runner: ubuntu-24.04

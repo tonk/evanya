@@ -1,10 +1,10 @@
-app-id: com.flectar.mail
+app-id: com.evanya.mail
 runtime: org.freedesktop.Platform
 runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
-command: flectar-mail
+command: evanya
 separate-locales: false
 
 # The app already uses portals for browser and file-picker requests. Credential
@@ -27,31 +27,31 @@ cleanup:
   - '*.la'
 
 modules:
-  - name: flectar-mail
+  - name: evanya
     buildsystem: simple
     build-options:
       append-path: /usr/lib/sdk/rust-stable/bin
       env:
         CARGO_BUILD_JOBS: '1'
-        CARGO_HOME: /run/build/flectar-mail/cargo
+        CARGO_HOME: /run/build/evanya/cargo
         CARGO_NET_OFFLINE: 'true'
     build-commands:
-      - cargo build --offline --locked --release --no-default-features --features remote-content,gpu-renderer,flatpak --bin flectar-mail
-      - install -Dm0755 target/release/flectar-mail /app/bin/flectar-mail
-      - install -Dm0755 pdfium-runtime/lib/libpdfium.so /app/lib/flectar-mail/libpdfium.so
-      - python3 scripts/test-pdf-preview.py /app/bin/flectar-mail
+      - cargo build --offline --locked --release --no-default-features --features remote-content,gpu-renderer,flatpak --bin evanya
+      - install -Dm0755 target/release/evanya /app/bin/evanya
+      - install -Dm0755 pdfium-runtime/lib/libpdfium.so /app/lib/evanya/libpdfium.so
+      - python3 scripts/test-pdf-preview.py /app/bin/evanya
       - python3 scripts/stage-linux-metadata.py --flatpak _flatpak-stage
-      - install -Dm0644 _flatpak-stage/usr/share/applications/com.flectar.mail.desktop /app/share/applications/com.flectar.mail.desktop
-      - install -Dm0644 _flatpak-stage/usr/share/metainfo/com.flectar.mail.metainfo.xml /app/share/metainfo/com.flectar.mail.metainfo.xml
-      - install -Dm0644 resources/app-icon/flectar-mail-masked-512.png /app/share/icons/hicolor/512x512/apps/com.flectar.mail.png
-      - install -Dm0644 resources/app-icon/flectar-mail-masked.svg /app/share/icons/hicolor/scalable/apps/com.flectar.mail.svg
-      - install -Dm0644 LICENSE /app/share/licenses/flectar-mail/LICENSE
-      - cp -a LICENSES /app/share/licenses/flectar-mail/LICENSES
-      - install -Dm0644 THIRD_PARTY_NOTICES.md /app/share/doc/flectar-mail/THIRD_PARTY_NOTICES.md
-      - install -Dm0644 resources/fonts/google-sans-flex/OFL.txt /app/share/licenses/flectar-mail/google-sans-flex/OFL.txt
-      - install -Dm0644 resources/fonts/google-sans-flex/README.md /app/share/doc/flectar-mail/google-sans-flex/README.md
-      - mkdir -p /app/share/licenses/flectar-mail/pdfium
-      - cp -a pdfium-runtime/LICENSE pdfium-runtime/licenses /app/share/licenses/flectar-mail/pdfium/
+      - install -Dm0644 _flatpak-stage/usr/share/applications/com.evanya.mail.desktop /app/share/applications/com.evanya.mail.desktop
+      - install -Dm0644 _flatpak-stage/usr/share/metainfo/com.evanya.mail.metainfo.xml /app/share/metainfo/com.evanya.mail.metainfo.xml
+      - install -Dm0644 resources/app-icon/flectar-mail-masked-512.png /app/share/icons/hicolor/512x512/apps/com.evanya.mail.png
+      - install -Dm0644 resources/app-icon/flectar-mail-masked.svg /app/share/icons/hicolor/scalable/apps/com.evanya.mail.svg
+      - install -Dm0644 LICENSE /app/share/licenses/evanya/LICENSE
+      - cp -a LICENSES /app/share/licenses/evanya/LICENSES
+      - install -Dm0644 THIRD_PARTY_NOTICES.md /app/share/doc/evanya/THIRD_PARTY_NOTICES.md
+      - install -Dm0644 resources/fonts/google-sans-flex/OFL.txt /app/share/licenses/evanya/google-sans-flex/OFL.txt
+      - install -Dm0644 resources/fonts/google-sans-flex/README.md /app/share/doc/evanya/google-sans-flex/README.md
+      - mkdir -p /app/share/licenses/evanya/pdfium
+      - cp -a pdfium-runtime/LICENSE pdfium-runtime/licenses /app/share/licenses/evanya/pdfium/
     sources:
       # Package the exact checkout selected by the release workflow.
       - type: dir

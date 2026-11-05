@@ -294,7 +294,7 @@ fn library_path(executable: &std::path::Path) -> Result<std::path::PathBuf, Stri
     #[cfg(linux_desktop)]
     {
         // Linux packages keep private libraries out of the executable directory.
-        for libdir in ["../lib64/flectar-mail", "../lib/flectar-mail"] {
+        for libdir in ["../lib64/evanya", "../lib/evanya"] {
             let packaged = directory.join(libdir).join(&name);
             if packaged.is_file() {
                 return Ok(packaged);

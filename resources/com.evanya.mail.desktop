@@ -1,15 +1,15 @@
 [Desktop Entry]
-Name=Flectar Mail
+Name=Evanya
 GenericName=Email Client
 Comment=Native email client built with Slint and Blitz
-Exec=flectar-mail
-Icon=com.flectar.mail
+Exec=evanya
+Icon=com.evanya.mail
 Type=Application
 Categories=Office;Email;
 Keywords=Mail;Email;IMAP;Gmail;Outlook;Calendar;
 Terminal=false
 StartupNotify=true
-X-AppImage-Name=Flectar Mail
+X-AppImage-Name=Evanya
 # Packaging replaces this with the Cargo.toml version.
 X-AppImage-Version=0.1.0-alpha.4
 X-AppImage-Arch=x86_64

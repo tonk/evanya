@@ -90,8 +90,8 @@ class PackagingTests(unittest.TestCase):
         checksum = hashlib.sha256(data).hexdigest()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            frameworks = root / "Flectar Mail.app/Contents/Frameworks"
-            licenses = root / "Flectar Mail.app/Contents/Resources/Licenses/PDFium"
+            frameworks = root / "Evanya.app/Contents/Frameworks"
+            licenses = root / "Evanya.app/Contents/Resources/Licenses/PDFium"
             with patch.dict(
                 stage.ASSETS,
                 {"fixture": (checksum, "lib/libpdfium.dylib")},
@@ -109,7 +109,7 @@ class PackagingTests(unittest.TestCase):
             for name in (
                 "scripts/package-macos.sh",
                 "platform/macos/Info.plist.in",
-                "platform/macos/com.flectar.mail.login.plist",
+                "platform/macos/com.evanya.mail.login.plist",
                 "LICENSE",
                 "THIRD_PARTY_NOTICES.md",
                 "resources/fonts/google-sans-flex/OFL.txt",
@@ -125,8 +125,8 @@ class PackagingTests(unittest.TestCase):
             (root / "resources/app-icon/flectar-mail-masked.png").write_bytes(b"png")
             (root / "Cargo.toml").write_text('[package]\nversion = "0.1.0-alpha.5"\n')
             (root / "target/release").mkdir(parents=True)
-            shutil.copyfile("/bin/true", root / "target/release/flectar-mail")
-            (root / "target/release/flectar-mail").chmod(0o755)
+            shutil.copyfile("/bin/true", root / "target/release/evanya")
+            (root / "target/release/evanya").chmod(0o755)
 
             (root / "scripts/stage-pdfium.py").write_text(
                 "import os, pathlib, sys\n"
@@ -179,7 +179,7 @@ class PackagingTests(unittest.TestCase):
                         [
                             "bash",
                             str(root / "scripts/package-macos.sh"),
-                            str(root / "target/release/flectar-mail"),
+                            str(root / "target/release/evanya"),
                             str(output_dir),
                             architecture,
                         ],
@@ -194,18 +194,18 @@ class PackagingTests(unittest.TestCase):
                         text=True,
                     )
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-                    app = output_dir / "Flectar Mail.app/Contents"
+                    app = output_dir / "Evanya.app/Contents"
                     self.assertTrue((app / "Frameworks/libpdfium.dylib").is_file())
                     self.assertTrue((app / "Resources/Licenses/PDFium/build.json").is_file())
                     self.assertFalse((app / "MacOS/libpdfium.dylib").exists())
                     self.assertTrue(
-                        (app / "Library/LaunchAgents/com.flectar.mail.login.plist").is_file()
+                        (app / "Library/LaunchAgents/com.evanya.mail.login.plist").is_file()
                     )
-                    self.assertTrue((output_dir / f"flectar-mail-macos-{architecture}.zip").is_file())
-                    self.assertTrue((output_dir / f"flectar-mail-macos-{architecture}.dmg").is_file())
+                    self.assertTrue((output_dir / f"evanya-macos-{architecture}.zip").is_file())
+                    self.assertTrue((output_dir / f"evanya-macos-{architecture}.dmg").is_file())
                     signatures = codesign_log.read_text().splitlines()
                     self.assertIn("Contents/Frameworks/libpdfium.dylib", signatures[0])
-                    self.assertTrue(signatures[1].endswith("Flectar Mail.app"))
+                    self.assertTrue(signatures[1].endswith("Evanya.app"))
                     self.assertIn("--verify --deep --strict", signatures[2])
 
     def test_apk_requires_pdfium_notices_and_aligned_native_libraries(self):
