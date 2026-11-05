@@ -56,6 +56,9 @@ impl SidebarAnimation {
                 && animation.generation.get() == generation
             {
                 model.reconcile(animation.target.borrow().clone());
+                // The opened rows grew from zero height while they animated;
+                // without this the list stays too short to scroll to them.
+                model.remeasure();
             }
         });
     }

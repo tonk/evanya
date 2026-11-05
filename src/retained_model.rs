@@ -28,6 +28,15 @@ impl<T: Clone + 'static> Model for RetainedModel<T> {
 }
 
 impl<T: Clone + 'static> RetainedModel<T> {
+    /// Make a ListView measure its rows again. Slint's ListView sums the row
+    /// heights it saw when rows were added or removed; a row that grows
+    /// afterwards, as an expanding row does while it animates open, is not
+    /// counted until the next such change. A reset rebuilds the visible rows at
+    /// their current height and keeps the scroll position.
+    pub(crate) fn remeasure(&self) {
+        self.notify.reset();
+    }
+
     pub(crate) fn reconcile_by<K: Eq>(
         &self,
         rows: Vec<T>,
