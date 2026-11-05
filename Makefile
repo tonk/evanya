@@ -7,8 +7,11 @@ DESTDIR  ?=
 JOBS     ?=
 CARGO    ?= cargo
 CARGOFLAGS := $(if $(JOBS),-j $(JOBS),)
+# `make sweep` keeps build files used in the last SWEEP_DAYS days.
+SWEEP_DAYS ?= 14
+SWEEPFLAGS := $(if $(DRY),--dry-run,)
 
-.PHONY: all build release fast run-fast debug run check test fmt clippy install uninstall clean help
+.PHONY: all build release fast run-fast debug run check test fmt clippy install uninstall sweep clean help
 
 all: release
 
@@ -22,6 +25,7 @@ help:
 	@echo "make test       run the tests"
 	@echo "make fmt        format; make clippy  lint"
 	@echo "make install    install to \$$(DESTDIR)\$$(PREFIX)/bin (PREFIX=$(PREFIX))"
+	@echo "make sweep      delete build files unused for $(SWEEP_DAYS) days (SWEEP_DAYS=n, DRY=1 to only list)"
 	@echo "make clean      remove target/"
 
 build release:
@@ -58,6 +62,13 @@ install: release
 
 uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/bin/$(BIN)
+
+# Builds keep every older compiled version in target/, which grows to tens of
+# gigabytes. Needs cargo-sweep: `cargo install cargo-sweep`.
+sweep:
+	@command -v cargo-sweep >/dev/null || { echo "cargo-sweep is missing: cargo install cargo-sweep" >&2; exit 1; }
+	$(CARGO) sweep --time $(SWEEP_DAYS) $(SWEEPFLAGS)
+	$(CARGO) sweep --installed $(SWEEPFLAGS)
 
 clean:
 	$(CARGO) clean
