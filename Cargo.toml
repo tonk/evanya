@@ -226,6 +226,14 @@ strip = "symbols"
 # makes every integration-test binary expensive to link. Line tables preserve
 # useful file/line backtraces while keeping development builds substantially
 # smaller and less memory-hungry.
+# `make fast`: optimized like release, but without LTO and with parallel code
+# generation and incremental builds, so rebuilding after a change is quick.
+[profile.fast]
+inherits = "release"
+lto = false
+codegen-units = 16
+incremental = true
+
 [profile.dev]
 debug = 1
 
