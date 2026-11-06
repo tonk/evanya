@@ -65,8 +65,9 @@ enum Remote {
     Jmap {
         client: Option<jmap::client::ConnectedClient>,
     },
+    // Boxed: the Gmail uploader is much larger than the other connections.
     Gmail {
-        uploader: sync::gmail::Uploader,
+        uploader: Box<sync::gmail::Uploader>,
     },
 }
 
@@ -93,7 +94,7 @@ impl crate::Core {
             },
             MailProtocol::Jmap => Remote::Jmap { client: None },
             MailProtocol::Gmail => Remote::Gmail {
-                uploader: sync::gmail::Uploader::new(self.sync_ctx(), config.clone())?,
+                uploader: Box::new(sync::gmail::Uploader::new(self.sync_ctx(), config.clone())?),
             },
             MailProtocol::Pop3 | MailProtocol::Local => {
                 return Err(CoreError::Other(
@@ -722,7 +723,9 @@ impl crate::Core {
             MailProtocol::Gmail => {
                 let uploader = sync::gmail::Uploader::new(self.sync_ctx(), config.clone())?;
                 uploader.refresh_labels().await?;
-                Remote::Gmail { uploader }
+                Remote::Gmail {
+                    uploader: Box::new(uploader),
+                }
             }
             MailProtocol::Pop3 | MailProtocol::Local => {
                 return Err(CoreError::Other(

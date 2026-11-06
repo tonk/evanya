@@ -18,3 +18,8 @@ slint = { version = "1.18.1", default-features = false, features = [
 
 [build-dependencies]
 slint-build = "1.18.1"
+
+# build.rs compiles the interface with slint-build, which cargo-machete does
+# not see.
+[package.metadata.cargo-machete]
+ignored = ["slint-build"]
