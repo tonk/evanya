@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-06 14:39+0000\n"
+"POT-Creation-Date: 2026-11-06 14:56+0000\n"
 "PO-Revision-Date: 2026-09-20 23:21+0000\n"
 "Last-Translator: Admin <admin@flectar.com>\n"
 "Language-Team: Spanish <https://translate.flectar.com/projects/flectar-mail/"
@@ -400,30 +400,30 @@ msgstr[1] "{n} interacciones"
 #: ui/app.slint:193
 msgid "{n} min ago"
 msgid_plural "{n} min ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "hace {n} min"
+msgstr[1] "hace {n} min"
 
 #: ui/app.slint:194
 msgid "{n} h ago"
 msgid_plural "{n} h ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "hace {n} h"
+msgstr[1] "hace {n} h"
 
 #: ui/app.slint:195
 msgid "{n} day ago"
 msgid_plural "{n} days ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "hace {n} día"
+msgstr[1] "hace {n} días"
 
 #: ui/app.slint:196
 msgid "{n} week ago"
 msgid_plural "{n} weeks ago"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "hace {n} semana"
+msgstr[1] "hace {n} semanas"
 
 #: ui/app.slint:197
 msgid "Just now"
-msgstr ""
+msgstr "Ahora mismo"
 
 #: ui/app.slint:199
 msgid "Last contacted {}"
@@ -1002,47 +1002,47 @@ msgstr "No se pudo eliminar el calendario: {}"
 
 #: ui/app.slint:378
 msgid "Unified mailbox preference saved."
-msgstr ""
+msgstr "Preferencia del buzón unificado guardada."
 
 #: ui/app.slint:379
 msgid "Could not save unified mailbox preference: {}"
-msgstr ""
+msgstr "No se pudo guardar la preferencia del buzón unificado: {}"
 
 #: ui/app.slint:380
 msgid "Reading pane position saved."
-msgstr ""
+msgstr "Posición del panel de lectura guardada."
 
 #: ui/app.slint:381
 msgid "Date display preference saved."
-msgstr ""
+msgstr "Preferencia de visualización de fechas guardada."
 
 #: ui/app.slint:382
 msgid "Could not save date display preference: {}"
-msgstr ""
+msgstr "No se pudo guardar la preferencia de visualización de fechas: {}"
 
 #: ui/app.slint:383
 msgid "The account's mail is shown again."
-msgstr ""
+msgstr "El correo de la cuenta vuelve a mostrarse."
 
 #: ui/app.slint:384
 msgid "The account's mail is hidden; it keeps synchronizing."
-msgstr ""
+msgstr "El correo de la cuenta está oculto; sigue sincronizándose."
 
 #: ui/app.slint:385
 msgid "Could not save the account's mail visibility: {}"
-msgstr ""
+msgstr "No se pudo guardar la visibilidad del correo de la cuenta: {}"
 
 #: ui/app.slint:386
 msgid "Could not save the folder choice: {}"
-msgstr ""
+msgstr "No se pudo guardar la elección de carpetas: {}"
 
 #: ui/app.slint:387
 msgid "Move or copy {} to {}?"
-msgstr ""
+msgstr "¿Mover o copiar {} a {}?"
 
 #: ui/app.slint:388
 msgid "1 message"
-msgstr ""
+msgstr "1 mensaje"
 
 #: ui/app.slint:389 ui/views/mail-list-pane.slint:1095
 msgid "{} messages"
@@ -1050,84 +1050,86 @@ msgstr "{} mensajes"
 
 #: ui/app.slint:390
 msgid "Moving messages to {}…"
-msgstr ""
+msgstr "Moviendo mensajes a {}…"
 
 #: ui/app.slint:391
 msgid "Copying messages to {}…"
-msgstr ""
+msgstr "Copiando mensajes a {}…"
 
 #: ui/app.slint:392
 msgid "Moved {} to {}."
-msgstr ""
+msgstr "Se movió {} a {}."
 
 #: ui/app.slint:393
 msgid "Copied {} to {}."
-msgstr ""
+msgstr "Se copió {} a {}."
 
 #: ui/app.slint:394
 msgid ""
 "{} copied; {} could not be read or were refused and stay where they were."
 msgstr ""
+"{} copiados; {} no se pudieron leer o fueron rechazados y siguen donde "
+"estaban."
 
 #: ui/app.slint:395
 msgid "Could not copy the messages: {}"
-msgstr ""
+msgstr "No se pudieron copiar los mensajes: {}"
 
 #: ui/app.slint:396
 msgid "Calendar color saved."
-msgstr ""
+msgstr "Color del calendario guardado."
 
 #: ui/app.slint:397
 msgid "Add a language…"
-msgstr ""
+msgstr "Añadir un idioma…"
 
 #: ui/app.slint:398
 msgid "App font ({})"
-msgstr ""
+msgstr "Fuente de la aplicación ({})"
 
 #: ui/app.slint:399
 msgid "Could not save the font settings: {}"
-msgstr ""
+msgstr "No se pudieron guardar los ajustes de fuentes: {}"
 
 #: ui/app.slint:400
 msgid "Could not save the spelling settings: {}"
-msgstr ""
+msgstr "No se pudieron guardar los ajustes de ortografía: {}"
 
 #: ui/app.slint:401
 msgid "Account name saved."
-msgstr ""
+msgstr "Nombre de la cuenta guardado."
 
 #: ui/app.slint:402
 msgid "Account names require local mail data."
-msgstr ""
+msgstr "Los nombres de cuenta requieren datos de correo locales."
 
 #: ui/app.slint:403
 msgid "Could not save account name: {}"
-msgstr ""
+msgstr "No se pudo guardar el nombre de la cuenta: {}"
 
 #: ui/app.slint:404
 msgid "Message format preference saved."
-msgstr ""
+msgstr "Preferencia de formato de mensaje guardada."
 
 #: ui/app.slint:405
 msgid "Could not save message format preference: {}"
-msgstr ""
+msgstr "No se pudo guardar la preferencia de formato de mensaje: {}"
 
 #: ui/app.slint:406
 msgid "Could not save reading pane position: {}"
-msgstr ""
+msgstr "No se pudo guardar la posición del panel de lectura: {}"
 
 #: ui/app.slint:407
 msgid "Authorize contacts access in your browser."
-msgstr ""
+msgstr "Autoriza el acceso a los contactos en tu navegador."
 
 #: ui/app.slint:408
 msgid "Google contacts connected and initial sync started."
-msgstr ""
+msgstr "Contactos de Google conectados y sincronización inicial iniciada."
 
 #: ui/app.slint:409
 msgid "Could not connect Google contacts: {}"
-msgstr ""
+msgstr "No se pudieron conectar los contactos de Google: {}"
 
 #: ui/app.slint:410
 msgid "CardDAV connected and initial sync started."
@@ -1582,11 +1584,11 @@ msgstr "Carpeta renombrada."
 
 #: ui/app.slint:547
 msgid "Unread counts preference saved."
-msgstr ""
+msgstr "Preferencia de contadores de no leídos guardada."
 
 #: ui/app.slint:548
 msgid "Choose the directory to sync through"
-msgstr ""
+msgstr "Elige el directorio con el que sincronizar"
 
 #: ui/app.slint:549 ui/components/profile-switcher.slint:126
 #: ui/views/files-view.slint:39
@@ -1595,155 +1597,157 @@ msgstr "Todas las cuentas"
 
 #: ui/app.slint:550
 msgid "a header needs a name"
-msgstr ""
+msgstr "un encabezado necesita un nombre"
 
 #: ui/app.slint:551
 msgid "a header name has only letters, digits and punctuation other than ':'"
 msgstr ""
+"un nombre de encabezado solo lleva letras, dígitos y signos de puntuación "
+"distintos de ':'"
 
 #: ui/app.slint:552
 msgid "this header is written by Evanya itself"
-msgstr ""
+msgstr "este encabezado lo escribe el propio Evanya"
 
 #: ui/app.slint:553
 msgid "a header value is one line"
-msgstr ""
+msgstr "el valor de un encabezado es una sola línea"
 
 #: ui/app.slint:554
 msgid "a header is limited to 900 characters"
-msgstr ""
+msgstr "un encabezado se limita a 900 caracteres"
 
 #: ui/app.slint:555
 msgid "a header is written as Name: value"
-msgstr ""
+msgstr "un encabezado se escribe como Nombre: valor"
 
 #: ui/app.slint:556
 msgid "Line {}"
-msgstr ""
+msgstr "Línea {}"
 
 #: ui/app.slint:557 ui/components/calendar.slint:704
 msgid "Import an iCalendar file"
-msgstr ""
+msgstr "Importar un archivo iCalendar"
 
 #: ui/app.slint:558
 msgid "Could not import: {}"
-msgstr ""
+msgstr "No se pudo importar: {}"
 
 #: ui/app.slint:559
 msgid "Imported {} events."
-msgstr ""
+msgstr "Se importaron {} eventos."
 
 #: ui/app.slint:560
 msgid "{} were already in the calendar."
-msgstr ""
+msgstr "{} ya estaban en el calendario."
 
 #: ui/app.slint:561
 msgid "first"
-msgstr ""
+msgstr "primer"
 
 #: ui/app.slint:562
 msgid "second"
-msgstr ""
+msgstr "segundo"
 
 #: ui/app.slint:563
 msgid "third"
-msgstr ""
+msgstr "tercer"
 
 #: ui/app.slint:564
 msgid "fourth"
-msgstr ""
+msgstr "cuarto"
 
 #: ui/app.slint:565
 msgid "last"
-msgstr ""
+msgstr "último"
 
 #: ui/app.slint:566
 msgid "Does not repeat"
-msgstr ""
+msgstr "No se repite"
 
 #: ui/app.slint:567
 msgid "Every day"
-msgstr ""
+msgstr "Todos los días"
 
 #: ui/app.slint:568
 msgid "Every weekday (Monday to Friday)"
-msgstr ""
+msgstr "Todos los días laborables (de lunes a viernes)"
 
 #: ui/app.slint:569
 msgid "Every week"
-msgstr ""
+msgstr "Todas las semanas"
 
 #: ui/app.slint:570
 msgid "Every two weeks"
-msgstr ""
+msgstr "Cada dos semanas"
 
 #: ui/app.slint:571
 msgid "Every year"
-msgstr ""
+msgstr "Todos los años"
 
 #: ui/app.slint:572
 msgid "Custom rule, kept as it is"
-msgstr ""
+msgstr "Regla personalizada, se conserva tal cual"
 
 #: ui/app.slint:573
 msgid "Use YYYY-MM-DD for the end date."
-msgstr ""
+msgstr "Usa AAAA-MM-DD para la fecha de fin."
 
 #: ui/app.slint:574
 msgid "The repetition cannot end before the event starts."
-msgstr ""
+msgstr "La repetición no puede terminar antes de que empiece el evento."
 
 #: ui/app.slint:575
 msgid "The number of times is a number from 1 to 999."
-msgstr ""
+msgstr "El número de veces es un número del 1 al 999."
 
 #: ui/app.slint:576
 msgid "Every month on day {}"
-msgstr ""
+msgstr "Todos los meses el día {}"
 
 #: ui/app.slint:577
 msgid "Every month on the {}"
-msgstr ""
+msgstr "Todos los meses el {}"
 
 #: ui/app.slint:578
 msgid "Every month on the last {}"
-msgstr ""
+msgstr "Todos los meses el último {}"
 
 #: ui/app.slint:579
 msgid "Every year on the {} of {}"
-msgstr ""
+msgstr "Todos los años el {} de {}"
 
 #: ui/app.slint:580
 msgid "Every year on the last {} of {}"
-msgstr ""
+msgstr "Todos los años el último {} de {}"
 
 #: ui/app.slint:581
 msgid "{}, once"
-msgstr ""
+msgstr "{}, una vez"
 
 #: ui/app.slint:582
 msgid "{}, {} times"
-msgstr ""
+msgstr "{}, {} veces"
 
 #: ui/app.slint:583
 msgid "{}, until {}"
-msgstr ""
+msgstr "{}, hasta el {}"
 
 #: ui/app.slint:584
 msgid "New mail"
-msgstr ""
+msgstr "Correo nuevo"
 
 #: ui/app.slint:585
 msgid "Choose a picture for this account"
-msgstr ""
+msgstr "Elige una imagen para esta cuenta"
 
 #: ui/app.slint:586
 msgid "Could not use this picture: {}"
-msgstr ""
+msgstr "No se pudo usar esta imagen: {}"
 
 #: ui/app.slint:587
 msgid "Could not save unread counts preference: {}"
-msgstr ""
+msgstr "No se pudo guardar la preferencia de contadores de no leídos: {}"
 
 #: ui/app.slint:588
 msgid "Folder deleted."
@@ -2109,13 +2113,15 @@ msgstr "Etiquetas globales (solo locales)"
 
 #: ui/app.slint:2167
 msgid "Another account"
-msgstr ""
+msgstr "Otra cuenta"
 
 #: ui/app.slint:2179
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
+"Mover copia los mensajes allí y luego los pasa a la Papelera de su propia "
+"cuenta. Copiar los deja donde están."
 
 #: ui/app.slint:2188 ui/components/account-mail-preferences.slint:198
 #: ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
@@ -2127,11 +2133,11 @@ msgstr "Cancelar"
 
 #: ui/app.slint:2192 ui/components/controls.slint:87
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: ui/app.slint:2196
 msgid "Move"
-msgstr ""
+msgstr "Mover"
 
 #: ui/app.slint:2685
 msgid "Empty Trash?"
@@ -2345,21 +2351,23 @@ msgstr "OpenPGP"
 
 #: ui/components/account-mail-preferences.slint:144
 msgid "Your name"
-msgstr ""
+msgstr "Tu nombre"
 
 #: ui/components/account-mail-preferences.slint:148
 msgid "Name shown to recipients"
-msgstr ""
+msgstr "Nombre que ven los destinatarios"
 
 #: ui/components/account-mail-preferences.slint:152
 msgid ""
 "Shown to recipients next to your sign-in address. Leave it empty to use the "
 "name your provider gives."
 msgstr ""
+"Se muestra a los destinatarios junto a tu dirección de inicio de sesión. "
+"Déjalo vacío para usar el nombre que da tu proveedor."
 
 #: ui/components/account-mail-preferences.slint:156
 msgid "Save name"
-msgstr ""
+msgstr "Guardar nombre"
 
 #: ui/components/account-mail-preferences.slint:160
 msgid "Default sender identity"
@@ -2822,7 +2830,7 @@ msgstr "D"
 
 #: ui/components/calendar.slint:206
 msgid "Week {}"
-msgstr ""
+msgstr "Semana {}"
 
 #: ui/components/calendar.slint:241 ui/components/calendar.slint:752
 #: ui/components/calendar.slint:1045
@@ -2891,7 +2899,7 @@ msgstr "TODO EL DÍA"
 
 #: ui/components/calendar.slint:611
 msgid "Calendar sidebar width"
-msgstr ""
+msgstr "Ancho de la barra lateral del calendario"
 
 #: ui/components/calendar.slint:652
 msgid "Hide calendars"
@@ -2935,7 +2943,7 @@ msgstr "Hora local · {}"
 
 #: ui/components/calendar.slint:930
 msgid "+{} more"
-msgstr ""
+msgstr "+{} más"
 
 #: ui/components/calendar.slint:1056
 msgid "Agenda · {}"
@@ -3007,11 +3015,11 @@ msgstr "Plantillas de correo"
 
 #: ui/components/composer-actions.slint:75
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: ui/components/composer-actions.slint:85
 msgid "Plain text"
-msgstr ""
+msgstr "Texto sin formato"
 
 #: ui/components/composer-actions.slint:96
 msgid "Undo · Ctrl+Z"
@@ -3146,15 +3154,15 @@ msgstr "Confirmar"
 
 #: ui/components/controls.slint:86 ui/components/controls.slint:168
 msgid "Cut"
-msgstr ""
+msgstr "Cortar"
 
 #: ui/components/controls.slint:88 ui/components/controls.slint:170
 msgid "Paste"
-msgstr ""
+msgstr "Pegar"
 
 #: ui/components/controls.slint:90 ui/components/controls.slint:172
 msgid "Select all"
-msgstr ""
+msgstr "Seleccionar todo"
 
 #: ui/components/controls.slint:212
 msgid "On"
@@ -3202,11 +3210,11 @@ msgstr "Escribe tu mensaje…"
 
 #: ui/components/email-composer.slint:493
 msgid "No suggestions"
-msgstr ""
+msgstr "Sin sugerencias"
 
 #: ui/components/email-composer.slint:498
 msgid "Add to dictionary"
-msgstr ""
+msgstr "Añadir al diccionario"
 
 #: ui/components/email-link-context-area.slint:25
 msgid "Open link"
@@ -3327,15 +3335,15 @@ msgstr "Espacio"
 
 #: ui/components/mail-security-fields.slint:39
 msgid "Reject (recommended)"
-msgstr ""
+msgstr "Rechazar (recomendado)"
 
 #: ui/components/mail-security-fields.slint:39
 msgid "Accept once"
-msgstr ""
+msgstr "Aceptar una vez"
 
 #: ui/components/mail-security-fields.slint:39
 msgid "Always accept"
-msgstr ""
+msgstr "Aceptar siempre"
 
 #: ui/components/mail-security-fields.slint:95
 msgid "Connection security"
@@ -3398,13 +3406,15 @@ msgstr "Eliminar certificado"
 
 #: ui/components/mail-security-fields.slint:161
 msgid "Invalid server certificates"
-msgstr ""
+msgstr "Certificados de servidor no válidos"
 
 #: ui/components/mail-security-fields.slint:168
 msgid ""
 "The certificate is not checked while this account is added. Later "
 "connections check it again."
 msgstr ""
+"El certificado no se comprueba mientras se añade esta cuenta. Las conexiones "
+"posteriores lo comprueban de nuevo."
 
 #: ui/components/mail-security-fields.slint:169
 msgid ""
@@ -3412,6 +3422,9 @@ msgid ""
 "could impersonate the server. Only use this with a server you trust, such as "
 "Proton Bridge on this computer."
 msgstr ""
+"El certificado nunca se comprueba para esta cuenta, así que cualquiera en la "
+"red podría suplantar al servidor. Úsalo solo con un servidor de confianza, "
+"como Proton Bridge en este ordenador."
 
 #: ui/components/mail-security-fields.slint:174
 msgid "Custom certificate added for this account."
@@ -3574,7 +3587,7 @@ msgstr "Expandir carpeta"
 
 #: ui/components/sidebar-controls.slint:188
 msgid "Mark all as read"
-msgstr ""
+msgstr "Marcar todo como leído"
 
 #: ui/components/sidebar-controls.slint:195
 msgid "New subfolder"
@@ -3688,51 +3701,51 @@ msgstr "No se encontraron carpetas"
 
 #: ui/components/status-bar.slint:31
 msgid "All accounts are up to date"
-msgstr ""
+msgstr "Todas las cuentas están al día"
 
 #: ui/components/status-bar.slint:36
 msgid "message history: {} of {} folders"
-msgstr ""
+msgstr "historial de mensajes: {} de {} carpetas"
 
 #: ui/components/status-bar.slint:39
 msgid "downloading messages: {} of {}"
-msgstr ""
+msgstr "descargando mensajes: {} de {}"
 
 #: ui/components/status-bar.slint:42
 msgid "retrying {} that failed"
-msgstr ""
+msgstr "reintentando {} que fallaron"
 
 #: ui/components/status-bar.slint:45
 msgid "indexing for search: {} of {}"
-msgstr ""
+msgstr "indexando para la búsqueda: {} de {}"
 
 #: ui/components/status-bar.slint:47
 msgid "checking for new mail"
-msgstr ""
+msgstr "buscando correo nuevo"
 
 #: ui/components/status-bar.slint:52
 msgid "{}: offline"
-msgstr ""
+msgstr "{}: sin conexión"
 
 #: ui/components/status-bar.slint:55
 msgid "{}: sign in again"
-msgstr ""
+msgstr "{}: vuelve a iniciar sesión"
 
 #: ui/components/status-bar.slint:58
 msgid "{}: sync failed"
-msgstr ""
+msgstr "{}: falló la sincronización"
 
 #: ui/components/status-bar.slint:58
 msgid "{}: sync failed ({})"
-msgstr ""
+msgstr "{}: falló la sincronización ({})"
 
 #: ui/components/status-bar.slint:60
 msgid "{}: {}"
-msgstr ""
+msgstr "{}: {}"
 
 #: ui/components/status-bar.slint:61
 msgid "{}: {} · {}"
-msgstr ""
+msgstr "{}: {} · {}"
 
 #: ui/components/tab-overview.slint:18
 msgid "Show tabs"
@@ -3876,7 +3889,7 @@ msgstr "Verde azulado"
 
 #: ui/components/theme-editor.slint:625 ui/components/theme-editor.slint:646
 msgid "Black"
-msgstr ""
+msgstr "Negro"
 
 #: ui/components/theme-editor.slint:626 ui/components/theme-editor.slint:647
 msgid "Custom"
@@ -4009,15 +4022,15 @@ msgstr "CalDAV"
 
 #: ui/dialogs/calendar-details-dialog.slint:186
 msgid "COLOR"
-msgstr ""
+msgstr "COLOR"
 
 #: ui/dialogs/calendar-details-dialog.slint:212
 msgid "Color {}"
-msgstr ""
+msgstr "Color {}"
 
 #: ui/dialogs/calendar-details-dialog.slint:222
 msgid "Provider color"
-msgstr ""
+msgstr "Color del proveedor"
 
 #: ui/dialogs/calendar-details-dialog.slint:226
 msgid "WHEN"
@@ -4113,35 +4126,35 @@ msgstr "60"
 
 #: ui/dialogs/calendar-event-dialog.slint:89
 msgid "This device"
-msgstr ""
+msgstr "Este dispositivo"
 
 #: ui/dialogs/calendar-event-dialog.slint:93
 msgid "Optional"
-msgstr ""
+msgstr "Opcional"
 
 #: ui/dialogs/calendar-event-dialog.slint:96
 msgid "REPEAT"
-msgstr ""
+msgstr "REPETIR"
 
 #: ui/dialogs/calendar-event-dialog.slint:105
 msgid "ENDS"
-msgstr ""
+msgstr "TERMINA"
 
 #: ui/dialogs/calendar-event-dialog.slint:112
 msgid "Never"
-msgstr ""
+msgstr "Nunca"
 
 #: ui/dialogs/calendar-event-dialog.slint:112
 msgid "On a date"
-msgstr ""
+msgstr "En una fecha"
 
 #: ui/dialogs/calendar-event-dialog.slint:112
 msgid "After a number of times"
-msgstr ""
+msgstr "Después de un número de veces"
 
 #: ui/dialogs/calendar-event-dialog.slint:129
 msgid "Number of times"
-msgstr ""
+msgstr "Número de veces"
 
 #: ui/dialogs/calendar-event-dialog.slint:151
 msgid "Create"
@@ -4149,13 +4162,13 @@ msgstr "Crear"
 
 #: ui/dialogs/calendar-event-dialog.slint:197
 msgid "Import events"
-msgstr ""
+msgstr "Importar eventos"
 
 #: ui/dialogs/calendar-event-dialog.slint:199
 msgid "{} contains one event."
 msgid_plural "{} contains {n} events."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{} contiene un evento."
+msgstr[1] "{} contiene {n} eventos."
 
 #: ui/dialogs/calendar-event-dialog.slint:216
 #: ui/dialogs/settings-dialog.slint:2733
@@ -4810,7 +4823,7 @@ msgstr "Mover a carpeta"
 
 #: ui/dialogs/move-dialog.slint:45
 msgid "Find folder"
-msgstr ""
+msgstr "Buscar carpeta"
 
 #: ui/dialogs/oauth-setup-dialog.slint:28 ui/views/onboarding-view.slint:216
 msgid "Sign-in settings"
@@ -4956,19 +4969,19 @@ msgstr "Informar de un problema"
 
 #: ui/dialogs/settings-dialog.slint:59
 msgid "Move up in the account list"
-msgstr ""
+msgstr "Subir en la lista de cuentas"
 
 #: ui/dialogs/settings-dialog.slint:70
 msgid "Move down in the account list"
-msgstr ""
+msgstr "Bajar en la lista de cuentas"
 
 #: ui/dialogs/settings-dialog.slint:90
 msgid "Remove this account"
-msgstr ""
+msgstr "Eliminar esta cuenta"
 
 #: ui/dialogs/settings-dialog.slint:100
 msgid "Synchronize this account now"
-msgstr ""
+msgstr "Sincronizar esta cuenta ahora"
 
 #: ui/dialogs/settings-dialog.slint:128 ui/dialogs/settings-dialog.slint:129
 msgid "Search settings"
@@ -5050,23 +5063,23 @@ msgstr "No se pudo actualizar el uso del almacenamiento. Inténtalo de nuevo."
 
 #: ui/dialogs/settings-dialog.slint:530
 msgid "Sidebars"
-msgstr ""
+msgstr "Barras laterales"
 
 #: ui/dialogs/settings-dialog.slint:531
 msgid "Message list"
-msgstr ""
+msgstr "Lista de mensajes"
 
 #: ui/dialogs/settings-dialog.slint:532
 msgid "Reading pane"
-msgstr ""
+msgstr "Panel de lectura"
 
 #: ui/dialogs/settings-dialog.slint:536
 msgid "Plain text, reading and writing"
-msgstr ""
+msgstr "Texto sin formato, lectura y escritura"
 
 #: ui/dialogs/settings-dialog.slint:537
 msgid "Writing messages"
-msgstr ""
+msgstr "Escribir mensajes"
 
 #: ui/dialogs/settings-dialog.slint:628
 msgid "Every minute"
@@ -5158,7 +5171,7 @@ msgstr "Ruso"
 
 #: ui/dialogs/settings-dialog.slint:659
 msgid "Dutch"
-msgstr ""
+msgstr "Neerlandés"
 
 #: ui/dialogs/settings-dialog.slint:662
 msgid "Automatic"
@@ -5174,19 +5187,19 @@ msgstr "24 horas"
 
 #: ui/dialogs/settings-dialog.slint:677
 msgid "Smart"
-msgstr ""
+msgstr "Inteligente"
 
 #: ui/dialogs/settings-dialog.slint:678
 msgid "Date and time"
-msgstr ""
+msgstr "Fecha y hora"
 
 #: ui/dialogs/settings-dialog.slint:679
 msgid "Relative"
-msgstr ""
+msgstr "Relativa"
 
 #: ui/dialogs/settings-dialog.slint:680
 msgid "ISO 8601"
-msgstr ""
+msgstr "ISO 8601"
 
 #: ui/dialogs/settings-dialog.slint:706
 msgid ""
@@ -5295,7 +5308,7 @@ msgstr "Acerca de"
 
 #: ui/dialogs/settings-dialog.slint:1042
 msgid "Settings sidebar width"
-msgstr ""
+msgstr "Ancho de la barra lateral de ajustes"
 
 #: ui/dialogs/settings-dialog.slint:1066
 msgid "Manage appearance, privacy, and synchronization."
@@ -5341,20 +5354,24 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1181
 msgid "Status line"
-msgstr ""
+msgstr "Línea de estado"
 
 #: ui/dialogs/settings-dialog.slint:1182
 msgid ""
 "Show along the bottom of the window how mail synchronization is progressing."
 msgstr ""
+"Muestra en la parte inferior de la ventana cómo avanza la sincronización del "
+"correo."
 
 #: ui/dialogs/settings-dialog.slint:1194
 msgid "Unread counts on every folder"
-msgstr ""
+msgstr "Contadores de no leídos en cada carpeta"
 
 #: ui/dialogs/settings-dialog.slint:1195
 msgid "Show the number of unread messages beside each folder in the sidebar."
 msgstr ""
+"Muestra el número de mensajes no leídos junto a cada carpeta de la barra "
+"lateral."
 
 #: ui/dialogs/settings-dialog.slint:1207
 msgid "Frameless window"
@@ -5376,31 +5393,37 @@ msgstr "Mínimo"
 
 #: ui/dialogs/settings-dialog.slint:1235
 msgid "Unified mailbox"
-msgstr ""
+msgstr "Buzón unificado"
 
 #: ui/dialogs/settings-dialog.slint:1236
 msgid ""
 "Show shared Inbox, Starred and other mailboxes that combine all accounts."
 msgstr ""
+"Muestra la Bandeja de entrada, Destacados y otros buzones compartidos que "
+"combinan todas las cuentas."
 
 #: ui/dialogs/settings-dialog.slint:1248
 msgid "Preview at the bottom"
-msgstr ""
+msgstr "Vista previa abajo"
 
 #: ui/dialogs/settings-dialog.slint:1249
 msgid ""
 "Show the message list on top and the message below it, instead of side by "
 "side."
 msgstr ""
+"Muestra la lista de mensajes arriba y el mensaje debajo, en lugar de uno al "
+"lado del otro."
 
 #: ui/dialogs/settings-dialog.slint:1261
 msgid "Message list as a table"
-msgstr ""
+msgstr "Lista de mensajes como tabla"
 
 #: ui/dialogs/settings-dialog.slint:1262
 msgid ""
 "One line per message, with columns you can drag to resize and click to sort."
 msgstr ""
+"Una línea por mensaje, con columnas que puedes arrastrar para cambiar su "
+"tamaño y pulsar para ordenar."
 
 #: ui/dialogs/settings-dialog.slint:1286
 msgid "Language and time"
@@ -5432,33 +5455,36 @@ msgstr "Las horas se muestran como {}."
 
 #: ui/dialogs/settings-dialog.slint:1311
 msgid "Dates in the message list"
-msgstr ""
+msgstr "Fechas en la lista de mensajes"
 
 #: ui/dialogs/settings-dialog.slint:1312
 msgid "Always the date and the time."
-msgstr ""
+msgstr "Siempre la fecha y la hora."
 
 #: ui/dialogs/settings-dialog.slint:1313
 msgid "How long ago, such as \"5 min ago\", for the last four weeks."
 msgstr ""
+"Hace cuánto tiempo, como «hace 5 min», durante las últimas cuatro semanas."
 
 #: ui/dialogs/settings-dialog.slint:1314
 msgid "Year, month and day, such as 2026-11-04 14:32."
-msgstr ""
+msgstr "Año, mes y día, como 2026-11-04 14:32."
 
 #: ui/dialogs/settings-dialog.slint:1315
 msgid "The time for today and yesterday, otherwise the date."
-msgstr ""
+msgstr "La hora para hoy y ayer; si no, la fecha."
 
 #: ui/dialogs/settings-dialog.slint:1340
 msgid "Fonts"
-msgstr ""
+msgstr "Fuentes"
 
 #: ui/dialogs/settings-dialog.slint:1341
 msgid ""
 "Choose a font and size for each part. The message itself keeps the fonts its "
 "sender chose."
 msgstr ""
+"Elige una fuente y un tamaño para cada parte. El propio mensaje conserva las "
+"fuentes que eligió su remitente."
 
 #: ui/dialogs/settings-dialog.slint:1387
 msgid "Inbox behavior"
@@ -5499,45 +5525,53 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1423
 msgid "Write messages in plain text"
-msgstr ""
+msgstr "Escribir mensajes en texto sin formato"
 
 #: ui/dialogs/settings-dialog.slint:1424
 msgid ""
 "Send new messages, replies and forwards without formatting. Hold Shift while "
 "choosing New message, Reply or Forward to use the other format."
 msgstr ""
+"Envía mensajes nuevos, respuestas y reenvíos sin formato. Mantén pulsada la "
+"tecla Mayús al elegir Nuevo mensaje, Responder o Reenviar para usar el otro "
+"formato."
 
 #: ui/dialogs/settings-dialog.slint:1436
 msgid "Check spelling while writing"
-msgstr ""
+msgstr "Comprobar la ortografía al escribir"
 
 #: ui/dialogs/settings-dialog.slint:1438
 msgid ""
 "Misspelled words get a red line. Right-click one for suggestions. A word is "
 "correct when any chosen language knows it."
 msgstr ""
+"Las palabras con errores se subrayan en rojo. Pulsa con el botón derecho una "
+"de ellas para ver sugerencias. Una palabra es correcta si la conoce "
+"cualquiera de los idiomas elegidos."
 
 #: ui/dialogs/settings-dialog.slint:1439
 msgid ""
 "No spelling dictionaries were found. Install Hunspell dictionaries, such as "
 "hunspell-nl and hunspell-en-us."
 msgstr ""
+"No se encontraron diccionarios ortográficos. Instala diccionarios de "
+"Hunspell, como hunspell-nl y hunspell-en-us."
 
 #: ui/dialogs/settings-dialog.slint:1473
 msgid "Spelling languages"
-msgstr ""
+msgstr "Idiomas de ortografía"
 
 #: ui/dialogs/settings-dialog.slint:1475
 msgid "Following the interface language, with English."
-msgstr ""
+msgstr "Sigue el idioma de la interfaz, junto con el inglés."
 
 #: ui/dialogs/settings-dialog.slint:1476
 msgid "Chosen by you."
-msgstr ""
+msgstr "Elegidos por ti."
 
 #: ui/dialogs/settings-dialog.slint:1491
 msgid "Follow the interface language"
-msgstr ""
+msgstr "Seguir el idioma de la interfaz"
 
 #: ui/dialogs/settings-dialog.slint:1504
 msgid "Mark messages as read when opened"
@@ -5586,13 +5620,15 @@ msgstr ""
 
 #: ui/dialogs/settings-dialog.slint:1589
 msgid "Unread mail in the tray icon"
-msgstr ""
+msgstr "Correo no leído en el icono de la bandeja"
 
 #: ui/dialogs/settings-dialog.slint:1590
 msgid ""
 "Mark the tray icon with a red dot while the inbox has unread mail; its "
 "tooltip says how much."
 msgstr ""
+"Marca el icono de la bandeja con un punto rojo mientras la bandeja de "
+"entrada tenga correo no leído; su descripción indica cuánto."
 
 #: ui/dialogs/settings-dialog.slint:1618
 msgid "Start automatically"
@@ -5831,15 +5867,15 @@ msgstr "Cancelar inicio de sesión"
 
 #: ui/dialogs/settings-dialog.slint:2260
 msgid "Choose a picture for {}"
-msgstr ""
+msgstr "Elige una imagen para {}"
 
 #: ui/dialogs/settings-dialog.slint:2266
 msgid "Choose picture…"
-msgstr ""
+msgstr "Elegir imagen…"
 
 #: ui/dialogs/settings-dialog.slint:2267
 msgid "Remove picture"
-msgstr ""
+msgstr "Quitar imagen"
 
 #: ui/dialogs/settings-dialog.slint:2302 ui/views/files-view.slint:597
 msgid "Rename"
@@ -5875,11 +5911,11 @@ msgstr "Estado de la cuenta: {}"
 
 #: ui/dialogs/settings-dialog.slint:2338
 msgid "Edit account settings"
-msgstr ""
+msgstr "Editar los ajustes de la cuenta"
 
 #: ui/dialogs/settings-dialog.slint:2338
 msgid "Sign in to this account again"
-msgstr ""
+msgstr "Volver a iniciar sesión en esta cuenta"
 
 #: ui/dialogs/settings-dialog.slint:2355 ui/views/files-view.slint:600
 msgid "Folders"
@@ -5887,11 +5923,11 @@ msgstr "Carpetas"
 
 #: ui/dialogs/settings-dialog.slint:2372
 msgid "Show this account's mail"
-msgstr ""
+msgstr "Mostrar el correo de esta cuenta"
 
 #: ui/dialogs/settings-dialog.slint:2396
 msgid "Reconnect contacts"
-msgstr ""
+msgstr "Reconectar contactos"
 
 #: ui/dialogs/settings-dialog.slint:2397 ui/views/files-view.slint:523
 msgid "Manage"
@@ -5903,7 +5939,7 @@ msgstr "Corregir CardDAV"
 
 #: ui/dialogs/settings-dialog.slint:2398
 msgid "Google contacts"
-msgstr ""
+msgstr "Contactos de Google"
 
 #: ui/dialogs/settings-dialog.slint:2398
 msgid "CardDAV"
@@ -6082,7 +6118,7 @@ msgstr "Conectar"
 
 #: ui/dialogs/settings-dialog.slint:2605
 msgid "Mail headers"
-msgstr ""
+msgstr "Encabezados de correo"
 
 #: ui/dialogs/settings-dialog.slint:2607
 msgid ""
@@ -6090,14 +6126,17 @@ msgid ""
 "Headers for one account add to those for all accounts and replace any with "
 "the same name."
 msgstr ""
+"Campos de encabezado que se añaden a cada mensaje que envías, uno por línea "
+"con el formato Nombre: valor. Los encabezados de una cuenta se suman a los "
+"de todas las cuentas y sustituyen a los que tengan el mismo nombre."
 
 #: ui/dialogs/settings-dialog.slint:2615
 msgid "Applies to"
-msgstr ""
+msgstr "Se aplica a"
 
 #: ui/dialogs/settings-dialog.slint:2642
 msgid "Save headers"
-msgstr ""
+msgstr "Guardar encabezados"
 
 #: ui/dialogs/settings-dialog.slint:2668
 msgid "See what Evanya stores locally and manage the data on this device."
@@ -6317,7 +6356,7 @@ msgstr "Ir a la última pestaña"
 
 #: ui/dialogs/settings-dialog.slint:2855
 msgid "Keep Evanya the same on all your computers."
-msgstr ""
+msgstr "Mantén Evanya igual en todos tus ordenadores."
 
 #: ui/dialogs/settings-dialog.slint:2872
 msgid "Sync"
@@ -6330,46 +6369,53 @@ msgid ""
 "step between your computers. Evanya takes over what changed on another "
 "computer and adds its accounts."
 msgstr ""
+"Tus cuentas, perfiles, colores de cuenta y preferencias se guardan en un "
+"archivo, dentro de un directorio que Nextcloud, Syncthing, Dropbox u otra "
+"herramienta similar mantiene sincronizado entre tus ordenadores. Evanya "
+"adopta lo que cambió en otro ordenador y añade sus cuentas."
 
 #: ui/dialogs/settings-dialog.slint:2881
 msgid ""
 "Passwords stay on each computer: sign in once to an account that arrives "
 "this way. Mail comes from your mail servers, as always."
 msgstr ""
+"Las contraseñas se quedan en cada ordenador: inicia sesión una vez en una "
+"cuenta que llegue de esta forma. El correo viene de tus servidores de "
+"correo, como siempre."
 
 #: ui/dialogs/settings-dialog.slint:2887
 msgid "No directory chosen."
-msgstr ""
+msgstr "No se ha elegido ningún directorio."
 
 #: ui/dialogs/settings-dialog.slint:2894
 msgid "Synchronizing…"
-msgstr ""
+msgstr "Sincronizando…"
 
 #: ui/dialogs/settings-dialog.slint:2896
 msgid "Not synchronized yet."
-msgstr ""
+msgstr "Aún no sincronizado."
 
 #: ui/dialogs/settings-dialog.slint:2897
 msgid "Synchronized at {}; added one account."
 msgid_plural "Synchronized at {}; added {n} accounts."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Sincronizado a las {}; se añadió una cuenta."
+msgstr[1] "Sincronizado a las {}; se añadieron {n} cuentas."
 
 #: ui/dialogs/settings-dialog.slint:2898
 msgid "Synchronized at {}."
-msgstr ""
+msgstr "Sincronizado a las {}."
 
 #: ui/dialogs/settings-dialog.slint:2908
 msgid "Choose directory…"
-msgstr ""
+msgstr "Elegir directorio…"
 
 #: ui/dialogs/settings-dialog.slint:2908
 msgid "Change directory…"
-msgstr ""
+msgstr "Cambiar directorio…"
 
 #: ui/dialogs/settings-dialog.slint:2918
 msgid "Stop syncing"
-msgstr ""
+msgstr "Dejar de sincronizar"
 
 #: ui/dialogs/settings-dialog.slint:2942
 msgid "Evanya is based on Flectar Mail, by Flectar and its community."
@@ -6527,16 +6573,16 @@ msgstr "nombre@ejemplo.com"
 
 #: ui/dialogs/settings-dialog.slint:3364 ui/dialogs/settings-dialog.slint:3371
 msgid "POP3 username"
-msgstr ""
+msgstr "Nombre de usuario POP3"
 
 #: ui/dialogs/settings-dialog.slint:3364 ui/dialogs/settings-dialog.slint:3371
 msgid "IMAP username"
-msgstr ""
+msgstr "Nombre de usuario IMAP"
 
 #: ui/dialogs/settings-dialog.slint:3364 ui/dialogs/settings-dialog.slint:3371
 #: ui/views/onboarding-view.slint:296
 msgid "A name or an email address"
-msgstr ""
+msgstr "Un nombre o una dirección de correo electrónico"
 
 #: ui/dialogs/settings-dialog.slint:3373 ui/views/onboarding-view.slint:309
 msgid "Password, app password, or API token"
@@ -6548,31 +6594,31 @@ msgstr "Contraseña o contraseña de aplicación"
 
 #: ui/dialogs/settings-dialog.slint:3374
 msgid "SMTP username · Optional"
-msgstr ""
+msgstr "Nombre de usuario SMTP · Opcional"
 
 #: ui/dialogs/settings-dialog.slint:3374
 msgid "Same as the incoming username"
-msgstr ""
+msgstr "Igual que el usuario de entrada"
 
 #: ui/dialogs/settings-dialog.slint:3375
 msgid "SMTP password · Optional"
-msgstr ""
+msgstr "Contraseña SMTP · Opcional"
 
 #: ui/dialogs/settings-dialog.slint:3375
 msgid "Leave empty to keep the current one"
-msgstr ""
+msgstr "Déjalo vacío para conservar el actual"
 
 #: ui/dialogs/settings-dialog.slint:3375 ui/views/onboarding-view.slint:321
 msgid "Only when sending needs another password"
-msgstr ""
+msgstr "Solo cuando el envío necesita otra contraseña"
 
 #: ui/dialogs/settings-dialog.slint:3376 ui/views/onboarding-view.slint:301
 msgid "Account name · Optional"
-msgstr ""
+msgstr "Nombre de la cuenta · Opcional"
 
 #: ui/dialogs/settings-dialog.slint:3376 ui/views/onboarding-view.slint:304
 msgid "Shown in the sidebar instead of the email address"
-msgstr ""
+msgstr "Se muestra en la barra lateral en lugar de la dirección de correo"
 
 #: ui/dialogs/settings-dialog.slint:3383 ui/views/onboarding-view.slint:331
 msgid "IMAP"
@@ -6681,7 +6727,7 @@ msgstr "Elegir un perfil para {}"
 
 #: ui/dialogs/settings-dialog.slint:3672
 msgid "Folders in the sidebar"
-msgstr ""
+msgstr "Carpetas en la barra lateral"
 
 #: ui/dialogs/settings-dialog.slint:3674
 msgid ""
@@ -6689,10 +6735,13 @@ msgid ""
 "synchronizing and stay searchable. Inbox, Sent and the other standard "
 "mailboxes always show."
 msgstr ""
+"Desactiva las carpetas y etiquetas que no quieras ver. Siguen "
+"sincronizándose y se pueden buscar. La Bandeja de entrada, Enviados y los "
+"demás buzones estándar siempre se muestran."
 
 #: ui/dialogs/settings-dialog.slint:3680
 msgid "This account has no folders or labels of its own."
-msgstr ""
+msgstr "Esta cuenta no tiene carpetas ni etiquetas propias."
 
 #: ui/dialogs/settings-dialog.slint:3731
 msgid "Delete all local data?"
@@ -6826,7 +6875,7 @@ msgstr "Conservar calendario"
 
 #: ui/tray.slint:17
 msgid "Evanya: {} unread"
-msgstr ""
+msgstr "Evanya: {} sin leer"
 
 #: ui/tray.slint:27
 msgid "Show Evanya"
@@ -6870,7 +6919,7 @@ msgstr "Sugeridos"
 
 #: ui/views/contacts-view.slint:308
 msgid "Contact sidebar width"
-msgstr ""
+msgstr "Ancho de la barra lateral de contactos"
 
 #: ui/views/contacts-view.slint:345
 msgid "Show contact groups"
@@ -7153,7 +7202,7 @@ msgstr "Transferencias"
 
 #: ui/views/files-view.slint:298
 msgid "Files sidebar width"
-msgstr ""
+msgstr "Ancho de la barra lateral de archivos"
 
 #: ui/views/files-view.slint:327 ui/views/files-view.slint:577
 msgid "File sources"
@@ -7636,11 +7685,11 @@ msgstr "Quitar destacado"
 
 #: ui/views/mail-list-pane.slint:871
 msgid "Date"
-msgstr ""
+msgstr "Fecha"
 
 #: ui/views/mail-list-pane.slint:880
 msgid "Sort by {}"
-msgstr ""
+msgstr "Ordenar por {}"
 
 #: ui/views/mail-list-pane.slint:1092 ui/views/mail-list-pane.slint:1259
 #: ui/views/mail-reading-pane.slint:647
@@ -7673,7 +7722,7 @@ msgstr "Deseleccionar {}"
 
 #: ui/views/mail-list-pane.slint:1643
 msgid "Move to folder…"
-msgstr ""
+msgstr "Mover a la carpeta…"
 
 #: ui/views/mail-list-pane.slint:1644 ui/views/mail-reading-pane.slint:332
 #: ui/views/mail-reading-pane.slint:367 ui/views/mail-reading-pane.slint:399
@@ -7943,7 +7992,7 @@ msgstr "Usar en todas las cuentas (solo local)"
 
 #: ui/views/mail-view.slint:382 ui/views/mail-view.slint:668
 msgid "Folder list width"
-msgstr ""
+msgstr "Ancho de la lista de carpetas"
 
 #: ui/views/mail-view.slint:490
 msgid "Message list width"
@@ -8006,15 +8055,15 @@ msgstr "Usuario (por defecto, tu correo)"
 
 #: ui/views/onboarding-view.slint:285
 msgid "Incoming username (defaults to email)"
-msgstr ""
+msgstr "Nombre de usuario de entrada (por defecto, el correo)"
 
 #: ui/views/onboarding-view.slint:293
 msgid "SMTP username (defaults to the incoming one)"
-msgstr ""
+msgstr "Nombre de usuario SMTP (por defecto, el de entrada)"
 
 #: ui/views/onboarding-view.slint:318
 msgid "SMTP password (defaults to the one above)"
-msgstr ""
+msgstr "Contraseña SMTP (por defecto, la de arriba)"
 
 #: ui/views/onboarding-view.slint:356
 msgid "Server address (optional)"
@@ -8037,112 +8086,3 @@ msgstr "Restaurar"
 #: ui/window-chrome.slint:202 ui/window-chrome.slint:239
 msgid "Maximize"
 msgstr "Maximizar"
-
-#~ msgid "Paid"
-#~ msgstr "De pago"
-
-#~ msgid "Coming soon"
-#~ msgstr "Próximamente"
-
-#~ msgid "Learn more"
-#~ msgstr "Ver detalles"
-
-#~ msgid ""
-#~ "Optional paid services from Flectar. Evanya stays free and works without "
-#~ "them."
-#~ msgstr ""
-#~ "Servicios de pago opcionales de Flectar. Evanya sigue siendo gratuito y "
-#~ "funciona sin ellos."
-
-#~ msgid "Your setup on every device"
-#~ msgstr "Tu configuración en cada dispositivo"
-
-#~ msgid ""
-#~ "Sign in on a new phone or computer and your accounts, calendars, "
-#~ "contacts, and preferences are ready without setting them up again."
-#~ msgstr ""
-#~ "Inicia sesión en un teléfono u ordenador nuevo y tus cuentas, "
-#~ "calendarios, contactos y preferencias estarán listos sin tener que "
-#~ "configurarlos de nuevo."
-
-#~ msgid "Mail accounts, profiles, and signatures"
-#~ msgstr "Cuentas de correo, perfiles y firmas"
-
-#~ msgid "Calendar and contact connections"
-#~ msgstr "Conexiones de calendarios y contactos"
-
-#~ msgid "Themes, layout, and notification preferences"
-#~ msgstr "Temas, diseño y preferencias de notificaciones"
-
-#~ msgid "Account credentials, encrypted on this device before upload"
-#~ msgstr ""
-#~ "Credenciales de las cuentas, cifradas en este dispositivo antes de "
-#~ "subirlas"
-
-#~ msgid ""
-#~ "Your messages stay with your mail provider. Sync only carries your Evanya "
-#~ "setup."
-#~ msgstr ""
-#~ "Tus mensajes permanecen con tu proveedor de correo. La sincronización "
-#~ "solo transfiere la configuración de Evanya."
-
-#~ msgid ""
-#~ "These services are in development. Plans and availability will be "
-#~ "announced on flectar.com/mail."
-#~ msgstr ""
-#~ "Estos servicios están en desarrollo. Los planes y la disponibilidad se "
-#~ "anunciarán en flectar.com/mail."
-
-#~ msgid "Flectar account"
-#~ msgstr "Cuenta de Flectar"
-
-#~ msgid "Not signed in"
-#~ msgstr "Sin iniciar sesión"
-
-#~ msgid ""
-#~ "A Flectar account is only needed for these optional services. Learn more "
-#~ "at flectar.com/mail."
-#~ msgstr ""
-#~ "Solo necesitas una cuenta de Flectar para estos servicios opcionales. Más "
-#~ "información en flectar.com/mail."
-
-#~ msgid "Sign in with Flectar"
-#~ msgstr "Iniciar sesión con Flectar"
-
-#~ msgid "Sign-in coming soon"
-#~ msgstr "Acceso próximamente"
-
-#~ msgid "Business email"
-#~ msgstr "Correo empresarial"
-
-#~ msgid "Mailboxes on your own domain"
-#~ msgstr "Buzones con tu propio dominio"
-
-#~ msgid ""
-#~ "Professional addresses such as you@yourcompany.com, hosted by Flectar."
-#~ msgstr ""
-#~ "Direcciones profesionales como tu@tuempresa.com, alojadas en Flectar."
-
-#~ msgid "Connect a domain you already own"
-#~ msgstr "Conecta un dominio que ya tengas"
-
-#~ msgid "Create and manage mailboxes for your team"
-#~ msgstr "Crea y gestiona buzones para tu equipo"
-
-#~ msgid "New mailboxes appear in Evanya automatically"
-#~ msgstr "Los nuevos buzones aparecen automáticamente en Evanya"
-
-#~ msgid "Billed per mailbox."
-#~ msgstr "Facturación por buzón."
-
-#~ msgid "Blue calendar"
-#~ msgstr "Calendario azul"
-
-#~ msgid "Purple calendar"
-#~ msgstr "Calendario morado"
-
-#~ msgid "Orange calendar"
-#~ msgstr "Calendario naranja"
-
-#~ msgid "Green calendar"
-#~ msgstr "Calendario verde"
