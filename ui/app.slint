@@ -908,6 +908,8 @@ export component AppWindow inherits Window {
     in property <[CalendarDay]> calendar_month_days: [];
     in property <[CalendarWeekDay]> calendar_week_days: [];
     in property <[CalendarEventRow]> calendar_events: [];
+    // Rows the week view's all-day band needs to stack its events.
+    in property <int> calendar_all_day_lanes: 0;
     in property <[CalendarAgendaRow]> calendar_agenda_rows: [];
     in property <[CalendarAgendaFilterRow]> calendar_agenda_filters: [];
     in property <int> calendar_agenda_filter_count: 0;
@@ -1824,6 +1826,7 @@ export component AppWindow inherits Window {
             month-days: root.calendar_month_days;
             week-days: root.calendar_week_days;
             events: root.calendar_events;
+            all-day-lanes: root.calendar_all_day_lanes;
             agenda-rows: root.calendar_agenda_rows;
             agenda-filters: root.calendar_agenda_filters;
             agenda-filter-count: root.calendar_agenda_filter_count;

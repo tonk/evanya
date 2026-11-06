@@ -370,6 +370,97 @@ pub(crate) fn first_of_month(date: NaiveDate) -> NaiveDate {
     date.with_day(1).unwrap_or(date)
 }
 
+/// Lay out the week view so no two events overlap. Timed events that overlap
+/// within a day share its column side by side: each group of overlapping
+/// events gets as many columns as it needs at once. All-day events stack in
+/// rows of the all-day band, each in the first row free on all its days.
+/// Returns the events and the number of all-day rows.
+fn layout_week(mut events: Vec<CalendarEventRow>) -> (Vec<CalendarEventRow>, i32) {
+    // Timed events, per day, by start and then by longest first.
+    let mut timed: Vec<usize> = (0..events.len())
+        .filter(|&index| !events[index].all_day && (0..7).contains(&events[index].day_index))
+        .collect();
+    timed.sort_by_key(|&index| {
+        let event = &events[index];
+        (
+            event.day_index,
+            event.start_minutes,
+            -event.duration_minutes,
+        )
+    });
+    let end_of = |event: &CalendarEventRow| {
+        // Events shorter than the drawn minimum still take that much room.
+        (event.start_minutes + event.duration_minutes.max(30)).min(24 * 60)
+    };
+    let mut group: Vec<usize> = Vec::new();
+    let mut column_ends: Vec<i32> = Vec::new();
+    let mut group_end = i32::MIN;
+    let mut group_day = i32::MIN;
+    fn finish(group: &mut Vec<usize>, columns: usize, events: &mut [CalendarEventRow]) {
+        for &index in group.iter() {
+            events[index].lanes = columns.max(1) as i32;
+        }
+        group.clear();
+    }
+    for index in timed {
+        let (day, start, end) = (
+            events[index].day_index,
+            events[index].start_minutes,
+            end_of(&events[index]),
+        );
+        if day != group_day || start >= group_end {
+            finish(&mut group, column_ends.len(), &mut events);
+            column_ends.clear();
+            group_end = i32::MIN;
+            group_day = day;
+        }
+        let column = match column_ends
+            .iter()
+            .position(|&column_end| column_end <= start)
+        {
+            Some(column) => column,
+            None => {
+                column_ends.push(0);
+                column_ends.len() - 1
+            }
+        };
+        column_ends[column] = end;
+        events[index].lane = column as i32;
+        group_end = group_end.max(end);
+        group.push(index);
+    }
+    finish(&mut group, column_ends.len(), &mut events);
+
+    // All-day events, by first day and then by longest first.
+    let mut all_day: Vec<usize> = (0..events.len())
+        .filter(|&index| {
+            let event = &events[index];
+            event.all_day && event.day_index <= 6 && event.day_index + event.span_days > 0
+        })
+        .collect();
+    all_day.sort_by_key(|&index| (events[index].day_index.max(0), -events[index].span_days));
+    let mut rows: Vec<[bool; 7]> = Vec::new();
+    for index in all_day {
+        let first = events[index].day_index.max(0) as usize;
+        let last = (events[index].day_index + events[index].span_days - 1).min(6) as usize;
+        let row = match rows
+            .iter()
+            .position(|row| row[first..=last].iter().all(|taken| !taken))
+        {
+            Some(row) => row,
+            None => {
+                rows.push([false; 7]);
+                rows.len() - 1
+            }
+        };
+        rows[row][first..=last]
+            .iter_mut()
+            .for_each(|taken| *taken = true);
+        events[index].lane = row as i32;
+    }
+    (events, rows.len() as i32)
+}
+
 pub(crate) fn start_of_week(date: NaiveDate) -> NaiveDate {
     date - ChronoDuration::days(date.weekday().num_days_from_monday() as i64)
 }
@@ -693,6 +784,16 @@ fn event_row(
             .map(|source| calendar_color(&source.color, source.id))
             .unwrap_or_else(|| palette_color(event.color_index)),
         all_day: event.all_day,
+        lane: 0,
+        lanes: 1,
+        span_days: if event.all_day {
+            ((event.end - ChronoDuration::nanoseconds(1)).date() - event.date)
+                .num_days()
+                .max(0) as i32
+                + 1
+        } else {
+            1
+        },
         provider: source
             .map(|source| source.provider)
             .or_else(|| account.map(|account| account.provider.as_str()))
@@ -815,9 +916,17 @@ pub(crate) fn apply_calendar(app: &AppWindow, state: &LocalCalendarState, today:
     let events = state
         .events
         .iter()
-        .filter(|event| event.date >= range_start && event.date <= range_end)
+        // All-day events that began earlier still cover these days.
+        .filter(|event| {
+            let week = state.view_mode == "week";
+            event.date <= range_end
+                && (event.date >= range_start
+                    || (week && event.all_day && event.end.date() > range_start))
+        })
         .map(|event| event_row(app, state, &formats, event))
         .collect::<Vec<_>>();
+    let (events, all_day_lanes) = layout_week(events);
+    app.set_calendar_all_day_lanes(all_day_lanes);
 
     apply_agenda(app, state, today, Local::now().time());
     app.set_calendar_month_days(ModelRc::new(VecModel::from(month_days)));
@@ -1093,6 +1202,73 @@ mod tests {
         assert_eq!(calendar_color_index("#f6bf26", 9), 2);
         assert_eq!(calendar_color_index("#33b679", 9), 3);
         assert_eq!(calendar_color_index("not-a-color", 9), 1);
+    }
+
+    fn timed(day: i32, start: i32, minutes: i32) -> CalendarEventRow {
+        CalendarEventRow {
+            day_index: day,
+            start_minutes: start,
+            duration_minutes: minutes,
+            span_days: 1,
+            lanes: 1,
+            ..Default::default()
+        }
+    }
+
+    fn all_day(day: i32, days: i32) -> CalendarEventRow {
+        CalendarEventRow {
+            all_day: true,
+            day_index: day,
+            span_days: days,
+            lanes: 1,
+            ..Default::default()
+        }
+    }
+
+    fn lanes(events: &[CalendarEventRow]) -> Vec<(i32, i32)> {
+        events
+            .iter()
+            .map(|event| (event.lane, event.lanes))
+            .collect()
+    }
+
+    #[test]
+    fn overlapping_events_share_their_day_side_by_side() {
+        let (events, _) = layout_week(vec![
+            timed(0, 9 * 60, 60),
+            timed(0, 9 * 60 + 30, 60),
+            timed(0, 11 * 60, 60),
+            // The same hours on another day do not count.
+            timed(1, 9 * 60, 60),
+        ]);
+        assert_eq!(lanes(&events), [(0, 2), (1, 2), (0, 1), (0, 1)]);
+    }
+
+    #[test]
+    fn a_chain_of_overlaps_reuses_freed_columns() {
+        // 9-11, 10-12 and 11-13: the third fits where the first ended, but
+        // all three belong to one group that needs two columns.
+        let (events, _) = layout_week(vec![
+            timed(2, 9 * 60, 120),
+            timed(2, 10 * 60, 120),
+            timed(2, 11 * 60, 120),
+        ]);
+        assert_eq!(lanes(&events), [(0, 2), (1, 2), (0, 2)]);
+    }
+
+    #[test]
+    fn all_day_events_stack_without_overlapping() {
+        let (events, rows) = layout_week(vec![
+            all_day(0, 3),  // Monday to Wednesday
+            all_day(1, 1),  // Tuesday
+            all_day(3, 1),  // Thursday, free again
+            all_day(-2, 3), // began on Saturday before, covers Monday
+        ]);
+        // Monday holds two events; Tuesday's fits in the second row, which
+        // the earlier event leaves free after Monday.
+        let rows_used: Vec<i32> = events.iter().map(|event| event.lane).collect();
+        assert_eq!(rows_used, [0, 1, 0, 1]);
+        assert_eq!(rows, 2);
     }
 
     /// Slint's software renderer panics when it paints a rectangle reaching

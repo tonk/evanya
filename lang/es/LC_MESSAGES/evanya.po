@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-06 07:03+0000\n"
+"POT-Creation-Date: 2026-11-06 07:36+0000\n"
 "PO-Revision-Date: 2026-09-20 23:21+0000\n"
 "Last-Translator: Admin <admin@flectar.com>\n"
 "Language-Team: Spanish <https://translate.flectar.com/projects/flectar-mail/"
@@ -221,7 +221,7 @@ msgctxt "month on its own"
 msgid "December"
 msgstr "diciembre"
 
-#: ui/app.slint:147 ui/components/calendar.slint:832
+#: ui/app.slint:147 ui/components/calendar.slint:841
 msgid "Mon"
 msgstr "Lun"
 
@@ -229,7 +229,7 @@ msgstr "Lun"
 msgid "Monday"
 msgstr "Lunes"
 
-#: ui/app.slint:148 ui/components/calendar.slint:832
+#: ui/app.slint:148 ui/components/calendar.slint:841
 msgid "Tue"
 msgstr "Mar"
 
@@ -237,7 +237,7 @@ msgstr "Mar"
 msgid "Tuesday"
 msgstr "Martes"
 
-#: ui/app.slint:149 ui/components/calendar.slint:832
+#: ui/app.slint:149 ui/components/calendar.slint:841
 msgid "Wed"
 msgstr "Mié"
 
@@ -245,7 +245,7 @@ msgstr "Mié"
 msgid "Wednesday"
 msgstr "Miércoles"
 
-#: ui/app.slint:150 ui/components/calendar.slint:832
+#: ui/app.slint:150 ui/components/calendar.slint:841
 msgid "Thu"
 msgstr "Jue"
 
@@ -253,7 +253,7 @@ msgstr "Jue"
 msgid "Thursday"
 msgstr "Jueves"
 
-#: ui/app.slint:151 ui/components/calendar.slint:832
+#: ui/app.slint:151 ui/components/calendar.slint:841
 msgid "Fri"
 msgstr "Vie"
 
@@ -261,7 +261,7 @@ msgstr "Vie"
 msgid "Friday"
 msgstr "Viernes"
 
-#: ui/app.slint:152 ui/components/calendar.slint:832
+#: ui/app.slint:152 ui/components/calendar.slint:841
 msgid "Sat"
 msgstr "Sáb"
 
@@ -269,7 +269,7 @@ msgstr "Sáb"
 msgid "Saturday"
 msgstr "Sábado"
 
-#: ui/app.slint:153 ui/components/calendar.slint:832
+#: ui/app.slint:153 ui/components/calendar.slint:841
 msgid "Sun"
 msgstr "Dom"
 
@@ -386,7 +386,7 @@ msgstr "Historial de conversaciones disponible"
 msgid "New address-book entry"
 msgstr "Nueva entrada de contactos"
 
-#: ui/app.slint:186 ui/app.slint:1167 ui/components/composer-fields.slint:80
+#: ui/app.slint:186 ui/app.slint:1169 ui/components/composer-fields.slint:80
 #: ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr "No hay ninguna cuenta conectada"
@@ -1304,7 +1304,7 @@ msgid "Local calendar"
 msgstr "Calendario local"
 
 #: ui/app.slint:465 ui/components/calendar.slint:275
-#: ui/components/calendar.slint:324 ui/components/calendar.slint:460
+#: ui/components/calendar.slint:324 ui/components/calendar.slint:462
 msgid "Calendar"
 msgstr "Calendario"
 
@@ -1946,21 +1946,21 @@ msgstr "Cargando mensaje…"
 msgid "Evanya"
 msgstr "Evanya"
 
-#: ui/app.slint:1410 ui/app.slint:1423
+#: ui/app.slint:1412 ui/app.slint:1425
 msgid "Global Labels (local only)"
 msgstr "Etiquetas globales (solo locales)"
 
-#: ui/app.slint:2065
+#: ui/app.slint:2068
 msgid "Another account"
 msgstr ""
 
-#: ui/app.slint:2077
+#: ui/app.slint:2080
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
 
-#: ui/app.slint:2086 ui/components/account-mail-preferences.slint:178
+#: ui/app.slint:2089 ui/components/account-mail-preferences.slint:178
 #: ui/dialogs/folder-dialog.slint:128 ui/dialogs/oauth-setup-dialog.slint:126
 #: ui/dialogs/settings-dialog.slint:2382 ui/dialogs/settings-dialog.slint:3270
 #: ui/dialogs/settings-dialog.slint:3593 ui/views/files-view.slint:491
@@ -1968,76 +1968,76 @@ msgstr ""
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ui/app.slint:2090
+#: ui/app.slint:2093
 msgid "Copy"
 msgstr ""
 
-#: ui/app.slint:2094
+#: ui/app.slint:2097
 msgid "Move"
 msgstr ""
 
-#: ui/app.slint:2514
+#: ui/app.slint:2517
 msgid "Empty Trash?"
 msgstr "¿Vaciar la papelera?"
 
-#: ui/app.slint:2514 ui/views/files-view.slint:597
+#: ui/app.slint:2517 ui/views/files-view.slint:597
 msgid "Delete permanently?"
 msgstr "¿Eliminar permanentemente?"
 
-#: ui/app.slint:2518
+#: ui/app.slint:2521
 msgid ""
 "Permanently delete all messages in Trash across every connected account?"
 msgstr ""
 "¿Eliminar permanentemente todos los mensajes de la papelera de todas las "
 "cuentas conectadas?"
 
-#: ui/app.slint:2519
+#: ui/app.slint:2522
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr ""
 "¿Eliminar permanentemente todos los mensajes de la papelera de esta cuenta?"
 
-#: ui/app.slint:2521
+#: ui/app.slint:2524
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr ""
 "¿Eliminar permanentemente las conversaciones seleccionadas de la papelera?"
 
-#: ui/app.slint:2522
+#: ui/app.slint:2525
 msgid "Permanently delete this conversation from Trash?"
 msgstr "¿Eliminar permanentemente esta conversación de la papelera?"
 
-#: ui/app.slint:2523 ui/components/calendar.slint:1091
+#: ui/app.slint:2526 ui/components/calendar.slint:1100
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
 
-#: ui/app.slint:2524
+#: ui/app.slint:2527
 msgid "Empty Trash"
 msgstr "Vaciar la papelera"
 
-#: ui/app.slint:2524 ui/views/files-view.slint:679
+#: ui/app.slint:2527 ui/views/files-view.slint:679
 msgid "Delete permanently"
 msgstr "Eliminar permanentemente"
 
-#: ui/app.slint:2702
+#: ui/app.slint:2705
 msgid "Mailbox startup failed"
 msgstr "Error al iniciar el buzón"
 
-#: ui/app.slint:2708
+#: ui/app.slint:2711
 msgid "Evanya could not open local storage"
 msgstr "Evanya no pudo abrir el almacenamiento local"
 
-#: ui/app.slint:2721
+#: ui/app.slint:2724
 msgid "Diagnostic ID: {}"
 msgstr "ID de diagnóstico: {}"
 
-#: ui/app.slint:2724
+#: ui/app.slint:2727
 msgid "Diagnostic ID {}"
 msgstr "ID de diagnóstico {}"
 
-#: ui/app.slint:2729
+#: ui/app.slint:2732
 msgid "Retry"
 msgstr "Reintentar"
 
-#: ui/app.slint:2737 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2740 ui/components/copyable-diagnostic.slint:43
 msgid "Copy diagnostics"
 msgstr "Copiar datos de diagnóstico"
 
@@ -2067,7 +2067,7 @@ msgid_plural "{n} calendars"
 msgstr[0] "Un calendario"
 msgstr[1] "{n} calendarios"
 
-#: ui/components/account-calendars.slint:71 ui/components/calendar.slint:471
+#: ui/components/account-calendars.slint:71 ui/components/calendar.slint:473
 msgid "Paused"
 msgstr "En pausa"
 
@@ -2536,7 +2536,7 @@ msgstr "Filtrar calendarios · {} ocultos"
 msgid "Filter calendars"
 msgstr "Filtrar calendarios"
 
-#: ui/components/calendar-agenda.slint:67 ui/components/calendar.slint:622
+#: ui/components/calendar-agenda.slint:67 ui/components/calendar.slint:626
 msgid "Show calendars"
 msgstr "Mostrar calendarios"
 
@@ -2549,12 +2549,12 @@ msgstr "Restablecer"
 msgid "Filters only affect this agenda."
 msgstr "Los filtros solo afectan a esta agenda."
 
-#: ui/components/calendar-agenda.slint:212 ui/components/calendar.slint:679
+#: ui/components/calendar-agenda.slint:212 ui/components/calendar.slint:683
 #: ui/views/mail-list-pane.slint:682
 msgid "Today"
 msgstr "Hoy"
 
-#: ui/components/calendar-agenda.slint:214 ui/components/calendar.slint:693
+#: ui/components/calendar-agenda.slint:214 ui/components/calendar.slint:697
 msgid "{n} event"
 msgid_plural "{n} events"
 msgstr[0] "{n} evento"
@@ -2565,7 +2565,7 @@ msgid "Cancelled"
 msgstr "Cancelado"
 
 #: ui/components/calendar-agenda.slint:257 ui/components/calendar.slint:67
-#: ui/components/calendar.slint:866
+#: ui/components/calendar.slint:875
 msgid "View details for {}"
 msgstr "Ver detalles de {}"
 
@@ -2598,55 +2598,55 @@ msgid "Reset filters"
 msgstr "Restablecer filtros"
 
 #: ui/components/calendar-agenda.slint:290 ui/components/calendar.slint:116
-#: ui/components/calendar.slint:898
+#: ui/components/calendar.slint:907
 msgid "New event"
 msgstr "Nuevo evento"
 
-#: ui/components/calendar.slint:145 ui/components/calendar.slint:896
+#: ui/components/calendar.slint:145 ui/components/calendar.slint:905
 msgid "Previous month"
 msgstr "Mes anterior"
 
-#: ui/components/calendar.slint:159 ui/components/calendar.slint:897
+#: ui/components/calendar.slint:159 ui/components/calendar.slint:906
 msgid "Next month"
 msgstr "Mes siguiente"
 
-#: ui/components/calendar.slint:164 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:164 ui/components/calendar.slint:950
 msgctxt "Monday initial"
 msgid "M"
 msgstr "L"
 
-#: ui/components/calendar.slint:165 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:165 ui/components/calendar.slint:950
 msgctxt "Tuesday initial"
 msgid "T"
 msgstr "M"
 
-#: ui/components/calendar.slint:166 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:166 ui/components/calendar.slint:950
 msgctxt "Wednesday initial"
 msgid "W"
 msgstr "X"
 
-#: ui/components/calendar.slint:167 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:167 ui/components/calendar.slint:950
 msgctxt "Thursday initial"
 msgid "T"
 msgstr "J"
 
-#: ui/components/calendar.slint:168 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:168 ui/components/calendar.slint:950
 msgctxt "Friday initial"
 msgid "F"
 msgstr "V"
 
-#: ui/components/calendar.slint:169 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:169 ui/components/calendar.slint:950
 msgctxt "Saturday initial"
 msgid "S"
 msgstr "S"
 
-#: ui/components/calendar.slint:170 ui/components/calendar.slint:941
+#: ui/components/calendar.slint:170 ui/components/calendar.slint:950
 msgctxt "Sunday initial"
 msgid "S"
 msgstr "D"
 
-#: ui/components/calendar.slint:216 ui/components/calendar.slint:721
-#: ui/components/calendar.slint:971
+#: ui/components/calendar.slint:216 ui/components/calendar.slint:725
+#: ui/components/calendar.slint:980
 msgid "Select {}"
 msgstr "Seleccionar {}"
 
@@ -2670,111 +2670,111 @@ msgstr ""
 "Aún no hay calendarios. Conecta Google Calendar, Outlook o cualquier "
 "servidor CalDAV en Ajustes."
 
-#: ui/components/calendar.slint:469
+#: ui/components/calendar.slint:471
 msgid "Read only"
 msgstr "Solo lectura"
 
-#: ui/components/calendar.slint:469
+#: ui/components/calendar.slint:471
 msgid "Read and write"
 msgstr "Lectura y escritura"
 
-#: ui/components/calendar.slint:470
+#: ui/components/calendar.slint:472
 msgid "Last synced {}"
 msgstr "Última sincronización {}"
 
-#: ui/components/calendar.slint:470
+#: ui/components/calendar.slint:472
 msgid "Not synced yet"
 msgstr "Aún no se ha sincronizado"
 
-#: ui/components/calendar.slint:471
+#: ui/components/calendar.slint:473
 msgid "Enabled"
 msgstr "Activadas"
 
-#: ui/components/calendar.slint:472 ui/components/calendar.slint:490
+#: ui/components/calendar.slint:474 ui/components/calendar.slint:492
 msgid "Default calendar"
 msgstr "Calendario predeterminado"
 
-#: ui/components/calendar.slint:487
+#: ui/components/calendar.slint:489
 msgid "Created in Evanya"
 msgstr "Creado en Evanya"
 
-#: ui/components/calendar.slint:487
+#: ui/components/calendar.slint:489
 msgid "Synced provider event"
 msgstr "Evento sincronizado del proveedor"
 
-#: ui/components/calendar.slint:539 ui/components/calendar.slint:714
+#: ui/components/calendar.slint:543 ui/components/calendar.slint:718
 msgid "LOCAL"
 msgstr "LOCAL"
 
-#: ui/components/calendar.slint:540 ui/components/calendar.slint:730
+#: ui/components/calendar.slint:544 ui/components/calendar.slint:734
 msgid "ALL DAY"
 msgstr "TODO EL DÍA"
 
-#: ui/components/calendar.slint:581
+#: ui/components/calendar.slint:585
 msgid "Calendar sidebar width"
 msgstr ""
 
-#: ui/components/calendar.slint:622
+#: ui/components/calendar.slint:626
 msgid "Hide calendars"
 msgstr "Ocultar calendarios"
 
-#: ui/components/calendar.slint:644 ui/components/zoom-controls.slint:20
+#: ui/components/calendar.slint:648 ui/components/zoom-controls.slint:20
 msgid "Zoom out"
 msgstr "Alejar"
 
-#: ui/components/calendar.slint:653 ui/dialogs/settings-dialog.slint:2823
+#: ui/components/calendar.slint:657 ui/dialogs/settings-dialog.slint:2823
 msgid "Reset zoom"
 msgstr "Restablecer zoom"
 
-#: ui/components/calendar.slint:671 ui/components/zoom-controls.slint:39
+#: ui/components/calendar.slint:675 ui/components/zoom-controls.slint:39
 msgid "Zoom in"
 msgstr "Acercar"
 
-#: ui/components/calendar.slint:674
+#: ui/components/calendar.slint:678
 msgid "Previous period"
 msgstr "Periodo anterior"
 
-#: ui/components/calendar.slint:675
+#: ui/components/calendar.slint:679
 msgid "Next period"
 msgstr "Periodo siguiente"
 
-#: ui/components/calendar.slint:676
+#: ui/components/calendar.slint:680
 msgid "Week"
 msgstr "Semana"
 
-#: ui/components/calendar.slint:677 ui/components/calendar.slint:910
+#: ui/components/calendar.slint:681 ui/components/calendar.slint:919
 msgid "Month"
 msgstr "Mes"
 
-#: ui/components/calendar.slint:678 ui/components/calendar.slint:911
+#: ui/components/calendar.slint:682 ui/components/calendar.slint:920
 msgid "Agenda"
 msgstr "Agenda"
 
-#: ui/components/calendar.slint:692 ui/components/calendar.slint:923
+#: ui/components/calendar.slint:696 ui/components/calendar.slint:932
 msgid "Local time · {}"
 msgstr "Hora local · {}"
 
-#: ui/components/calendar.slint:982
+#: ui/components/calendar.slint:991
 msgid "Agenda · {}"
 msgstr "Agenda · {}"
 
-#: ui/components/calendar.slint:1017
+#: ui/components/calendar.slint:1026
 msgid "No events for this date"
 msgstr "No hay eventos para esta fecha"
 
-#: ui/components/calendar.slint:1089
+#: ui/components/calendar.slint:1098
 msgid "Delete this event?"
 msgstr "¿Eliminar este evento?"
 
-#: ui/components/calendar.slint:1090
+#: ui/components/calendar.slint:1099
 msgid "This event will be removed from your calendar."
 msgstr "Se eliminará este evento de tu calendario."
 
-#: ui/components/calendar.slint:1092
+#: ui/components/calendar.slint:1101
 msgid "Delete event"
 msgstr "Eliminar evento"
 
-#: ui/components/calendar.slint:1093
+#: ui/components/calendar.slint:1102
 msgid "Keep event"
 msgstr "Conservar evento"
 

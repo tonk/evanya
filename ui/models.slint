@@ -347,6 +347,13 @@ export struct CalendarEventRow {
     // The calendar's color, as chosen by the user or the provider.
     color: color,
     all_day: bool,
+    // Week layout, set in Rust so events never overlap. Timed events: the
+    // column `lane` of `lanes` side by side columns their group of
+    // overlapping events needs. All-day events: the row `lane` in the all-day
+    // band, and the `span_days` days they cover from their first day.
+    lane: int,
+    lanes: int,
+    span_days: int,
     provider: string,
     account: string,
     calendar: string,

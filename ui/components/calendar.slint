@@ -378,6 +378,8 @@ export component FunctionalCalendarView inherits Rectangle {
     in property <[CalendarDay]> month-days: [];
     in property <[CalendarWeekDay]> week-days: [];
     in property <[CalendarEventRow]> events: [];
+    // Rows of all-day events in the week view, stacked so none overlap.
+    in property <int> all-day-lanes: 0;
     in property <[CalendarAgendaRow]> agenda-rows: [];
     in property <[CalendarAgendaFilterRow]> agenda-filters: [];
     in property <int> agenda-filter-count: 0;
@@ -510,7 +512,9 @@ export component FunctionalCalendarView inherits Rectangle {
     private property <length> time-gutter: max(58px, max(local-label-width.preferred-width, max(all-day-label-width.preferred-width, hour-label-width.preferred-width + 6px)) + 14px);
     private property <length> column-width: max(1px, (root.main-width - root.time-gutter) / 7);
     // All-day events show one caption line that grows with the platform font.
-    private property <length> all-day-height: max(30px, all-day-line.preferred-height + 12px);
+    // One row per stacked all-day event, at least one.
+    private property <length> all-day-row: max(24px, all-day-line.preferred-height + 6px);
+    private property <length> all-day-height: max(1, root.all-day-lanes) * root.all-day-row + 6px;
     private property <length> grid-top: 112px + root.all-day-height;
     private property <length> fitted-hour-height: max(36px, (root.height - root.grid-top) / 10);
     private property <length> hour-height: max(16px, root.fitted-hour-height * root.zoom);
@@ -729,11 +733,14 @@ export component FunctionalCalendarView inherits Rectangle {
                 height: root.all-day-height;
                 Text { x: 12px; width: root.time-gutter - 14px; height: parent.height; text: @tr("ALL DAY"); color: root.muted-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; vertical-alignment: center; }
                 for event in root.events : CalendarEvent {
-                    visible: event.all-day;
-                    x: root.time-gutter + event.day-index * root.column-width + 4px;
-                    y: 3px;
-                    width: root.column-width - 8px;
-                    height: root.all-day-height - 6px;
+                    // An event that began before this week starts at its first column.
+                    private property <int> first-day: max(0, event.day-index);
+                    private property <int> last-day: min(6, event.day-index + event.span-days - 1);
+                    visible: event.all-day && self.last-day >= self.first-day;
+                    x: root.time-gutter + self.first-day * root.column-width + 4px;
+                    y: 3px + event.lane * root.all-day-row;
+                    width: (self.last-day - self.first-day + 1) * root.column-width - 8px;
+                    height: root.all-day-row - 3px;
                     title: event.title;
                     detail: event.detail;
                     compact: true;
@@ -798,10 +805,12 @@ export component FunctionalCalendarView inherits Rectangle {
                     }
                     for marker in [0, 1, 2, 3, 4, 5, 6, 7] : Rectangle { x: root.time-gutter + marker * root.column-width; width: 1px; height: parent.height; background: root.subtle-border-color; }
                     for event in root.events : CalendarEvent {
+                        // Overlapping events share their day's column side by side.
+                        private property <length> lane-width: (root.column-width - 10px) / max(1, event.lanes);
                         visible: !event.all-day;
-                        x: root.time-gutter + event.day-index * root.column-width + 5px;
+                        x: root.time-gutter + event.day-index * root.column-width + 5px + event.lane * self.lane-width;
                         y: event.start-minutes / 60 * root.hour-height;
-                        width: root.column-width - 10px;
+                        width: self.lane-width - (event.lanes > 1 ? 2px : 0px);
                         // A timed event ends in its own day column. Synced events can
                         // span weeks, past what the software renderer can paint (#35).
                         height: max(min(44px, 24 * root.hour-height - self.y), min(event.duration-minutes, 1440 - event.start-minutes) / 60 * root.hour-height);
