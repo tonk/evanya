@@ -13,19 +13,17 @@
     <p>Built from the ground up for speed. Evanya delivers native performance, instant startup, and about 20 MB of private memory at idle.</p>
   </div>
   <p>
-    <a href="https://flectar.com">Website</a> ·
-    <a href="https://github.com/flectar/mail/issues">Report an issue</a> ·
+    <a href="https://github.com/tonk/evanya/issues">Report an issue</a> ·
     <a href="CONTRIBUTING.md">Contribute</a>
   </p>
   <p>
     <a href="LICENSE"><img src="https://img.shields.io/github/license/flectar/mail?style=flat&label=license&color=2563eb" alt="License: AGPL-3.0"></a>
-    <a href="https://github.com/flectar/mail/releases"><img src="https://img.shields.io/github/downloads/flectar/mail/total?style=flat&label=downloads&color=16a34a" alt="Downloads across all releases"></a>
-    <a href="https://github.com/flectar/mail/releases"><img src="https://img.shields.io/github/v/release/flectar/mail?display_name=tag&include_prereleases&sort=semver&style=flat&label=release&color=0ea5e9" alt="Latest release"></a>
-    <a href="https://translate.flectar.com/engage/flectar-mail/"><img src="https://translate.flectar.com/widget/flectar-mail/svg-badge.svg" alt="Translation status"></a>
+    <a href="https://github.com/tonk/evanya/releases"><img src="https://img.shields.io/github/downloads/flectar/mail/total?style=flat&label=downloads&color=16a34a" alt="Downloads across all releases"></a>
+    <a href="https://github.com/tonk/evanya/releases"><img src="https://img.shields.io/github/v/release/tonk/evanya?display_name=tag&include_prereleases&sort=semver&style=flat&label=release&color=0ea5e9" alt="Latest release"></a>
   </p>
   <p>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/language-Rust%201.92%2B-dea584?style=flat" alt="Language: Rust 1.92+"></a>
-    <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-475569?style=flat" alt="Platforms: Windows, macOS, Linux, Android, iOS">
+    <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-475569?style=flat" alt="Platforms: Windows, macOS, Linux">
   </p>
 </div>
 
@@ -40,9 +38,10 @@ contacts. It is engineered to open instantly, stay responsive, and use a
 fraction of the memory of a typical web-based mail client.
 
 > [!NOTE]
-> Evanya is based on [Flectar Mail](https://github.com/flectar/mail), made by
-> Flectar and its contributors. Their copyright notices and licenses are kept
-> unchanged, and Evanya remains licensed under the GNU AGPL v3.
+> Evanya is based on [Flectar Mail](https://github.com/tonk/evanya),
+> made by Flectar and its contributors. Their copyright notices and
+> licenses are kept unchanged, and Evanya remains licensed under the GNU
+> AGPL v3.
 
 ## ❓ Why Evanya?
 
@@ -67,18 +66,19 @@ fraction of the memory of a typical web-based mail client.
 | Including code and libraries (PSS) | **~85 MB** | ~435 MB |
 | Browser engine | None | Gecko |
 
-Measured on Linux with one IMAP account (860 messages), the inbox open and an
-HTML newsletter displayed, 60 seconds after launch, with the default CPU
-renderer. Private memory is what Windows Task Manager lists as **Memory**. On
-Windows, with 7 real accounts and about 69,000 unread messages, Task Manager
-shows about 40 MB with the window open and about 4 MB once it's closed to the
-tray. See [how we measure and how to check it yourself](docs/performance.md).
+Measured on Linux with one IMAP account (860 messages), the inbox open
+and an HTML newsletter displayed, 60 seconds after launch, with the
+default CPU renderer. Private memory is what Windows Task Manager lists
+as **Memory**. On Windows, with 7 real accounts and about 69,000 unread
+messages, Task Manager shows about 40 MB with the window open and about
+4 MB once it's closed to the tray. See [how we measure and how to check
+it yourself](docs/performance.md).
 
 ### How it compares
 
 | Email client | Interface | Renders email with | Platforms |
 | --- | --- | --- | --- |
-| **Evanya** | Native Rust app | Blitz, a Rust HTML/CSS renderer; no WebView | Windows, macOS, Linux, Android; iOS coming soon |
+| **Evanya** | Native Rust app | Blitz, a Rust HTML/CSS renderer; no WebView | Windows, macOS, Linux |
 | Thunderbird | Gecko-based desktop app | Gecko | Windows, macOS, Linux, Android |
 | Outlook for Windows | Windows shell with a web UI | Microsoft Edge WebView2 | Windows |
 | Spark | Electron app | Chromium | macOS, Windows, iOS, Android |
@@ -303,31 +303,28 @@ tray. See [how we measure and how to check it yourself](docs/performance.md).
 
 ## 🧪 Experimental HTML rendering
 
-> [!WARNING]
-> HTML email rendering is currently the most experimental part of Evanya.
-> Some messages, especially those with complex or unusual markup and CSS, may
-> not render correctly yet.
+> [!WARNING] HTML email rendering is currently the most experimental
+> part of Evanya.  Some messages, especially those with complex or
+> unusual markup and CSS, may not render correctly yet.
 
-Evanya renders email with [Blitz](https://github.com/DioxusLabs/blitz), a
-Rust HTML/CSS renderer from the Dioxus team, instead of embedding a browser or
-WebView. If a message renders incorrectly, please
-[report it](https://github.com/flectar/mail/issues). Read more about
-[the renderer and the CPU and GPU options](docs/features.md#html-rendering).
+Evanya renders email with [Blitz](https://github.com/DioxusLabs/blitz),
+a Rust HTML/CSS renderer from the Dioxus team, instead of embedding
+a browser or WebView. If a message renders incorrectly, please [report
+it](https://github.com/tonk/evanya/issues). Read more about [the
+renderer and the CPU and GPU options](docs/features.md#html-rendering).
 
 ## 📥 Get Evanya
 
-Evanya is in development and not yet stable, and is built from source. Preview
-builds of the upstream Evanya are on
-[GitHub Releases](https://github.com/flectar/mail/releases) with the
+Evanya is in development and not yet stable, and is built from source.
+Preview builds of the upstream Evanya are on [GitHub
+Releases](https://github.com/tonk/evanya/releases) with the
 **Pre-release** badge.
 
-> [!WARNING]
-> **Google OAuth verification requires an annual CASA security assessment.**
-> Flectar is a community open-source project, so completing this assessment
-> depends on sponsor support. Until the required verification is funded and
-> complete, a stable release with Gmail OAuth configured by default will not be
-> possible. If you want to help make built-in Gmail sign-in available, please
-> [sponsor Flectar](https://github.com/sponsors/flectar).
+> [!WARNING] **Google OAuth verification requires an annual CASA
+> security assessment.** Evanya is a community open-source project, so
+> completing this assessment depends on sponsor support. Until the
+> required verification is funded and complete, a stable release with
+> Gmail OAuth configured by default will not be possible.
 
 | Platform | Download | Notes |
 | --- | --- | --- |
@@ -345,24 +342,16 @@ The [installation guide](docs/install.md) covers install commands, the Linux
 keyring and desktop portal, Flatpak and RPM notes, verifying downloads, Android
 signing, and building from source with `cargo run --bin evanya`.
 
-## 🤝 Get involved
-
-| Topic | Details |
-| --- | --- |
-| 🌍 **Translate** | Translate the app, improve a translation, or review strings on [Weblate](https://translate.flectar.com/), with no programming or GitHub experience required. Translations reach this repository as pull requests, with GitHub attribution for contributors. README translations live here; see [Contributing translations](CONTRIBUTING.md#translations). |
-| ♿ **Accessibility** | Keyboard navigation, light and dark themes, and flexible layouts, with work ongoing. [ACCESSIBILITY.md](ACCESSIBILITY.md) covers current features, testing limitations, and how to report a barrier. |
-| 🔒 **Security** | Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md), and keep their details out of public issues. |
-| 🌐 **Open source** | One open-source application with no separate community edition, licensed under the [GNU Affero General Public License v3](LICENSE). The [licensing overview](LICENSING.md) has the practical details. |
-| 🛠️ **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md) explains how to help shape the project. |
-
 ## 🫡 Acknowledgements
 
 Evanya is made possible by the work of these projects and their
 contributors:
 
-- [Slint](https://slint.dev/), the native UI toolkit that powers the Evanya
-  interface.
-- [Blitz](https://github.com/DioxusLabs/blitz), the Rust HTML/CSS renderer from
-  the Dioxus team that powers the email reading experience.
+- [Flectar Mail](https://flectar.com), the point where I started
+- [Slint](https://slint.dev/), the native UI toolkit that powers the
+  Evanya interface.
+- [Blitz](https://github.com/DioxusLabs/blitz), the Rust HTML/CSS
+  renderer from the Dioxus team that powers the email reading
+  experience.
 
 ---
