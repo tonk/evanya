@@ -37,6 +37,8 @@ mod mail;
 mod mail_drop_tests;
 mod mail_groups;
 mod mail_navigation;
+#[cfg(desktop)]
+mod mail_notifications;
 mod mail_render_projection;
 mod mail_scope;
 mod mail_setup;
@@ -1214,6 +1216,25 @@ fn bundled_language_for_locale(locale: &str) -> Option<&'static str> {
             .any(|value| subtag.eq_ignore_ascii_case(value))
     });
     (!is_traditional).then_some("zh_Hans")
+}
+
+/// The translatable message for a repeat field that is wrong.
+/// Offer the "Repeat" choices that fit an event on `date`.
+fn set_repeat_choices(app: &AppWindow, date: NaiveDate, custom: bool) {
+    app.set_calendar_event_repeat_choices(ModelRc::new(VecModel::from(calendar::repeat_labels(
+        app, date, custom,
+    ))));
+    app.set_calendar_event_repeat_custom(calendar::repeat_custom(date));
+}
+
+fn repeat_problem(problem: &str) -> UiMessage {
+    match problem {
+        "Use YYYY-MM-DD for the end date." => UiMessage::plain("Use YYYY-MM-DD for the end date."),
+        "The repetition cannot end before the event starts." => {
+            UiMessage::plain("The repetition cannot end before the event starts.")
+        }
+        _ => UiMessage::plain("The number of times is a number from 1 to 999."),
+    }
 }
 
 /// Show why an event could not be saved, in the event dialog itself.
@@ -3186,7 +3207,11 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     // Where new events go, as last offered: (calendar id, account id, label).
     let event_targets: Rc<RefCell<Vec<(i64, i64, String)>>> = Rc::default();
     let last_event_target: Rc<Cell<Option<i64>>> = Rc::default();
+    // The date the "Repeat" choices were made for, to carry the choice along
+    // when the date changes.
+    let repeat_date = Rc::new(Cell::new(Local::now().date_naive()));
     let open_new_event = {
+        let repeat_date_for_new = Rc::clone(&repeat_date);
         let app_weak = app.as_weak();
         let calendar_for_editor = Rc::clone(&calendar_state);
         let inbox_for_editor = Rc::clone(&state);
@@ -3226,6 +3251,12 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             app.set_calendar_event_color(i32::try_from(chosen).unwrap_or_default());
             app.set_calendar_event_location("".into());
             app.set_calendar_event_description("".into());
+            set_repeat_choices(&app, date, false);
+            repeat_date_for_new.set(date);
+            app.set_calendar_event_repeat(0);
+            app.set_calendar_event_ends(calendar::ENDS_NEVER);
+            app.set_calendar_event_until("".into());
+            app.set_calendar_event_count("".into());
             app.set_calendar_event_error("".into());
             app.set_calendar_editor_open(true);
         })
@@ -3379,6 +3410,22 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         }
     });
 
+    // The "Repeat" choices name the weekday and month of the event's date.
+    let repeat_date_for_edit = Rc::clone(&repeat_date);
+    let app_weak = app.as_weak();
+    app.on_calendar_event_date_edited(move |text| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        if let Ok(date) = NaiveDate::parse_from_str(text.trim(), "%Y-%m-%d") {
+            let previous = repeat_date_for_edit.replace(date);
+            let choice =
+                calendar::repeat_choice_moved(app.get_calendar_event_repeat(), previous, date);
+            set_repeat_choices(&app, date, choice == calendar::repeat_custom(date));
+            app.set_calendar_event_repeat(choice);
+        }
+    });
+
     let calendar_for_editor = Rc::clone(&calendar_state);
     let open_for_button = Rc::clone(&open_new_event);
     app.on_calendar_open_editor(move || {
@@ -3399,6 +3446,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let app_weak = app.as_weak();
     let calendar_for_edit = Rc::clone(&calendar_state);
     let editing_event_for_edit = Rc::clone(&calendar_editing_event_id);
+    let repeat_date_for_event = Rc::clone(&repeat_date);
     app.on_calendar_edit_event(move |event_id| {
         let Some(app) = app_weak.upgrade() else {
             return;
@@ -3439,6 +3487,17 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         app.set_calendar_event_color(0);
         app.set_calendar_event_location(event.location.clone().into());
         app.set_calendar_event_description(event.description.clone().into());
+        let repeat = calendar::repeat_fields(&event.recurrence, event.date);
+        set_repeat_choices(
+            &app,
+            event.date,
+            repeat.choice == calendar::repeat_custom(event.date),
+        );
+        repeat_date_for_event.set(event.date);
+        app.set_calendar_event_repeat(repeat.choice);
+        app.set_calendar_event_ends(repeat.ends);
+        app.set_calendar_event_until(repeat.until.into());
+        app.set_calendar_event_count(repeat.count.into());
         app.set_calendar_event_error("".into());
         app.set_calendar_editor_open(true);
     });
@@ -3544,6 +3603,19 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             );
             return;
         };
+        let rule = match calendar::repeat_rule(
+            app.get_calendar_event_repeat(),
+            date,
+            app.get_calendar_event_ends(),
+            &app.get_calendar_event_until(),
+            &app.get_calendar_event_count(),
+        ) {
+            Ok(rule) => rule,
+            Err(problem) => {
+                show_event_problem(&app, repeat_problem(problem));
+                return;
+            }
+        };
         let Some(core) = inbox_for_calendar_save.borrow().core.clone() else {
             show_event_problem(&app, UiMessage::plain("Calendar storage is unavailable."));
             return;
@@ -3576,6 +3648,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     all_day: event.all_day,
                     attendees: event.attendee_addresses,
                     notify: false,
+                    rrule: rule,
                 }))
                 .map(|_| ())
         } else {
@@ -3601,6 +3674,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     ends_at,
                     all_day: false,
                     attendees: Vec::new(),
+                    rrule: rule.flatten(),
                 }))
                 .map(|_| ())
         };
@@ -4332,6 +4406,13 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             && let Some(app) = mail_update_app.upgrade()
         {
             apply_account_states(&app, &mail_update_state, &pending.account_states);
+        }
+        #[cfg(desktop)]
+        if pending.new_mail
+            && let Some(app) = mail_update_app.upgrade()
+            && app.get_notification_sound_enabled()
+        {
+            mail_notifications::play_new_mail_sound();
         }
         let status_changed = status_line
             .borrow_mut()
@@ -8478,6 +8559,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     account_avatars::register(&app, &state, &runtime);
     custom_headers::register(&app, &state, &runtime);
     move_picker::register(&app, &state);
+    #[cfg(desktop)]
+    mail_notifications::start(&app, &state, &runtime);
 
     register_data_management_callbacks(
         &app,

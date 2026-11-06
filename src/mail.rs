@@ -510,6 +510,10 @@ impl CoreMailSource {
     pub(crate) fn file_core(&self) -> Arc<Core> {
         Arc::clone(&self.core)
     }
+
+    pub(crate) fn notification_core(&self) -> Arc<Core> {
+        Arc::clone(&self.core)
+    }
     pub async fn start(
         paths: Paths,
         credentials: evanya_core::accounts::credentials::CredentialStoreHandle,

@@ -101,6 +101,10 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
             : #26a269;
     }
 
+    // The week number column left of the days, and each day's width.
+    private property <length> week-column: 30px;
+    private property <length> mini-day-width: (root.width - 2 * LayoutMetrics.sidebar-inset - root.week-column) / 7;
+
     divider-color: root.subtle-border-color;
 
     if root.active && !root.collapsed: Rectangle {
@@ -169,9 +173,9 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
             @tr("Saturday initial" => "S"),
             @tr("Sunday initial" => "S")
         ]: Text {
-            x: LayoutMetrics.sidebar-inset + index * ((root.width - 2 * LayoutMetrics.sidebar-inset) / 7);
+            x: LayoutMetrics.sidebar-inset + root.week-column + index * root.mini-day-width;
             y: 94px;
-            width: (root.width - 2 * LayoutMetrics.sidebar-inset) / 7;
+            width: root.mini-day-width;
             height: max(18px, self.preferred-height);
             text: name;
             color: root.muted-color;
@@ -180,10 +184,31 @@ export component FunctionalCalendarSidebar inherits CollapsibleWorkspaceSidebar 
             horizontal-alignment: center;
             vertical-alignment: center;
         }
+        // ISO week numbers, one per row, as many calendars show them.
+        Rectangle {
+            x: LayoutMetrics.sidebar-inset;
+            y: 112px;
+            width: root.week-column - 4px;
+            height: 6 * 28px;
+            border-radius: 6px;
+            background: root.subtle-border-color;
+        }
+        for row in [0, 1, 2, 3, 4, 5] : Text {
+            x: LayoutMetrics.sidebar-inset;
+            y: 114px + row * 28px;
+            width: root.week-column - 4px;
+            height: 26px;
+            text: row * 7 < root.days.length ? root.days[row * 7].week : "";
+            color: root.muted-color;
+            font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+            accessible-label: @tr("Week {}", self.text);
+        }
         for day[index] in root.days: Rectangle {
-            x: LayoutMetrics.sidebar-inset + mod(index, 7) * ((root.width - 2 * LayoutMetrics.sidebar-inset) / 7);
+            x: LayoutMetrics.sidebar-inset + root.week-column + mod(index, 7) * root.mini-day-width;
             y: 114px + floor(index / 7) * 28px;
-            width: (root.width - 2 * LayoutMetrics.sidebar-inset) / 7;
+            width: root.mini-day-width;
             height: 26px;
             background: transparent;
             Rectangle {

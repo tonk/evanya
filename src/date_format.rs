@@ -224,6 +224,11 @@ impl DateFormats {
         &self.yesterday
     }
 
+    /// A month name as used inside a phrase, counting from January as 0.
+    pub(crate) fn month(&self, month0: u32) -> &str {
+        &self.months[month0 as usize % 12]
+    }
+
     /// A weekday name, counting from Monday.
     pub(crate) fn weekday(&self, days_from_monday: u32, abbreviated: bool) -> &str {
         let names = if abbreviated {

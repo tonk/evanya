@@ -370,6 +370,338 @@ pub(crate) fn first_of_month(date: NaiveDate) -> NaiveDate {
     date.with_day(1).unwrap_or(date)
 }
 
+/// The event dialog's "Repeat" choices, by position. Those after "every
+/// month" depend on the event's date: the weekday and its place in the
+/// month, such as the last Tuesday, and for yearly rules the month.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum Repeat {
+    Never,
+    Daily,
+    Weekdays,
+    Weekly,
+    Fortnightly,
+    Monthly,
+    MonthlyWeekday,
+    MonthlyLastWeekday,
+    Yearly,
+    YearlyWeekday,
+    YearlyLastWeekday,
+}
+
+const REPEATS: [Repeat; 11] = [
+    Repeat::Never,
+    Repeat::Daily,
+    Repeat::Weekdays,
+    Repeat::Weekly,
+    Repeat::Fortnightly,
+    Repeat::Monthly,
+    Repeat::MonthlyWeekday,
+    Repeat::MonthlyLastWeekday,
+    Repeat::Yearly,
+    Repeat::YearlyWeekday,
+    Repeat::YearlyLastWeekday,
+];
+
+/// How a repeating event ends: never, on a date, or after a number of times.
+pub(crate) const ENDS_NEVER: i32 = 0;
+pub(crate) const ENDS_ON_DATE: i32 = 1;
+pub(crate) const ENDS_AFTER: i32 = 2;
+
+const WEEKDAY_CODES: [&str; 7] = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+
+/// The week of the month `date` falls in (1 to 5), and whether it is the
+/// last such weekday of its month.
+fn week_of_month(date: NaiveDate) -> (u32, bool) {
+    let next_month = shift_month(first_of_month(date), 1);
+    let last = (date + ChronoDuration::days(7)) >= next_month;
+    ((date.day() - 1) / 7 + 1, last)
+}
+
+/// The choices that fit an event on `date`, in the order the dialog shows
+/// them. A weekday by its number is offered for the first four weeks of a
+/// month, the last weekday only when `date` is one: a rule must match the day
+/// the event starts on.
+fn repeats_for(date: NaiveDate) -> Vec<Repeat> {
+    let (week, last) = week_of_month(date);
+    REPEATS
+        .into_iter()
+        .filter(|repeat| match repeat {
+            Repeat::MonthlyWeekday | Repeat::YearlyWeekday => week <= 4,
+            Repeat::MonthlyLastWeekday | Repeat::YearlyLastWeekday => last,
+            _ => true,
+        })
+        .collect()
+}
+
+/// The "Repeat" choice for a rule the dialog does not offer, which keeps it:
+/// the one after the choices for `date`.
+pub(crate) fn repeat_custom(date: NaiveDate) -> i32 {
+    repeats_for(date).len() as i32
+}
+
+/// The choice on `to` that repeats the way `choice` did on `from`, when the
+/// event's date changes. A numbered weekday that does not exist on the new
+/// date becomes the last one, and the other way around.
+pub(crate) fn repeat_choice_moved(choice: i32, from: NaiveDate, to: NaiveDate) -> i32 {
+    let Some(repeat) = usize::try_from(choice)
+        .ok()
+        .and_then(|index| repeats_for(from).get(index).copied())
+    else {
+        return repeat_custom(to);
+    };
+    let choices = repeats_for(to);
+    let position = |repeat| choices.iter().position(|choice| *choice == repeat);
+    let fallback = match repeat {
+        Repeat::MonthlyWeekday => Repeat::MonthlyLastWeekday,
+        Repeat::MonthlyLastWeekday => Repeat::MonthlyWeekday,
+        Repeat::YearlyWeekday => Repeat::YearlyLastWeekday,
+        Repeat::YearlyLastWeekday => Repeat::YearlyWeekday,
+        other => other,
+    };
+    position(repeat)
+        .or_else(|| position(fallback))
+        .map_or(0, |index| index as i32)
+}
+
+/// The rule a choice stands for on an event that starts on `date`; empty for
+/// a one-off event.
+fn base_rule(repeat: Repeat, date: NaiveDate) -> String {
+    let weekday = WEEKDAY_CODES[date.weekday().num_days_from_monday() as usize];
+    // The fifth weekday exists only in some months: it is the last one.
+    let nth = match week_of_month(date).0 {
+        5 => -1,
+        week => week as i32,
+    };
+    match repeat {
+        Repeat::Never => String::new(),
+        Repeat::Daily => "FREQ=DAILY".into(),
+        Repeat::Weekdays => "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR".into(),
+        Repeat::Weekly => "FREQ=WEEKLY".into(),
+        Repeat::Fortnightly => "FREQ=WEEKLY;INTERVAL=2".into(),
+        Repeat::Monthly => "FREQ=MONTHLY".into(),
+        Repeat::MonthlyWeekday => format!("FREQ=MONTHLY;BYDAY={nth}{weekday}"),
+        Repeat::MonthlyLastWeekday => format!("FREQ=MONTHLY;BYDAY=-1{weekday}"),
+        Repeat::Yearly => "FREQ=YEARLY".into(),
+        Repeat::YearlyWeekday => {
+            format!("FREQ=YEARLY;BYMONTH={};BYDAY={nth}{weekday}", date.month())
+        }
+        Repeat::YearlyLastWeekday => {
+            format!("FREQ=YEARLY;BYMONTH={};BYDAY=-1{weekday}", date.month())
+        }
+    }
+}
+
+/// A rule's parts, upper case and in a fixed order, to compare rules.
+fn rule_parts(rule: &str) -> Vec<String> {
+    let mut parts: Vec<String> = rule
+        .trim()
+        .trim_start_matches("RRULE:")
+        .split(';')
+        .map(|part| part.trim().to_ascii_uppercase())
+        .filter(|part| !part.is_empty() && part != "INTERVAL=1")
+        .collect();
+    parts.sort();
+    parts
+}
+
+/// What the dialog shows for an event's rule: the "Repeat" choice, how it
+/// ends, and the end date or count as typed.
+pub(crate) struct RepeatFields {
+    pub(crate) choice: i32,
+    pub(crate) ends: i32,
+    pub(crate) until: String,
+    pub(crate) count: String,
+}
+
+/// Read an event's rule into the dialog's fields.
+pub(crate) fn repeat_fields(rrule: &str, date: NaiveDate) -> RepeatFields {
+    let mut fields = RepeatFields {
+        choice: 0,
+        ends: ENDS_NEVER,
+        until: String::new(),
+        count: String::new(),
+    };
+    let mut parts = rule_parts(rrule);
+    if parts.is_empty() {
+        return fields;
+    }
+    if let Some(index) = parts.iter().position(|part| part.starts_with("COUNT=")) {
+        fields.ends = ENDS_AFTER;
+        fields.count = parts.remove(index)[6..].to_owned();
+    } else if let Some(index) = parts.iter().position(|part| part.starts_with("UNTIL=")) {
+        let until = parts.remove(index);
+        fields.ends = ENDS_ON_DATE;
+        let value = &until[6..];
+        // A UTC moment, shown as the day it falls on here, or a plain date.
+        let day = chrono::NaiveDateTime::parse_from_str(value, "%Y%m%dT%H%M%SZ")
+            .ok()
+            .map(|moment| {
+                Utc.from_utc_datetime(&moment)
+                    .with_timezone(&Local)
+                    .date_naive()
+            })
+            .or_else(|| NaiveDate::parse_from_str(value, "%Y%m%d").ok());
+        fields.until = day
+            .map(|day| day.format("%Y-%m-%d").to_string())
+            .unwrap_or_default();
+    }
+    let choices = repeats_for(date);
+    fields.choice = choices
+        .iter()
+        .skip(1)
+        .position(|repeat| rule_parts(&base_rule(*repeat, date)) == parts)
+        .map_or(choices.len() as i32, |index| index as i32 + 1);
+    if fields.choice == choices.len() as i32 {
+        // A rule the dialog cannot show is kept whole, end included.
+        fields.ends = ENDS_NEVER;
+    }
+    fields
+}
+
+/// The rule the dialog's fields describe: `Ok(Some(None))` for a one-off
+/// event, `Ok(None)` to keep the rule the event has, or the field that is
+/// wrong.
+pub(crate) fn repeat_rule(
+    choice: i32,
+    date: NaiveDate,
+    ends: i32,
+    until: &str,
+    count: &str,
+) -> Result<Option<Option<String>>, &'static str> {
+    let Some(repeat) = usize::try_from(choice)
+        .ok()
+        .and_then(|index| repeats_for(date).get(index).copied())
+    else {
+        return Ok(None);
+    };
+    let base = base_rule(repeat, date);
+    if base.is_empty() {
+        return Ok(Some(None));
+    }
+    let rule = match ends {
+        ENDS_ON_DATE => {
+            let until = NaiveDate::parse_from_str(until.trim(), "%Y-%m-%d")
+                .map_err(|_| "Use YYYY-MM-DD for the end date.")?;
+            if until < date {
+                return Err("The repetition cannot end before the event starts.");
+            }
+            // Through the whole last day, on this computer's clock.
+            let end_of_day = until
+                .and_hms_opt(23, 59, 59)
+                .and_then(|end| Local.from_local_datetime(&end).earliest())
+                .ok_or("Use YYYY-MM-DD for the end date.")?;
+            format!(
+                "{base};UNTIL={}",
+                end_of_day.with_timezone(&Utc).format("%Y%m%dT%H%M%SZ")
+            )
+        }
+        ENDS_AFTER => {
+            let count: u32 = count
+                .trim()
+                .parse()
+                .ok()
+                .filter(|count| (1..=999).contains(count))
+                .ok_or("The number of times is a number from 1 to 999.")?;
+            format!("{base};COUNT={count}")
+        }
+        _ => base,
+    };
+    Ok(Some(Some(rule)))
+}
+
+/// The "Repeat" choices for an event on `date`, in the user's language;
+/// with `custom`, also the choice that keeps a rule the dialog cannot show.
+pub(crate) fn repeat_labels(app: &AppWindow, date: NaiveDate, custom: bool) -> Vec<SharedString> {
+    use crate::ui_message::{UiMessage, translated};
+    let formats = date_format::current();
+    let weekday = formats
+        .weekday(date.weekday().num_days_from_monday(), false)
+        .to_owned();
+    let month = formats.month(date.month0()).to_owned();
+    let (week, _) = week_of_month(date);
+    let ordinal = translated(
+        app,
+        &match week {
+            1 => UiMessage::plain("first"),
+            2 => UiMessage::plain("second"),
+            3 => UiMessage::plain("third"),
+            4 => UiMessage::plain("fourth"),
+            _ => UiMessage::plain("last"),
+        },
+    )
+    .to_string();
+    let nth_weekday = format!("{ordinal} {weekday}");
+    let mut labels: Vec<SharedString> = repeats_for(date)
+        .into_iter()
+        .map(|repeat| {
+            let message = match repeat {
+                Repeat::Never => UiMessage::plain("Does not repeat"),
+                Repeat::Daily => UiMessage::plain("Every day"),
+                Repeat::Weekdays => UiMessage::plain("Every weekday (Monday to Friday)"),
+                Repeat::Weekly => UiMessage::plain("Every week"),
+                Repeat::Fortnightly => UiMessage::plain("Every two weeks"),
+                Repeat::Monthly => UiMessage::detail("Every month on day {}", date.day()),
+                Repeat::MonthlyWeekday => {
+                    UiMessage::detail("Every month on the {}", nth_weekday.clone())
+                }
+                Repeat::MonthlyLastWeekday => {
+                    UiMessage::detail("Every month on the last {}", weekday.clone())
+                }
+                Repeat::Yearly => UiMessage::plain("Every year"),
+                Repeat::YearlyWeekday => {
+                    UiMessage::arguments("Every year on the {} of {}", nth_weekday.clone(), &month)
+                }
+                Repeat::YearlyLastWeekday => {
+                    UiMessage::arguments("Every year on the last {} of {}", weekday.clone(), &month)
+                }
+            };
+            translated(app, &message)
+        })
+        .collect();
+    if custom {
+        labels.push(translated(
+            app,
+            &UiMessage::plain("Custom rule, kept as it is"),
+        ));
+    }
+    labels
+}
+
+/// How an event repeats, in words where the dialog has them, such as "Every
+/// month on the last Friday, 5 times"; another rule is shown as it is.
+fn repeat_description(
+    app: &AppWindow,
+    formats: &DateFormats,
+    rrule: &str,
+    date: NaiveDate,
+) -> String {
+    use crate::ui_message::{UiMessage, translated};
+    let fields = repeat_fields(rrule, date);
+    if fields.choice <= 0 || fields.choice == repeat_custom(date) {
+        return rrule.to_owned();
+    }
+    let Some(label) = repeat_labels(app, date, false)
+        .get(fields.choice as usize)
+        .map(|label| label.to_string())
+    else {
+        return rrule.to_owned();
+    };
+    let message = match fields.ends {
+        ENDS_AFTER if fields.count == "1" => UiMessage::detail("{}, once", label),
+        ENDS_AFTER => UiMessage::arguments("{}, {} times", label, &fields.count),
+        ENDS_ON_DATE => match NaiveDate::parse_from_str(&fields.until, "%Y-%m-%d") {
+            Ok(until) => UiMessage::arguments(
+                "{}, until {}",
+                label,
+                &formats.date(DateStyle::Medium, until),
+            ),
+            Err(_) => return label,
+        },
+        _ => return label,
+    };
+    translated(app, &message).to_string()
+}
+
 /// Lay out the week view so no two events overlap. Timed events that overlap
 /// within a day share its column side by side: each group of overlapping
 /// events gets as many columns as it needs at once. All-day events stack in
@@ -902,7 +1234,7 @@ fn event_row(
         attendees: event.attendees.clone().into(),
         join_url: event.join_url.clone().into(),
         rsvp_status: event.rsvp_status.clone().into(),
-        recurrence: event.recurrence.clone().into(),
+        recurrence: repeat_description(app, formats, &event.recurrence, event.date).into(),
         status: event.status.clone().into(),
         source: if event.is_local { "local" } else { "provider" }.into(),
     }
@@ -927,6 +1259,7 @@ pub(crate) fn apply_calendar(app: &AppWindow, state: &LocalCalendarState, today:
                 is_today: date == today,
                 is_selected: date == state.selected_date,
                 has_events: state.events.iter().any(|event| event.date == date),
+                week: date.iso_week().week().to_string().into(),
                 ..Default::default()
             }
         })
@@ -1296,6 +1629,73 @@ mod tests {
         assert_eq!(calendar_color_index("#f6bf26", 9), 2);
         assert_eq!(calendar_color_index("#33b679", 9), 3);
         assert_eq!(calendar_color_index("not-a-color", 9), 1);
+    }
+
+    #[test]
+    fn repeat_rules_follow_the_date_and_read_back() {
+        // Tuesday 27 October 2026 is the last Tuesday of its month.
+        let date = NaiveDate::from_ymd_opt(2026, 10, 27).unwrap();
+        let rule = |choice| repeat_rule(choice, date, ENDS_NEVER, "", "").unwrap();
+        assert_eq!(rule(0), Some(None));
+        assert_eq!(rule(6), Some(Some("FREQ=MONTHLY;BYDAY=4TU".into())));
+        assert_eq!(rule(7), Some(Some("FREQ=MONTHLY;BYDAY=-1TU".into())));
+        assert_eq!(
+            rule(10),
+            Some(Some("FREQ=YEARLY;BYMONTH=10;BYDAY=-1TU".into()))
+        );
+        assert_eq!(rule(repeat_custom(date)), None);
+        // An end after a number of times, read back the same way.
+        let counted = repeat_rule(3, date, ENDS_AFTER, "", "5").unwrap();
+        assert_eq!(counted, Some(Some("FREQ=WEEKLY;COUNT=5".into())));
+        let fields = repeat_fields("FREQ=WEEKLY;COUNT=5", date);
+        assert_eq!(
+            (fields.choice, fields.ends, fields.count.as_str()),
+            (3, ENDS_AFTER, "5")
+        );
+        // An end date covers that whole day and reads back as the date.
+        let until = repeat_rule(10, date, ENDS_ON_DATE, "2030-10-29", "")
+            .unwrap()
+            .unwrap()
+            .unwrap();
+        assert!(
+            until.starts_with("FREQ=YEARLY;BYMONTH=10;BYDAY=-1TU;UNTIL=203010"),
+            "{until}"
+        );
+        let fields = repeat_fields(&until, date);
+        assert_eq!(
+            (fields.choice, fields.ends, fields.until.as_str()),
+            (10, ENDS_ON_DATE, "2030-10-29")
+        );
+        // Mistakes are named.
+        assert!(repeat_rule(3, date, ENDS_ON_DATE, "2026-10-01", "").is_err());
+        assert!(repeat_rule(3, date, ENDS_AFTER, "", "0").is_err());
+        // A rule the dialog cannot make is kept.
+        assert_eq!(
+            repeat_fields("FREQ=WEEKLY;BYDAY=TU,TH", date).choice,
+            repeat_custom(date)
+        );
+        // The fifth Tuesday of a month is its last.
+        let fifth = NaiveDate::from_ymd_opt(2026, 9, 29).unwrap();
+        assert_eq!(
+            repeat_rule(6, fifth, ENDS_NEVER, "", "").unwrap(),
+            Some(Some("FREQ=MONTHLY;BYDAY=-1TU".into()))
+        );
+        assert_eq!(repeats_for(fifth).len(), 9);
+        // The second Friday is not the last: only the numbered weekday fits.
+        let second = NaiveDate::from_ymd_opt(2026, 11, 13).unwrap();
+        assert!(!repeats_for(second).contains(&Repeat::MonthlyLastWeekday));
+        assert_eq!(
+            repeat_rule(6, second, ENDS_NEVER, "", "").unwrap(),
+            Some(Some("FREQ=MONTHLY;BYDAY=2FR".into()))
+        );
+        // Moving the date keeps the kind of repetition.
+        assert_eq!(repeat_choice_moved(7, date, second), 6);
+        assert_eq!(repeat_choice_moved(6, second, fifth), 6);
+        assert_eq!(repeat_choice_moved(3, date, fifth), 3);
+        assert_eq!(
+            repeat_choice_moved(repeat_custom(date), date, second),
+            repeat_custom(second)
+        );
     }
 
     fn timed(day: i32, start: i32, minutes: i32) -> CalendarEventRow {

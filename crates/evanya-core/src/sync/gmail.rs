@@ -2555,6 +2555,11 @@ async fn sync_once(
                 }
             })
             .await?;
+        // New mail must not wait until the whole mailbox is listed: take over
+        // what changed since the full sync started after each page.
+        if let Err(error) = sync_history(ctx, config, api, &state, mail_history, true).await {
+            tracing::warn!(account_id, %error, "Gmail history during full sync failed");
+        }
         if next_cursor.is_none() {
             sync_draft_map(ctx, config, api).await?;
             emit_sync_status(ctx, account_id).await;
@@ -2564,10 +2569,28 @@ async fn sync_once(
         return Ok(false);
     }
 
+    sync_history(ctx, config, api, &state, mail_history, false).await
+}
+
+/// Take over what changed in Gmail since the stored history id: new mail,
+/// label changes and deletions. During a full sync it runs too, after each
+/// page, so new mail does not wait for the whole mailbox; an expired cursor
+/// then waits for the full sync, which starts history afresh.
+async fn sync_history(
+    ctx: &SyncCtx,
+    config: &AccountConfig,
+    api: &GmailApi,
+    state: &repo::gmail::SyncState,
+    mail_history: MailHistory,
+    during_full_sync: bool,
+) -> Result<bool> {
+    let account_id = config.id;
     let Some(history_id) = state.history_id.as_deref() else {
-        ctx.db
-            .write(move |conn| repo::gmail::expire_history(conn, account_id))
-            .await?;
+        if !during_full_sync {
+            ctx.db
+                .write(move |conn| repo::gmail::expire_history(conn, account_id))
+                .await?;
+        }
         return Ok(false);
     };
     let page = match api
@@ -2575,6 +2598,7 @@ async fn sync_once(
         .await
     {
         Ok(page) => page,
+        Err(CoreError::NotFound(_)) if during_full_sync => return Ok(false),
         Err(CoreError::NotFound(_)) => {
             tracing::info!(
                 account_id,

@@ -88,6 +88,7 @@ fn main() {
             "sanitize" => mime::sanitize_html(&html).into_bytes(),
             _ => {
                 let message = mime::OutgoingMessage {
+                    extra_headers: &[],
                     from: from.clone(),
                     reply_to: None,
                     to: &recipients,

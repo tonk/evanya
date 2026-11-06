@@ -338,6 +338,8 @@ export struct CalendarDay {
     is_today: bool,
     is_selected: bool,
     has_events: bool,
+    // The ISO week number, which the week column shows for a row's Monday.
+    week: string,
     // Month view: the rows its event chips use, and how many of the day's
     // events sit in row k or below, at more_after[k], for "+n more".
     lanes_used: int,

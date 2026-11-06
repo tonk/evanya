@@ -41,6 +41,8 @@ struct Rule {
     until_ms: Option<i64>,
     /// weekly: plain weekdays; monthly: (ordinal, weekday) when ordinal != 0
     bydays: Vec<(i32, Weekday)>,
+    /// yearly: the month, as in "the last Sunday of October"
+    bymonth: Option<u32>,
     /// true when the rule has parts we don't support (BYSETPOS, BYMONTHDAY…)
     unsupported: bool,
 }
@@ -65,6 +67,7 @@ fn parse_rule(rrule: &str) -> Option<Rule> {
         count: None,
         until_ms: None,
         bydays: Vec::new(),
+        bymonth: None,
         unsupported: false,
     };
     let mut saw_freq = false;
@@ -105,6 +108,11 @@ fn parse_rule(rrule: &str) -> Option<Rule> {
                     rule.bydays.push((ord, day));
                 }
             }
+            // One month only, as yearly rules for a weekday in a month use it.
+            "BYMONTH" => match v.trim().parse::<u32>() {
+                Ok(month @ 1..=12) => rule.bymonth = Some(month),
+                _ => rule.unsupported = true,
+            },
             "WKST" | "BYHOUR" | "BYMINUTE" | "BYSECOND" => {}
             _ => rule.unsupported = true, // BYSETPOS, BYMONTHDAY, BYMONTH, …
         }
@@ -245,11 +253,15 @@ fn candidates(rule: &Rule, dtstart: NaiveDateTime, horizon: NaiveDateTime) -> Ve
             }
         }
         Freq::Yearly => {
+            let month = rule.bymonth.unwrap_or(dtstart.month());
+            let by_ord = rule.bydays.iter().find(|(ord, _)| *ord != 0);
             let mut year = dtstart.year();
             loop {
-                if let Some(date) =
-                    chrono::NaiveDate::from_ymd_opt(year, dtstart.month(), dtstart.day())
-                {
+                let date = match by_ord {
+                    Some((ord, day)) => nth_weekday(year, month, *ord, *day),
+                    None => chrono::NaiveDate::from_ymd_opt(year, month, dtstart.day()),
+                };
+                if let Some(date) = date {
                     let cand = date.and_time(time);
                     if cand >= dtstart {
                         if cand > horizon || out.len() >= MAX_CANDIDATES {
@@ -287,7 +299,9 @@ pub fn expand(
     }
     // Monthly BYDAY without ordinal ("every month on Tuesday"?) is really a
     // weekly-ish rule we don't model; bail to master-only.
-    if rule.freq == Freq::Monthly && rule.bydays.iter().any(|(ord, _)| *ord == 0) {
+    if matches!(rule.freq, Freq::Monthly | Freq::Yearly)
+        && rule.bydays.iter().any(|(ord, _)| *ord == 0)
+    {
         return None;
     }
 
@@ -551,6 +565,51 @@ mod tests {
         )
         .unwrap();
         assert_eq!(occ[1].start, local_ms(2026, 8, 28, 8, 0));
+    }
+
+    #[test]
+    fn yearly_weekday_of_a_month_follows_the_calendar() {
+        // The last Sunday of October: 25 Oct 2026, 31 Oct 2027, 29 Oct 2028.
+        let start = local_ms(2026, 10, 25, 10, 0);
+        let starts = |rule: &str, from: i64, to: i64| -> Vec<i64> {
+            expand(rule, start, HOUR, false, None, from, to)
+                .unwrap()
+                .iter()
+                .map(|o| o.start)
+                .collect()
+        };
+        let rule = "FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU;COUNT=3";
+        assert_eq!(
+            starts(rule, 0, local_ms(2027, 12, 31, 0, 0)),
+            [local_ms(2026, 10, 25, 10, 0), local_ms(2027, 10, 31, 10, 0)]
+        );
+        // Each window holds its year's occurrence; COUNT ends the series.
+        assert_eq!(
+            starts(
+                rule,
+                local_ms(2028, 1, 1, 0, 0),
+                local_ms(2028, 12, 31, 0, 0)
+            ),
+            [local_ms(2028, 10, 29, 10, 0)]
+        );
+        assert!(
+            starts(
+                rule,
+                local_ms(2029, 1, 1, 0, 0),
+                local_ms(2029, 12, 31, 0, 0)
+            )
+            .is_empty()
+        );
+        // UNTIL stops the series after that day.
+        let until = "FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU;UNTIL=20271101T000000Z";
+        assert!(
+            starts(
+                until,
+                local_ms(2028, 1, 1, 0, 0),
+                local_ms(2028, 12, 31, 0, 0)
+            )
+            .is_empty()
+        );
     }
 
     #[test]

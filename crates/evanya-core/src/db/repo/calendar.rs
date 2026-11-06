@@ -410,6 +410,12 @@ pub fn update_local_fields(
             attendees_to_json(attendees)?,
         ],
     )?;
+    if let Some(rrule) = &args.rrule {
+        conn.execute(
+            "UPDATE calendar_events SET rrule = ?2 WHERE id = ?1",
+            params![args.event_id, rrule],
+        )?;
+    }
     Ok(())
 }
 
@@ -821,6 +827,7 @@ mod tests {
                 email: "bob@test.dev".into(),
             }],
             notify: true,
+            rrule: None,
         };
         let atts = vec![EventAttendee {
             email: "bob@test.dev".into(),

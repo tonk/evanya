@@ -5842,7 +5842,8 @@ impl Core {
     /// drafted and queued through the normal send pipeline (undo window,
     /// offline queueing, sent-folder append all apply).
     pub async fn create_event(&self, args: CreateEventArgs) -> Result<CalendarEvent> {
-        self.create_event_with(args, None, None).await
+        let rrule = args.rrule.clone();
+        self.create_event_with(args, None, rrule).await
     }
 
     /// Add the events of an iCalendar file to a calendar, or to this device
@@ -5905,6 +5906,7 @@ impl Core {
                     ends_at,
                     all_day: event.all_day,
                     attendees: Vec::new(),
+                    rrule: None,
                 },
                 Some(event.uid.clone()),
                 event.rrule.clone(),
@@ -6288,6 +6290,7 @@ impl Core {
                 ends_at: args.ends_at,
                 all_day: args.all_day,
                 attendees: args.attendees.clone(),
+                rrule: None,
             });
             self.send_calendar_mail(
                 account_id,
@@ -11858,6 +11861,7 @@ mod calendar_connection_tests {
             ends_at: 1_800_003_600_000,
             all_day: false,
             attendees: Vec::new(),
+            rrule: None,
         })
         .await
         .unwrap();

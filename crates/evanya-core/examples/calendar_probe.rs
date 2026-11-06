@@ -41,6 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 ends_at: start + 3_600_000,
                 all_day: false,
                 attendees: Vec::new(),
+                rrule: None,
             })
             .await;
         match result {

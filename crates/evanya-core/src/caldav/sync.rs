@@ -54,13 +54,15 @@ pub async fn sync_connection(
     self_email: &str,
     pushes: &[PendingPush],
 ) -> Result<Synced> {
-    let pushed = push::push_routed(db, bus, t, account_id, self_email, pushes).await?;
+    let (pushed, push_error) =
+        push::push_routed(db, bus, t, account_id, self_email, pushes).await?;
 
     let calendars = db
         .read(move |conn| repo::caldav::connection_calendars(conn, connection_id))
         .await?;
     let mut synced = Synced {
         changed: pushed,
+        calendar_error: push_error,
         ..Synced::default()
     };
     for cal in calendars.into_iter().filter(|c| c.enabled) {

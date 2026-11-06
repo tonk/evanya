@@ -15,8 +15,9 @@ use super::Transport;
 use super::route::PendingPush;
 
 /// Push the changes routed to one connection. Individual row failures are
-/// logged and left dirty for the next cycle; only auth errors and a lost
-/// network abort. Returns true when at least one row synced.
+/// left dirty for the next cycle; only auth errors and a lost network abort.
+/// Returns whether at least one row synced, and the first failure, which the
+/// calendar shows so a change that never arrives does not go unnoticed.
 pub async fn push_routed(
     db: &Db,
     bus: &EventBus,
@@ -24,17 +25,22 @@ pub async fn push_routed(
     account_id: i64,
     self_email: &str,
     pushes: &[PendingPush],
-) -> Result<bool> {
+) -> Result<(bool, Option<String>)> {
     let mut any = false;
+    let mut failure = None;
     for push in pushes {
         match push_row(db, bus, t, account_id, self_email, push).await {
             Ok(()) => any = true,
             Err(CoreError::NeedsReauth) => return Err(CoreError::NeedsReauth),
             Err(CoreError::Offline) => return Err(CoreError::Offline),
-            Err(e) => tracing::warn!("caldav push of event {} failed: {e}", push.row.event.id),
+            Err(e) => {
+                tracing::warn!("caldav push of event {} failed: {e}", push.row.event.id);
+                let name = push.row.event.summary.clone().unwrap_or_default();
+                failure.get_or_insert(format!("could not send \"{name}\": {e}"));
+            }
         }
     }
-    Ok(any)
+    Ok((any, failure))
 }
 
 async fn push_row(
@@ -55,13 +61,7 @@ async fn push_row(
     // <uid>.ics resource in the calendar it was routed to.
     let (href_path, if_match): (String, Option<String>) = match &row.caldav_href {
         Some(href) => (href.clone(), row.etag.clone()),
-        None => {
-            let path = match url::Url::parse(&calendar.url) {
-                Ok(u) => format!("{}{}.ics", u.path(), sanitize_uid(&row.ical_uid)),
-                Err(_) => format!("{}{}.ics", calendar.url, sanitize_uid(&row.ical_uid)),
-            };
-            (path, None)
-        }
+        None => (new_resource_path(&calendar.url, &row.ical_uid), None),
     };
     let calendar_id = calendar.id;
     let abs_url = super::discovery::resolve(&calendar.url, &href_path)?;
@@ -239,6 +239,19 @@ async fn resolve_conflict(
 
     bus.emit(CoreEvent::CalendarConflict { event_id, summary });
     Ok(())
+}
+
+/// Where a new event goes: a `<uid>.ics` resource inside the calendar's
+/// collection. Google lists its collections without a trailing slash, so one
+/// is added; without it the PUT names a sibling of the collection and fails
+/// with 404.
+fn new_resource_path(calendar_url: &str, uid: &str) -> String {
+    let collection = match url::Url::parse(calendar_url) {
+        Ok(url) => url.path().to_owned(),
+        Err(_) => calendar_url.to_owned(),
+    };
+    let separator = if collection.ends_with('/') { "" } else { "/" };
+    format!("{collection}{separator}{}.ics", sanitize_uid(uid))
 }
 
 fn sanitize_uid(uid: &str) -> String {
@@ -440,6 +453,24 @@ fn override_vevents(raw: &str) -> Vec<String> {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn a_new_event_goes_inside_the_collection() {
+        let uid = "1793968842868-qrl1zx4vo6@evanya";
+        // Google's collections have no trailing slash.
+        assert_eq!(
+            super::new_resource_path(
+                "https://apidata.googleusercontent.com/caldav/v2/me@gmail.com/events",
+                uid
+            ),
+            "/caldav/v2/me@gmail.com/events/1793968842868-qrl1zx4vo6@evanya.ics"
+        );
+        assert_eq!(
+            super::new_resource_path("https://dav.example.com/calendars/me/home/", uid),
+            "/calendars/me/home/1793968842868-qrl1zx4vo6@evanya.ics"
+        );
+    }
+
     use super::*;
     use crate::caldav::http::{DavResponse, MockTransport};
     use crate::caldav::sync::tests::seed_db;
@@ -457,7 +488,9 @@ mod tests {
             .read(move |c| crate::caldav::route::pending(c, account_id))
             .await?;
         let pushes: Vec<PendingPush> = routes.pushes.into_values().flatten().collect();
-        push_routed(db, bus, t, account_id, self_email, &pushes).await
+        push_routed(db, bus, t, account_id, self_email, &pushes)
+            .await
+            .map(|(any, _)| any)
     }
 
     async fn seed_synced_event(db: &Db) -> i64 {
@@ -505,6 +538,7 @@ mod tests {
             all_day: false,
             attendees: vec![],
             notify: false,
+            rrule: None,
         }
     }
 

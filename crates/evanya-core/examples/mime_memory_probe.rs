@@ -81,6 +81,7 @@ fn main() {
         email: "recipient@example.test".into(),
     }];
     let message = OutgoingMessage {
+        extra_headers: &[],
         from: Address {
             name: None,
             email: "sender@example.test".into(),

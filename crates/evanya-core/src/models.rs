@@ -2747,6 +2747,9 @@ pub struct CreateEventArgs {
     /// Invites are emailed (ICS METHOD:REQUEST) to every attendee.
     #[serde(default)]
     pub attendees: Vec<Address>,
+    /// RFC 5545 recurrence rule, such as `FREQ=WEEKLY`; None = one-off.
+    #[serde(default)]
+    pub rrule: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -2777,6 +2780,10 @@ pub struct UpdateEventArgs {
     /// Email an updated REQUEST ICS to attendees (organizer only).
     #[serde(default = "default_true")]
     pub notify: bool,
+    /// A new recurrence rule: `Some(None)` makes the event one-off, `None`
+    /// keeps the rule it has.
+    #[serde(default)]
+    pub rrule: Option<Option<String>>,
 }
 
 // Deliberately no `Debug`: it would print the CalDAV app password.

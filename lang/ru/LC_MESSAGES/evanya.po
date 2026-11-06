@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-06 12:04+0000\n"
+"POT-Creation-Date: 2026-11-06 14:04+0000\n"
 "PO-Revision-Date: 2026-10-08 15:11+0000\n"
 "Last-Translator: Flectar contributors\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -223,7 +223,7 @@ msgctxt "month on its own"
 msgid "December"
 msgstr "Декабрь"
 
-#: ui/app.slint:149 ui/components/calendar.slint:851
+#: ui/app.slint:149 ui/components/calendar.slint:876
 msgid "Mon"
 msgstr "Пн"
 
@@ -231,7 +231,7 @@ msgstr "Пн"
 msgid "Monday"
 msgstr "Понедельник"
 
-#: ui/app.slint:150 ui/components/calendar.slint:851
+#: ui/app.slint:150 ui/components/calendar.slint:876
 msgid "Tue"
 msgstr "Вт"
 
@@ -239,7 +239,7 @@ msgstr "Вт"
 msgid "Tuesday"
 msgstr "Вторник"
 
-#: ui/app.slint:151 ui/components/calendar.slint:851
+#: ui/app.slint:151 ui/components/calendar.slint:876
 msgid "Wed"
 msgstr "Ср"
 
@@ -247,7 +247,7 @@ msgstr "Ср"
 msgid "Wednesday"
 msgstr "Среда"
 
-#: ui/app.slint:152 ui/components/calendar.slint:851
+#: ui/app.slint:152 ui/components/calendar.slint:876
 msgid "Thu"
 msgstr "Чт"
 
@@ -255,7 +255,7 @@ msgstr "Чт"
 msgid "Thursday"
 msgstr "Четверг"
 
-#: ui/app.slint:153 ui/components/calendar.slint:851
+#: ui/app.slint:153 ui/components/calendar.slint:876
 msgid "Fri"
 msgstr "Пт"
 
@@ -263,7 +263,7 @@ msgstr "Пт"
 msgid "Friday"
 msgstr "Пятница"
 
-#: ui/app.slint:154 ui/components/calendar.slint:851
+#: ui/app.slint:154 ui/components/calendar.slint:876
 msgid "Sat"
 msgstr "Сб"
 
@@ -271,7 +271,7 @@ msgstr "Сб"
 msgid "Saturday"
 msgstr "Суббота"
 
-#: ui/app.slint:155 ui/components/calendar.slint:851
+#: ui/app.slint:155 ui/components/calendar.slint:876
 msgid "Sun"
 msgstr "Вс"
 
@@ -388,7 +388,7 @@ msgstr "История переписки доступна"
 msgid "New address-book entry"
 msgstr "Новая запись в адресной книге"
 
-#: ui/app.slint:188 ui/app.slint:1227 ui/components/composer-fields.slint:80
+#: ui/app.slint:188 ui/app.slint:1260 ui/components/composer-fields.slint:80
 #: ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr "Нет подключённой учётной записи"
@@ -1290,8 +1290,8 @@ msgstr "Загрузка контактов…"
 msgid "Local calendar"
 msgstr "Локальный календарь"
 
-#: ui/app.slint:467 ui/components/calendar.slint:275
-#: ui/components/calendar.slint:324 ui/components/calendar.slint:463
+#: ui/app.slint:467 ui/components/calendar.slint:300
+#: ui/components/calendar.slint:349 ui/components/calendar.slint:488
 msgid "Calendar"
 msgstr "Календарь"
 
@@ -1608,7 +1608,7 @@ msgstr ""
 msgid "Line {}"
 msgstr ""
 
-#: ui/app.slint:557 ui/components/calendar.slint:679
+#: ui/app.slint:557 ui/components/calendar.slint:704
 msgid "Import an iCalendar file"
 msgstr ""
 
@@ -1625,144 +1625,240 @@ msgid "{} were already in the calendar."
 msgstr ""
 
 #: ui/app.slint:561
-msgid "Choose a picture for this account"
+msgid "first"
 msgstr ""
 
 #: ui/app.slint:562
-msgid "Could not use this picture: {}"
+msgid "second"
 msgstr ""
 
 #: ui/app.slint:563
-msgid "Could not save unread counts preference: {}"
+msgid "third"
 msgstr ""
 
 #: ui/app.slint:564
+msgid "fourth"
+msgstr ""
+
+#: ui/app.slint:565
+msgid "last"
+msgstr ""
+
+#: ui/app.slint:566
+msgid "Does not repeat"
+msgstr ""
+
+#: ui/app.slint:567
+msgid "Every day"
+msgstr ""
+
+#: ui/app.slint:568
+msgid "Every weekday (Monday to Friday)"
+msgstr ""
+
+#: ui/app.slint:569
+msgid "Every week"
+msgstr ""
+
+#: ui/app.slint:570
+msgid "Every two weeks"
+msgstr ""
+
+#: ui/app.slint:571
+msgid "Every year"
+msgstr ""
+
+#: ui/app.slint:572
+msgid "Custom rule, kept as it is"
+msgstr ""
+
+#: ui/app.slint:573
+msgid "Use YYYY-MM-DD for the end date."
+msgstr ""
+
+#: ui/app.slint:574
+msgid "The repetition cannot end before the event starts."
+msgstr ""
+
+#: ui/app.slint:575
+msgid "The number of times is a number from 1 to 999."
+msgstr ""
+
+#: ui/app.slint:576
+msgid "Every month on day {}"
+msgstr ""
+
+#: ui/app.slint:577
+msgid "Every month on the {}"
+msgstr ""
+
+#: ui/app.slint:578
+msgid "Every month on the last {}"
+msgstr ""
+
+#: ui/app.slint:579
+msgid "Every year on the {} of {}"
+msgstr ""
+
+#: ui/app.slint:580
+msgid "Every year on the last {} of {}"
+msgstr ""
+
+#: ui/app.slint:581
+msgid "{}, once"
+msgstr ""
+
+#: ui/app.slint:582
+msgid "{}, {} times"
+msgstr ""
+
+#: ui/app.slint:583
+msgid "{}, until {}"
+msgstr ""
+
+#: ui/app.slint:584
+msgid "New mail"
+msgstr ""
+
+#: ui/app.slint:585
+msgid "Choose a picture for this account"
+msgstr ""
+
+#: ui/app.slint:586
+msgid "Could not use this picture: {}"
+msgstr ""
+
+#: ui/app.slint:587
+msgid "Could not save unread counts preference: {}"
+msgstr ""
+
+#: ui/app.slint:588
 msgid "Folder deleted."
 msgstr "Папка удалена."
 
-#: ui/app.slint:565
+#: ui/app.slint:589
 msgid "Could not create folder: {}"
 msgstr "Не удалось создать папку: {}"
 
-#: ui/app.slint:566
+#: ui/app.slint:590
 msgid "Could not rename folder: {}"
 msgstr "Не удалось переименовать папку: {}"
 
-#: ui/app.slint:567
+#: ui/app.slint:591
 msgid "Could not delete folder: {}"
 msgstr "Не удалось удалить папку: {}"
 
-#: ui/app.slint:568
+#: ui/app.slint:592
 msgid "Could not close preview: {}"
 msgstr "Не удалось закрыть предпросмотр: {}"
 
-#: ui/app.slint:569
+#: ui/app.slint:593
 msgid "Opened the system print view."
 msgstr "Открыт системный просмотр печати."
 
-#: ui/app.slint:570
+#: ui/app.slint:594
 msgid "Could not print message: {}"
 msgstr "Не удалось напечатать сообщение: {}"
 
-#: ui/app.slint:571
+#: ui/app.slint:595
 msgid "Opened the message in your browser."
 msgstr "Сообщение открыто в браузере."
 
-#: ui/app.slint:572
+#: ui/app.slint:596
 msgid "Could not open message in browser: {}"
 msgstr "Не удалось открыть сообщение в браузере: {}"
 
-#: ui/app.slint:573
+#: ui/app.slint:597
 msgid "Connect an account before replying or forwarding."
 msgstr "Подключите учётную запись перед ответом или пересылкой."
 
-#: ui/app.slint:574
+#: ui/app.slint:598
 msgid "Choose a message first."
 msgstr "Сначала выберите сообщение."
 
-#: ui/app.slint:575
+#: ui/app.slint:599
 msgid "Only drafts can be reopened for editing."
 msgstr "Только черновики можно снова открыть для редактирования."
 
-#: ui/app.slint:576
+#: ui/app.slint:600
 msgid "Could not open draft: {}"
 msgstr "Не удалось открыть черновик: {}"
 
-#: ui/app.slint:577
+#: ui/app.slint:601
 msgid "Could not open draft: invalid account identifier"
 msgstr "Не удалось открыть черновик: неверный идентификатор учётной записи"
 
-#: ui/app.slint:578
+#: ui/app.slint:602
 msgid "Connected account"
 msgstr "Подключённая учётная запись"
 
-#: ui/app.slint:579
+#: ui/app.slint:603
 msgid "Could not open composer: {}"
 msgstr "Не удалось открыть редактор письма: {}"
 
-#: ui/app.slint:580
+#: ui/app.slint:604
 msgid "Add an account to send mail."
 msgstr "Добавьте учётную запись, чтобы отправлять почту."
 
-#: ui/app.slint:581 ui/components/sidebar.slint:521
+#: ui/app.slint:605 ui/components/sidebar.slint:521
 msgid "On this device"
 msgstr "На этом устройстве"
 
-#: ui/app.slint:582
+#: ui/app.slint:606
 msgid "Could not open composer: invalid account identifier"
 msgstr ""
 "Не удалось открыть редактор письма: неверный идентификатор учётной записи"
 
 #. Reply and forward quotation headers, written into the draft.
-#: ui/app.slint:588
+#: ui/app.slint:612
 msgid "On {}, {} wrote:"
 msgstr "{}, {} пишет:"
 
-#: ui/app.slint:589
+#: ui/app.slint:613
 msgid "{} wrote:"
 msgstr "{} пишет:"
 
-#: ui/app.slint:590
+#: ui/app.slint:614
 msgid "Forwarded message"
 msgstr "Пересылаемое сообщение"
 
-#: ui/app.slint:591
+#: ui/app.slint:615
 msgctxt "forwarded message header"
 msgid "From: {}"
 msgstr "От: {}"
 
-#: ui/app.slint:592
+#: ui/app.slint:616
 msgctxt "forwarded message header"
 msgid "Date: {}"
 msgstr "Дата: {}"
 
-#: ui/app.slint:593
+#: ui/app.slint:617
 msgctxt "forwarded message header"
 msgid "Subject: {}"
 msgstr "Тема: {}"
 
-#: ui/app.slint:594
+#: ui/app.slint:618
 msgctxt "forwarded message header"
 msgid "To: {}"
 msgstr "Кому: {}"
 
-#: ui/app.slint:595
+#: ui/app.slint:619
 msgid "Attach files to this email"
 msgstr "Прикрепить файлы к этому письму"
 
-#: ui/app.slint:596
+#: ui/app.slint:620
 msgid "Could not add attachments: {}"
 msgstr "Не удалось добавить вложения: {}"
 
-#: ui/app.slint:597
+#: ui/app.slint:621
 msgid "Added 1 attachment."
 msgstr "Добавлено одно вложение."
 
-#: ui/app.slint:598
+#: ui/app.slint:622
 msgid "Added {} attachments."
 msgstr "Добавлено вложений: {}."
 
-#: ui/app.slint:599
+#: ui/app.slint:623
 msgid ""
 "Attachments added: {}. Skipped: {} (duplicate, unreadable, or over the 25 MB "
 "total limit)."
@@ -1770,124 +1866,124 @@ msgstr ""
 "Добавлено вложений: {}. Пропущено: {} (дубликаты, недоступные для чтения или "
 "превышающие общий лимит 25 МБ)."
 
-#: ui/app.slint:600
+#: ui/app.slint:624
 msgid "Attachment removed."
 msgstr "Вложение удалено."
 
-#: ui/app.slint:601
+#: ui/app.slint:625
 msgid "Choose the account this message should be sent from."
 msgstr "Выберите учётную запись, с которой нужно отправить это сообщение."
 
-#: ui/app.slint:602
+#: ui/app.slint:626
 msgid "Choose a verified sender identity for this message."
 msgstr "Выберите подтверждённые данные отправителя для этого письма."
 
-#: ui/app.slint:603
+#: ui/app.slint:627
 msgid "Connect an account before saving or sending mail."
 msgstr "Подключите учётную запись перед сохранением или отправкой почты."
 
-#: ui/app.slint:604
+#: ui/app.slint:628
 msgid "Message queued for delivery (action {})."
 msgstr "Сообщение поставлено в очередь на отправку (действие {})."
 
-#: ui/app.slint:605
+#: ui/app.slint:629
 msgid "Sending message…"
 msgstr "Отправка сообщения…"
 
-#: ui/app.slint:606
+#: ui/app.slint:630
 msgid "Message sent."
 msgstr "Сообщение отправлено."
 
-#: ui/app.slint:607
+#: ui/app.slint:631
 msgid "Message was not sent: {} Your draft is preserved."
 msgstr "Сообщение не отправлено: {} Ваш черновик сохранён."
 
-#: ui/app.slint:608
+#: ui/app.slint:632
 msgid "Draft saved locally (#{})."
 msgstr "Черновик сохранён локально (#{})."
 
-#: ui/app.slint:609
+#: ui/app.slint:633
 msgid "Compose failed: {}"
 msgstr "Создание письма не удалось: {}"
 
-#: ui/app.slint:610
+#: ui/app.slint:634
 msgid "Connect an account before managing email templates."
 msgstr "Подключите учётную запись перед управлением шаблонами писем."
 
-#: ui/app.slint:611
+#: ui/app.slint:635
 msgid "Could not load email templates: {}"
 msgstr "Не удалось загрузить шаблоны писем: {}"
 
-#: ui/app.slint:612
+#: ui/app.slint:636
 msgid "Enter a template name."
 msgstr "Введите имя шаблона."
 
-#: ui/app.slint:613
+#: ui/app.slint:637
 msgid "Add a subject or message to the template."
 msgstr "Добавьте тему или сообщение в шаблон."
 
-#: ui/app.slint:614
+#: ui/app.slint:638
 msgid "Email template saved."
 msgstr "Шаблон письма сохранён."
 
-#: ui/app.slint:615
+#: ui/app.slint:639
 msgid "Could not save email template: {}"
 msgstr "Не удалось сохранить шаблон письма: {}"
 
-#: ui/app.slint:616
+#: ui/app.slint:640
 msgid "Email template deleted."
 msgstr "Шаблон письма удалён."
 
-#: ui/app.slint:617
+#: ui/app.slint:641
 msgid "Could not delete email template: {}"
 msgstr "Не удалось удалить шаблон письма: {}"
 
-#: ui/app.slint:618
+#: ui/app.slint:642
 msgid "Email template is no longer available."
 msgstr "Шаблон письма больше недоступен."
 
-#: ui/app.slint:619
+#: ui/app.slint:643
 msgid "Email template inserted."
 msgstr "Шаблон письма вставлен."
 
-#: ui/app.slint:620
+#: ui/app.slint:644
 msgid "Email template inserted, but its usage could not be saved: {}"
 msgstr ""
 "Шаблон письма вставлен, но сведения о его использовании не сохранены: {}"
 
-#: ui/app.slint:621
+#: ui/app.slint:645
 msgid "Choose a supported account type and connection security."
 msgstr "Выберите поддерживаемый тип учётной записи и безопасность соединения."
 
-#: ui/app.slint:622
+#: ui/app.slint:646
 msgid "IMAP port must be between 1 and 65535."
 msgstr "Порт IMAP должен быть в диапазоне от 1 до 65535."
 
-#: ui/app.slint:623
+#: ui/app.slint:647
 msgid "POP3 port must be between 1 and 65535."
 msgstr "Порт POP3 должен быть в диапазоне от 1 до 65535."
 
-#: ui/app.slint:624
+#: ui/app.slint:648
 msgid "SMTP port must be between 1 and 65535."
 msgstr "Порт SMTP должен быть в диапазоне от 1 до 65535."
 
-#: ui/app.slint:625
+#: ui/app.slint:649
 msgid "Local mail data is unavailable. Retry startup."
 msgstr "Локальные данные почты недоступны. Повторите запуск."
 
-#: ui/app.slint:626
+#: ui/app.slint:650
 msgid "Discovering JMAP and checking capabilities…"
 msgstr "Обнаружение JMAP и проверка возможностей…"
 
-#: ui/app.slint:627
+#: ui/app.slint:651
 msgid "Certificate imported. Connect to verify the server."
 msgstr "Сертификат импортирован. Подключитесь для проверки сервера."
 
-#: ui/app.slint:628
+#: ui/app.slint:652
 msgid "Could not load account preferences: {}"
 msgstr "Не удалось загрузить настройки учётной записи: {}"
 
-#: ui/app.slint:629
+#: ui/app.slint:653
 msgid ""
 "Your edited signature was preserved. Choose No signature to keep it as "
 "message text before inserting another."
@@ -1895,19 +1991,19 @@ msgstr ""
 "Ваша изменённая подпись сохранена. Выберите «Без подписи», чтобы оставить её "
 "как текст сообщения перед вставкой другой."
 
-#: ui/app.slint:630
+#: ui/app.slint:654
 msgid "Certificate import failed: {}"
 msgstr "Импорт сертификата не удался: {}"
 
-#: ui/app.slint:631
+#: ui/app.slint:655
 msgid "Testing IMAP and SMTP connections…"
 msgstr "Проверка подключений IMAP и SMTP…"
 
-#: ui/app.slint:632
+#: ui/app.slint:656
 msgid "Testing POP3 and SMTP connections…"
 msgstr "Проверка подключений POP3 и SMTP…"
 
-#: ui/app.slint:637
+#: ui/app.slint:661
 msgid ""
 "Another browser authorization is already in progress; finish it or choose "
 "Cancel."
@@ -1915,98 +2011,98 @@ msgstr ""
 "Другая авторизация в браузере уже выполняется; завершите её или выберите "
 "«Отмена»."
 
-#: ui/app.slint:638 ui/dialogs/settings-dialog.slint:2130
+#: ui/app.slint:662 ui/dialogs/settings-dialog.slint:2130
 #: ui/dialogs/settings-dialog.slint:2173 ui/views/onboarding-view.slint:170
 msgid "Add app keys in Sign-in settings to enable this provider."
 msgstr ""
 "Добавьте ключи приложения в настройках входа, чтобы включить этого "
 "провайдера."
 
-#: ui/app.slint:639
+#: ui/app.slint:663
 msgid "Choose Gmail or Outlook OAuth."
 msgstr "Выберите OAuth Gmail или Outlook."
 
-#: ui/app.slint:640
+#: ui/app.slint:664
 msgid "Complete sign-in in your browser, or choose Cancel here."
 msgstr "Завершите вход в браузере или выберите «Отмена» здесь."
 
-#: ui/app.slint:641
+#: ui/app.slint:665
 msgid "Cancelling browser sign-in…"
 msgstr "Отмена входа через браузер…"
 
-#: ui/app.slint:642
+#: ui/app.slint:666
 msgid "Finishing browser sign-in…"
 msgstr "Завершение входа через браузер…"
 
-#: ui/app.slint:643
+#: ui/app.slint:667
 msgid "Could not use that browser address: {}"
 msgstr "Не удалось использовать этот адрес браузера: {}"
 
-#: ui/app.slint:644
+#: ui/app.slint:668
 msgid "Calendar core is unavailable."
 msgstr "Ядро календаря недоступно."
 
-#: ui/app.slint:645
+#: ui/app.slint:669
 msgid "Account no longer exists."
 msgstr "Учётная запись больше не существует."
 
-#: ui/app.slint:646
+#: ui/app.slint:670
 msgid "Authorize calendar access in your browser."
 msgstr "Авторизуйте доступ к календарю в браузере."
 
-#: ui/app.slint:647
+#: ui/app.slint:671
 msgid "OAuth app keys saved."
 msgstr "Ключи приложения OAuth сохранены."
 
-#: ui/app.slint:648
+#: ui/app.slint:672
 msgid "{} OAuth settings saved."
 msgstr "Настройки OAuth {} сохранены."
 
-#: ui/app.slint:649
+#: ui/app.slint:673
 msgid "OAuth settings failed: {}"
 msgstr "Настройки OAuth не удались: {}"
 
-#: ui/app.slint:650
+#: ui/app.slint:674
 msgid "Mail refresh failed: {}"
 msgstr "Обновление почты не удалось: {}"
 
-#: ui/app.slint:651
+#: ui/app.slint:675
 msgid "Mail filter failed: {}"
 msgstr "Фильтрация почты не удалась: {}"
 
-#: ui/app.slint:652
+#: ui/app.slint:676
 msgid "Mail pagination failed: {}"
 msgstr "Постраничная навигация по почте не удалась: {}"
 
-#: ui/app.slint:653
+#: ui/app.slint:677
 msgid "Could not mark message as read: {}"
 msgstr "Не удалось отметить сообщение как прочитанное: {}"
 
-#: ui/app.slint:654 ui/views/mail-reading-pane.slint:196
+#: ui/app.slint:678 ui/views/mail-reading-pane.slint:196
 #: ui/views/mail-reading-pane.slint:1280
 msgid "Loading message…"
 msgstr "Загрузка сообщения…"
 
-#: ui/app.slint:660 ui/components/workspace-navigation.slint:787
+#: ui/app.slint:684 ui/components/workspace-navigation.slint:787
 #: ui/tray.slint:15 ui/tray.slint:18
 msgid "Evanya"
 msgstr "Evanya"
 
-#: ui/app.slint:1470 ui/app.slint:1483
+#: ui/app.slint:1503 ui/app.slint:1516
 msgid "Global Labels (local only)"
 msgstr "Глобальные метки (только локально)"
 
-#: ui/app.slint:2134
+#: ui/app.slint:2167
 msgid "Another account"
 msgstr ""
 
-#: ui/app.slint:2146
+#: ui/app.slint:2179
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
 
-#: ui/app.slint:2155 ui/components/account-mail-preferences.slint:178
+#: ui/app.slint:2188 ui/components/account-mail-preferences.slint:178
 #: ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
 #: ui/dialogs/settings-dialog.slint:2329 ui/dialogs/settings-dialog.slint:3271
 #: ui/dialogs/settings-dialog.slint:3594 ui/views/files-view.slint:491
@@ -2014,74 +2110,74 @@ msgstr ""
 msgid "Cancel"
 msgstr "Отмена"
 
-#: ui/app.slint:2159 ui/components/controls.slint:87
+#: ui/app.slint:2192 ui/components/controls.slint:87
 msgid "Copy"
 msgstr ""
 
-#: ui/app.slint:2163
+#: ui/app.slint:2196
 msgid "Move"
 msgstr ""
 
-#: ui/app.slint:2645
+#: ui/app.slint:2685
 msgid "Empty Trash?"
 msgstr "Очистить корзину?"
 
-#: ui/app.slint:2645 ui/views/files-view.slint:597
+#: ui/app.slint:2685 ui/views/files-view.slint:597
 msgid "Delete permanently?"
 msgstr "Удалить безвозвратно?"
 
-#: ui/app.slint:2649
+#: ui/app.slint:2689
 msgid ""
 "Permanently delete all messages in Trash across every connected account?"
 msgstr ""
 "Безвозвратно удалить все письма из корзины во всех подключённых учётных "
 "записях?"
 
-#: ui/app.slint:2650
+#: ui/app.slint:2690
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr "Безвозвратно удалить все письма из корзины этой учётной записи?"
 
-#: ui/app.slint:2652
+#: ui/app.slint:2692
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr "Безвозвратно удалить выбранные переписки из корзины?"
 
-#: ui/app.slint:2653
+#: ui/app.slint:2693
 msgid "Permanently delete this conversation from Trash?"
 msgstr "Безвозвратно удалить эту переписку из корзины?"
 
-#: ui/app.slint:2654 ui/components/calendar.slint:1140
+#: ui/app.slint:2694 ui/components/calendar.slint:1165
 msgid "This action cannot be undone."
 msgstr "Это действие нельзя отменить."
 
-#: ui/app.slint:2655
+#: ui/app.slint:2695
 msgid "Empty Trash"
 msgstr "Очистить корзину"
 
-#: ui/app.slint:2655 ui/views/files-view.slint:679
+#: ui/app.slint:2695 ui/views/files-view.slint:679
 msgid "Delete permanently"
 msgstr "Удалить безвозвратно"
 
-#: ui/app.slint:2833
+#: ui/app.slint:2873
 msgid "Mailbox startup failed"
 msgstr "Запуск почтового ящика не удался"
 
-#: ui/app.slint:2839
+#: ui/app.slint:2879
 msgid "Evanya could not open local storage"
 msgstr "Evanya не смог открыть локальное хранилище"
 
-#: ui/app.slint:2852
+#: ui/app.slint:2892
 msgid "Diagnostic ID: {}"
 msgstr "Идентификатор диагностики: {}"
 
-#: ui/app.slint:2855
+#: ui/app.slint:2895
 msgid "Diagnostic ID {}"
 msgstr "Идентификатор диагностики {}"
 
-#: ui/app.slint:2860
+#: ui/app.slint:2900
 msgid "Retry"
 msgstr "Повторить"
 
-#: ui/app.slint:2868 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2908 ui/components/copyable-diagnostic.slint:43
 msgid "Copy diagnostics"
 msgstr "Копировать диагностику"
 
@@ -2112,7 +2208,7 @@ msgstr[0] "{n} календарь"
 msgstr[1] "{n} календаря"
 msgstr[2] "{n} календарей"
 
-#: ui/components/account-calendars.slint:71 ui/components/calendar.slint:474
+#: ui/components/account-calendars.slint:71 ui/components/calendar.slint:499
 msgid "Paused"
 msgstr "Приостановлено"
 
@@ -2576,7 +2672,7 @@ msgstr "Фильтр календарей · скрыто: {}"
 msgid "Filter calendars"
 msgstr "Фильтр календарей"
 
-#: ui/components/calendar-agenda.slint:67 ui/components/calendar.slint:627
+#: ui/components/calendar-agenda.slint:67 ui/components/calendar.slint:652
 msgid "Show calendars"
 msgstr "Показать календари"
 
@@ -2589,12 +2685,12 @@ msgstr "Сбросить"
 msgid "Filters only affect this agenda."
 msgstr "Фильтры действуют только в этом расписании."
 
-#: ui/components/calendar-agenda.slint:212 ui/components/calendar.slint:685
+#: ui/components/calendar-agenda.slint:212 ui/components/calendar.slint:710
 #: ui/views/mail-list-pane.slint:684
 msgid "Today"
 msgstr "Сегодня"
 
-#: ui/components/calendar-agenda.slint:214 ui/components/calendar.slint:699
+#: ui/components/calendar-agenda.slint:214 ui/components/calendar.slint:724
 msgid "{n} event"
 msgid_plural "{n} events"
 msgstr[0] "{n} событие"
@@ -2606,7 +2702,7 @@ msgid "Cancelled"
 msgstr "Отменено"
 
 #: ui/components/calendar-agenda.slint:257 ui/components/calendar.slint:67
-#: ui/components/calendar.slint:889
+#: ui/components/calendar.slint:914
 msgid "View details for {}"
 msgstr "Просмотреть подробности для {}"
 
@@ -2638,72 +2734,76 @@ msgstr "Создайте событие, чтобы начать планиро�
 msgid "Reset filters"
 msgstr "Сбросить фильтры"
 
-#: ui/components/calendar-agenda.slint:290 ui/components/calendar.slint:116
-#: ui/components/calendar.slint:947
+#: ui/components/calendar-agenda.slint:290 ui/components/calendar.slint:120
+#: ui/components/calendar.slint:972
 msgid "New event"
 msgstr "Новое событие"
 
-#: ui/components/calendar.slint:145 ui/components/calendar.slint:945
+#: ui/components/calendar.slint:149 ui/components/calendar.slint:970
 msgid "Previous month"
 msgstr "Предыдущий месяц"
 
-#: ui/components/calendar.slint:159 ui/components/calendar.slint:946
+#: ui/components/calendar.slint:163 ui/components/calendar.slint:971
 msgid "Next month"
 msgstr "Следующий месяц"
 
-#: ui/components/calendar.slint:164 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:168 ui/components/calendar.slint:1015
 msgctxt "Monday initial"
 msgid "M"
 msgstr "П"
 
-#: ui/components/calendar.slint:165 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:169 ui/components/calendar.slint:1015
 msgctxt "Tuesday initial"
 msgid "T"
 msgstr "В"
 
-#: ui/components/calendar.slint:166 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:170 ui/components/calendar.slint:1015
 msgctxt "Wednesday initial"
 msgid "W"
 msgstr "С"
 
-#: ui/components/calendar.slint:167 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:171 ui/components/calendar.slint:1015
 msgctxt "Thursday initial"
 msgid "T"
 msgstr "Ч"
 
-#: ui/components/calendar.slint:168 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:172 ui/components/calendar.slint:1015
 msgctxt "Friday initial"
 msgid "F"
 msgstr "П"
 
-#: ui/components/calendar.slint:169 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:173 ui/components/calendar.slint:1015
 msgctxt "Saturday initial"
 msgid "S"
 msgstr "С"
 
-#: ui/components/calendar.slint:170 ui/components/calendar.slint:990
+#: ui/components/calendar.slint:174 ui/components/calendar.slint:1015
 msgctxt "Sunday initial"
 msgid "S"
 msgstr "В"
 
-#: ui/components/calendar.slint:216 ui/components/calendar.slint:727
-#: ui/components/calendar.slint:1020
+#: ui/components/calendar.slint:206
+msgid "Week {}"
+msgstr ""
+
+#: ui/components/calendar.slint:241 ui/components/calendar.slint:752
+#: ui/components/calendar.slint:1045
 msgid "Select {}"
 msgstr "Выбрать {}"
 
-#: ui/components/calendar.slint:236
+#: ui/components/calendar.slint:261
 msgid "MY CALENDARS"
 msgstr "МОИ КАЛЕНДАРИ"
 
-#: ui/components/calendar.slint:324
+#: ui/components/calendar.slint:349
 msgid "Hide {}"
 msgstr "Скрыть {}"
 
-#: ui/components/calendar.slint:325
+#: ui/components/calendar.slint:350
 msgid "Show {}"
 msgstr "Показать {}"
 
-#: ui/components/calendar.slint:356
+#: ui/components/calendar.slint:381
 msgid ""
 "No calendars yet. Connect Google Calendar, Outlook or any CalDAV server in "
 "Settings."
@@ -2711,115 +2811,115 @@ msgstr ""
 "Календарей пока нет. Подключите Google Календарь, Outlook или любой сервер "
 "CalDAV в настройках."
 
-#: ui/components/calendar.slint:472
+#: ui/components/calendar.slint:497
 msgid "Read only"
 msgstr "Только чтение"
 
-#: ui/components/calendar.slint:472
+#: ui/components/calendar.slint:497
 msgid "Read and write"
 msgstr "Чтение и запись"
 
-#: ui/components/calendar.slint:473
+#: ui/components/calendar.slint:498
 msgid "Last synced {}"
 msgstr "Последняя синхронизация {}"
 
-#: ui/components/calendar.slint:473
+#: ui/components/calendar.slint:498
 msgid "Not synced yet"
 msgstr "Ещё не синхронизировано"
 
-#: ui/components/calendar.slint:474
+#: ui/components/calendar.slint:499
 msgid "Enabled"
 msgstr "Включено"
 
-#: ui/components/calendar.slint:475 ui/components/calendar.slint:493
+#: ui/components/calendar.slint:500 ui/components/calendar.slint:518
 msgid "Default calendar"
 msgstr "Календарь по умолчанию"
 
-#: ui/components/calendar.slint:490
+#: ui/components/calendar.slint:515
 msgid "Created in Evanya"
 msgstr "Создано в Evanya"
 
-#: ui/components/calendar.slint:490
+#: ui/components/calendar.slint:515
 msgid "Synced provider event"
 msgstr "Синхронизированное событие провайдера"
 
-#: ui/components/calendar.slint:544 ui/components/calendar.slint:720
+#: ui/components/calendar.slint:569 ui/components/calendar.slint:745
 msgid "LOCAL"
 msgstr "ЛОКАЛЬНО"
 
-#: ui/components/calendar.slint:545 ui/components/calendar.slint:736
+#: ui/components/calendar.slint:570 ui/components/calendar.slint:761
 msgid "ALL DAY"
 msgstr "ВЕСЬ ДЕНЬ"
 
-#: ui/components/calendar.slint:586
+#: ui/components/calendar.slint:611
 msgid "Calendar sidebar width"
 msgstr ""
 
-#: ui/components/calendar.slint:627
+#: ui/components/calendar.slint:652
 msgid "Hide calendars"
 msgstr "Скрыть календари"
 
-#: ui/components/calendar.slint:649 ui/components/zoom-controls.slint:20
+#: ui/components/calendar.slint:674 ui/components/zoom-controls.slint:20
 msgid "Zoom out"
 msgstr "Уменьшить"
 
-#: ui/components/calendar.slint:658 ui/dialogs/settings-dialog.slint:2824
+#: ui/components/calendar.slint:683 ui/dialogs/settings-dialog.slint:2824
 msgid "Reset zoom"
 msgstr "Сбросить масштаб"
 
-#: ui/components/calendar.slint:676 ui/components/zoom-controls.slint:39
+#: ui/components/calendar.slint:701 ui/components/zoom-controls.slint:39
 msgid "Zoom in"
 msgstr "Увеличить"
 
-#: ui/components/calendar.slint:680
+#: ui/components/calendar.slint:705
 msgid "Previous period"
 msgstr "Предыдущий период"
 
-#: ui/components/calendar.slint:681
+#: ui/components/calendar.slint:706
 msgid "Next period"
 msgstr "Следующий период"
 
-#: ui/components/calendar.slint:682
+#: ui/components/calendar.slint:707
 msgid "Week"
 msgstr "Неделя"
 
-#: ui/components/calendar.slint:683 ui/components/calendar.slint:959
+#: ui/components/calendar.slint:708 ui/components/calendar.slint:984
 msgid "Month"
 msgstr "Месяц"
 
-#: ui/components/calendar.slint:684 ui/components/calendar.slint:960
+#: ui/components/calendar.slint:709 ui/components/calendar.slint:985
 msgid "Agenda"
 msgstr "Расписание"
 
-#: ui/components/calendar.slint:698 ui/components/calendar.slint:972
+#: ui/components/calendar.slint:723 ui/components/calendar.slint:997
 msgid "Local time · {}"
 msgstr "Местное время · {}"
 
-#: ui/components/calendar.slint:905
+#: ui/components/calendar.slint:930
 msgid "+{} more"
 msgstr ""
 
-#: ui/components/calendar.slint:1031
+#: ui/components/calendar.slint:1056
 msgid "Agenda · {}"
 msgstr "Повестка · {}"
 
-#: ui/components/calendar.slint:1066
+#: ui/components/calendar.slint:1091
 msgid "No events for this date"
 msgstr "На эту дату событий нет"
 
-#: ui/components/calendar.slint:1138
+#: ui/components/calendar.slint:1163
 msgid "Delete this event?"
 msgstr "Удалить это событие?"
 
-#: ui/components/calendar.slint:1139
+#: ui/components/calendar.slint:1164
 msgid "This event will be removed from your calendar."
 msgstr "Это событие будет удалено из вашего календаря."
 
-#: ui/components/calendar.slint:1141
+#: ui/components/calendar.slint:1166
 msgid "Delete event"
 msgstr "Удалить событие"
 
-#: ui/components/calendar.slint:1142
+#: ui/components/calendar.slint:1167
 msgid "Keep event"
 msgstr "Оставить событие"
 
@@ -3801,8 +3901,8 @@ msgstr "Сбросить эту палитру"
 msgid "Revert"
 msgstr "Вернуть"
 
-#: ui/components/theme-editor.slint:785 ui/dialogs/folder-dialog.slint:135
-#: ui/views/files-view.slint:679
+#: ui/components/theme-editor.slint:785 ui/dialogs/settings-dialog.slint:2321
+#: ui/views/mail-reading-pane.slint:2028
 msgid "Save"
 msgstr "Сохранить"
 
@@ -3934,70 +4034,94 @@ msgstr "ОПИСАНИЕ"
 msgid "Open meeting link"
 msgstr "Открыть ссылку на встречу"
 
-#: ui/dialogs/calendar-event-dialog.slint:46
+#: ui/dialogs/calendar-event-dialog.slint:61
 msgid "Edit calendar event"
 msgstr "Редактировать событие календаря"
 
-#: ui/dialogs/calendar-event-dialog.slint:46
+#: ui/dialogs/calendar-event-dialog.slint:61
 msgid "New calendar event"
 msgstr "Новое событие календаря"
 
-#: ui/dialogs/calendar-event-dialog.slint:58
+#: ui/dialogs/calendar-event-dialog.slint:73
 msgid "Edit event"
 msgstr "Редактировать событие"
 
-#: ui/dialogs/calendar-event-dialog.slint:59
+#: ui/dialogs/calendar-event-dialog.slint:74
 msgid "TITLE"
 msgstr "НАЗВАНИЕ"
 
-#: ui/dialogs/calendar-event-dialog.slint:60
+#: ui/dialogs/calendar-event-dialog.slint:75
 msgid "Event title"
 msgstr "Название события"
 
-#: ui/dialogs/calendar-event-dialog.slint:61
+#: ui/dialogs/calendar-event-dialog.slint:76
 msgid "DATE"
 msgstr "ДАТА"
 
-#: ui/dialogs/calendar-event-dialog.slint:62
+#: ui/dialogs/calendar-event-dialog.slint:77
 msgid "START TIME"
 msgstr "ВРЕМЯ НАЧАЛА"
 
-#: ui/dialogs/calendar-event-dialog.slint:63 ui/views/contacts-view.slint:805
+#: ui/dialogs/calendar-event-dialog.slint:78 ui/views/contacts-view.slint:805
 msgid "YYYY-MM-DD"
 msgstr "ГГГГ-ММ-ДД"
 
-#: ui/dialogs/calendar-event-dialog.slint:65
+#: ui/dialogs/calendar-event-dialog.slint:80
 msgid "DURATION (MINUTES)"
 msgstr "ПРОДОЛЖИТЕЛЬНОСТЬ (МИНУТЫ)"
 
-#: ui/dialogs/calendar-event-dialog.slint:66
+#: ui/dialogs/calendar-event-dialog.slint:81
 msgid "60"
 msgstr "60"
 
-#: ui/dialogs/calendar-event-dialog.slint:74
+#: ui/dialogs/calendar-event-dialog.slint:89
 msgid "This device"
 msgstr ""
 
-#: ui/dialogs/calendar-event-dialog.slint:78
+#: ui/dialogs/calendar-event-dialog.slint:93
 msgid "Optional"
 msgstr ""
 
-#: ui/dialogs/calendar-event-dialog.slint:99
+#: ui/dialogs/calendar-event-dialog.slint:96
+msgid "REPEAT"
+msgstr ""
+
+#: ui/dialogs/calendar-event-dialog.slint:105
+msgid "ENDS"
+msgstr ""
+
+#: ui/dialogs/calendar-event-dialog.slint:112
+msgid "Never"
+msgstr ""
+
+#: ui/dialogs/calendar-event-dialog.slint:112
+msgid "On a date"
+msgstr ""
+
+#: ui/dialogs/calendar-event-dialog.slint:112
+msgid "After a number of times"
+msgstr ""
+
+#: ui/dialogs/calendar-event-dialog.slint:129
+msgid "Number of times"
+msgstr ""
+
+#: ui/dialogs/calendar-event-dialog.slint:151
 msgid "Create"
 msgstr "Создать"
 
-#: ui/dialogs/calendar-event-dialog.slint:145
+#: ui/dialogs/calendar-event-dialog.slint:197
 msgid "Import events"
 msgstr ""
 
-#: ui/dialogs/calendar-event-dialog.slint:147
+#: ui/dialogs/calendar-event-dialog.slint:199
 msgid "{} contains one event."
 msgid_plural "{} contains {n} events."
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ui/dialogs/calendar-event-dialog.slint:164
+#: ui/dialogs/calendar-event-dialog.slint:216
 #: ui/dialogs/settings-dialog.slint:2732
 msgid "Import"
 msgstr "Импорт"

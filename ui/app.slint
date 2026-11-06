@@ -558,6 +558,30 @@ if (key == "Import an iCalendar file") { return @tr("Import an iCalendar file");
         if (key == "Could not import: {}") { return @tr("Could not import: {}", argument); }
         if (key == "Imported {} events.") { return @tr("Imported {} events.", argument); }
         if (key == "{} were already in the calendar.") { return @tr("{} were already in the calendar.", argument); }
+if (key == "first") { return @tr("first"); }
+        if (key == "second") { return @tr("second"); }
+        if (key == "third") { return @tr("third"); }
+        if (key == "fourth") { return @tr("fourth"); }
+        if (key == "last") { return @tr("last"); }
+        if (key == "Does not repeat") { return @tr("Does not repeat"); }
+        if (key == "Every day") { return @tr("Every day"); }
+        if (key == "Every weekday (Monday to Friday)") { return @tr("Every weekday (Monday to Friday)"); }
+        if (key == "Every week") { return @tr("Every week"); }
+        if (key == "Every two weeks") { return @tr("Every two weeks"); }
+        if (key == "Every year") { return @tr("Every year"); }
+        if (key == "Custom rule, kept as it is") { return @tr("Custom rule, kept as it is"); }
+        if (key == "Use YYYY-MM-DD for the end date.") { return @tr("Use YYYY-MM-DD for the end date."); }
+        if (key == "The repetition cannot end before the event starts.") { return @tr("The repetition cannot end before the event starts."); }
+        if (key == "The number of times is a number from 1 to 999.") { return @tr("The number of times is a number from 1 to 999."); }
+        if (key == "Every month on day {}") { return @tr("Every month on day {}", argument); }
+        if (key == "Every month on the {}") { return @tr("Every month on the {}", argument); }
+        if (key == "Every month on the last {}") { return @tr("Every month on the last {}", argument); }
+if (key == "Every year on the {} of {}") { return @tr("Every year on the {} of {}", argument, second-argument); }
+        if (key == "Every year on the last {} of {}") { return @tr("Every year on the last {} of {}", argument, second-argument); }
+        if (key == "{}, once") { return @tr("{}, once", argument); }
+        if (key == "{}, {} times") { return @tr("{}, {} times", argument, second-argument); }
+        if (key == "{}, until {}") { return @tr("{}, until {}", argument, second-argument); }
+        if (key == "New mail") { return @tr("New mail"); }
         if (key == "Choose a picture for this account") { return @tr("Choose a picture for this account"); }
         if (key == "Could not use this picture: {}") { return @tr("Could not use this picture: {}", argument); }
         if (key == "Could not save unread counts preference: {}") { return @tr("Could not save unread counts preference: {}", argument); }
@@ -1003,6 +1027,15 @@ export component AppWindow inherits Window {
     in-out property <string> calendar_event_description: "";
     // Why the event could not be saved, shown in the event dialog.
     in-out property <string> calendar_event_error: "";
+    // The event dialog's "Repeat" choice; see REPEAT_RULES in src/calendar.rs.
+    in-out property <int> calendar_event_repeat: 0;
+    in property <[string]> calendar_event_repeat_choices: [];
+    in property <int> calendar_event_repeat_custom: 99;
+    // How a repeating event ends: 0 never, 1 on a date, 2 after a count.
+    in-out property <int> calendar_event_ends: 0;
+    in-out property <string> calendar_event_until: "";
+    in-out property <string> calendar_event_count: "";
+    callback calendar-event-date-edited(string);
     // Importing an iCalendar file into a calendar.
     in-out property <bool> calendar_import_open: false;
     in property <[MoveTarget]> move_targets;
@@ -2236,6 +2269,13 @@ export component AppWindow inherits Window {
             calendar_event_location <=> root.calendar_event_location;
             calendar_event_description <=> root.calendar_event_description;
             calendar_event_error: root.calendar_event_error;
+            calendar_event_repeat <=> root.calendar_event_repeat;
+            calendar_event_repeat_choices: root.calendar_event_repeat_choices;
+            calendar_event_repeat_custom: root.calendar_event_repeat_custom;
+            calendar_event_ends <=> root.calendar_event_ends;
+            calendar_event_until <=> root.calendar_event_until;
+            calendar_event_count <=> root.calendar_event_count;
+            date-edited(text) => { root.calendar-event-date-edited(text); }
             calendar-save-event(title, date, time, duration, color) => {
                 root.calendar-save-event(title, date, time, duration, color);
             }

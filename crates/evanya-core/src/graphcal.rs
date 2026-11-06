@@ -38,13 +38,14 @@ pub async fn sync_connection(
     connection_id: i64,
     pushes: &[PendingPush],
 ) -> Result<Synced> {
-    let pushed = push_routed(db, token, pushes).await?;
+    let (pushed, push_error) = push_routed(db, token, pushes).await?;
 
     let calendars = db
         .read(move |conn| repo::caldav::connection_calendars(conn, connection_id))
         .await?;
     let mut synced = Synced {
         changed: pushed,
+        calendar_error: push_error,
         ..Synced::default()
     };
     for cal in calendars.into_iter().filter(|c| c.enabled) {
@@ -68,16 +69,25 @@ pub async fn sync_connection(
 /// unconditional PATCHes (Graph offers no If-Match on delegated events), so
 /// concurrent remote edits resolve last-writer-wins; the next pull
 /// reconciles the row.
-async fn push_routed(db: &Db, token: &str, pushes: &[PendingPush]) -> Result<bool> {
+async fn push_routed(
+    db: &Db,
+    token: &str,
+    pushes: &[PendingPush],
+) -> Result<(bool, Option<String>)> {
     let mut any = false;
+    let mut failure = None;
     for push in pushes {
         match push_row(db, token, push).await {
             Ok(()) => any = true,
             Err(error @ (CoreError::NeedsReauth | CoreError::Offline)) => return Err(error),
-            Err(e) => tracing::warn!("graph push of event {} failed: {e}", push.row.event.id),
+            Err(e) => {
+                tracing::warn!("graph push of event {} failed: {e}", push.row.event.id);
+                let name = push.row.event.summary.clone().unwrap_or_default();
+                failure.get_or_insert(format!("could not send \"{name}\": {e}"));
+            }
         }
     }
-    Ok(any)
+    Ok((any, failure))
 }
 
 async fn push_row(db: &Db, token: &str, push: &PendingPush) -> Result<()> {

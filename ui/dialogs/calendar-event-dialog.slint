@@ -29,6 +29,21 @@ export component CalendarEventDialog inherits Rectangle {
     in-out property <string> calendar_event_description: "";
     // Why saving failed; empty while there is nothing to report.
     in property <string> calendar_event_error: "";
+    // The choices match REPEAT_RULES in src/calendar.rs; the last is a rule
+    // the dialog does not offer, kept as it is.
+    in-out property <int> calendar_event_repeat: 0;
+    // Labels for the "Repeat" choices, which name the date's weekday and month.
+    in property <[string]> calendar_event_repeat_choices: [];
+    // The choice that keeps a rule the dialog cannot show.
+    in property <int> calendar_event_repeat_custom: 99;
+    in-out property <int> calendar_event_ends: 0;
+    in-out property <string> calendar_event_until: "";
+    in-out property <string> calendar_event_count: "";
+    callback date-edited(string);
+    // The end row shows for a rule the dialog makes; a kept rule keeps its end.
+    private property <bool> ends-shown: root.calendar_event_repeat > 0 && root.calendar_event_repeat != root.calendar_event_repeat_custom;
+    // Where the fields end: below the end row when it shows.
+    private property <length> fields-bottom: root.ends-shown ? ends-field.y + ends-field.height : repeat-field.y + repeat-field.height;
     callback calendar-save-event(string, string, string, string, int);
 
         Rectangle {
@@ -60,7 +75,7 @@ export component CalendarEventDialog inherits Rectangle {
                 title-field := LineEdit { x: 24px; y: title-label.y + title-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_title; placeholder-text: @tr("Event title"); }
                 date-label := Text { x: 24px; y: title-field.y + 54px; width: (parent.width - 56px) / 2; height: max(18px, max(self.preferred-height, start-label.preferred-height)); wrap: word-wrap; text: @tr("DATE"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
                 start-label := Text { x: parent.width / 2 + 4px; y: date-label.y; width: (parent.width - 56px) / 2; height: date-label.height; wrap: word-wrap; text: @tr("START TIME"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
-                date-field := LineEdit { x: 24px; y: date-label.y + date-label.height + 4px; width: (parent.width - 56px) / 2; height: root.compact ? 44px : 38px; text <=> root.calendar_event_date; placeholder-text: @tr("YYYY-MM-DD"); }
+                date-field := LineEdit { x: 24px; y: date-label.y + date-label.height + 4px; width: (parent.width - 56px) / 2; height: root.compact ? 44px : 38px; text <=> root.calendar_event_date; placeholder-text: @tr("YYYY-MM-DD"); edited(text) => { root.date-edited(text); } }
                 LineEdit { x: parent.width / 2 + 4px; y: date-field.y; width: (parent.width - 56px) / 2; height: root.compact ? 44px : 38px; text <=> root.calendar_event_time; placeholder-text: root.time-placeholder; }
                 duration-label := Text { x: 24px; y: date-field.y + 54px; width: (parent.width - 56px) / 2; height: max(18px, max(self.preferred-height, calendar-label.preferred-height)); wrap: word-wrap; text: @tr("DURATION (MINUTES)"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
                 duration-field := LineEdit { x: 24px; y: duration-label.y + duration-label.height + 4px; width: (parent.width - 56px) / 2; height: root.compact ? 44px : 38px; text <=> root.calendar_event_duration; placeholder-text: @tr("60"); input-type: InputType.number; }
@@ -78,9 +93,46 @@ export component CalendarEventDialog inherits Rectangle {
                 location-field := LineEdit { x: 24px; y: location-label.y + location-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_location; placeholder-text: @tr("Optional"); }
                 description-label := Text { x: 24px; y: location-field.y + 54px; width: parent.width - 48px; height: max(18px, self.preferred-height); text: @tr("DESCRIPTION"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
                 description-field := LineEdit { x: 24px; y: description-label.y + description-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_description; placeholder-text: @tr("Optional"); }
+                repeat-label := Text { x: 24px; y: description-field.y + 54px; width: parent.width - 48px; height: max(18px, self.preferred-height); text: @tr("REPEAT"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
+                repeat-field := SettingsSelect {
+                    x: 24px;
+                    y: repeat-label.y + repeat-label.height + 4px;
+                    width: parent.width - 48px;
+                    height: root.compact ? 44px : 38px;
+                    choices: root.calendar_event_repeat_choices;
+                    selected-index <=> root.calendar_event_repeat;
+                }
+                ends-label := Text { visible: root.ends-shown; x: 24px; y: repeat-field.y + 54px; width: parent.width - 48px; height: root.ends-shown ? max(18px, self.preferred-height) : 0px; text: @tr("ENDS"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
+                ends-field := SettingsSelect {
+                    visible: root.ends-shown;
+                    x: 24px;
+                    y: ends-label.y + ends-label.height + 4px;
+                    width: (parent.width - 56px) / 2;
+                    height: root.compact ? 44px : 38px;
+                    choices: [@tr("Never"), @tr("On a date"), @tr("After a number of times")];
+                    selected-index <=> root.calendar_event_ends;
+                }
+                if root.ends-shown && root.calendar_event_ends == 1 : LineEdit {
+                    x: parent.width / 2 + 4px;
+                    y: ends-field.y;
+                    width: (parent.width - 56px) / 2;
+                    height: ends-field.height;
+                    text <=> root.calendar_event_until;
+                    placeholder-text: @tr("YYYY-MM-DD");
+                }
+                if root.ends-shown && root.calendar_event_ends == 2 : LineEdit {
+                    x: parent.width / 2 + 4px;
+                    y: ends-field.y;
+                    width: (parent.width - 56px) / 2;
+                    height: ends-field.height;
+                    text <=> root.calendar_event_count;
+                    placeholder-text: @tr("Number of times");
+                    input-type: InputType.number;
+                }
+
                 error-text := Text {
                     x: 24px;
-                    y: description-field.y + description-field.height + 10px;
+                    y: root.fields-bottom + 10px;
                     width: parent.width - 48px;
                     height: root.calendar_event_error == "" ? 0px : self.preferred-height;
                     visible: root.calendar_event_error != "";
@@ -89,7 +141,7 @@ export component CalendarEventDialog inherits Rectangle {
                     font-size: TypeScale.caption;
                     wrap: word-wrap;
                 }
-                event-divider := Rectangle { x: 0px; y: root.compact ? root.height - 72px : description-field.y + 64px + (root.calendar_event_error == "" ? 0px : error-text.height + 4px); width: parent.width; height: 1px; background: root.border-subtle; }
+                event-divider := Rectangle { x: 0px; y: root.compact ? root.height - 72px : root.fields-bottom + 26px + (root.calendar_event_error == "" ? 0px : error-text.height + 4px); width: parent.width; height: 1px; background: root.border-subtle; }
                 Button { x: save-button.x - self.width - 8px; y: save-button.y; width: max(82px, self.content-width); height: root.compact ? 44px : 40px; text: @tr("Cancel"); clicked => { root.calendar_editor_open = false; } }
                 save-button := Button {
                     x: parent.width - self.width - 24px;

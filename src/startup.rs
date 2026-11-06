@@ -586,6 +586,8 @@ pub(crate) struct PendingCoreUpdates {
     pub(crate) sync_statuses: HashMap<i64, evanya_core::models::SyncStatus>,
     /// The folder each account's sync last reported working on.
     pub(crate) sync_folders: HashMap<i64, String>,
+    /// Fresh mail from people arrived: the new-mail sound plays.
+    pub(crate) new_mail: bool,
     pub(crate) action_error: Option<String>,
     pub(crate) calendar_changed: bool,
     pub(crate) contacts_changed: bool,
@@ -748,6 +750,13 @@ pub(crate) fn spawn_core_event_listener(
                         .unwrap_or_else(|poisoned| poisoned.into_inner())
                         .account_states
                         .insert(account_id, (sync_state, sync_error));
+                    true
+                }
+                Ok(CoreEvent::MailNew { .. }) => {
+                    pending
+                        .lock()
+                        .unwrap_or_else(|poisoned| poisoned.into_inner())
+                        .new_mail = true;
                     true
                 }
                 Ok(CoreEvent::SyncStatus(status)) => {
