@@ -99,7 +99,39 @@ impl Core {
         self.db
             .write(move |conn| {
                 repo::sender_identities::replace(conn, account_id, &identities)?;
+                // The provider's name for the sign-in address yields to the
+                // one the user chose.
+                if let Some(account) = repo::accounts::get_config(conn, account_id)? {
+                    repo::sender_identities::ensure_primary(conn, &account)?;
+                }
                 repo::sender_identities::list(conn, account_id)
+            })
+            .await
+    }
+
+    /// The name recipients see next to the account's sign-in address. An
+    /// empty name brings back the one the provider or account setup gave.
+    pub async fn set_sender_name(&self, account_id: i64, name: String) -> Result<()> {
+        let name = name.trim().to_owned();
+        if name.chars().any(char::is_control) {
+            return Err(CoreError::Other(
+                "a sender name cannot contain line breaks".into(),
+            ));
+        }
+        self.db
+            .write(move |conn| {
+                let mut account = repo::accounts::get_config(conn, account_id)?
+                    .ok_or_else(|| CoreError::NotFound(format!("account {account_id}")))?;
+                account.settings.sender_name = (!name.is_empty()).then_some(name);
+                repo::accounts::set_settings(conn, account_id, &account.settings)?;
+                if account.settings.sender_name.is_none() {
+                    conn.execute(
+                        "UPDATE sender_identities SET display_name=?3
+                         WHERE account_id=?1 AND email=?2",
+                        rusqlite::params![account_id, account.email, account.display_name],
+                    )?;
+                }
+                repo::sender_identities::ensure_primary(conn, &account)
             })
             .await
     }

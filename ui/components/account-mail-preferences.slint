@@ -53,6 +53,11 @@ export global AccountMailPreferences {
     in-out property <string> sender-form-name;
     in-out property <string> sender-form-reply-to;
     in-out property <bool> sender-form-editing: false;
+    // The name next to the sign-in address; the placeholder shows the
+    // provider's name, used while this is empty.
+    in-out property <string> sender-name;
+    in-out property <string> sender-name-placeholder;
+    callback save-sender-name;
     callback load(int);
     callback edit-signature(int);
     callback save-signature;
@@ -136,6 +141,21 @@ export component AccountMailPreferencesPanel inherits OnScreenSurface {
             }
             if !root.security-tab : VerticalBox {
                 spacing: 10px;
+                Text { min-height: self.preferred-height; vertical-stretch: 0; text: @tr("Your name"); color: AppTheme.heading; font-weight: 600; }
+                LineEdit {
+                    text <=> AccountMailPreferences.sender-name;
+                    input-label: @tr("Your name");
+                    placeholder-text: AccountMailPreferences.sender-name-placeholder != "" ? AccountMailPreferences.sender-name-placeholder : @tr("Name shown to recipients");
+                    enabled: !AccountMailPreferences.busy;
+                    accepted(value) => { AccountMailPreferences.save-sender-name(); }
+                }
+                Text { min-height: self.preferred-height; vertical-stretch: 0; text: @tr("Shown to recipients next to your sign-in address. Leave it empty to use the name your provider gives."); color: AppTheme.secondary; wrap: word-wrap; }
+                HorizontalBox {
+                    padding: 0px;
+                    alignment: start;
+                    Button { width: max(96px, self.content-width); text: @tr("Save name"); primary: true; enabled: !AccountMailPreferences.busy; clicked => { AccountMailPreferences.save-sender-name(); } }
+                }
+                Rectangle { height: 1px; background: AppTheme.input-border; }
                 SettingsSelectRow {
                     compact: root.compact; title: @tr("Default sender identity"); description: @tr("Preselected for new messages. Your sign-in address is unchanged.");
                     choices: AccountMailPreferences.sender-identity-names; selected-index <=> AccountMailPreferences.default-sender-index;

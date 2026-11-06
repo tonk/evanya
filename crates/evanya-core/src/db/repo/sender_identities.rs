@@ -26,15 +26,28 @@ fn from_row(row: &rusqlite::Row<'_>) -> rusqlite::Result<SenderIdentity> {
 }
 
 pub fn ensure_primary(conn: &Connection, account: &AccountConfig) -> Result<()> {
+    // A sender name the user chose wins over whatever the provider says.
+    let chosen = account
+        .settings
+        .sender_name
+        .as_deref()
+        .map(str::trim)
+        .filter(|name| !name.is_empty());
     conn.execute(
         "INSERT INTO sender_identities (
            account_id,email,display_name,is_primary,is_provider_default,
            verification_status,last_synced_at
-         ) VALUES (?1,?2,?3,1,1,'accepted',?4)
+         ) VALUES (?1,?2,COALESCE(?5,?3),1,1,'accepted',?4)
          ON CONFLICT(account_id,email) DO UPDATE SET
-           display_name=COALESCE(excluded.display_name,sender_identities.display_name),
+           display_name=COALESCE(?5,excluded.display_name,sender_identities.display_name),
            is_primary=1,verification_status='accepted',source='provider'",
-        params![account.id, account.email, account.display_name, now_ms()],
+        params![
+            account.id,
+            account.email,
+            account.display_name,
+            now_ms(),
+            chosen
+        ],
     )?;
     Ok(())
 }
@@ -442,6 +455,25 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn a_chosen_sender_name_outlasts_the_providers() {
+        let mut conn = crate::db::testutil::conn();
+        let account_id = account(&conn, Provider::Gmail);
+        let mut login = identity(account_id, "login@example.test", true, "accepted");
+        login.display_name = Some("Mailbox".into());
+        replace(&mut conn, account_id, &[login.clone()]).unwrap();
+        let mut config = crate::db::repo::accounts::get_config(&conn, account_id)
+            .unwrap()
+            .unwrap();
+        config.settings.sender_name = Some("Ton Kersten".into());
+        ensure_primary(&conn, &config).unwrap();
+        let name = |conn: &Connection| resolve_default(conn, &config).unwrap().display_name;
+        assert_eq!(name(&conn).as_deref(), Some("Ton Kersten"));
+        // A provider refresh brings its own name back; the chosen one wins.
+        replace(&mut conn, account_id, &[login]).unwrap();
+        assert_eq!(name(&conn).as_deref(), Some("Ton Kersten"));
     }
 
     #[test]

@@ -2638,6 +2638,7 @@ export component SettingsDialog inherits Rectangle {
                                         alignment: end;
                                         if root.custom_headers_saved : Text { text: @tr("Saved"); color: root.faint-text; font-size: TypeScale.caption; vertical-alignment: center; }
                                         Button {
+                                            width: max(112px, self.content-width);
                                             text: @tr("Save headers");
                                             primary: true;
                                             clicked => { root.save_custom_headers(root.custom_headers_scope_index, root.custom_headers_text); }

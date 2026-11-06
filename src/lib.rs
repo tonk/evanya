@@ -7929,8 +7929,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             app.set_sync_status(progress);
             let args = AddPasswordAccountArgs {
                 email: email.to_string(),
-                display_name: Some(app.get_account_display_name().trim().to_owned())
-                    .filter(|name| !name.is_empty()),
+                // The account name only names it in Evanya; recipients see
+                // the sender name from the sender identity settings.
+                display_name: None,
                 username: username.to_string(),
                 password: password.to_string(),
                 smtp_password: app.get_account_smtp_password().to_string(),
@@ -7951,9 +7952,20 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             };
             app.set_account_setup_in_progress(true);
             let updates = ui_task_tx_for_account.clone();
+            let account_name = app.get_account_display_name().trim().to_owned();
+            let named_app = app.as_weak();
             runtime_for_account.spawn(async move {
                 let update = match core.add_password_account(args).await {
                     Ok(account) => {
+                        // Store the account name as its name in the sidebar,
+                        // as renaming it there does.
+                        if let Ok(account_id) = i32::try_from(account.id) {
+                            let _ = slint::invoke_from_event_loop(move || {
+                                if let Some(app) = named_app.upgrade() {
+                                    app.invoke_rename_account(account_id, account_name.into());
+                                }
+                            });
+                        }
                         // The account actor starts its first sync as soon as it
                         // is created. Waiting for that potentially enormous
                         // mailbox here would only hold the setup UI hostage.

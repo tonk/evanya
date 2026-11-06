@@ -449,6 +449,10 @@ pub struct AccountSettings {
     /// global ones; a field here replaces a global field of the same name.
     #[serde(default)]
     pub custom_headers: Vec<CustomHeader>,
+    /// The name recipients see next to the sign-in address. It replaces the
+    /// name the provider or the account setup gave; `None` keeps that one.
+    #[serde(default)]
+    pub sender_name: Option<String>,
 }
 
 /// A header field the user adds to outgoing mail, such as `X-Mailer` or
@@ -533,6 +537,7 @@ impl AccountSettings {
             sent_copy_policy: SentCopyPolicy::Auto,
             keep_on_server: KeepOnServer::Always,
             custom_headers: Vec::new(),
+            sender_name: None,
         }
     }
 }

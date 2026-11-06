@@ -353,6 +353,8 @@ pub(super) fn register(
         ui.set_sender_identity_status("".into());
         ui.set_sender_identity_rows(ModelRc::default());
         ui.set_sender_identity_policy("never".into());
+        ui.set_sender_name("".into());
+        ui.set_sender_name_placeholder("".into());
         clear_sender_form(&ui);
         ui.invoke_edit_signature(-1);
         ui.set_fingerprint("".into());
@@ -385,6 +387,17 @@ pub(super) fn register(
                         if let Some(config) = configs.iter().find(|c| c.id == i64::from(id)) {
                             ui.set_account_id(id);
                             ui.set_account_label(config.email.clone().into());
+                            ui.set_sender_name(
+                                config
+                                    .settings
+                                    .sender_name
+                                    .clone()
+                                    .unwrap_or_default()
+                                    .into(),
+                            );
+                            ui.set_sender_name_placeholder(
+                                config.display_name.clone().unwrap_or_default().into(),
+                            );
                             ui.set_status("".into());
                             ui.set_key_inventory("".into());
                             project(&app, &settings, config.id);
@@ -470,6 +483,48 @@ pub(super) fn register(
                     .map_err(|error| error.to_string())
             },
             |app, result| status(&app, result, "Default sender identity saved."),
+        );
+    });
+    let weak = app.as_weak();
+    let state_sender_name = state.clone();
+    let work = tasks.clone();
+    ui.on_save_sender_name(move || {
+        let Some(app) = weak.upgrade() else { return };
+        let ui = app.global::<AccountMailPreferences>();
+        if ui.get_busy() || ui.get_account_id() <= 0 {
+            return;
+        }
+        let account_id = i64::from(ui.get_account_id());
+        let Some(core) = core(&state_sender_name) else {
+            return;
+        };
+        let name = ui.get_sender_name().to_string();
+        work.spawn(
+            &app,
+            true,
+            async move {
+                core.set_sender_name(account_id, name)
+                    .await
+                    .map_err(|error| error.to_string())?;
+                let identities = core
+                    .list_sender_identities(account_id)
+                    .await
+                    .map_err(|error| error.to_string())?;
+                let (_, configs) = preferences(&core).await?;
+                Ok((configs, identities))
+            },
+            move |app, result: Result<(Vec<AccountConfig>, Vec<SenderIdentity>), String>| {
+                match result {
+                    Ok((configs, identities)) => {
+                        if let Some(config) = configs.iter().find(|config| config.id == account_id)
+                        {
+                            project_identities(&app, config, &identities, None);
+                        }
+                        status(&app, Ok(()), "Sender name saved.");
+                    }
+                    Err(error) => status(&app, Err(error), ""),
+                }
+            },
         );
     });
     let weak = app.as_weak();
