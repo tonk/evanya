@@ -538,8 +538,10 @@ export component FunctionalCalendarView inherits Rectangle {
     private property <length> time-gutter: max(58px, max(local-label-width.preferred-width, max(all-day-label-width.preferred-width, hour-label-width.preferred-width + 6px)) + 14px);
     private property <length> column-width: max(1px, (root.main-width - root.time-gutter) / 7);
     // All-day events show one caption line that grows with the platform font.
-    // One row per stacked all-day event, at least one.
-    private property <length> all-day-row: max(24px, all-day-line.preferred-height + 6px);
+    // One row per stacked all-day event, at least one. A chip is the row less
+    // 3px, and its caption sits 3px inside it at the top and the bottom, so the
+    // caption needs the line height plus 9px.
+    private property <length> all-day-row: max(24px, all-day-line.preferred-height + 9px);
     private property <length> all-day-height: max(1, root.all-day-lanes) * root.all-day-row + 6px;
     private property <length> grid-top: 112px + root.all-day-height;
     private property <length> fitted-hour-height: max(36px, (root.height - root.grid-top) / 10);

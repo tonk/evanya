@@ -2905,16 +2905,19 @@ export component SettingsDialog inherits Rectangle {
                                         spacing: 8px;
                                         alignment: start;
                                         Button {
+                                            width: max(112px, self.content-width);
                                             text: root.setup_sync_directory == "" ? @tr("Choose directory…") : @tr("Change directory…");
                                             primary: root.setup_sync_directory == "";
                                             clicked => { root.choose_setup_sync_directory(); }
                                         }
                                         if root.setup_sync_directory != "" : Button {
+                                            width: max(96px, self.content-width);
                                             text: @tr("Sync now");
                                             enabled: !root.setup_sync_busy;
                                             clicked => { root.sync_setup_now(); }
                                         }
                                         if root.setup_sync_directory != "" : Button {
+                                            width: max(96px, self.content-width);
                                             text: @tr("Stop syncing");
                                             clicked => { root.stop_setup_sync(); }
                                         }
