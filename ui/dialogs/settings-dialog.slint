@@ -533,6 +533,7 @@ export component SettingsDialog inherits Rectangle {
         if key == "calendar" { return @tr("Calendar"); }
         if key == "contacts" { return @tr("Contacts"); }
         if key == "files" { return @tr("Files"); }
+        if key == "plain" { return @tr("Plain text, reading and writing"); }
         return @tr("Writing messages");
     }
     callback save_spellcheck(string, string);

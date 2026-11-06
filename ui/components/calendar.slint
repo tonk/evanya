@@ -419,6 +419,7 @@ export component FunctionalCalendarView inherits Rectangle {
     callback set-view(string);
     callback today;
     callback new-event;
+    callback import-ics;
     callback open-link(string);
     callback set-source-enabled(int, bool);
     callback set-source-color(int, string);
@@ -675,6 +676,7 @@ export component FunctionalCalendarView inherits Rectangle {
                     tooltip-text: @tr("Zoom in");
                     clicked => { root.set-zoom(root.zoom * 1.25); }
                 }
+                ToolbarIconButton { icon: @image-url("../icons/lucide/outline/upload.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Import an iCalendar file"); clicked => { root.import-ics(); } }
                 ToolbarIconButton { icon: @image-url("../icons/lucide/outline/chevron-left.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Previous period"); clicked => { root.navigate("period", -1); } }
                 ToolbarIconButton { icon: @image-url("../icons/lucide/outline/chevron-right.svg"); icon-color: root.secondary-color; hover-background: root.control-hover-color; tooltip-text: @tr("Next period"); clicked => { root.navigate("period", 1); } }
                 Button { width: max(66px, self.content-width); height: LayoutMetrics.sidebar-action-height; text: @tr("Week"); selected: root.view-mode == "week"; clicked => { root.set-view("week"); } }

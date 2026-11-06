@@ -317,6 +317,8 @@ export component MailListPane inherits FocusScope {
     in-out property <string> column-order: "sender,subject,date";
     callback sort-by(string);
     callback columns-committed();
+    // "Move to folder…" for this message, or the selection it belongs to.
+    callback open-move-picker(int, int);
     in property <bool> loading: false;
     in property <[EmailRow]> emails: [];
     in property <[MailListEntry]> list_entries: [];
@@ -1638,6 +1640,7 @@ export component MailListPane inherits FocusScope {
                                             // Local mail has no archive or spam.
                                             if !mail-row.local-mail : MenuItem { title: @tr("Archive"); activated => { root.message_action_for_email(mail-data.id, "archive"); } }
                                             if !mail-row.local-mail : MenuItem { title: @tr("Move to spam"); activated => { root.message_action_for_email(mail-data.id, "spam"); } }
+                                            MenuItem { title: @tr("Move to folder…"); activated => { root.open-move-picker(mail-data.id, mail-data.account_id); } }
                                             MenuItem { title: root.trash_view ? @tr("Delete permanently…") : @tr("Move to trash"); activated => { root.message_action_for_email(mail-data.id, root.trash_view ? "delete_permanently" : "trash"); } }
                                         }
                                     }

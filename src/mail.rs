@@ -2113,6 +2113,18 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    pub async fn import_ics(
+        &self,
+        text: &str,
+        account_id: i64,
+        calendar_id: Option<i64>,
+    ) -> Result<evanya_core::models::IcsImport, String> {
+        self.core
+            .import_ics(text, account_id, calendar_id)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
     pub async fn create_event(&self, args: CreateEventArgs) -> Result<CalendarEvent, String> {
         self.core
             .create_event(args)
@@ -3359,11 +3371,40 @@ fn initials(name: &str) -> String {
     letters
 }
 
+/// The font plain-text messages are read in, as chosen in Settings: a family
+/// (empty: the default) and a size scale.
+static PLAIN_TEXT_FONT: std::sync::RwLock<(String, f32)> =
+    std::sync::RwLock::new((String::new(), 1.0));
+
+pub(crate) fn set_plain_text_font(family: &str, scale: f32) {
+    *PLAIN_TEXT_FONT
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner) =
+        (family.trim().to_owned(), scale.clamp(0.5, 3.0));
+}
+
 fn text_to_html(text: &str) -> String {
-    const PREFIX: &str = "<html><body style=\"font-family:Arial,sans-serif;padding:32px;line-height:1.6;color:#303348\"><pre style=\"margin:0;font:inherit;white-space:pre-wrap;overflow-wrap:anywhere\">";
+    let (family, scale) = PLAIN_TEXT_FONT
+        .read()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .clone();
+    // A family name never holds quotes or markup; drop any that sneak in.
+    let family: String = family
+        .chars()
+        .filter(|c| !matches!(c, '\'' | '"' | '<' | '>' | ';' | '\\'))
+        .collect();
+    let families = if family.is_empty() {
+        "Arial,sans-serif".to_owned()
+    } else {
+        format!("'{family}',monospace")
+    };
+    let prefix = format!(
+        "<html><body style=\"font-family:{families};font-size:{:.1}px;padding:32px;line-height:1.6;color:#303348\"><pre style=\"margin:0;font:inherit;white-space:pre-wrap;overflow-wrap:anywhere\">",
+        16.0 * scale
+    );
     const SUFFIX: &str = "</pre></body></html>";
-    let mut html = String::with_capacity(PREFIX.len() + text.len() + SUFFIX.len());
-    html.push_str(PREFIX);
+    let mut html = String::with_capacity(prefix.len() + text.len() + SUFFIX.len());
+    html.push_str(&prefix);
     crate::email_document::append_escaped(&mut html, text);
     html.push_str(SUFFIX);
     html
@@ -3626,6 +3667,27 @@ mod tests {
         assert!(html.contains("white-space:pre-wrap"));
         assert!(html.contains("&gt; Earlier reply\n&gt;&gt; Older reply"));
         assert_eq!(prepared.plain_text, text);
+    }
+
+    #[test]
+    fn plain_text_is_read_in_the_chosen_font() {
+        crate::mail::set_plain_text_font("SauceCodePro Nerd Font", 1.25);
+        let html = crate::mail::text_to_html("hello");
+        crate::mail::set_plain_text_font("", 1.0);
+        assert!(
+            html.contains("font-family:'SauceCodePro Nerd Font',monospace"),
+            "{html}"
+        );
+        assert!(html.contains("font-size:20.0px"), "{html}");
+        // A family name cannot close the style attribute.
+        crate::mail::set_plain_text_font("Evil\";><script>", 1.0);
+        let html = crate::mail::text_to_html("hello");
+        crate::mail::set_plain_text_font("", 1.0);
+        assert!(
+            !html.contains("<script>") && html.contains("'Evilscript',monospace"),
+            "{html}"
+        );
+        assert!(crate::mail::text_to_html("x").contains("Arial,sans-serif"));
     }
 
     fn message_summary(from: &str, to: &[&str], outgoing: bool) -> MessageSummary {

@@ -29,6 +29,20 @@ export global MailDragApi {
     callback drop-on-mailbox(data-transfer, string, int, int) -> bool;
 }
 
+// A folder "Move to folder…" offers, or an account heading above its folders.
+export struct MoveTarget {
+    header: bool,
+    label: string,
+    // The folder and account names in lower case, for filtering.
+    search: string,
+    // The folder's full path, shown when filtering.
+    path: string,
+    scope: string,
+    account_id: int,
+    folder_id: int,
+    depth: int,
+}
+
 export struct MailboxRow {
     account_id: int,
     folder_id: int,

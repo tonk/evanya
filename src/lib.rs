@@ -43,6 +43,7 @@ mod mail_setup;
 mod mail_view_model;
 mod mail_work;
 mod message_appearance;
+mod move_picker;
 mod number_format;
 mod oauth_browser;
 #[cfg(test)]
@@ -1213,6 +1214,12 @@ fn bundled_language_for_locale(locale: &str) -> Option<&'static str> {
             .any(|value| subtag.eq_ignore_ascii_case(value))
     });
     (!is_traditional).then_some("zh_Hans")
+}
+
+/// Show why an event could not be saved, in the event dialog itself.
+fn show_event_problem(app: &AppWindow, message: UiMessage) {
+    app.set_calendar_event_error(ui_message::translated(app, &message));
+    app.set_sync_status(message);
 }
 
 fn apply_language(app: &AppWindow, preference: &str) {
@@ -3219,9 +3226,158 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             app.set_calendar_event_color(i32::try_from(chosen).unwrap_or_default());
             app.set_calendar_event_location("".into());
             app.set_calendar_event_description("".into());
+            app.set_calendar_event_error("".into());
             app.set_calendar_editor_open(true);
         })
     };
+
+    // Importing an iCalendar file: pick it, then choose the calendar.
+    let pending_import: Rc<RefCell<Option<String>>> = Rc::default();
+    #[cfg(desktop)]
+    {
+        let app_weak = app.as_weak();
+        let calendar_for_import = Rc::clone(&calendar_state);
+        let inbox_for_import = Rc::clone(&state);
+        let targets_for_import = Rc::clone(&event_targets);
+        let pending = Rc::clone(&pending_import);
+        let runtime_for_pick = Rc::clone(&runtime);
+        let picking = Rc::new(Cell::new(false));
+        app.on_calendar_import_ics(move || {
+            let Some(app) = app_weak.upgrade() else {
+                return;
+            };
+            if picking.replace(true) {
+                return;
+            }
+            let title = ui_message::translated(&app, &UiMessage::plain("Import an iCalendar file"))
+                .to_string();
+            let request: documents::DocumentFuture<Option<(String, String)>> =
+                Box::pin(async move {
+                    let Some(file) = rfd::AsyncFileDialog::new()
+                        .set_title(title)
+                        .add_filter("iCalendar", &["ics", "ical", "ifb", "icalendar"])
+                        .pick_file()
+                        .await
+                    else {
+                        return Ok(None);
+                    };
+                    if std::fs::metadata(file.path())
+                        .map_err(|error| error.to_string())?
+                        .len()
+                        > 16 * 1024 * 1024
+                    {
+                        return Err("the file is larger than 16 MB".into());
+                    }
+                    let text = String::from_utf8_lossy(&file.read().await).into_owned();
+                    Ok(Some((file.file_name(), text)))
+                });
+            let app_weak = app.as_weak();
+            let calendar = Rc::clone(&calendar_for_import);
+            let inbox = Rc::clone(&inbox_for_import);
+            let targets_slot = Rc::clone(&targets_for_import);
+            let pending = Rc::clone(&pending);
+            let picking = Rc::clone(&picking);
+            documents::run_request(&runtime_for_pick, request, move |picked| {
+                picking.set(false);
+                let Some(app) = app_weak.upgrade() else {
+                    return;
+                };
+                let (name, text) = match picked {
+                    Ok(Some(file)) => file,
+                    Ok(None) => return,
+                    Err(error) => {
+                        app.set_sync_status(UiMessage::detail("Could not import: {}", error));
+                        return;
+                    }
+                };
+                let count = evanya_core::calendar::parse_ics(&text)
+                    .iter()
+                    .filter(|event| event.recurrence_id_ms.is_none())
+                    .count();
+                let targets =
+                    calendar::event_targets(&calendar.borrow(), &inbox.borrow().connected_accounts);
+                app.set_calendar_event_targets(ModelRc::new(VecModel::from(
+                    targets
+                        .iter()
+                        .map(|target| slint::SharedString::from(target.2.as_str()))
+                        .collect::<Vec<_>>(),
+                )));
+                *targets_slot.borrow_mut() = targets;
+                *pending.borrow_mut() = Some(text);
+                app.set_calendar_import_name(name.into());
+                app.set_calendar_import_count(i32::try_from(count).unwrap_or(i32::MAX));
+                app.set_calendar_import_target(0);
+                app.set_calendar_import_result("".into());
+                app.set_calendar_import_done(false);
+                app.set_calendar_import_open(true);
+            });
+        });
+    }
+
+    let app_weak = app.as_weak();
+    let calendar_for_confirm = Rc::clone(&calendar_state);
+    let inbox_for_confirm = Rc::clone(&state);
+    let targets_for_confirm = Rc::clone(&event_targets);
+    let runtime_for_confirm = Rc::clone(&runtime);
+    app.on_calendar_import_confirm(move |target| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(text) = pending_import.borrow_mut().take() else {
+            return;
+        };
+        let Some(core) = inbox_for_confirm.borrow().core.clone() else {
+            return;
+        };
+        // Without a writable calendar, the events stay on this device.
+        let (calendar_id, account_id) = usize::try_from(target)
+            .ok()
+            .and_then(|index| targets_for_confirm.borrow().get(index).cloned())
+            .map_or((None, 0), |(calendar_id, account_id, _)| {
+                (Some(calendar_id), account_id)
+            });
+        match runtime_for_confirm.block_on(core.import_ics(&text, account_id, calendar_id)) {
+            Ok(import) => {
+                let mut result = ui_message::translated(
+                    &app,
+                    &UiMessage::detail("Imported {} events.", import.imported.to_string()),
+                )
+                .to_string();
+                if import.already_present > 0 {
+                    result.push(' ');
+                    result.push_str(&ui_message::translated(
+                        &app,
+                        &UiMessage::detail(
+                            "{} were already in the calendar.",
+                            import.already_present.to_string(),
+                        ),
+                    ));
+                }
+                app.set_calendar_import_result(result.into());
+                app.set_calendar_import_done(true);
+                let today = Local::now().date_naive();
+                let mut calendar = calendar_for_confirm.borrow_mut();
+                let _ = refresh_calendar_events(
+                    &core,
+                    &runtime_for_confirm,
+                    &mut calendar,
+                    &inbox_for_confirm.borrow().connected_accounts,
+                );
+                apply_calendar(&app, &calendar, today);
+            }
+            Err(error) => {
+                *pending_import.borrow_mut() = Some(text);
+                app.set_calendar_import_result(
+                    ui_message::translated(
+                        &app,
+                        &UiMessage::detail("Could not import: {}", error.to_string()),
+                    )
+                    .to_string()
+                    .into(),
+                );
+            }
+        }
+    });
 
     let calendar_for_editor = Rc::clone(&calendar_state);
     let open_for_button = Rc::clone(&open_new_event);
@@ -3283,6 +3439,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         app.set_calendar_event_color(0);
         app.set_calendar_event_location(event.location.clone().into());
         app.set_calendar_event_description(event.description.clone().into());
+        app.set_calendar_event_error("".into());
         app.set_calendar_editor_open(true);
     });
 
@@ -3357,32 +3514,38 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 .and_then(|(hour, minute)| NaiveTime::from_hms_opt(hour, minute, 0)),
         );
         let Some((date, time)) = parsed else {
-            app.set_sync_status(UiMessage::detail(
-                "Use YYYY-MM-DD for the date and a time such as {}.",
-                formats.time(9, 30),
-            ));
+            show_event_problem(
+                &app,
+                UiMessage::detail(
+                    "Use YYYY-MM-DD for the date and a time such as {}.",
+                    formats.time(9, 30),
+                ),
+            );
             return;
         };
         let Ok(duration) = duration.trim().parse::<i32>() else {
-            app.set_sync_status(UiMessage::plain(
-                "Event duration must be a number of minutes.",
-            ));
+            show_event_problem(
+                &app,
+                UiMessage::plain("Event duration must be a number of minutes."),
+            );
             return;
         };
         if title.trim().is_empty() || !(15..=1440).contains(&duration) {
-            app.set_sync_status(UiMessage::plain(
-                "Add a title and choose a duration from 15 to 1440 minutes.",
-            ));
+            show_event_problem(
+                &app,
+                UiMessage::plain("Add a title and choose a duration from 15 to 1440 minutes."),
+            );
             return;
         }
         let Some(start) = Local.from_local_datetime(&date.and_time(time)).earliest() else {
-            app.set_sync_status(UiMessage::plain(
-                "That local time does not exist in the current time zone.",
-            ));
+            show_event_problem(
+                &app,
+                UiMessage::plain("That local time does not exist in the current time zone."),
+            );
             return;
         };
         let Some(core) = inbox_for_calendar_save.borrow().core.clone() else {
-            app.set_sync_status(UiMessage::plain("Calendar storage is unavailable."));
+            show_event_problem(&app, UiMessage::plain("Calendar storage is unavailable."));
             return;
         };
         let starts_at = start.timestamp_millis();
@@ -3442,7 +3605,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 .map(|_| ())
         };
         if let Err(error) = result {
-            app.set_sync_status(UiMessage::detail("Could not save event: {}", error));
+            show_event_problem(&app, UiMessage::detail("Could not save event: {}", error));
             return;
         }
         let today = Local::now().date_naive();
@@ -3458,6 +3621,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         apply_calendar(&app, &calendar, today);
         editing_event_for_save.set(None);
         app.set_calendar_event_editing(false);
+        app.set_calendar_event_error("".into());
         app.set_calendar_editor_open(false);
         match refresh_result {
             Ok(()) => app.set_sync_status(UiMessage::plain(
@@ -6534,6 +6698,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             *intent_for_open.borrow_mut() = ComposeIntent::default();
             app.set_compose_mode("new".into());
             app.set_compose_plain_text(opening_plain_text(&app));
+            compose_editor::set_plain_mode(app.get_compose_plain_text());
             // Send from the account being looked at.
             let view_account = compose_account_for_view(&state_for_open.borrow());
             if let Some(account_id) = view_account {
@@ -6703,6 +6868,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             } else {
                 draft.body_html.is_none()
             });
+            compose_editor::set_plain_mode(app.get_compose_plain_text());
             app.global::<AccountMailPreferences>()
                 .invoke_composer_reset();
             app.global::<AccountMailPreferences>()
@@ -6796,6 +6962,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         *intent_for_message_compose.borrow_mut() = prepared.intent;
         app.set_compose_mode(action);
         app.set_compose_plain_text(plain_text);
+        compose_editor::set_plain_mode(app.get_compose_plain_text());
         app.global::<AccountMailPreferences>()
             .invoke_composer_reset();
         app.global::<AccountMailPreferences>()
@@ -7126,6 +7293,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             return;
         };
         app.set_compose_plain_text(plain_text);
+        compose_editor::set_plain_mode(app.get_compose_plain_text());
         if !plain_text {
             return;
         }
@@ -8309,6 +8477,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     setup_sync::register(&app, &state, &runtime);
     account_avatars::register(&app, &state, &runtime);
     custom_headers::register(&app, &state, &runtime);
+    move_picker::register(&app, &state);
 
     register_data_management_callbacks(
         &app,

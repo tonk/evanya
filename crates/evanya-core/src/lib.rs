@@ -5842,6 +5842,85 @@ impl Core {
     /// drafted and queued through the normal send pipeline (undo window,
     /// offline queueing, sent-folder append all apply).
     pub async fn create_event(&self, args: CreateEventArgs) -> Result<CalendarEvent> {
+        self.create_event_with(args, None, None).await
+    }
+
+    /// Add the events of an iCalendar file to a calendar, or to this device
+    /// with `calendar_id` None. Each keeps its UID, so importing a file twice
+    /// adds nothing the second time, and its recurrence rule. Attendees are
+    /// not invited again: the events are added as they are.
+    pub async fn import_ics(
+        &self,
+        text: &str,
+        account_id: i64,
+        calendar_id: Option<i64>,
+    ) -> Result<IcsImport> {
+        let mut import = IcsImport::default();
+        for event in calendar::parse_ics(text) {
+            // Overrides of single occurrences and cancellations have nothing
+            // to add on their own.
+            let cancelled = event
+                .status
+                .as_deref()
+                .is_some_and(|status| status.eq_ignore_ascii_case("CANCELLED"));
+            if event.recurrence_id_ms.is_some() || cancelled || event.uid.is_empty() {
+                import.skipped += 1;
+                continue;
+            }
+            let uid = event.uid.clone();
+            let present = self
+                .calendar_db
+                .read(move |conn| {
+                    Ok(conn.query_row(
+                        "SELECT EXISTS(SELECT 1 FROM calendar_events
+                         WHERE ical_uid = ?1 AND calendar_id IS ?2 AND account_id = ?3)",
+                        rusqlite::params![uid, calendar_id, account_id],
+                        |row| row.get::<_, bool>(0),
+                    )?)
+                })
+                .await?;
+            if present {
+                import.already_present += 1;
+                continue;
+            }
+            let day = 24 * 60 * 60 * 1000;
+            let ends_at = event
+                .ends_at_ms
+                .filter(|end| *end > event.starts_at_ms)
+                .unwrap_or(event.starts_at_ms + if event.all_day { day } else { 60 * 60 * 1000 });
+            let summary = event
+                .summary
+                .clone()
+                .filter(|summary| !summary.trim().is_empty())
+                .unwrap_or_else(|| "(no title)".to_owned());
+            self.create_event_with(
+                CreateEventArgs {
+                    account_id,
+                    calendar_id,
+                    summary,
+                    description: event.description.clone(),
+                    location: event.location.clone(),
+                    join_url: event.join_url.clone(),
+                    starts_at: event.starts_at_ms,
+                    ends_at,
+                    all_day: event.all_day,
+                    attendees: Vec::new(),
+                },
+                Some(event.uid.clone()),
+                event.rrule.clone(),
+            )
+            .await?;
+            import.imported += 1;
+        }
+        Ok(import)
+    }
+
+    async fn create_event_with(
+        &self,
+        args: CreateEventArgs,
+        uid: Option<String>,
+        rrule: Option<String>,
+    ) -> Result<CalendarEvent> {
         if args.summary.trim().is_empty() {
             return Err(CoreError::Other("event needs a title".into()));
         }
@@ -5884,7 +5963,8 @@ impl Core {
             }
         }
 
-        let uid = format!("{}-{}@evanya", now_ms(), crate::mime::rand_token());
+        let uid =
+            uid.unwrap_or_else(|| format!("{}-{}@evanya", now_ms(), crate::mime::rand_token()));
         let attendees: Vec<EventAttendee> = args
             .attendees
             .iter()
@@ -5919,6 +5999,15 @@ impl Core {
                     ev.ends_at,
                     ev.all_day,
                 )
+                .and_then(|event_id| {
+                    if let Some(rrule) = &rrule {
+                        conn.execute(
+                            "UPDATE calendar_events SET rrule = ?1 WHERE id = ?2",
+                            rusqlite::params![rrule, event_id],
+                        )?;
+                    }
+                    Ok(event_id)
+                })
             })
             .await?;
 

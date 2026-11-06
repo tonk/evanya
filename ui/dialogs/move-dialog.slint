@@ -1,0 +1,90 @@
+import { ScrollView } from "std-widgets.slint";
+import { Button } from "../components/button.slint";
+import { LineEdit } from "../components/controls.slint";
+import { MailDragApi, MoveTarget } from "../models.slint";
+import { TypeScale } from "../typography.slint";
+
+/// "Move to folder…": choose where a message, or the selection it belongs
+/// to, goes. The same checks and actions as dropping it on the folder.
+export component MoveToFolderDialog inherits Rectangle {
+    in property <[MoveTarget]> targets;
+    in property <int> message-id;
+    in property <int> account-id;
+    in-out property <bool> open;
+    in property <bool> dark-mode;
+    in property <color> surface;
+    in property <color> border;
+    in property <color> title-color;
+    in property <color> body-color;
+    in property <color> muted-text;
+    in property <color> hover-color;
+    in property <color> accent;
+    callback filter-changed(string);
+
+    background: root.dark-mode ? #00000088 : #20212455;
+    TouchArea { clicked => { root.open = false; } }
+
+    Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: min(420px, parent.width - 32px);
+        height: min(560px, parent.height - 48px);
+        border-radius: 12px;
+        border-width: 1px;
+        border-color: root.border;
+        background: root.surface;
+        accessible-role: groupbox;
+        accessible-label: @tr("Move to folder");
+        TouchArea { }
+
+        VerticalLayout {
+            padding: 20px;
+            spacing: 12px;
+            Text { text: @tr("Move to folder"); color: root.title-color; font-size: TypeScale.title-small; font-weight: 700; }
+            filter-field := LineEdit {
+                placeholder-text: @tr("Find folder");
+                edited(text) => { root.filter-changed(text); }
+                init => { self.focus(); }
+            }
+            ScrollView {
+                vertical-stretch: 1;
+                VerticalLayout {
+                    for target in root.targets : Rectangle {
+                        // A folder this mail can go to, as for a drop.
+                        private property <bool> allowed: !target.header
+                            && MailDragApi.can-drop-on-mailbox(MailDragApi.make-transfer(root.message-id, root.account-id), target.scope, target.account-id, target.folder-id);
+                        height: target.header ? 30px : 32px;
+                        border-radius: 6px;
+                        background: self.allowed && row-touch.has-hover ? root.hover-color : transparent;
+                        Text {
+                            x: 8px + target.depth * 14px;
+                            width: parent.width - self.x - 8px;
+                            text: target.label;
+                            color: target.header ? root.muted-text : parent.allowed ? root.body-color : root.muted-text.with-alpha(0.6);
+                            font-size: target.header ? TypeScale.caption : TypeScale.body;
+                            font-weight: target.header ? 700 : 400;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+                        row-touch := TouchArea {
+                            enabled: parent.allowed;
+                            mouse-cursor: parent.allowed ? MouseCursor.pointer : MouseCursor.default;
+                            accessible-role: button;
+                            accessible-enabled: parent.allowed;
+                            accessible-label: target.label;
+                            clicked => {
+                                if MailDragApi.drop-on-mailbox(MailDragApi.make-transfer(root.message-id, root.account-id), target.scope, target.account-id, target.folder-id) {
+                                    root.open = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            HorizontalLayout {
+                alignment: end;
+                Button { text: @tr("Cancel"); clicked => { root.open = false; } }
+            }
+        }
+    }
+}

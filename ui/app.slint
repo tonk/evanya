@@ -34,7 +34,9 @@ export { TabsUi, TabRow } from "components/workspace-navigation.slint";
 import { TabsUi } from "components/workspace-navigation.slint";
 import { TabOverview } from "components/tab-overview.slint";
 import { WorkspaceFrame } from "components/workspace-layout.slint";
-import { CalendarEventDialog } from "dialogs/calendar-event-dialog.slint";
+import { CalendarEventDialog, CalendarImportDialog } from "dialogs/calendar-event-dialog.slint";
+import { MoveToFolderDialog } from "dialogs/move-dialog.slint";
+import { MoveTarget } from "models.slint";
 import { ComposeDialog } from "dialogs/compose-dialog.slint";
 import { FolderDialog } from "dialogs/folder-dialog.slint";
 import { ConfirmationDialog } from "components/confirmation-dialog.slint";
@@ -552,6 +554,10 @@ if (key == "All accounts") { return @tr("All accounts"); }
         if (key == "a header is limited to 900 characters") { return @tr("a header is limited to 900 characters"); }
         if (key == "a header is written as Name: value") { return @tr("a header is written as Name: value"); }
         if (key == "Line {}") { return @tr("Line {}", argument); }
+if (key == "Import an iCalendar file") { return @tr("Import an iCalendar file"); }
+        if (key == "Could not import: {}") { return @tr("Could not import: {}", argument); }
+        if (key == "Imported {} events.") { return @tr("Imported {} events.", argument); }
+        if (key == "{} were already in the calendar.") { return @tr("{} were already in the calendar.", argument); }
         if (key == "Choose a picture for this account") { return @tr("Choose a picture for this account"); }
         if (key == "Could not use this picture: {}") { return @tr("Could not use this picture: {}", argument); }
         if (key == "Could not save unread counts preference: {}") { return @tr("Could not save unread counts preference: {}", argument); }
@@ -995,8 +1001,25 @@ export component AppWindow inherits Window {
     in property <[string]> calendar_event_targets: [];
     in-out property <string> calendar_event_location: "";
     in-out property <string> calendar_event_description: "";
+    // Why the event could not be saved, shown in the event dialog.
+    in-out property <string> calendar_event_error: "";
+    // Importing an iCalendar file into a calendar.
+    in-out property <bool> calendar_import_open: false;
+    in property <[MoveTarget]> move_targets;
+    in-out property <bool> move_picker_open: false;
+    in-out property <int> move_picker_message_id: -1;
+    in-out property <int> move_picker_account_id: -1;
+    in-out property <string> calendar_import_name: "";
+    in-out property <int> calendar_import_count: 0;
+    in-out property <int> calendar_import_target: 0;
+    in-out property <string> calendar_import_result: "";
+    in-out property <bool> calendar_import_done: false;
     // Create an event at a date (YYYY-MM-DD) and minute of the day, from the week grid.
     callback calendar-new-event-at(string, int);
+    callback calendar_import_ics();
+    // "Move to folder…": the folders, filtered by the given text.
+    callback prepare_move_targets(string);
+    callback calendar_import_confirm(int);
     in property <string> selected_scope: "Unified Inbox";
     in property <string> selected_scope_title: "Unified Inbox";
     in property <bool> trash_view: false;
@@ -1688,6 +1711,12 @@ export component AppWindow inherits Window {
             column-order <=> root.mail_column_order;
             sort-mail(key) => { root.sort_mail_list(key); }
             mail-columns-committed => { root.save_mail_columns(root.mail_sender_column_width, root.mail_date_column_width, root.mail_column_order); }
+            open-move-picker(message-id, account-id) => {
+                root.move_picker_message_id = message-id;
+                root.move_picker_account_id = account-id;
+                root.prepare_move_targets("");
+                root.move_picker_open = true;
+            }
             bottom-list-fraction <=> root.reading_pane_bottom_fraction;
             sidebar-width <=> root.mail_sidebar_width;
             sidebar-width-committed(width) => { root.save_mail_sidebar_width(width); }
@@ -1904,6 +1933,7 @@ export component AppWindow inherits Window {
             today => { root.calendar-today(); }
             new-event => { root.calendar-open-editor(); }
             new-event-at(date, minutes) => { root.calendar-new-event-at(date, minutes); }
+            import-ics => { root.calendar_import_ics(); }
             edit-event(event-id) => { root.calendar-edit-event(event-id); }
             delete-event(event-id) => { root.calendar-delete-event(event-id); }
             open-link(url) => { root.open_email_link(url); }
@@ -2139,6 +2169,47 @@ export component AppWindow inherits Window {
             }
         }
 
+        if root.move_picker_open : MoveToFolderDialog {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: parent.height;
+            targets: root.move_targets;
+            message-id: root.move_picker_message_id;
+            account-id: root.move_picker_account_id;
+            open <=> root.move_picker_open;
+            dark-mode: root.dark-mode;
+            surface: root.surface;
+            border: root.border;
+            title-color: root.title-color;
+            body-color: root.body-text;
+            muted-text: root.muted-text;
+            hover-color: root.border-subtle;
+            accent: root.accent;
+            filter-changed(text) => { root.prepare_move_targets(text); }
+        }
+
+        if root.calendar_import_open : CalendarImportDialog {
+            x: 0px;
+            y: 0px;
+            width: parent.width;
+            height: parent.height;
+            dark-mode: root.dark-mode;
+            border: root.border;
+            border-subtle: root.border-subtle;
+            muted-text: root.muted-text;
+            surface: root.surface;
+            title-color: root.title-color;
+            open <=> root.calendar_import_open;
+            file-name: root.calendar_import_name;
+            event-count: root.calendar_import_count;
+            targets: root.calendar_event_targets;
+            target <=> root.calendar_import_target;
+            result: root.calendar_import_result;
+            done: root.calendar_import_done;
+            confirm(target) => { root.calendar_import_confirm(target); }
+        }
+
         if root.calendar_editor_open : CalendarEventDialog {
             compact: root.compact-layout;
             x: 0px;
@@ -2164,6 +2235,7 @@ export component AppWindow inherits Window {
             calendar_event_targets: root.calendar_event_targets;
             calendar_event_location <=> root.calendar_event_location;
             calendar_event_description <=> root.calendar_event_description;
+            calendar_event_error: root.calendar_event_error;
             calendar-save-event(title, date, time, duration, color) => {
                 root.calendar-save-event(title, date, time, duration, color);
             }

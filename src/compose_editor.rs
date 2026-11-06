@@ -47,10 +47,55 @@ pub(crate) fn set_body_font(family: &str, scale: f32) {
     }
 }
 
-fn body_font() -> (&'static str, f32) {
+/// The composer body's font while it writes plain text, as chosen in
+/// Settings; the body font when none is chosen.
+static PLAIN_FONT: std::sync::RwLock<Option<(&'static str, f32)>> = std::sync::RwLock::new(None);
+/// Whether the composer writes plain text.
+static PLAIN_MODE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Write plain text in `family` (empty: the body font) at `scale`.
+pub(crate) fn set_plain_font(family: &str, scale: f32) {
+    let family = family.trim();
+    let chosen: Option<(&'static str, f32)> = (!family.is_empty() || (scale - 1.0).abs() > 0.01)
+        .then(|| {
+            let family: &'static str = if family.is_empty() {
+                body_font_unmoded().0
+            } else {
+                Box::leak(family.to_owned().into_boxed_str())
+            };
+            (family, scale.clamp(0.5, 3.0))
+        });
+    let mut current = PLAIN_FONT
+        .write()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    if *current != chosen {
+        *current = chosen;
+        BODY_FONT_EPOCH.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+    }
+}
+
+/// Whether the composer now writes plain text, which picks its font.
+pub(crate) fn set_plain_mode(plain: bool) {
+    if PLAIN_MODE.swap(plain, std::sync::atomic::Ordering::AcqRel) != plain {
+        BODY_FONT_EPOCH.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+    }
+}
+
+fn body_font_unmoded() -> (&'static str, f32) {
     *BODY_FONT
         .read()
         .unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
+fn body_font() -> (&'static str, f32) {
+    if PLAIN_MODE.load(std::sync::atomic::Ordering::Acquire)
+        && let Some(plain) = *PLAIN_FONT
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+    {
+        return plain;
+    }
+    body_font_unmoded()
 }
 pub(crate) const UI_FONT_DATA: &[u8] = include_bytes!(
     "../resources/fonts/google-sans-flex/GoogleSansFlex-VariableFont_GRAD,ROND,opsz,slnt,wdth,wght.ttf"

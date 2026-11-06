@@ -27,6 +27,8 @@ export component CalendarEventDialog inherits Rectangle {
     in property <[string]> calendar_event_targets: [];
     in-out property <string> calendar_event_location: "";
     in-out property <string> calendar_event_description: "";
+    // Why saving failed; empty while there is nothing to report.
+    in property <string> calendar_event_error: "";
     callback calendar-save-event(string, string, string, string, int);
 
         Rectangle {
@@ -76,7 +78,18 @@ export component CalendarEventDialog inherits Rectangle {
                 location-field := LineEdit { x: 24px; y: location-label.y + location-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_location; placeholder-text: @tr("Optional"); }
                 description-label := Text { x: 24px; y: location-field.y + 54px; width: parent.width - 48px; height: max(18px, self.preferred-height); text: @tr("DESCRIPTION"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
                 description-field := LineEdit { x: 24px; y: description-label.y + description-label.height + 4px; width: parent.width - 48px; height: root.compact ? 44px : 38px; text <=> root.calendar_event_description; placeholder-text: @tr("Optional"); }
-                event-divider := Rectangle { x: 0px; y: root.compact ? root.height - 72px : description-field.y + 64px; width: parent.width; height: 1px; background: root.border-subtle; }
+                error-text := Text {
+                    x: 24px;
+                    y: description-field.y + description-field.height + 10px;
+                    width: parent.width - 48px;
+                    height: root.calendar_event_error == "" ? 0px : self.preferred-height;
+                    visible: root.calendar_event_error != "";
+                    text: root.calendar_event_error;
+                    color: #d9534f;
+                    font-size: TypeScale.caption;
+                    wrap: word-wrap;
+                }
+                event-divider := Rectangle { x: 0px; y: root.compact ? root.height - 72px : description-field.y + 64px + (root.calendar_event_error == "" ? 0px : error-text.height + 4px); width: parent.width; height: 1px; background: root.border-subtle; }
                 Button { x: save-button.x - self.width - 8px; y: save-button.y; width: max(82px, self.content-width); height: root.compact ? 44px : 40px; text: @tr("Cancel"); clicked => { root.calendar_editor_open = false; } }
                 save-button := Button {
                     x: parent.width - self.width - 24px;
@@ -90,4 +103,68 @@ export component CalendarEventDialog inherits Rectangle {
                 }
             }
         }
+}
+
+/// Import the events of an iCalendar file into a chosen calendar.
+export component CalendarImportDialog inherits Rectangle {
+    in property <bool> dark-mode: false;
+    in property <color> border;
+    in property <color> border-subtle;
+    in property <color> muted-text;
+    in property <color> surface;
+    in property <color> title-color;
+    in-out property <bool> open: false;
+    in property <string> file-name;
+    in property <int> event-count;
+    in property <[string]> targets: [];
+    in-out property <int> target: 0;
+    in property <string> result;
+    in property <bool> done: false;
+    callback confirm(int);
+
+    Rectangle {
+        background: root.dark-mode ? #00000088 : #20212455;
+        TouchArea { clicked => { root.open = false; } }
+
+        Rectangle {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            width: min(420px, parent.width - 32px);
+            height: import-box.preferred-height;
+            border-radius: 12px;
+            border-width: 1px;
+            border-color: root.border;
+            background: root.surface;
+            accessible-role: groupbox;
+            accessible-label: @tr("Import an iCalendar file");
+            TouchArea { }
+
+            import-box := VerticalLayout {
+                padding: 24px;
+                spacing: 12px;
+                Text { text: @tr("Import events"); color: root.title-color; font-size: TypeScale.title-small; font-weight: 700; }
+                Text {
+                    text: @tr("{} contains one event." | "{} contains {n} events." % root.event-count, root.file-name);
+                    color: root.muted-text;
+                    font-size: TypeScale.secondary;
+                    wrap: word-wrap;
+                }
+                if !root.done : Text { text: @tr("CALENDAR"); color: root.muted-text; font-size: TypeScale.caption; font-weight: 700; }
+                if !root.done : SettingsSelect {
+                    enabled: root.targets.length > 1;
+                    choices: root.targets.length > 0 ? root.targets : [@tr("This device")];
+                    selected-index <=> root.target;
+                }
+                if root.result != "" : Text { text: root.result; color: root.title-color; font-size: TypeScale.secondary; wrap: word-wrap; }
+                HorizontalBox {
+                    padding: 0px;
+                    spacing: 8px;
+                    alignment: end;
+                    if !root.done : Button { text: @tr("Cancel"); clicked => { root.open = false; } }
+                    if !root.done : Button { text: @tr("Import"); primary: true; enabled: root.event-count > 0; clicked => { root.confirm(root.target); } }
+                    if root.done : Button { text: @tr("Done"); primary: true; clicked => { root.open = false; } }
+                }
+            }
+        }
+    }
 }

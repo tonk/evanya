@@ -9,8 +9,8 @@ use super::*;
 use evanya_core::models::CustomTheme;
 
 /// The parts of the workspace with a font of their own, in Settings order.
-const FONT_AREAS: [&str; 7] = [
-    "sidebar", "list", "reader", "calendar", "contacts", "files", "composer",
+const FONT_AREAS: [&str; 8] = [
+    "sidebar", "list", "reader", "plain", "calendar", "contacts", "files", "composer",
 ];
 /// The size scales offered, as the Fonts settings list them.
 const FONT_SCALES: [f32; 8] = [0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0];
@@ -73,6 +73,12 @@ pub(crate) fn apply_area_fonts(app: &AppWindow, settings: &evanya_core::models::
             "files" => {
                 fonts.set_files_family(shown);
                 fonts.set_files_scale(scale);
+            }
+            "plain" => {
+                fonts.set_plain_family(shown);
+                fonts.set_plain_scale(scale);
+                crate::compose_editor::set_plain_font(family.unwrap_or_default(), scale);
+                crate::mail::set_plain_text_font(family.unwrap_or_default(), scale);
             }
             _ => {
                 fonts.set_composer_family(shown);

@@ -330,3 +330,42 @@ async fn mark_folder_read_marks_only_that_folder() {
     core.mark_folder_read(inbox).await.unwrap();
     assert_eq!(actions(&core.db).await.len(), 1);
 }
+
+#[tokio::test]
+async fn an_ics_file_imports_once_with_its_recurrence() {
+    let tmp = tempfile::tempdir().unwrap();
+    let core = Core::start(Paths::for_tests(tmp.path())).await.unwrap();
+    let ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\n\
+BEGIN:VEVENT\r\nUID:dentist@example.com\r\nSUMMARY:Tandarts\r\nLOCATION:Groesbeek\r\n\
+DTSTART:20261110T090000Z\r\nDTEND:20261110T093000Z\r\nEND:VEVENT\r\n\
+BEGIN:VEVENT\r\nUID:standup@example.com\r\nSUMMARY:Standup\r\n\
+DTSTART:20261109T080000Z\r\nDTEND:20261109T081500Z\r\nRRULE:FREQ=WEEKLY;BYDAY=MO\r\nEND:VEVENT\r\n\
+BEGIN:VEVENT\r\nUID:gone@example.com\r\nSUMMARY:Afgelast\r\nSTATUS:CANCELLED\r\n\
+DTSTART:20261111T090000Z\r\nEND:VEVENT\r\n\
+END:VCALENDAR\r\n";
+    let first = core.import_ics(ics, 0, None).await.unwrap();
+    assert_eq!(
+        (first.imported, first.already_present, first.skipped),
+        (2, 0, 1)
+    );
+    let again = core.import_ics(ics, 0, None).await.unwrap();
+    assert_eq!((again.imported, again.already_present), (0, 2));
+
+    let (start, end) = (1_793_000_000_000, 1_796_000_000_000);
+    let events = core.list_events(start, end).await.unwrap();
+    let dentist = events
+        .iter()
+        .find(|event| event.summary.as_deref() == Some("Tandarts"))
+        .expect("imported event");
+    assert_eq!(dentist.location.as_deref(), Some("Groesbeek"));
+    assert_eq!(dentist.ends_at, Some(dentist.starts_at + 30 * 60 * 1000));
+    // The weekly standup recurs over the following weeks.
+    let standups = events
+        .iter()
+        .filter(|event| event.summary.as_deref() == Some("Standup"))
+        .count();
+    assert!(
+        standups > 1,
+        "expected the weekly rule to expand, got {standups}"
+    );
+}

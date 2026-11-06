@@ -47,6 +47,7 @@ export component MailView inherits FocusScope {
     in-out property <string> column-order: "sender,subject,date";
     callback sort-mail(string);
     callback mail-columns-committed();
+    callback open-move-picker(int, int);
     in property <bool> loading: false;
     in property <[EmailRow]> emails: [];
     in property <[MailListEntry]> list_entries: [];
@@ -408,6 +409,7 @@ export component MailView inherits FocusScope {
                 column-order <=> root.column-order;
                 sort-by(key) => { root.sort-mail(key); }
                 columns-committed => { root.mail-columns-committed(); }
+                open-move-picker(message-id, account-id) => { root.open-move-picker(message-id, account-id); }
                 selected_scope: root.selected_scope;
                 scope_title: root.selected_scope_title;
                 trash_view: root.trash_view;
@@ -698,6 +700,7 @@ export component MailView inherits FocusScope {
                 column-order <=> root.column-order;
                 sort-by(key) => { root.sort-mail(key); }
                 columns-committed => { root.mail-columns-committed(); }
+                open-move-picker(message-id, account-id) => { root.open-move-picker(message-id, account-id); }
                 selected_scope: root.selected_scope;
                 scope_title: root.selected_scope_title;
                 trash_view: root.trash_view;

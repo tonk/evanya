@@ -2714,6 +2714,18 @@ pub struct EventAttendee {
     pub partstat: Option<String>,
 }
 
+/// What importing an iCalendar file did.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IcsImport {
+    /// Events added.
+    pub imported: usize,
+    /// Events the calendar already had, by UID.
+    pub already_present: usize,
+    /// Overrides of single occurrences and cancellations.
+    pub skipped: usize,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateEventArgs {
