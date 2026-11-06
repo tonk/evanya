@@ -460,6 +460,9 @@ export component IconButton inherits Rectangle {
     hit-area := TouchArea {
         enabled: root.interactive;
         moved => { IconButtonInput.keyboard = false; }
+        // `moved` only fires while the pointer is pressed, so entering a button
+        // is what switches help back to the pointer after keyboard use.
+        changed has-hover => { if self.has-hover { IconButtonInput.keyboard = false; } }
         clicked => { keyboard.focus(); root.pointer-activated(); root.clicked(); }
         mouse-cursor: pointer;
     }
