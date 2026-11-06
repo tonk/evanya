@@ -461,6 +461,89 @@ fn layout_week(mut events: Vec<CalendarEventRow>) -> (Vec<CalendarEventRow>, i32
     (events, rows.len() as i32)
 }
 
+/// Lay out the month grid so no two event chips overlap. Events stack in rows
+/// within a day; an all-day event covering several days becomes one chip per
+/// week row it crosses, in a row free on each of its days there. Multi-day
+/// chips come first, then other all-day events, then timed ones by start.
+///
+/// Returns the chips, with `lanes` set to the most rows any of their days
+/// uses, and for each of the 42 days the rows in use and how many of its
+/// chips sit in each row or below.
+fn layout_month(events: Vec<CalendarEventRow>) -> (Vec<CalendarEventRow>, Vec<(i32, Vec<i32>)>) {
+    // One chip per week row an event covers, clipped to the grid.
+    let mut chips = Vec::new();
+    for event in events {
+        let first = event.month_index;
+        let last = if event.all_day {
+            first + event.span_days.max(1) - 1
+        } else {
+            first
+        };
+        let (first, last) = (first.max(0), last.min(41));
+        let mut start = first;
+        while start <= last {
+            let end = last.min(start - start % 7 + 6);
+            let mut chip = event.clone();
+            chip.month_index = start;
+            chip.span_days = end - start + 1;
+            chips.push(chip);
+            start = end + 1;
+        }
+    }
+    chips.sort_by_key(|chip| {
+        (
+            chip.month_index,
+            !chip.all_day,
+            -chip.span_days,
+            chip.start_minutes,
+        )
+    });
+    let mut taken: Vec<Vec<[bool; 7]>> = vec![Vec::new(); 6];
+    for chip in &mut chips {
+        let week = &mut taken[(chip.month_index / 7) as usize];
+        let first = (chip.month_index % 7) as usize;
+        let last = first + chip.span_days as usize - 1;
+        let lane = match week
+            .iter()
+            .position(|row| row[first..=last].iter().all(|used| !used))
+        {
+            Some(lane) => lane,
+            None => {
+                week.push([false; 7]);
+                week.len() - 1
+            }
+        };
+        week[lane][first..=last]
+            .iter_mut()
+            .for_each(|used| *used = true);
+        chip.lane = lane as i32;
+    }
+    let covers = |chip: &CalendarEventRow, day: i32| {
+        (chip.month_index..chip.month_index + chip.span_days).contains(&day)
+    };
+    let days: Vec<(i32, Vec<i32>)> = (0..42)
+        .map(|day| {
+            let lanes: Vec<i32> = chips
+                .iter()
+                .filter(|chip| covers(chip, day))
+                .map(|chip| chip.lane)
+                .collect();
+            let used = lanes.iter().map(|lane| lane + 1).max().unwrap_or(0);
+            let more_after = (0..used)
+                .map(|row| lanes.iter().filter(|lane| **lane >= row).count() as i32)
+                .collect();
+            (used, more_after)
+        })
+        .collect();
+    for chip in &mut chips {
+        chip.lanes = (chip.month_index..chip.month_index + chip.span_days)
+            .map(|day| days[day as usize].0)
+            .max()
+            .unwrap_or(1);
+    }
+    (chips, days)
+}
+
 pub(crate) fn start_of_week(date: NaiveDate) -> NaiveDate {
     date - ChronoDuration::days(date.weekday().num_days_from_monday() as i64)
 }
@@ -844,6 +927,7 @@ pub(crate) fn apply_calendar(app: &AppWindow, state: &LocalCalendarState, today:
                 is_today: date == today,
                 is_selected: date == state.selected_date,
                 has_events: state.events.iter().any(|event| event.date == date),
+                ..Default::default()
             }
         })
         .collect::<Vec<_>>();
@@ -917,16 +1001,26 @@ pub(crate) fn apply_calendar(app: &AppWindow, state: &LocalCalendarState, today:
         .events
         .iter()
         // All-day events that began earlier still cover these days.
+        // All-day events that began earlier still cover these days.
         .filter(|event| {
-            let week = state.view_mode == "week";
             event.date <= range_end
-                && (event.date >= range_start
-                    || (week && event.all_day && event.end.date() > range_start))
+                && (event.date >= range_start || (event.all_day && event.end.date() > range_start))
         })
         .map(|event| event_row(app, state, &formats, event))
         .collect::<Vec<_>>();
-    let (events, all_day_lanes) = layout_week(events);
-    app.set_calendar_all_day_lanes(all_day_lanes);
+    let mut month_days = month_days;
+    let events = if state.view_mode == "week" {
+        let (events, all_day_lanes) = layout_week(events);
+        app.set_calendar_all_day_lanes(all_day_lanes);
+        events
+    } else {
+        let (events, days) = layout_month(events);
+        for (day, (lanes_used, more_after)) in month_days.iter_mut().zip(days) {
+            day.lanes_used = lanes_used;
+            day.more_after = ModelRc::new(VecModel::from(more_after));
+        }
+        events
+    };
 
     apply_agenda(app, state, today, Local::now().time());
     app.set_calendar_month_days(ModelRc::new(VecModel::from(month_days)));
@@ -1269,6 +1363,53 @@ mod tests {
         let rows_used: Vec<i32> = events.iter().map(|event| event.lane).collect();
         assert_eq!(rows_used, [0, 1, 0, 1]);
         assert_eq!(rows, 2);
+    }
+
+    fn in_month(index: i32, row: CalendarEventRow) -> CalendarEventRow {
+        CalendarEventRow {
+            month_index: index,
+            ..row
+        }
+    }
+
+    #[test]
+    fn month_chips_stack_and_count_what_does_not_fit() {
+        let (chips, days) = layout_month(vec![
+            in_month(2, timed(0, 14 * 60, 60)),
+            in_month(2, timed(0, 9 * 60, 60)),
+            in_month(2, all_day(0, 1)),
+        ]);
+        // All-day first, then by start time.
+        let order: Vec<(bool, i32, i32)> = chips
+            .iter()
+            .map(|chip| (chip.all_day, chip.start_minutes, chip.lane))
+            .collect();
+        assert_eq!(
+            order,
+            [(true, 0, 0), (false, 9 * 60, 1), (false, 14 * 60, 2)]
+        );
+        assert_eq!(days[2], (3, vec![3, 2, 1]));
+        assert_eq!(days[3], (0, vec![]));
+        assert!(chips.iter().all(|chip| chip.lanes == 3));
+    }
+
+    #[test]
+    fn month_chips_split_at_week_rows_and_keep_a_free_row() {
+        // Saturday to Tuesday crosses into the next week row; a Monday event
+        // in that row goes below it.
+        let (chips, days) = layout_month(vec![
+            in_month(5, all_day(0, 4)),
+            in_month(7, timed(0, 600, 60)),
+        ]);
+        let spans: Vec<(i32, i32, i32)> = chips
+            .iter()
+            .map(|chip| (chip.month_index, chip.span_days, chip.lane))
+            .collect();
+        assert_eq!(spans, [(5, 2, 0), (7, 2, 0), (7, 1, 1)]);
+        assert_eq!(days[8].0, 1);
+        // An event before the grid starts at its first day.
+        let (chips, _) = layout_month(vec![in_month(-2, all_day(0, 3))]);
+        assert_eq!((chips[0].month_index, chips[0].span_days), (0, 1));
     }
 
     /// Slint's software renderer panics when it paints a rectangle reaching

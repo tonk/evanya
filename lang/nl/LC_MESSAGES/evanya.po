@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-06 07:36+0000\n"
+"POT-Creation-Date: 2026-11-06 07:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -219,7 +219,7 @@ msgctxt "month on its own"
 msgid "December"
 msgstr "december"
 
-#: ui/app.slint:147 ui/components/calendar.slint:841
+#: ui/app.slint:147 ui/components/calendar.slint:849
 msgid "Mon"
 msgstr "ma"
 
@@ -227,7 +227,7 @@ msgstr "ma"
 msgid "Monday"
 msgstr "maandag"
 
-#: ui/app.slint:148 ui/components/calendar.slint:841
+#: ui/app.slint:148 ui/components/calendar.slint:849
 msgid "Tue"
 msgstr "di"
 
@@ -235,7 +235,7 @@ msgstr "di"
 msgid "Tuesday"
 msgstr "dinsdag"
 
-#: ui/app.slint:149 ui/components/calendar.slint:841
+#: ui/app.slint:149 ui/components/calendar.slint:849
 msgid "Wed"
 msgstr "wo"
 
@@ -243,7 +243,7 @@ msgstr "wo"
 msgid "Wednesday"
 msgstr "woensdag"
 
-#: ui/app.slint:150 ui/components/calendar.slint:841
+#: ui/app.slint:150 ui/components/calendar.slint:849
 msgid "Thu"
 msgstr "do"
 
@@ -251,7 +251,7 @@ msgstr "do"
 msgid "Thursday"
 msgstr "donderdag"
 
-#: ui/app.slint:151 ui/components/calendar.slint:841
+#: ui/app.slint:151 ui/components/calendar.slint:849
 msgid "Fri"
 msgstr "vr"
 
@@ -259,7 +259,7 @@ msgstr "vr"
 msgid "Friday"
 msgstr "vrijdag"
 
-#: ui/app.slint:152 ui/components/calendar.slint:841
+#: ui/app.slint:152 ui/components/calendar.slint:849
 msgid "Sat"
 msgstr "za"
 
@@ -267,7 +267,7 @@ msgstr "za"
 msgid "Saturday"
 msgstr "zaterdag"
 
-#: ui/app.slint:153 ui/components/calendar.slint:841
+#: ui/app.slint:153 ui/components/calendar.slint:849
 msgid "Sun"
 msgstr "zo"
 
@@ -1991,7 +1991,7 @@ msgstr "De geselecteerde gesprekken definitief uit de prullenbak verwijderen?"
 msgid "Permanently delete this conversation from Trash?"
 msgstr "Dit gesprek definitief uit de prullenbak verwijderen?"
 
-#: ui/app.slint:2526 ui/components/calendar.slint:1100
+#: ui/app.slint:2526 ui/components/calendar.slint:1138
 msgid "This action cannot be undone."
 msgstr "Deze actie kan niet ongedaan worden gemaakt."
 
@@ -2549,7 +2549,7 @@ msgid "Cancelled"
 msgstr "Geannuleerd"
 
 #: ui/components/calendar-agenda.slint:257 ui/components/calendar.slint:67
-#: ui/components/calendar.slint:875
+#: ui/components/calendar.slint:887
 msgid "View details for {}"
 msgstr "Details van {} bekijken"
 
@@ -2582,55 +2582,55 @@ msgid "Reset filters"
 msgstr "Filters herstellen"
 
 #: ui/components/calendar-agenda.slint:290 ui/components/calendar.slint:116
-#: ui/components/calendar.slint:907
+#: ui/components/calendar.slint:945
 msgid "New event"
 msgstr "Nieuwe afspraak"
 
-#: ui/components/calendar.slint:145 ui/components/calendar.slint:905
+#: ui/components/calendar.slint:145 ui/components/calendar.slint:943
 msgid "Previous month"
 msgstr "Vorige maand"
 
-#: ui/components/calendar.slint:159 ui/components/calendar.slint:906
+#: ui/components/calendar.slint:159 ui/components/calendar.slint:944
 msgid "Next month"
 msgstr "Volgende maand"
 
-#: ui/components/calendar.slint:164 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:164 ui/components/calendar.slint:988
 msgctxt "Monday initial"
 msgid "M"
 msgstr "M"
 
-#: ui/components/calendar.slint:165 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:165 ui/components/calendar.slint:988
 msgctxt "Tuesday initial"
 msgid "T"
 msgstr "D"
 
-#: ui/components/calendar.slint:166 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:166 ui/components/calendar.slint:988
 msgctxt "Wednesday initial"
 msgid "W"
 msgstr "W"
 
-#: ui/components/calendar.slint:167 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:167 ui/components/calendar.slint:988
 msgctxt "Thursday initial"
 msgid "T"
 msgstr "D"
 
-#: ui/components/calendar.slint:168 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:168 ui/components/calendar.slint:988
 msgctxt "Friday initial"
 msgid "F"
 msgstr "V"
 
-#: ui/components/calendar.slint:169 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:169 ui/components/calendar.slint:988
 msgctxt "Saturday initial"
 msgid "S"
 msgstr "Z"
 
-#: ui/components/calendar.slint:170 ui/components/calendar.slint:950
+#: ui/components/calendar.slint:170 ui/components/calendar.slint:988
 msgctxt "Sunday initial"
 msgid "S"
 msgstr "Z"
 
 #: ui/components/calendar.slint:216 ui/components/calendar.slint:725
-#: ui/components/calendar.slint:980
+#: ui/components/calendar.slint:1018
 msgid "Select {}"
 msgstr "{} selecteren"
 
@@ -2726,39 +2726,43 @@ msgstr "Volgende periode"
 msgid "Week"
 msgstr "Week"
 
-#: ui/components/calendar.slint:681 ui/components/calendar.slint:919
+#: ui/components/calendar.slint:681 ui/components/calendar.slint:957
 msgid "Month"
 msgstr "Maand"
 
-#: ui/components/calendar.slint:682 ui/components/calendar.slint:920
+#: ui/components/calendar.slint:682 ui/components/calendar.slint:958
 msgid "Agenda"
 msgstr "Agenda-overzicht"
 
-#: ui/components/calendar.slint:696 ui/components/calendar.slint:932
+#: ui/components/calendar.slint:696 ui/components/calendar.slint:970
 msgid "Local time · {}"
 msgstr "Lokale tijd · {}"
 
-#: ui/components/calendar.slint:991
+#: ui/components/calendar.slint:903
+msgid "+{} more"
+msgstr "+{} meer"
+
+#: ui/components/calendar.slint:1029
 msgid "Agenda · {}"
 msgstr "Agenda-overzicht · {}"
 
-#: ui/components/calendar.slint:1026
+#: ui/components/calendar.slint:1064
 msgid "No events for this date"
 msgstr "Geen afspraken op deze datum"
 
-#: ui/components/calendar.slint:1098
+#: ui/components/calendar.slint:1136
 msgid "Delete this event?"
 msgstr "Deze afspraak verwijderen?"
 
-#: ui/components/calendar.slint:1099
+#: ui/components/calendar.slint:1137
 msgid "This event will be removed from your calendar."
 msgstr "Deze afspraak wordt uit je agenda verwijderd."
 
-#: ui/components/calendar.slint:1101
+#: ui/components/calendar.slint:1139
 msgid "Delete event"
 msgstr "Afspraak verwijderen"
 
-#: ui/components/calendar.slint:1102
+#: ui/components/calendar.slint:1140
 msgid "Keep event"
 msgstr "Afspraak behouden"
 

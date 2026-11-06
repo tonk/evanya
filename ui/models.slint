@@ -322,6 +322,10 @@ export struct CalendarDay {
     is_today: bool,
     is_selected: bool,
     has_events: bool,
+    // Month view: the rows its event chips use, and how many of the day's
+    // events sit in row k or below, at more_after[k], for "+n more".
+    lanes_used: int,
+    more_after: [int],
 }
 
 export struct CalendarWeekDay {

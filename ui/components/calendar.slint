@@ -832,12 +832,20 @@ export component FunctionalCalendarView inherits Rectangle {
             }
         }
 
-        if root.view-mode == "month" : Rectangle {
+        if root.view-mode == "month" : month-grid := Rectangle {
             x: 0px;
             y: LayoutMetrics.desktop-mail-toolbar-height;
             width: parent.width;
             height: parent.height - LayoutMetrics.desktop-mail-toolbar-height;
             background: root.surface-color;
+            // Event chips stack in rows below the date. As many rows show as
+            // fit in a cell; a full day shows "+n more" in its last row.
+            private property <length> cell-width: self.width / 7;
+            private property <length> cell-height: (self.height - 34px) / 6;
+            private property <length> chip-height: max(20px, month-chip-probe.preferred-height);
+            private property <length> chip-row: self.chip-height + 2px;
+            private property <int> chip-rows: max(1, floor((self.cell-height - 34px - 4px) / self.chip-row));
+            month-chip-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 600; }
             for name[index] in [@tr("Mon"), @tr("Tue"), @tr("Wed"), @tr("Thu"), @tr("Fri"), @tr("Sat"), @tr("Sun")] : Text {
                 x: index * parent.width / 7;
                 y: 0px;
@@ -863,10 +871,14 @@ export component FunctionalCalendarView inherits Rectangle {
                 TouchArea { accessible-role: button; accessible-label: @tr("Select {}", day.date-label); accessible-checked: day.is-selected; accessible-action-default => { root.select-date(day.iso-date); } clicked => { root.select-date(day.iso-date); } mouse-cursor: pointer; }
             }
             for event in root.events : Rectangle {
-                x: mod(event.month-index, 7) * parent.width / 7 + 7px;
-                y: 34px + floor(event.month-index / 7) * (parent.height - 34px) / 6 + 34px;
-                width: parent.width / 7 - 14px;
-                height: max(20px, chip-title.preferred-height);
+                // Hidden past the rows that fit, and in the last row when one
+                // of its days needs that row for "+n more".
+                visible: event.lane < month-grid.chip-rows
+                    && (event.lanes <= month-grid.chip-rows || event.lane < month-grid.chip-rows - 1);
+                x: mod(event.month-index, 7) * month-grid.cell-width + 7px;
+                y: 34px + floor(event.month-index / 7) * month-grid.cell-height + 34px + event.lane * month-grid.chip-row;
+                width: event.span-days * month-grid.cell-width - 14px;
+                height: month-grid.chip-height;
                 border-radius: 4px;
                 background: root.event-fill(event.color);
                 chip-title := Text { x: 6px; width: parent.width - 10px; height: parent.height; text: event.title; color: root.body-color; font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale; font-weight: 600; overflow: elide; vertical-alignment: center; }
@@ -875,6 +887,32 @@ export component FunctionalCalendarView inherits Rectangle {
                     accessible-label: @tr("View details for {}", event.title);
                     accessible-action-default => { root.show-event(event); }
                     clicked => { root.show-event(event); }
+                    mouse-cursor: pointer;
+                }
+            }
+            for day[index] in root.month-days : Rectangle {
+                visible: day.lanes-used > month-grid.chip-rows;
+                x: mod(index, 7) * month-grid.cell-width + 7px;
+                y: 34px + floor(index / 7) * month-grid.cell-height + 34px + (month-grid.chip-rows - 1) * month-grid.chip-row;
+                width: month-grid.cell-width - 14px;
+                height: month-grid.chip-height;
+                more-label := Text {
+                    x: 6px;
+                    width: parent.width - 10px;
+                    height: parent.height;
+                    text: self.visible ? @tr("+{} more", day.more-after[month-grid.chip-rows - 1]) : "";
+                    color: more-touch.has-hover ? root.accent-color : root.muted-color;
+                    font-family: AreaFonts.calendar-family; font-size: TypeScale.caption * AreaFonts.calendar-scale;
+                    font-weight: 600;
+                    overflow: elide;
+                    vertical-alignment: center;
+                }
+                // The week view shows every event of the day.
+                more-touch := TouchArea {
+                    accessible-role: button;
+                    accessible-label: more-label.text;
+                    accessible-action-default => { root.select-date(day.iso-date); root.set-view("week"); }
+                    clicked => { root.select-date(day.iso-date); root.set-view("week"); }
                     mouse-cursor: pointer;
                 }
             }
