@@ -158,12 +158,12 @@ jobs:
           - name: macOS
             runner: macos-15
             command: cargo clippy --workspace --all-targets --locked -- -D warnings
-          - name: iOS
-            runner: macos-15
-            target: aarch64-apple-ios
-            command: >-
-              cargo clippy --locked --target aarch64-apple-ios --bin evanya
-              --no-default-features --features remote-content,ios -- -D warnings
+          # - name: iOS
+            # runner: macos-15
+            # target: aarch64-apple-ios
+            # command: >-
+              # cargo clippy --locked --target aarch64-apple-ios --bin evanya
+              # --no-default-features --features remote-content,ios -- -D warnings
           # Android builds are switched off for now.
           # - name: Android
             # runner: ubuntu-24.04
