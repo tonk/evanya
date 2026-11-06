@@ -53,7 +53,10 @@ component AccountActions inherits HorizontalLayout {
         hover-background: AppTheme.muted-control-bg;
         interactive: root.can-move-up;
         opacity: root.can-move-up ? 1 : 0.35;
-        tooltip-text: @tr("Move up");
+        // The rows below the account header paint over anything shown under
+        // these buttons, so their tooltips open above.
+        tooltip-above: true;
+        tooltip-text: @tr("Move up in the account list");
         clicked => { root.move-up(); }
     }
     IconButton {
@@ -63,7 +66,8 @@ component AccountActions inherits HorizontalLayout {
         hover-background: AppTheme.muted-control-bg;
         interactive: root.can-move-down;
         opacity: root.can-move-down ? 1 : 0.35;
-        tooltip-text: @tr("Move down");
+        tooltip-above: true;
+        tooltip-text: @tr("Move down in the account list");
         clicked => { root.move-down(); }
     }
     IconButton {
@@ -72,6 +76,7 @@ component AccountActions inherits HorizontalLayout {
         ghost: true;
         hover-background: AppTheme.muted-control-bg;
         interactive: root.edit-enabled;
+        tooltip-above: true;
         tooltip-text: root.edit-label;
         clicked => { root.edit(); }
     }
@@ -81,7 +86,8 @@ component AccountActions inherits HorizontalLayout {
         ghost: true;
         hover-background: AppTheme.destructive.with-alpha(0.12);
         interactive: root.remove-enabled;
-        tooltip-text: @tr("Remove");
+        tooltip-above: true;
+        tooltip-text: @tr("Remove this account");
         clicked => { root.remove(); }
     }
     IconButton {
@@ -90,7 +96,8 @@ component AccountActions inherits HorizontalLayout {
         ghost: true;
         hover-background: AppTheme.muted-control-bg;
         interactive: root.sync-enabled;
-        tooltip-text: @tr("Sync");
+        tooltip-above: true;
+        tooltip-text: @tr("Synchronize this account now");
         clicked => { root.sync(); }
     }
 }
@@ -2381,7 +2388,7 @@ export component SettingsDialog inherits Rectangle {
                                             account-state := Text { height: max(16px, self.preferred-height); text: account.status == "offline" ? @tr("Offline · retrying automatically") : account.status == "needs_reauth" ? @tr("Sign-in required") : account.status == "syncing" ? @tr("Syncing…") : account.status == "idle" ? (account.mail_protocol == "gmail" ? @tr("Connected · Gmail") : account.mail_protocol == "jmap" ? @tr("Connected · JMAP") : account.mail_protocol == "pop3" ? (drop-target.unencrypted ? @tr("Connected without encryption · POP3 + SMTP") : @tr("Connected · POP3 + SMTP")) : drop-target.unencrypted ? @tr("Connected without encryption · IMAP + SMTP") : @tr("Connected · IMAP + SMTP")) : @tr("Account status: {}", account.status); color: account.status == "needs_reauth" ? #c0392b : account.status == "idle" && drop-target.unencrypted ? AppTheme.destructive : root.faint-text; font-size: TypeScale.caption; overflow: elide; }
                                         }
                                         AccountActions {
-                                            edit-label: account.provider == "generic" ? @tr("Edit") : @tr("Reconnect");
+                                            edit-label: account.provider == "generic" ? @tr("Edit account settings") : @tr("Sign in to this account again");
                                             reconnect: account.provider != "generic";
                                             edit-enabled: !root.account_setup_in_progress && (account.provider == "generic" || !root.oauth_in_progress) && !root.oauth_settings_saving;
                                             remove-enabled: !root.account_setup_in_progress && !root.oauth_in_progress && !root.oauth_settings_saving;
