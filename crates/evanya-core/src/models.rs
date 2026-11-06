@@ -1940,6 +1940,9 @@ pub struct Settings {
     /// sidebar, not only beside Inbox, Starred and Drafts.
     #[serde(default)]
     pub show_folder_unread_counts: bool,
+    /// Mark the tray icon while the inbox has unread mail.
+    #[serde(default = "default_true")]
+    pub tray_unread_mark: bool,
     /// Group replies with the messages they answer into conversations. Off
     /// lists, opens and acts on every message on its own.
     #[serde(default = "default_true")]
@@ -2385,6 +2388,7 @@ impl Default for Settings {
             show_tabs: true,
             show_status_bar: true,
             show_folder_unread_counts: false,
+            tray_unread_mark: true,
             conversation_view: true,
             workspace_layout: default_workspace_layout(),
             unified_mailbox: true,

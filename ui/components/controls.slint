@@ -77,6 +77,20 @@ export component LineEdit inherits Rectangle {
         accessible-role: none;
     }
 
+
+    // Right-click for the clipboard. A password can be pasted but not
+    // copied or cut out of its field.
+    ContextMenuArea {
+        enabled: root.enabled;
+        Menu {
+            if root.input-type != InputType.password && !root.read-only : MenuItem { title: @tr("Cut"); activated => { editor.cut(); } }
+            if root.input-type != InputType.password : MenuItem { title: @tr("Copy"); activated => { editor.copy(); } }
+            if !root.read-only : MenuItem { title: @tr("Paste"); activated => { editor.focus(); editor.paste(); } }
+            MenuSeparator {}
+            MenuItem { title: @tr("Select all"); activated => { editor.focus(); editor.select-all(); } }
+        }
+    }
+
     select-all => { editor.select-all(); }
     copy => { editor.copy(); }
 }
@@ -143,6 +157,19 @@ export component TextEdit inherits Rectangle {
                     editor-scroll.content-y = min(0px, editor-scroll.visible-height - cursor.y - line);
                 }
             }
+        }
+    }
+
+
+    // Right-click for the clipboard.
+    ContextMenuArea {
+        enabled: root.enabled;
+        Menu {
+            if !root.read-only : MenuItem { title: @tr("Cut"); activated => { editor.cut(); } }
+            MenuItem { title: @tr("Copy"); activated => { editor.copy(); } }
+            if !root.read-only : MenuItem { title: @tr("Paste"); activated => { editor.focus(); editor.paste(); } }
+            MenuSeparator {}
+            MenuItem { title: @tr("Select all"); activated => { editor.focus(); editor.select-all(); } }
         }
     }
 

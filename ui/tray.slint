@@ -9,9 +9,13 @@ export component EvanyaTray inherits SystemTrayIcon {
     // explains the small size; this compilation unit cannot share globals
     // with app.slint.
     in property <image> image: @image-url("../resources/app-icon/evanya-tray.png");
+    // Unread inbox conversations; Rust marks the image when there are some.
+    in property <int> unread: 0;
     icon: root.image;
     title: @tr("Evanya");
-    tooltip: @tr("Evanya");
+    tooltip: root.unread > 0
+        ? @tr("Evanya: {} unread", root.unread)
+        : @tr("Evanya");
 
     callback show_window();
     callback quit_app();

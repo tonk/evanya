@@ -35,6 +35,88 @@ const PLATFORM: &str = crate::platform::NAME;
 
 thread_local! {
     static TRAY: RefCell<Option<slint::Weak<EvanyaTray>>> = const { RefCell::new(None) };
+    /// The chosen icon's tray image, before any unread mark.
+    static TRAY_IMAGE: RefCell<Option<slint::Image>> = const { RefCell::new(None) };
+    /// Unread inbox conversations, and whether the tray shows them.
+    static TRAY_UNREAD: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+    static TRAY_UNREAD_SHOWN: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
+}
+
+/// The inbox has this many unread conversations.
+pub(crate) fn set_tray_unread(count: usize) {
+    if TRAY_UNREAD.replace(count) != count {
+        refresh_tray();
+    }
+}
+
+/// Whether the tray icon marks unread mail.
+pub(crate) fn set_tray_unread_shown(shown: bool) {
+    if TRAY_UNREAD_SHOWN.replace(shown) != shown {
+        refresh_tray();
+    }
+}
+
+/// Show the tray image, with a mark for unread mail when there is some.
+fn refresh_tray() {
+    let Some(tray) = TRAY.with(|tray| tray.borrow().as_ref().and_then(slint::Weak::upgrade)) else {
+        return;
+    };
+    let Some(image) = TRAY_IMAGE.with(|image| image.borrow().clone()) else {
+        return;
+    };
+    let unread = if TRAY_UNREAD_SHOWN.get() {
+        TRAY_UNREAD.get()
+    } else {
+        0
+    };
+    tray.set_image(if unread > 0 {
+        with_unread_mark(&image).unwrap_or(image)
+    } else {
+        image
+    });
+    tray.set_unread(i32::try_from(unread).unwrap_or(i32::MAX));
+}
+
+/// `image` with a red dot in its top right corner, ringed in white so it
+/// stands out on dark and light panels alike.
+fn with_unread_mark(image: &slint::Image) -> Option<slint::Image> {
+    let mut pixels = image.to_rgba8()?;
+    let (width, height) = (pixels.width() as usize, pixels.height() as usize);
+    let size = width.min(height) as f32;
+    let (center_x, center_y) = (width as f32 - size * 0.24, size * 0.24);
+    let (dot, ring) = (size * 0.19, size * 0.24);
+    let buffer = pixels.make_mut_slice();
+    for y in 0..height {
+        for x in 0..width {
+            // Four by four samples per pixel smooth the edges.
+            let (mut in_dot, mut in_ring) = (0u32, 0u32);
+            for sample in 0..16 {
+                let px = x as f32 + (sample % 4) as f32 / 4.0 + 0.125 - center_x;
+                let py = y as f32 + (sample / 4) as f32 / 4.0 + 0.125 - center_y;
+                let distance = (px * px + py * py).sqrt();
+                in_dot += u32::from(distance <= dot);
+                in_ring += u32::from(distance <= ring);
+            }
+            if in_ring == 0 {
+                continue;
+            }
+            let pixel = &mut buffer[y * width + x];
+            let blend = |under: u8, over: u8, coverage: u32| {
+                ((u32::from(under) * (16 - coverage) + u32::from(over) * coverage) / 16) as u8
+            };
+            // White ring first, then the red dot over it.
+            let (r, g, b) = (
+                blend(pixel.r, 255, in_ring),
+                blend(pixel.g, 255, in_ring),
+                blend(pixel.b, 255, in_ring),
+            );
+            pixel.r = blend(r, 0xe5, in_dot);
+            pixel.g = blend(g, 0x48, in_dot);
+            pixel.b = blend(b, 0x4d, in_dot);
+            pixel.a = blend(pixel.a, 255, in_ring);
+        }
+    }
+    Some(slint::Image::from_rgba8(pixels))
 }
 
 pub(crate) fn variant(icon: models::AppIcon) -> AppIconVariant {
@@ -71,11 +153,8 @@ pub(crate) fn apply(app: &AppWindow, icon: models::AppIcon) {
     global.set_available(AVAILABLE);
     global.set_platform(PLATFORM.into());
     global.set_variant(variant(icon));
-    TRAY.with(|tray| {
-        if let Some(tray) = tray.borrow().as_ref().and_then(slint::Weak::upgrade) {
-            tray.set_image(global.invoke_tray_image(variant(icon)));
-        }
-    });
+    TRAY_IMAGE.with(|image| *image.borrow_mut() = Some(global.invoke_tray_image(variant(icon))));
+    refresh_tray();
     #[cfg(target_os = "macos")]
     dock::show(icon);
     #[cfg(all(linux_desktop, not(feature = "flatpak")))]
@@ -87,8 +166,11 @@ pub(crate) fn apply(app: &AppWindow, icon: models::AppIcon) {
 /// Keep the tray's image in step with the chosen icon.
 pub(crate) fn attach_tray(app: &AppWindow, tray: &EvanyaTray) {
     let global = app.global::<crate::AppIcon>();
-    tray.set_image(global.invoke_tray_image(global.get_variant()));
+    let image = global.invoke_tray_image(global.get_variant());
+    tray.set_image(image.clone());
+    TRAY_IMAGE.with(|slot| *slot.borrow_mut() = Some(image));
     TRAY.with(|slot| *slot.borrow_mut() = Some(tray.as_weak()));
+    refresh_tray();
 }
 
 /// The 512 px rendering of a non-default icon, for the Dock and the Linux
@@ -296,6 +378,7 @@ mod launcher {
 
     #[cfg(test)]
     mod tests {
+
         use super::*;
 
         fn contents(theme: &Path, slot: usize) -> Option<Vec<u8>> {
@@ -406,6 +489,25 @@ mod tests {
     use i_slint_core::items::AccessibleRole;
     use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
     use std::{cell::Cell, ops::ControlFlow, rc::Rc};
+
+    #[test]
+    fn unread_mark_is_a_red_dot_in_the_top_right_corner() {
+        let blank = slint::SharedPixelBuffer::<slint::Rgba8Pixel>::new(64, 64);
+        let marked = super::with_unread_mark(&slint::Image::from_rgba8(blank))
+            .unwrap()
+            .to_rgba8()
+            .unwrap();
+        let pixel = |x: usize, y: usize| marked.as_slice()[y * 64 + x];
+        // The dot's center, its white ring, and an untouched corner.
+        let center = pixel(49, 15);
+        assert_eq!(
+            (center.r, center.g, center.b, center.a),
+            (0xe5, 0x48, 0x4d, 255)
+        );
+        let ring = pixel(49, 1);
+        assert_eq!((ring.r, ring.g, ring.b), (255, 255, 255));
+        assert_eq!(pixel(5, 58).a, 0);
+    }
 
     struct Headless(Rc<MinimalSoftwareWindow>);
     impl slint::platform::Platform for Headless {

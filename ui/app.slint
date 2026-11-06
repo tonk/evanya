@@ -691,6 +691,7 @@ export component AppWindow inherits Window {
     callback save_show_tabs(bool);
     callback save_show_status_bar(bool);
     callback save_folder_unread_counts(bool);
+    callback save_tray_unread_mark(bool);
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
     // Fonts per part: the font names to choose from (the first is the app's
@@ -1102,6 +1103,8 @@ export component AppWindow inherits Window {
     in-out property <bool> show_status_bar: true;
     // Unread counts beside every folder in the sidebar.
     in-out property <bool> show_folder_unread_counts: false;
+    // A red dot on the tray icon while the inbox has unread mail.
+    in-out property <bool> tray_unread_mark: true;
     in property <[SyncStatusLine]> sync_status_lines;
     in-out property <bool> group_mail_by_date: true;
     // Group replies into conversations; off lists each message on its own.
@@ -2193,6 +2196,7 @@ export component AppWindow inherits Window {
             show_tabs <=> root.show_tabs;
             show_status_bar <=> root.show_status_bar;
             show_folder_unread_counts <=> root.show_folder_unread_counts;
+            tray_unread_mark <=> root.tray_unread_mark;
             group_mail_by_date <=> root.group_mail_by_date;
             conversation_view <=> root.conversation_view;
             compose_plain_text <=> root.compose_plain_text_default;
@@ -2299,6 +2303,7 @@ export component AppWindow inherits Window {
             save_show_tabs(enabled) => { root.save_show_tabs(enabled); }
             save_show_status_bar(enabled) => { root.save_show_status_bar(enabled); }
             save_folder_unread_counts(enabled) => { root.save_folder_unread_counts(enabled); }
+            save_tray_unread_mark(enabled) => { root.save_tray_unread_mark(enabled); }
             prepare_profile_members(profile-id, account-id) => {
                 root.prepare_profile_members(profile-id, account-id);
             }

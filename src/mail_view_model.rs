@@ -527,6 +527,7 @@ pub(super) fn render_current(
     app.set_selected_scope(scope.into());
     app.set_search_query(query.clone().into());
     app.set_unified_count(sidebar_badge_text(inbox_count).into());
+    crate::app_icon::set_tray_unread(inbox_count);
     app.set_search_filter(search_filter.into());
     app.set_can_load_more(if using_core {
         next_cursor.is_some()
@@ -1367,6 +1368,7 @@ pub(super) fn refresh_list_metadata(app: &AppWindow, state: &Rc<RefCell<InboxSta
     app.set_selected_scope(scope.into());
     app.set_search_query(query.clone().into());
     app.set_unified_count(sidebar_badge_text(inbox_count).into());
+    crate::app_icon::set_tray_unread(inbox_count);
     app.set_search_filter(search_filter.into());
     app.set_can_load_more(can_load_more);
     state.borrow().queue_warm_start_update();

@@ -537,6 +537,7 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> suggest_learned_contacts: true;
     in-out property <bool> remote-images-enabled: false;
     in-out property <bool> close_to_tray: false;
+    in-out property <bool> tray_unread_mark: true;
     in-out property <bool> launch_at_login: false;
     in property <bool> launch_at_login_available: false;
     in-out property <string> account_email: "";
@@ -676,6 +677,7 @@ export component SettingsDialog inherits Rectangle {
     callback save_contact_discovery_settings(bool, bool, bool, bool);
     callback clear_contact_suggestions() -> bool;
     callback set_close_to_tray(bool);
+    callback save_tray_unread_mark(bool);
     callback set_launch_at_login(bool);
     callback sync_mail();
     callback sync_account(int);
@@ -722,10 +724,6 @@ export component SettingsDialog inherits Rectangle {
     callback load_storage_usage();
     pure callback settings-search-matches(string, string) -> bool;
     callback open-link(string);
-    // Flectar Base services are previewed in the Services page until the
-    // base.flectar.com integration ships; enabling this exposes sign-in.
-    in property <bool> flectar-services-available: false;
-    callback start_flectar_sign_in();
 
     private property <[string]> sync-interval-options: [
         @tr("Every minute"),
@@ -1669,6 +1667,36 @@ export component SettingsDialog inherits Rectangle {
                                         // Two-way, so the app can correct the switch after a toggle.
                                         checked <=> root.close_to_tray;
                                         toggled => { root.set_close_to_tray(self.checked); }
+                                    }
+                                }
+                            }
+
+                            // Only the tray shows this, so it follows the tray switch.
+                            Rectangle {
+                                visible: !root.compact && root.close_to_tray;
+                                height: self.visible ? 51px + unread-title.height + unread-description.height : 0px;
+                                background: root.surface;
+                                border-radius: 8px;
+                                border-width: 1px;
+                                border-color: root.border-subtle;
+                                HorizontalBox {
+                                    padding-top: 18px;
+                                    padding-right: 20px;
+                                    padding-bottom: 18px;
+                                    padding-left: 20px;
+                                    spacing: 16px;
+                                    VerticalBox {
+                                        spacing: 5px;
+                                        unread-title := Text { height: max(20px, self.preferred-height); text: @tr("Unread mail in the tray icon"); color: root.heading; font-size: TypeScale.subtitle; font-weight: 700; }
+                                        unread-description := Text { height: max(17px, self.preferred-height); text: @tr("Mark the tray icon with a red dot while the inbox has unread mail; its tooltip says how much."); color: root.faint-text; font-size: TypeScale.secondary; wrap: word-wrap; }
+                                    }
+                                    Rectangle { horizontal-stretch: 1; }
+                                    Switch {
+                                        checked: root.tray_unread_mark;
+                                        toggled => {
+                                            root.tray_unread_mark = self.checked;
+                                            root.save_tray_unread_mark(self.checked);
+                                        }
                                     }
                                 }
                             }
@@ -2852,25 +2880,6 @@ export component SettingsDialog inherits Rectangle {
                             SettingsPageTitle { label: @tr("Services"); title-color: root.title-color; }
                             Text { height: max(root.compact ? 34px : 17px, self.preferred-height); text: @tr("Optional paid services from Flectar. Evanya stays free and works without them."); color: root.secondary-text; font-size: TypeScale.secondary; vertical-alignment: center; wrap: word-wrap; }
 
-                            Rectangle {
-                                height: account-note.y + account-note.height + (root.compact ? 70px : 22px);
-                                vertical-stretch: 0;
-                                account-card := SettingsCard { title: @tr("Flectar account"); description: @tr("Not signed in"); surface: root.surface; card-border-color: root.border-subtle; heading: root.heading; secondary-text: root.faint-text; }
-                                Image { x: 20px; y: account-note.y + (account-note.height - self.height) / 2; width: LayoutMetrics.icon-size; height: LayoutMetrics.icon-size; source: @image-url("../icons/lucide/outline/lock.svg"); colorize: root.accent; image-fit: contain; accessible-role: none; }
-                                account-note := Text { x: 48px; y: account-card.content-y + 14px; width: root.compact ? parent.width - 68px : sign-in-button.x - 70px; height: max(root.compact ? 68px : 42px, self.preferred-height); text: @tr("A Flectar account is only needed for these optional services. Learn more at flectar.com/mail."); color: root.secondary-text; font-size: TypeScale.caption; wrap: word-wrap; vertical-alignment: center; }
-                                sign-in-button := Button {
-                                    x: root.compact ? 20px : parent.width - self.width - 20px;
-                                    y: root.compact ? account-note.y + account-note.height + 18px : account-note.y + (account-note.height - self.height) / 2;
-                                    width: root.compact ? parent.width - 40px : max(210px, self.content-width);
-                                    text: root.flectar-services-available ? @tr("Sign in with Flectar") : @tr("Sign-in coming soon");
-                                    icon: @image-url("../icons/lucide/outline/browser.svg");
-                                    has-icon: true;
-                                    primary: root.flectar-services-available;
-                                    enabled: root.flectar-services-available;
-                                    clicked => { root.start_flectar_sign_in(); }
-                                }
-                            }
-
                             ServicePreviewCard {
                                 compact: root.compact;
                                 icon: @image-url("../icons/lucide/filled/cloud-sync.svg");
@@ -2892,29 +2901,6 @@ export component SettingsDialog inherits Rectangle {
                                 faint-text: root.faint-text;
                                 accent: ServiceIconPalette.sync;
                                 accent-soft: ServiceIconPalette.sync.with-alpha(AppTheme.dark ? 0.16 : 0.10);
-                                learn-more => { root.open-link("https://flectar.com/mail"); }
-                            }
-
-                            ServicePreviewCard {
-                                compact: root.compact;
-                                icon: @image-url("../icons/lucide/filled/building.svg");
-                                title: @tr("Business email");
-                                tagline: @tr("Mailboxes on your own domain");
-                                description: @tr("Professional addresses such as you@yourcompany.com, hosted by Flectar.");
-                                features: [
-                                    @tr("Connect a domain you already own"),
-                                    @tr("Create and manage mailboxes for your team"),
-                                    @tr("New mailboxes appear in Evanya automatically"),
-                                ];
-                                note: @tr("Billed per mailbox.");
-                                surface: root.surface;
-                                card-border-color: root.border-subtle;
-                                heading: root.heading;
-                                body-text: root.body-text;
-                                secondary-text: root.secondary-text;
-                                faint-text: root.faint-text;
-                                accent: ServiceIconPalette.business;
-                                accent-soft: ServiceIconPalette.business.with-alpha(AppTheme.dark ? 0.16 : 0.10);
                                 learn-more => { root.open-link("https://flectar.com/mail"); }
                             }
 
