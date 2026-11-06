@@ -23,18 +23,23 @@ find ui -type f -name '*.slint' ! -name '.*' -print0 \
       -o "$work_dir/evanya.pot"
 
 # Extraction timestamps are intentionally volatile; compare every semantic
-# catalog line while ignoring only that generated header field.
+# catalog line while ignoring only that generated header field. Line wrapping
+# differs between gettext versions, so both sides are compared unwrapped.
+normalize() {
+  msgcat --no-wrap "$1" | sed '/^"POT-Creation-Date:/d'
+}
+
 diff -u \
-  <(sed '/^"POT-Creation-Date:/d' lang/evanya.pot) \
-  <(sed '/^"POT-Creation-Date:/d' "$work_dir/evanya.pot")
+  <(normalize lang/evanya.pot) \
+  <(normalize "$work_dir/evanya.pot")
 
 for language in da de es fr it ja nl ru tr zh_Hans; do
   msgmerge --quiet --no-fuzzy-matching \
     --output-file "$work_dir/evanya-$language.po" \
     "lang/$language/LC_MESSAGES/evanya.po" "$work_dir/evanya.pot"
   diff -u \
-    <(sed '/^"POT-Creation-Date:/d' "lang/$language/LC_MESSAGES/evanya.po") \
-    <(sed '/^"POT-Creation-Date:/d' "$work_dir/evanya-$language.po")
+    <(normalize "lang/$language/LC_MESSAGES/evanya.po") \
+    <(normalize "$work_dir/evanya-$language.po")
 done
 
 bash scripts/check-ui-message-catalog.sh
