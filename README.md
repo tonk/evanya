@@ -17,13 +17,13 @@
     <a href="CONTRIBUTING.md">Contribute</a>
   </p>
   <p>
-    <a href="LICENSE"><img src="https://img.shields.io/github/license/flectar/mail?style=flat&label=license&color=2563eb" alt="License: AGPL-3.0"></a>
-    <a href="https://github.com/tonk/evanya/releases"><img src="https://img.shields.io/github/downloads/flectar/mail/total?style=flat&label=downloads&color=16a34a" alt="Downloads across all releases"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/github/license/tonk/evanya?style=flat&label=license&color=2563eb" alt="License: AGPL-3.0"></a>
+    <a href="https://github.com/tonk/evanya/releases"><img src="https://img.shields.io/github/downloads/tonk/evanya/total?style=flat&label=downloads&color=16a34a" alt="Downloads across all releases"></a>
     <a href="https://github.com/tonk/evanya/releases"><img src="https://img.shields.io/github/v/release/tonk/evanya?display_name=tag&include_prereleases&sort=semver&style=flat&label=release&color=0ea5e9" alt="Latest release"></a>
   </p>
   <p>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/language-Rust%201.92%2B-dea584?style=flat" alt="Language: Rust 1.92+"></a>
-    <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-475569?style=flat" alt="Platforms: Windows, macOS, Linux">
+    <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-475569?style=flat" alt="Platforms: Windows, macOS, Linux">
   </p>
 </div>
 
@@ -38,7 +38,7 @@ contacts. It is engineered to open instantly, stay responsive, and use a
 fraction of the memory of a typical web-based mail client.
 
 > [!NOTE]
-> Evanya is based on [Flectar Mail](https://github.com/tonk/evanya),
+> Evanya is based on [Flectar Mail](https://github.com/flectar/mail),
 > made by Flectar and its contributors. Their copyright notices and
 > licenses are kept unchanged, and Evanya remains licensed under the GNU
 > AGPL v3.
@@ -303,8 +303,9 @@ it yourself](docs/performance.md).
 
 ## 🧪 Experimental HTML rendering
 
-> [!WARNING] HTML email rendering is currently the most experimental
-> part of Evanya.  Some messages, especially those with complex or
+> [!WARNING]
+> HTML email rendering is currently the most experimental
+> part of Evanya. Some messages, especially those with complex or
 > unusual markup and CSS, may not render correctly yet.
 
 Evanya renders email with [Blitz](https://github.com/DioxusLabs/blitz),
@@ -316,11 +317,12 @@ renderer and the CPU and GPU options](docs/features.md#html-rendering).
 ## 📥 Get Evanya
 
 Evanya is in development and not yet stable, and is built from source.
-Preview builds of the upstream Evanya are on [GitHub
+Preview builds of Evanya are on [GitHub
 Releases](https://github.com/tonk/evanya/releases) with the
 **Pre-release** badge.
 
-> [!WARNING] **Google OAuth verification requires an annual CASA
+> [!WARNING]
+> **Google OAuth verification requires an annual CASA
 > security assessment.** Evanya is a community open-source project, so
 > completing this assessment depends on sponsor support. Until the
 > required verification is funded and complete, a stable release with
