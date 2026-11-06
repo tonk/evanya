@@ -1941,6 +1941,14 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    pub async fn mark_folder_read(&self, folder_id: i64) -> Result<(), String> {
+        self.core
+            .mark_folder_read(folder_id)
+            .await
+            .map(|_| ())
+            .map_err(|error| error.to_string())
+    }
+
     pub async fn empty_trash(&self, account_id: Option<i64>) -> Result<(), String> {
         self.core
             .empty_trash(account_id)

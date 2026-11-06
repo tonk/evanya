@@ -181,6 +181,7 @@ export component MailView inherits FocusScope {
     callback bulk_message_action(string);
     callback toggle_mail_group(string);
     callback request_empty_trash(int);
+    callback request_mark_folder_read(int);
     callback set_email_checked(int, bool);
     callback set_all_emails_checked(bool);
     callback toggle_mail_label(int, bool);
@@ -359,6 +360,7 @@ export component MailView inherits FocusScope {
                 request-rename-folder(id, name) => { root.request_folder_rename(id, name); }
                 request-delete-folder(id, name) => { root.request_folder_delete(id, name); }
                 request-empty-trash(account-id) => { root.request_empty_trash(account-id); }
+                request-mark-folder-read(folder-id) => { root.request_mark_folder_read(folder-id); }
                 request-rename-label(id, name, color, account, global) => { root.request_label_rename(id, name, color, account, global); }
                 request-delete-label(id, name, account, global, has-children) => {
                     root.request_label_delete(id, name, account, global, has-children);
@@ -923,6 +925,7 @@ export component MailView inherits FocusScope {
                 request-rename-folder(id, name) => { root.request_folder_rename(id, name); }
                 request-delete-folder(id, name) => { root.request_folder_delete(id, name); }
                 request-empty-trash(account-id) => { root.request_empty_trash(account-id); }
+                request-mark-folder-read(folder-id) => { root.request_mark_folder_read(folder-id); }
                 request-rename-label(id, name, color, account, global) => { root.request_label_rename(id, name, color, account, global); }
                 request-delete-label(id, name, account, global, has-children) => {
                     root.request_label_delete(id, name, account, global, has-children);

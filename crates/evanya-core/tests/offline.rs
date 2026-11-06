@@ -252,3 +252,81 @@ async fn offline_actions_queue_locally_and_survive_restart() {
 
     let _ = std::fs::remove_file(&creds_file);
 }
+
+#[tokio::test]
+async fn mark_folder_read_marks_only_that_folder() {
+    let tmp = tempfile::tempdir().unwrap();
+    let paths = Paths::for_tests(tmp.path());
+    paths.ensure().unwrap();
+    let db = Db::open(&paths.db_file()).unwrap();
+    let (account_id, _) = seed(&db, dead_port()).await;
+    // A second unread message, in Archive.
+    let (inbox, archived) = db
+        .write(move |conn| {
+            let folder = |path: &str| -> rusqlite::Result<i64> {
+                conn.query_row(
+                    "SELECT id FROM folders WHERE account_id = ?1 AND path = ?2",
+                    rusqlite::params![account_id, path],
+                    |row| row.get(0),
+                )
+            };
+            let (inbox, archive) = (folder("INBOX")?, folder("Archive")?);
+            let thread_id = repo::threads::create(conn, account_id, None, "older")?;
+            let message = repo::messages::NewMessage {
+                account_id,
+                folder_id: archive,
+                uid: Some(8),
+                message_id: Some("m2@example.com".into()),
+                gm_msgid: None,
+                gm_thrid: None,
+                subject: "Older".into(),
+                from: None,
+                to: vec![],
+                cc: vec![],
+                bcc: vec![],
+                date: now_ms(),
+                internal_date: None,
+                is_read: false,
+                is_starred: false,
+                is_draft: false,
+                is_outgoing: false,
+                is_automated: false,
+                has_attachments: false,
+                size: None,
+                snippet: String::new(),
+                references: vec![],
+                list_unsubscribe: None,
+                list_unsubscribe_post: None,
+                sender_addr: None,
+                sender_verification: Default::default(),
+            };
+            let archived = repo::messages::insert(conn, &message, thread_id)?;
+            repo::threads::recompute(conn, thread_id)?;
+            Ok((inbox, archived))
+        })
+        .await
+        .unwrap();
+    drop(db);
+
+    let core = Core::start(Paths::for_tests(tmp.path())).await.unwrap();
+    core.mark_folder_read(inbox).await.unwrap();
+
+    let unread = core
+        .db
+        .read(|conn| {
+            let mut stmt = conn.prepare("SELECT id FROM messages WHERE is_read = 0")?;
+            let ids = stmt
+                .query_map([], |row| row.get::<_, i64>(0))?
+                .collect::<rusqlite::Result<Vec<_>>>()?;
+            Ok(ids)
+        })
+        .await
+        .unwrap();
+    assert_eq!(unread, [archived], "only the Inbox message is read");
+    let queued = actions(&core.db).await;
+    assert_eq!(queued.len(), 1);
+    assert_eq!(queued[0].0, "mark_read", "the server is told too");
+    // Nothing unread is left to mark.
+    core.mark_folder_read(inbox).await.unwrap();
+    assert_eq!(actions(&core.db).await.len(), 1);
+}

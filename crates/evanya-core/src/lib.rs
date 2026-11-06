@@ -4338,6 +4338,37 @@ impl Core {
         Ok(ActionResult { action_ids })
     }
 
+    /// Mark every unread message in a folder read: here at once, and on the
+    /// server through the action queue. A Gmail label counts as a folder.
+    pub async fn mark_folder_read(&self, folder_id: i64) -> Result<ActionResult> {
+        let message_ids = self
+            .db
+            .read(move |conn| {
+                let mut stmt = conn.prepare(
+                    "SELECT id FROM messages
+                     WHERE is_read = 0 AND is_draft = 0 AND thread_id IS NOT NULL
+                       AND (folder_id = ?1 OR id IN (
+                            SELECT message_id FROM message_folders WHERE folder_id = ?1))",
+                )?;
+                let ids = stmt
+                    .query_map([folder_id], |row| row.get::<_, i64>(0))?
+                    .collect::<rusqlite::Result<Vec<_>>>()?;
+                Ok(ids)
+            })
+            .await?;
+        if message_ids.is_empty() {
+            return Ok(ActionResult {
+                action_ids: Vec::new(),
+            });
+        }
+        self.perform_action(PerformActionArgs {
+            kind: ActionKind::MarkRead,
+            target: ActionTarget::Messages(message_ids),
+            params: None,
+        })
+        .await
+    }
+
     /// Queue a provider-side purge of Trash for one account or all accounts.
     /// The provider enumerates the whole mailbox, including mail outside the
     /// local history window and messages not loaded in the UI.

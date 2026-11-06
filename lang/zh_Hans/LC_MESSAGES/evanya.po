@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-06 09:49+0000\n"
+"POT-Creation-Date: 2026-11-06 10:28+0000\n"
 "PO-Revision-Date: 2026-10-15 02:03+0000\n"
 "Last-Translator: Taivas Jumala <taivas_jumala@yafoss.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://"
@@ -386,7 +386,7 @@ msgstr "有往来邮件记录"
 msgid "New address-book entry"
 msgstr "新建通讯录条目"
 
-#: ui/app.slint:186 ui/app.slint:1183 ui/components/composer-fields.slint:80
+#: ui/app.slint:186 ui/app.slint:1184 ui/components/composer-fields.slint:80
 #: ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr "未连接账户"
@@ -1617,7 +1617,7 @@ msgstr "无法打开邮件编辑器：{}"
 msgid "Add an account to send mail."
 msgstr ""
 
-#: ui/app.slint:565 ui/components/sidebar.slint:519
+#: ui/app.slint:565 ui/components/sidebar.slint:521
 msgid "On this device"
 msgstr ""
 
@@ -1897,21 +1897,21 @@ msgstr "正在加载邮件…"
 msgid "Evanya"
 msgstr "Evanya"
 
-#: ui/app.slint:1426 ui/app.slint:1439
+#: ui/app.slint:1427 ui/app.slint:1440
 msgid "Global Labels (local only)"
 msgstr "全局标签（仅本地）"
 
-#: ui/app.slint:2082
+#: ui/app.slint:2084
 msgid "Another account"
 msgstr ""
 
-#: ui/app.slint:2094
+#: ui/app.slint:2096
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
 
-#: ui/app.slint:2103 ui/components/account-mail-preferences.slint:178
+#: ui/app.slint:2105 ui/components/account-mail-preferences.slint:178
 #: ui/dialogs/folder-dialog.slint:128 ui/dialogs/oauth-setup-dialog.slint:126
 #: ui/dialogs/settings-dialog.slint:2298 ui/dialogs/settings-dialog.slint:3186
 #: ui/dialogs/settings-dialog.slint:3509 ui/views/files-view.slint:491
@@ -1919,72 +1919,72 @@ msgstr ""
 msgid "Cancel"
 msgstr "取消"
 
-#: ui/app.slint:2107 ui/components/controls.slint:87
+#: ui/app.slint:2109 ui/components/controls.slint:87
 msgid "Copy"
 msgstr ""
 
-#: ui/app.slint:2111
+#: ui/app.slint:2113
 msgid "Move"
 msgstr ""
 
-#: ui/app.slint:2542
+#: ui/app.slint:2544
 msgid "Empty Trash?"
 msgstr "清空回收站？"
 
-#: ui/app.slint:2542 ui/views/files-view.slint:597
+#: ui/app.slint:2544 ui/views/files-view.slint:597
 msgid "Delete permanently?"
 msgstr "永久删除？"
 
-#: ui/app.slint:2546
+#: ui/app.slint:2548
 msgid ""
 "Permanently delete all messages in Trash across every connected account?"
 msgstr "永久删除每个已连接帐户的回收站中的所有邮件？"
 
-#: ui/app.slint:2547
+#: ui/app.slint:2549
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr "是否永久删除此帐户的回收站中的所有邮件？"
 
-#: ui/app.slint:2549
+#: ui/app.slint:2551
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr "是否从回收站中永久删除选定的对话？"
 
-#: ui/app.slint:2550
+#: ui/app.slint:2552
 msgid "Permanently delete this conversation from Trash?"
 msgstr "是否从回收站中永久删除此对话？"
 
-#: ui/app.slint:2551 ui/components/calendar.slint:1138
+#: ui/app.slint:2553 ui/components/calendar.slint:1138
 msgid "This action cannot be undone."
 msgstr "此操作无法撤销。"
 
-#: ui/app.slint:2552
+#: ui/app.slint:2554
 msgid "Empty Trash"
 msgstr "清空回收站"
 
-#: ui/app.slint:2552 ui/views/files-view.slint:679
+#: ui/app.slint:2554 ui/views/files-view.slint:679
 msgid "Delete permanently"
 msgstr "永久删除"
 
-#: ui/app.slint:2730
+#: ui/app.slint:2732
 msgid "Mailbox startup failed"
 msgstr "邮箱启动失败"
 
-#: ui/app.slint:2736
+#: ui/app.slint:2738
 msgid "Evanya could not open local storage"
 msgstr "Evanya 无法打开本地存储"
 
-#: ui/app.slint:2749
+#: ui/app.slint:2751
 msgid "Diagnostic ID: {}"
 msgstr "诊断 ID：{}"
 
-#: ui/app.slint:2752
+#: ui/app.slint:2754
 msgid "Diagnostic ID {}"
 msgstr "诊断 ID {}"
 
-#: ui/app.slint:2757
+#: ui/app.slint:2759
 msgid "Retry"
 msgstr "重试"
 
-#: ui/app.slint:2765 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2767 ui/components/copyable-diagnostic.slint:43
 msgid "Copy diagnostics"
 msgstr "复制诊断信息"
 
@@ -3289,129 +3289,133 @@ msgstr ""
 msgid "{}, {}"
 msgstr "{}，{}"
 
-#: ui/components/sidebar-controls.slint:171
+#: ui/components/sidebar-controls.slint:172
 msgid "Collapse label"
 msgstr "折叠标签"
 
-#: ui/components/sidebar-controls.slint:171
+#: ui/components/sidebar-controls.slint:172
 msgid "Expand label"
 msgstr "展开标签"
 
-#: ui/components/sidebar-controls.slint:172
+#: ui/components/sidebar-controls.slint:173
 msgid "Collapse folder"
 msgstr "折叠文件夹"
 
-#: ui/components/sidebar-controls.slint:172
+#: ui/components/sidebar-controls.slint:173
 msgid "Expand folder"
 msgstr "展开文件夹"
 
-#: ui/components/sidebar-controls.slint:187
+#: ui/components/sidebar-controls.slint:188
+msgid "Mark all as read"
+msgstr ""
+
+#: ui/components/sidebar-controls.slint:195
 msgid "New subfolder"
 msgstr "新建子文件夹"
 
-#: ui/components/sidebar-controls.slint:193 ui/dialogs/folder-dialog.slint:29
+#: ui/components/sidebar-controls.slint:201 ui/dialogs/folder-dialog.slint:29
 msgid "Rename folder"
 msgstr "重命名文件夹"
 
-#: ui/components/sidebar-controls.slint:199
+#: ui/components/sidebar-controls.slint:207
 msgid "Delete folder"
 msgstr "删除文件夹"
 
-#: ui/components/sidebar-controls.slint:212
+#: ui/components/sidebar-controls.slint:228
 msgid "Empty Trash…"
 msgstr "清空回收站…"
 
-#: ui/components/sidebar-controls.slint:224
+#: ui/components/sidebar-controls.slint:240
 msgid "New nested label"
 msgstr "新建嵌套标签"
 
-#: ui/components/sidebar-controls.slint:230
+#: ui/components/sidebar-controls.slint:246
 msgid "Rename global label"
 msgstr "重命名全局标签"
 
-#: ui/components/sidebar-controls.slint:230
+#: ui/components/sidebar-controls.slint:246
 msgid "Rename label in {}"
 msgstr "重命名 {} 中的标签"
 
-#: ui/components/sidebar-controls.slint:235
+#: ui/components/sidebar-controls.slint:251
 msgid "Delete global label"
 msgstr "删除全局标签"
 
-#: ui/components/sidebar-controls.slint:235
+#: ui/components/sidebar-controls.slint:251
 msgid "Delete label from {}"
 msgstr "删除 {} 中的标签"
 
-#: ui/components/sidebar.slint:117 ui/views/mail-list-pane.slint:1721
+#: ui/components/sidebar.slint:118 ui/views/mail-list-pane.slint:1721
 msgid "New email"
 msgstr "新建邮件"
 
-#: ui/components/sidebar.slint:117
+#: ui/components/sidebar.slint:118
 msgid "Add an account"
 msgstr ""
 
-#: ui/components/sidebar.slint:171 ui/components/sidebar.slint:180
-#: ui/components/sidebar.slint:200
+#: ui/components/sidebar.slint:172 ui/components/sidebar.slint:181
+#: ui/components/sidebar.slint:201
 msgid "Find folder or label"
 msgstr "查找文件夹或标签"
 
-#: ui/components/sidebar.slint:217
+#: ui/components/sidebar.slint:218
 msgid "Clear folder filter"
 msgstr "清除文件夹筛选"
 
-#: ui/components/sidebar.slint:233
+#: ui/components/sidebar.slint:234
 msgid "Add account"
 msgstr "添加账户"
 
-#: ui/components/sidebar.slint:286
+#: ui/components/sidebar.slint:287
 msgid "ALL ACCOUNTS"
 msgstr "全部账户"
 
-#: ui/components/sidebar.slint:295
+#: ui/components/sidebar.slint:296
 msgid "All Inboxes"
 msgstr "所有收件箱"
 
-#: ui/components/sidebar.slint:311
+#: ui/components/sidebar.slint:312
 msgid "Inbox"
 msgstr "收件箱"
 
-#: ui/components/sidebar.slint:373
+#: ui/components/sidebar.slint:375
 msgid "Categories"
 msgstr "分类"
 
-#: ui/components/sidebar.slint:391
+#: ui/components/sidebar.slint:393
 msgid "Important"
 msgstr "重要"
 
-#: ui/components/sidebar.slint:411 ui/dialogs/settings-dialog.slint:302
+#: ui/components/sidebar.slint:413 ui/dialogs/settings-dialog.slint:302
 msgid "Other"
 msgstr "其他"
 
-#: ui/components/sidebar.slint:454 ui/components/sidebar.slint:614
+#: ui/components/sidebar.slint:456 ui/components/sidebar.slint:615
 msgid "Labels"
 msgstr "标签"
 
-#: ui/components/sidebar.slint:473
+#: ui/components/sidebar.slint:475
 msgid "Global label {}"
 msgstr "全局标签 {}"
 
-#: ui/components/sidebar.slint:505 ui/views/contacts-view.slint:227
+#: ui/components/sidebar.slint:507 ui/views/contacts-view.slint:227
 msgid "ACCOUNTS"
 msgstr "账户"
 
-#: ui/components/sidebar.slint:634
+#: ui/components/sidebar.slint:635
 msgid "{} label, {} account"
 msgstr "{} 标签，{} 账户"
 
-#: ui/components/sidebar.slint:676 ui/dialogs/folder-dialog.slint:27
+#: ui/components/sidebar.slint:677 ui/dialogs/folder-dialog.slint:27
 #: ui/views/files-view.slint:373 ui/views/files-view.slint:597
 msgid "New folder"
 msgstr "新建文件夹"
 
-#: ui/components/sidebar.slint:693 ui/dialogs/folder-dialog.slint:26
+#: ui/components/sidebar.slint:694 ui/dialogs/folder-dialog.slint:26
 msgid "New label"
 msgstr "新建标签"
 
-#: ui/components/sidebar.slint:713
+#: ui/components/sidebar.slint:714
 msgid "No folders found"
 msgstr "未找到文件夹"
 
@@ -7361,15 +7365,15 @@ msgstr "石板色"
 msgid "Use across all accounts (local only)"
 msgstr "在所有账户中使用（仅本地）"
 
-#: ui/views/mail-view.slint:379 ui/views/mail-view.slint:664
+#: ui/views/mail-view.slint:381 ui/views/mail-view.slint:666
 msgid "Folder list width"
 msgstr ""
 
-#: ui/views/mail-view.slint:486
+#: ui/views/mail-view.slint:488
 msgid "Message list width"
 msgstr "邮件列表宽度"
 
-#: ui/views/mail-view.slint:859
+#: ui/views/mail-view.slint:861
 msgid "Close folders"
 msgstr "关闭文件夹"
 

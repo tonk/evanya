@@ -6016,6 +6016,25 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     });
 
     let app_weak = app.as_weak();
+    let state_for_folder_read = Rc::clone(&state);
+    app.on_mark_folder_read(move |folder_id| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = state_for_folder_read.borrow().core.clone() else {
+            return;
+        };
+        let operations = vec![(
+            -1,
+            MailTarget::Thread(0),
+            mail_work::Operation::MarkFolderRead(i64::from(folder_id)),
+        )];
+        if let Err(error) = mail_work::enqueue(&state_for_folder_read, core, operations) {
+            app.set_render_status(UiMessage::detail("Message action failed: {}", error));
+        }
+    });
+
+    let app_weak = app.as_weak();
     let state_for_label = Rc::clone(&state);
     app.on_toggle_mail_label(move |label_id, applied| {
         let Some(app) = app_weak.upgrade() else {

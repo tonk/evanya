@@ -42,6 +42,8 @@ pub(super) struct MailWork {
 pub(super) enum Operation {
     Action(String),
     EmptyTrash(Option<i64>),
+    /// Mark every unread message in this folder read.
+    MarkFolderRead(i64),
     Drop(MailDropDestination),
     Label(i64, bool),
 }
@@ -70,6 +72,7 @@ impl Operation {
         match self {
             Self::Action(a) => core.perform_message_action(target, a).await,
             Self::EmptyTrash(account_id) => core.empty_trash(*account_id).await,
+            Self::MarkFolderRead(folder_id) => core.mark_folder_read(*folder_id).await,
             Self::Label(id, add) => core.perform_label_action(target, *id, *add).await,
             Self::Drop(MailDropDestination::Action(a)) => {
                 core.perform_message_action(target, a).await
