@@ -1117,8 +1117,8 @@ pub(super) fn register_settings_preference_callbacks(
             return;
         };
         let core = state_for_unified.borrow().core.clone();
-        match core {
-            Some(core) => match runtime_for_unified.block_on(core.set_unified_mailbox(enabled)) {
+        if let Some(core) = core {
+            match runtime_for_unified.block_on(core.set_unified_mailbox(enabled)) {
                 Ok(()) => {
                     app.set_sync_status(UiMessage::plain("Unified mailbox preference saved."))
                 }
@@ -1126,8 +1126,7 @@ pub(super) fn register_settings_preference_callbacks(
                     "Could not save unified mailbox preference: {}",
                     error,
                 )),
-            },
-            None => {}
+            }
         }
         crate::sidebar_model::set_unified_mailbox_enabled(enabled);
         crate::sidebar_model::refresh_sidebar(&state_for_unified);

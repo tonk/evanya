@@ -693,7 +693,7 @@ fn repeat_description(
             Ok(until) => UiMessage::arguments(
                 "{}, until {}",
                 label,
-                &formats.date(DateStyle::Medium, until),
+                formats.date(DateStyle::Medium, until),
             ),
             Err(_) => return label,
         },

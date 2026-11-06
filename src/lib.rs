@@ -7280,7 +7280,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     });
 
     // Spelling suggestions for the word at the caret, offered on right-click.
-    let spell_target: Rc<RefCell<Option<(std::ops::Range<usize>, String)>>> = Rc::default();
+    type SpellTarget = Option<(std::ops::Range<usize>, String)>;
+    let spell_target: Rc<RefCell<SpellTarget>> = Rc::default();
     let app_weak = app.as_weak();
     let document_for_spell = Rc::clone(&compose_document);
     let target_for_lookup = Rc::clone(&spell_target);

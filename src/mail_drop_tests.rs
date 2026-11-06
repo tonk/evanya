@@ -131,9 +131,7 @@ fn drops_resolve_by_scope_not_by_mailbox_name() {
     other.account_id = 2;
     other.context = "Work".into();
     state.mailboxes.push(other);
-    let payload = MailDragPayload {
-        items: vec![item.clone()],
-    };
+    let payload = MailDragPayload { items: vec![item] };
     let cross = resolve_cross_account_drop(&state, &payload, Scope::Folder(40), 2, 40)
         .expect("a drop on another account")
         .expect("a mailbox that receives copies");
