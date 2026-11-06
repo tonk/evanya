@@ -499,7 +499,8 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
                 "macos/evanya-macos-arm64.dmg",
                 "macos/evanya-macos-x64.zip",
                 "macos/evanya-macos-x64.dmg",
-                "android/evanya.apk",
+                # Android builds are switched off for now.
+                # "android/evanya.apk",
             )
             for name in names:
                 path = source / name
@@ -508,8 +509,9 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             (source / "benchmark.json").write_text("{}")
             dist = root / "dist"
             prepare(source, dist, "0.1.0-beta.1")
-            self.assertEqual(len(list(dist.iterdir())), 12)
-            self.assertTrue((dist / "evanya-0.1.0-beta.1-android-arm64.apk").is_file())
+            # 12 with the Android APK, which is switched off for now.
+            self.assertEqual(len(list(dist.iterdir())), 11)
+            # self.assertTrue((dist / "evanya-0.1.0-beta.1-android-arm64.apk").is_file())
             # GitHub must not rewrite a download name after we checksum it.
             deb = dist / "evanya_0.1.0.beta.1_amd64.deb"
             self.assertEqual(deb.read_bytes(), (source / names[1]).read_bytes())
@@ -540,16 +542,18 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
             )
             stable_dist = root / "stable"
             prepare(source, stable_dist, "0.1.0")
-            self.assertEqual(len(list(stable_dist.iterdir())), 12)
+            # 12 with the Android APK, which is switched off for now.
+            self.assertEqual(len(list(stable_dist.iterdir())), 11)
             self.assertTrue((stable_dist / "evanya_0.1.0_amd64.deb").is_file())
-            self.assertTrue((stable_dist / "evanya-0.1.0-android-arm64.apk").is_file())
+            # self.assertTrue((stable_dist / "evanya-0.1.0-android-arm64.apk").is_file())
             missing.unlink()
             with self.assertRaises(ValueError):
                 prepare(source, root / "missing-stable", "0.1.0")
 
     def test_notes_distinguish_android_preview(self):
-        for version in ("0.1.0-beta.1", "0.1.0"):
-            self.assertIn("previews and stable releases share one signing", release_assets.release_notes(version))
+        # Android builds are switched off for now.
+        # for version in ("0.1.0-beta.1", "0.1.0"):
+        #     self.assertIn("previews and stable releases share one signing", release_assets.release_notes(version))
         self.assertIn("does not receive Flathub updates", release_assets.release_notes("0.1.0-beta.1"))
         self.assertIn("build-provenance attestations", release_assets.release_notes("0.1.0-beta.1"))
         self.assertIn("Apple silicon and Intel", release_assets.release_notes("0.1.0-beta.1"))

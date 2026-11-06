@@ -23,7 +23,8 @@ def prepare(source: Path, destination: Path, version: str) -> None:
         "evanya-macos-arm64.dmg": f"evanya-{version}-macos-arm64.dmg",
         "evanya-macos-x64.zip": f"evanya-{version}-macos-x64.zip",
         "evanya-macos-x64.dmg": f"evanya-{version}-macos-x64.dmg",
-        "evanya.apk": f"evanya-{version}-android-arm64.apk",
+        # Android builds are switched off for now.
+        # "evanya.apk": f"evanya-{version}-android-arm64.apk",
     }
     # Validate every input before copying anything; unrelated benchmark files
     # are intentionally excluded from the public downloads.
@@ -73,8 +74,9 @@ def release_notes(version: str) -> str:
         "receive Flathub updates yet; close-to-tray is disabled in that package. "
         "SHA256SUMS covers every download, and GitHub "
         "records signed build-provenance attestations. iOS archives are "
-        "experimental and available through manual workflow runs only.\n\n"
-        + android
+        "experimental and available through manual workflow runs only.\n"
+        # Android builds are switched off for now.
+        # + "\n" + android
     )
 
 

@@ -164,15 +164,16 @@ jobs:
             command: >-
               cargo clippy --locked --target aarch64-apple-ios --bin evanya
               --no-default-features --features remote-content,ios -- -D warnings
-          - name: Android
-            runner: ubuntu-24.04
-            target: aarch64-linux-android
-            # The shared application is a path dependency of this separate
-            # workspace, so `-- -D warnings` alone would not cover it.
-            command: >-
-              RUSTFLAGS="-D warnings"
-              cargo clippy --manifest-path platform/android/Cargo.toml --locked
-              --target aarch64-linux-android -- -D warnings
+          # Android builds are switched off for now.
+          # - name: Android
+            # runner: ubuntu-24.04
+            # target: aarch64-linux-android
+            # # The shared application is a path dependency of this separate
+            # # workspace, so `-- -D warnings` alone would not cover it.
+            # command: >-
+              # RUSTFLAGS="-D warnings"
+              # cargo clippy --manifest-path platform/android/Cargo.toml --locked
+              # --target aarch64-linux-android -- -D warnings
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
