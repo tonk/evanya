@@ -337,6 +337,97 @@ pub(super) struct BackupRestore {
     pub(super) preferences: bool,
 }
 
+/// An account backup of these accounts and settings: what Export writes, and
+/// what setup sync shares between computers. Credentials are never part of it.
+pub(super) fn account_backup_value(
+    settings: Option<&Settings>,
+    configs: &[AccountConfig],
+) -> serde_json::Value {
+    let preferences = settings
+        .map(|settings| {
+            let mail_profiles = settings
+                .mail_profiles
+                .iter()
+                .map(|profile| PortableMailProfile {
+                    name: profile.name.clone(),
+                    color: profile.color.clone(),
+                    account_emails: configs
+                        .iter()
+                        .filter(|account| profile.account_ids.contains(&account.id))
+                        .map(|account| account.email.clone())
+                        .collect(),
+                })
+                .collect::<Vec<_>>();
+            let account_colors = configs
+                .iter()
+                .filter_map(|account| {
+                    settings
+                        .account_colors
+                        .get(&account.id.to_string())
+                        .map(|color| (account.email.clone(), color.clone()))
+                })
+                .collect::<HashMap<_, _>>();
+            serde_json::json!({
+                "theme": settings.theme,
+                "messageAppearance": settings.message_appearance,
+                "showAvatars": settings.show_avatars,
+                "showTabs": settings.show_tabs,
+                "showStatusBar": settings.show_status_bar,
+                "showFolderUnreadCounts": settings.show_folder_unread_counts,
+                "trayUnreadMark": settings.tray_unread_mark,
+                "conversationView": settings.conversation_view,
+                "composePlainText": settings.compose_plain_text,
+                "mailListLayout": settings.mail_list_layout,
+                "mailSort": settings.mail_sort,
+                "mailTableSenderWidth": settings.mail_table_sender_width,
+                "mailTableDateWidth": settings.mail_table_date_width,
+                "mailTableColumnOrder": settings.mail_table_column_order,
+                "workspaceLayout": settings.workspace_layout,
+                "unifiedMailbox": settings.unified_mailbox,
+                "readingPanePosition": settings.reading_pane_position,
+                "readingPaneBottomPercent": settings.reading_pane_bottom_percent,
+                "mailSidebarWidth": settings.mail_sidebar_width,
+                "workspaceListPaneWidth": settings.workspace_list_pane_width,
+                "monochromeSidebarIcons": settings.monochrome_sidebar_icons,
+                "appIcon": settings.app_icon,
+                "language": settings.language,
+                "timeFormat": settings.time_format,
+                "listDateFormat": settings.list_date_format,
+                "calendarWeekStart": settings.calendar_week_start,
+                "calendarZoom": settings.calendar_zoom,
+                "areaFonts": settings.area_fonts,
+                "loadRemoteImages": settings.load_remote_images,
+                "markReadOnOpen": settings.mark_read_on_open,
+                "collectOutgoingContacts": settings.collect_outgoing_contacts,
+                "collectIncomingContacts": settings.collect_incoming_contacts,
+                "contactSuggestAllAccounts": settings.contact_suggest_all_accounts,
+                "suggestLearnedContacts": settings.suggest_learned_contacts,
+                "notificationsEnabled": settings.notifications_enabled,
+                "notificationScope": settings.notification_scope,
+                "soundEnabled": settings.sound_enabled,
+                "syncIntervalMinutes": settings.sync_interval_minutes,
+                "closeToTray": settings.close_to_tray,
+                "windowFrame": settings.window_frame,
+                "showAccountMarkers": settings.show_account_badges,
+                "accountColors": account_colors,
+                "mailProfiles": mail_profiles
+            })
+        })
+        .unwrap_or_else(|| serde_json::json!({}));
+    let accounts = configs
+        .iter()
+        .map(PortableAccountConfig::from)
+        .collect::<Vec<_>>();
+    serde_json::json!({
+        "format": account_backup::FORMAT,
+        "version": account_backup::VERSION,
+        "createdAt": Utc::now().to_rfc3339(),
+        "includesCredentials": false,
+        "accounts": accounts,
+        "preferences": preferences
+    })
+}
+
 /// Restores an Evanya (or Flectar Mail) account backup: account settings, profiles,
 /// colors, and preferences. Existing accounts are kept unchanged.
 pub(super) fn restore_account_backup(
@@ -1392,91 +1483,10 @@ pub(super) fn register_data_management_callbacks(
             ));
             return;
         }
-        let preferences = core
+        let settings = core
             .as_ref()
-            .and_then(|core| runtime_for_backup.block_on(core.load_settings()).ok())
-            .map(|settings| {
-                let mail_profiles = settings
-                    .mail_profiles
-                    .iter()
-                    .map(|profile| PortableMailProfile {
-                        name: profile.name.clone(),
-                        color: profile.color.clone(),
-                        account_emails: configs
-                            .iter()
-                            .filter(|account| profile.account_ids.contains(&account.id))
-                            .map(|account| account.email.clone())
-                            .collect(),
-                    })
-                    .collect::<Vec<_>>();
-                let account_colors = configs
-                    .iter()
-                    .filter_map(|account| {
-                        settings
-                            .account_colors
-                            .get(&account.id.to_string())
-                            .map(|color| (account.email.clone(), color.clone()))
-                    })
-                    .collect::<HashMap<_, _>>();
-                serde_json::json!({
-                    "theme": settings.theme,
-                    "messageAppearance": settings.message_appearance,
-                    "showAvatars": settings.show_avatars,
-                    "showTabs": settings.show_tabs,
-                    "showStatusBar": settings.show_status_bar,
-                    "showFolderUnreadCounts": settings.show_folder_unread_counts,
-                    "trayUnreadMark": settings.tray_unread_mark,
-                    "conversationView": settings.conversation_view,
-                    "composePlainText": settings.compose_plain_text,
-                    "mailListLayout": settings.mail_list_layout,
-                    "mailSort": settings.mail_sort,
-                    "mailTableSenderWidth": settings.mail_table_sender_width,
-                    "mailTableDateWidth": settings.mail_table_date_width,
-                    "mailTableColumnOrder": settings.mail_table_column_order,
-                    "workspaceLayout": settings.workspace_layout,
-                    "unifiedMailbox": settings.unified_mailbox,
-                    "readingPanePosition": settings.reading_pane_position,
-                    "readingPaneBottomPercent": settings.reading_pane_bottom_percent,
-                    "mailSidebarWidth": settings.mail_sidebar_width,
-                    "workspaceListPaneWidth": settings.workspace_list_pane_width,
-                    "monochromeSidebarIcons": settings.monochrome_sidebar_icons,
-                    "appIcon": settings.app_icon,
-                    "language": settings.language,
-                    "timeFormat": settings.time_format,
-                    "listDateFormat": settings.list_date_format,
-                    "calendarWeekStart": settings.calendar_week_start,
-                    "calendarZoom": settings.calendar_zoom,
-                    "areaFonts": settings.area_fonts,
-                    "loadRemoteImages": settings.load_remote_images,
-                    "markReadOnOpen": settings.mark_read_on_open,
-                    "collectOutgoingContacts": settings.collect_outgoing_contacts,
-                    "collectIncomingContacts": settings.collect_incoming_contacts,
-                    "contactSuggestAllAccounts": settings.contact_suggest_all_accounts,
-                    "suggestLearnedContacts": settings.suggest_learned_contacts,
-                    "notificationsEnabled": settings.notifications_enabled,
-                    "notificationScope": settings.notification_scope,
-                    "soundEnabled": settings.sound_enabled,
-                    "syncIntervalMinutes": settings.sync_interval_minutes,
-                    "closeToTray": settings.close_to_tray,
-                    "windowFrame": settings.window_frame,
-                    "showAccountMarkers": settings.show_account_badges,
-                    "accountColors": account_colors,
-                    "mailProfiles": mail_profiles
-                })
-            })
-            .unwrap_or_else(|| serde_json::json!({}));
-        let accounts = configs
-            .iter()
-            .map(PortableAccountConfig::from)
-            .collect::<Vec<_>>();
-        let backup = serde_json::json!({
-            "format": account_backup::FORMAT,
-            "version": account_backup::VERSION,
-            "createdAt": Utc::now().to_rfc3339(),
-            "includesCredentials": false,
-            "accounts": accounts,
-            "preferences": preferences
-        });
+            .and_then(|core| runtime_for_backup.block_on(core.load_settings()).ok());
+        let backup = account_backup_value(settings.as_ref(), &configs);
         let bytes = match serde_json::to_vec_pretty(&backup) {
             Ok(bytes) => bytes,
             Err(error) => {

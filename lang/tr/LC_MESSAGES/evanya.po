@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-06 09:33+0000\n"
+"POT-Creation-Date: 2026-11-06 09:49+0000\n"
 "PO-Revision-Date: 2026-09-15 12:00+0000\n"
 "Last-Translator: Flectar contributors\n"
 "Language-Team: Turkish\n"
@@ -21,7 +21,7 @@ msgid "Graphite"
 msgstr ""
 
 #: ui/app-icon.slint:21 ui/components/theme-editor.slint:612
-#: ui/dialogs/settings-dialog.slint:1181
+#: ui/dialogs/settings-dialog.slint:1069
 msgid "Light"
 msgstr "Açık"
 
@@ -384,7 +384,7 @@ msgstr "Konuşma geçmişi mevcut"
 msgid "New address-book entry"
 msgstr "Yeni adres defteri kaydı"
 
-#: ui/app.slint:186 ui/app.slint:1172 ui/components/composer-fields.slint:80
+#: ui/app.slint:186 ui/app.slint:1183 ui/components/composer-fields.slint:80
 #: ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr "Bağlı hesap yok"
@@ -1472,7 +1472,7 @@ msgstr "Eşitleme tamamlandı, yenileme başarısız: {}"
 msgid "Sync complete."
 msgstr "Eşitleme tamamlandı."
 
-#: ui/app.slint:523
+#: ui/app.slint:523 ui/dialogs/settings-dialog.slint:2809
 msgid "Sync failed: {}"
 msgstr "Eşitleme başarısız: {}"
 
@@ -1550,135 +1550,139 @@ msgid "Unread counts preference saved."
 msgstr ""
 
 #: ui/app.slint:546
-msgid "Could not save unread counts preference: {}"
+msgid "Choose the directory to sync through"
 msgstr ""
 
 #: ui/app.slint:547
+msgid "Could not save unread counts preference: {}"
+msgstr ""
+
+#: ui/app.slint:548
 msgid "Folder deleted."
 msgstr "Klasör silindi."
 
-#: ui/app.slint:548
+#: ui/app.slint:549
 msgid "Could not create folder: {}"
 msgstr "Klasör oluşturulamadı: {}"
 
-#: ui/app.slint:549
+#: ui/app.slint:550
 msgid "Could not rename folder: {}"
 msgstr "Klasör yeniden adlandırılamadı: {}"
 
-#: ui/app.slint:550
+#: ui/app.slint:551
 msgid "Could not delete folder: {}"
 msgstr "Klasör silinemedi: {}"
 
-#: ui/app.slint:551
+#: ui/app.slint:552
 msgid "Could not close preview: {}"
 msgstr "Önizleme kapatılamadı: {}"
 
-#: ui/app.slint:552
+#: ui/app.slint:553
 msgid "Opened the system print view."
 msgstr "Sistem yazdırma görünümü açıldı."
 
-#: ui/app.slint:553
+#: ui/app.slint:554
 msgid "Could not print message: {}"
 msgstr "İleti yazdırılamadı: {}"
 
-#: ui/app.slint:554
+#: ui/app.slint:555
 msgid "Opened the message in your browser."
 msgstr "İleti tarayıcınızda açıldı."
 
-#: ui/app.slint:555
+#: ui/app.slint:556
 msgid "Could not open message in browser: {}"
 msgstr "İleti tarayıcıda açılamadı: {}"
 
-#: ui/app.slint:556
+#: ui/app.slint:557
 msgid "Connect an account before replying or forwarding."
 msgstr "Yanıtlamadan veya iletmeden önce bir hesap bağlayın."
 
-#: ui/app.slint:557
+#: ui/app.slint:558
 msgid "Choose a message first."
 msgstr "Önce bir ileti seçin."
 
-#: ui/app.slint:558
+#: ui/app.slint:559
 msgid "Only drafts can be reopened for editing."
 msgstr "Yalnızca taslaklar düzenlenmek üzere yeniden açılabilir."
 
-#: ui/app.slint:559
+#: ui/app.slint:560
 msgid "Could not open draft: {}"
 msgstr "Taslak açılamadı: {}"
 
-#: ui/app.slint:560
+#: ui/app.slint:561
 msgid "Could not open draft: invalid account identifier"
 msgstr "Taslak açılamadı: geçersiz hesap tanımlayıcısı"
 
-#: ui/app.slint:561
+#: ui/app.slint:562
 msgid "Connected account"
 msgstr "Bağlı hesap"
 
-#: ui/app.slint:562
+#: ui/app.slint:563
 msgid "Could not open composer: {}"
 msgstr "Oluşturucu açılamadı: {}"
 
-#: ui/app.slint:563
+#: ui/app.slint:564
 msgid "Add an account to send mail."
 msgstr ""
 
-#: ui/app.slint:564 ui/components/sidebar.slint:519
+#: ui/app.slint:565 ui/components/sidebar.slint:519
 msgid "On this device"
 msgstr ""
 
-#: ui/app.slint:565
+#: ui/app.slint:566
 msgid "Could not open composer: invalid account identifier"
 msgstr "Oluşturucu açılamadı: geçersiz hesap tanımlayıcısı"
 
 #. Reply and forward quotation headers, written into the draft.
-#: ui/app.slint:571
+#: ui/app.slint:572
 msgid "On {}, {} wrote:"
 msgstr "{} tarihinde {} şunu yazdı:"
 
-#: ui/app.slint:572
+#: ui/app.slint:573
 msgid "{} wrote:"
 msgstr "{} şunu yazdı:"
 
-#: ui/app.slint:573
+#: ui/app.slint:574
 msgid "Forwarded message"
 msgstr "İletilen ileti"
 
-#: ui/app.slint:574
+#: ui/app.slint:575
 msgctxt "forwarded message header"
 msgid "From: {}"
 msgstr "Kimden: {}"
 
-#: ui/app.slint:575
+#: ui/app.slint:576
 msgctxt "forwarded message header"
 msgid "Date: {}"
 msgstr "Tarih: {}"
 
-#: ui/app.slint:576
+#: ui/app.slint:577
 msgctxt "forwarded message header"
 msgid "Subject: {}"
 msgstr "Konu: {}"
 
-#: ui/app.slint:577
+#: ui/app.slint:578
 msgctxt "forwarded message header"
 msgid "To: {}"
 msgstr "Kime: {}"
 
-#: ui/app.slint:578
+#: ui/app.slint:579
 msgid "Attach files to this email"
 msgstr "Bu e-postaya dosya ekleyin"
 
-#: ui/app.slint:579
+#: ui/app.slint:580
 msgid "Could not add attachments: {}"
 msgstr "Ekler eklenemedi: {}"
 
-#: ui/app.slint:580
+#: ui/app.slint:581
 msgid "Added 1 attachment."
 msgstr "1 ek eklendi."
 
-#: ui/app.slint:581
+#: ui/app.slint:582
 msgid "Added {} attachments."
 msgstr "{} ek eklendi."
 
-#: ui/app.slint:582
+#: ui/app.slint:583
 msgid ""
 "Attachments added: {}. Skipped: {} (duplicate, unreadable, or over the 25 MB "
 "total limit)."
@@ -1686,123 +1690,123 @@ msgstr ""
 "Eklenen ekler: {}. Atlananlar: {} (yinelenen, okunamayan veya toplam 25 MB "
 "sınırını aşan)."
 
-#: ui/app.slint:583
+#: ui/app.slint:584
 msgid "Attachment removed."
 msgstr "Ek kaldırıldı."
 
-#: ui/app.slint:584
+#: ui/app.slint:585
 msgid "Choose the account this message should be sent from."
 msgstr "Bu iletinin hangi hesaptan gönderileceğini seçin."
 
-#: ui/app.slint:585
+#: ui/app.slint:586
 msgid "Choose a verified sender identity for this message."
 msgstr "Bu ileti için doğrulanmış bir gönderen kimliği seçin."
 
-#: ui/app.slint:586
+#: ui/app.slint:587
 msgid "Connect an account before saving or sending mail."
 msgstr "E-posta kaydetmeden veya göndermeden önce bir hesap bağlayın."
 
-#: ui/app.slint:587
+#: ui/app.slint:588
 msgid "Message queued for delivery (action {})."
 msgstr "İleti gönderilmek üzere kuyruğa alındı (eylem {})."
 
-#: ui/app.slint:588
+#: ui/app.slint:589
 msgid "Sending message…"
 msgstr "İleti gönderiliyor…"
 
-#: ui/app.slint:589
+#: ui/app.slint:590
 msgid "Message sent."
 msgstr "İleti gönderildi."
 
-#: ui/app.slint:590
+#: ui/app.slint:591
 msgid "Message was not sent: {} Your draft is preserved."
 msgstr "İleti gönderilemedi: {} Taslağınız korunuyor."
 
-#: ui/app.slint:591
+#: ui/app.slint:592
 msgid "Draft saved locally (#{})."
 msgstr "Taslak yerel olarak kaydedildi (#{})."
 
-#: ui/app.slint:592
+#: ui/app.slint:593
 msgid "Compose failed: {}"
 msgstr "Oluşturma başarısız: {}"
 
-#: ui/app.slint:593
+#: ui/app.slint:594
 msgid "Connect an account before managing email templates."
 msgstr "E-posta şablonlarını yönetmeden önce bir hesap bağlayın."
 
-#: ui/app.slint:594
+#: ui/app.slint:595
 msgid "Could not load email templates: {}"
 msgstr "E-posta şablonları yüklenemedi: {}"
 
-#: ui/app.slint:595
+#: ui/app.slint:596
 msgid "Enter a template name."
 msgstr "Bir şablon adı girin."
 
-#: ui/app.slint:596
+#: ui/app.slint:597
 msgid "Add a subject or message to the template."
 msgstr "Şablona bir konu veya ileti ekleyin."
 
-#: ui/app.slint:597
+#: ui/app.slint:598
 msgid "Email template saved."
 msgstr "E-posta şablonu kaydedildi."
 
-#: ui/app.slint:598
+#: ui/app.slint:599
 msgid "Could not save email template: {}"
 msgstr "E-posta şablonu kaydedilemedi: {}"
 
-#: ui/app.slint:599
+#: ui/app.slint:600
 msgid "Email template deleted."
 msgstr "E-posta şablonu silindi."
 
-#: ui/app.slint:600
+#: ui/app.slint:601
 msgid "Could not delete email template: {}"
 msgstr "E-posta şablonu silinemedi: {}"
 
-#: ui/app.slint:601
+#: ui/app.slint:602
 msgid "Email template is no longer available."
 msgstr "E-posta şablonu artık mevcut değil."
 
-#: ui/app.slint:602
+#: ui/app.slint:603
 msgid "Email template inserted."
 msgstr "E-posta şablonu eklendi."
 
-#: ui/app.slint:603
+#: ui/app.slint:604
 msgid "Email template inserted, but its usage could not be saved: {}"
 msgstr "E-posta şablonu eklendi, ancak kullanımı kaydedilemedi: {}"
 
-#: ui/app.slint:604
+#: ui/app.slint:605
 msgid "Choose a supported account type and connection security."
 msgstr ""
 
-#: ui/app.slint:605
+#: ui/app.slint:606
 msgid "IMAP port must be between 1 and 65535."
 msgstr "IMAP bağlantı noktası 1 ile 65535 arasında olmalıdır."
 
-#: ui/app.slint:606
+#: ui/app.slint:607
 msgid "POP3 port must be between 1 and 65535."
 msgstr ""
 
-#: ui/app.slint:607
+#: ui/app.slint:608
 msgid "SMTP port must be between 1 and 65535."
 msgstr "SMTP bağlantı noktası 1 ile 65535 arasında olmalıdır."
 
-#: ui/app.slint:608
+#: ui/app.slint:609
 msgid "Local mail data is unavailable. Retry startup."
 msgstr "Yerel e-posta verisi kullanılamıyor. Başlatmayı yeniden deneyin."
 
-#: ui/app.slint:609
+#: ui/app.slint:610
 msgid "Discovering JMAP and checking capabilities…"
 msgstr "JMAP keşfediliyor ve yetenekler denetleniyor…"
 
-#: ui/app.slint:610
+#: ui/app.slint:611
 msgid "Certificate imported. Connect to verify the server."
 msgstr "Sertifika içe aktarıldı. Sunucuyu doğrulamak için bağlanın."
 
-#: ui/app.slint:611
+#: ui/app.slint:612
 msgid "Could not load account preferences: {}"
 msgstr "Hesap tercihleri yüklenemedi: {}"
 
-#: ui/app.slint:612
+#: ui/app.slint:613
 msgid ""
 "Your edited signature was preserved. Choose No signature to keep it as "
 "message text before inserting another."
@@ -1810,19 +1814,19 @@ msgstr ""
 "Düzenlediğiniz imza korundu. Başka birini eklemeden önce onu ileti metni "
 "olarak tutmak için İmza yok'u seçin."
 
-#: ui/app.slint:613
+#: ui/app.slint:614
 msgid "Certificate import failed: {}"
 msgstr "Sertifika içe aktarılamadı: {}"
 
-#: ui/app.slint:614
+#: ui/app.slint:615
 msgid "Testing IMAP and SMTP connections…"
 msgstr "IMAP ve SMTP bağlantıları sınanıyor…"
 
-#: ui/app.slint:615
+#: ui/app.slint:616
 msgid "Testing POP3 and SMTP connections…"
 msgstr ""
 
-#: ui/app.slint:620
+#: ui/app.slint:621
 msgid ""
 "Another browser authorization is already in progress; finish it or choose "
 "Cancel."
@@ -1830,171 +1834,171 @@ msgstr ""
 "Başka bir tarayıcı yetkilendirmesi zaten sürüyor; onu bitirin veya İptal'i "
 "seçin."
 
-#: ui/app.slint:621 ui/dialogs/settings-dialog.slint:2231
-#: ui/dialogs/settings-dialog.slint:2274 ui/views/onboarding-view.slint:170
+#: ui/app.slint:622 ui/dialogs/settings-dialog.slint:2119
+#: ui/dialogs/settings-dialog.slint:2162 ui/views/onboarding-view.slint:170
 msgid "Add app keys in Sign-in settings to enable this provider."
 msgstr ""
 "Bu sağlayıcıyı etkinleştirmek için Oturum açma ayarlarında uygulama "
 "anahtarları ekleyin."
 
-#: ui/app.slint:622
+#: ui/app.slint:623
 msgid "Choose Gmail or Outlook OAuth."
 msgstr "Gmail veya Outlook OAuth seçin."
 
-#: ui/app.slint:623
+#: ui/app.slint:624
 msgid "Complete sign-in in your browser, or choose Cancel here."
 msgstr "Oturum açmayı tarayıcınızda tamamlayın veya burada İptal'i seçin."
 
-#: ui/app.slint:624
+#: ui/app.slint:625
 msgid "Cancelling browser sign-in…"
 msgstr "Tarayıcıyla oturum açma iptal ediliyor…"
 
-#: ui/app.slint:625
+#: ui/app.slint:626
 msgid "Finishing browser sign-in…"
 msgstr "Tarayıcıyla oturum açma tamamlanıyor…"
 
-#: ui/app.slint:626
+#: ui/app.slint:627
 msgid "Could not use that browser address: {}"
 msgstr "O tarayıcı adresi kullanılamadı: {}"
 
-#: ui/app.slint:627
+#: ui/app.slint:628
 msgid "Calendar core is unavailable."
 msgstr "Takvim çekirdeği kullanılamıyor."
 
-#: ui/app.slint:628
+#: ui/app.slint:629
 msgid "Account no longer exists."
 msgstr "Hesap artık yok."
 
-#: ui/app.slint:629
+#: ui/app.slint:630
 msgid "Authorize calendar access in your browser."
 msgstr "Takvim erişimini tarayıcınızda yetkilendirin."
 
-#: ui/app.slint:630
+#: ui/app.slint:631
 msgid "OAuth app keys saved."
 msgstr "OAuth uygulama anahtarları kaydedildi."
 
-#: ui/app.slint:631
+#: ui/app.slint:632
 msgid "{} OAuth settings saved."
 msgstr "{} OAuth ayarları kaydedildi."
 
-#: ui/app.slint:632
+#: ui/app.slint:633
 msgid "OAuth settings failed: {}"
 msgstr "OAuth ayarları başarısız: {}"
 
-#: ui/app.slint:633
+#: ui/app.slint:634
 msgid "Mail refresh failed: {}"
 msgstr "E-posta yenilemesi başarısız: {}"
 
-#: ui/app.slint:634
+#: ui/app.slint:635
 msgid "Mail filter failed: {}"
 msgstr "E-posta filtresi başarısız: {}"
 
-#: ui/app.slint:635
+#: ui/app.slint:636
 msgid "Mail pagination failed: {}"
 msgstr "E-posta sayfalaması başarısız: {}"
 
-#: ui/app.slint:636
+#: ui/app.slint:637
 msgid "Could not mark message as read: {}"
 msgstr "İleti okundu olarak işaretlenemedi: {}"
 
-#: ui/app.slint:637 ui/views/mail-reading-pane.slint:196
+#: ui/app.slint:638 ui/views/mail-reading-pane.slint:196
 #: ui/views/mail-reading-pane.slint:1280
 msgid "Loading message…"
 msgstr "İleti yükleniyor…"
 
-#: ui/app.slint:643 ui/components/workspace-navigation.slint:787
+#: ui/app.slint:644 ui/components/workspace-navigation.slint:787
 #: ui/tray.slint:15 ui/tray.slint:18
 msgid "Evanya"
 msgstr "Evanya"
 
-#: ui/app.slint:1415 ui/app.slint:1428
+#: ui/app.slint:1426 ui/app.slint:1439
 msgid "Global Labels (local only)"
 msgstr "Genel Etiketler (yalnızca yerel)"
 
-#: ui/app.slint:2071
+#: ui/app.slint:2082
 msgid "Another account"
 msgstr ""
 
-#: ui/app.slint:2083
+#: ui/app.slint:2094
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
 
-#: ui/app.slint:2092 ui/components/account-mail-preferences.slint:178
+#: ui/app.slint:2103 ui/components/account-mail-preferences.slint:178
 #: ui/dialogs/folder-dialog.slint:128 ui/dialogs/oauth-setup-dialog.slint:126
-#: ui/dialogs/settings-dialog.slint:2410 ui/dialogs/settings-dialog.slint:3256
-#: ui/dialogs/settings-dialog.slint:3579 ui/views/files-view.slint:491
+#: ui/dialogs/settings-dialog.slint:2298 ui/dialogs/settings-dialog.slint:3186
+#: ui/dialogs/settings-dialog.slint:3509 ui/views/files-view.slint:491
 #: ui/views/mail-reading-pane.slint:2023
 msgid "Cancel"
 msgstr "İptal"
 
-#: ui/app.slint:2096 ui/components/controls.slint:87
+#: ui/app.slint:2107 ui/components/controls.slint:87
 msgid "Copy"
 msgstr ""
 
-#: ui/app.slint:2100
+#: ui/app.slint:2111
 msgid "Move"
 msgstr ""
 
-#: ui/app.slint:2522
+#: ui/app.slint:2542
 msgid "Empty Trash?"
 msgstr ""
 
-#: ui/app.slint:2522 ui/views/files-view.slint:597
+#: ui/app.slint:2542 ui/views/files-view.slint:597
 msgid "Delete permanently?"
 msgstr "Kalıcı olarak silinsin mi?"
 
-#: ui/app.slint:2526
+#: ui/app.slint:2546
 msgid ""
 "Permanently delete all messages in Trash across every connected account?"
 msgstr ""
 
-#: ui/app.slint:2527
+#: ui/app.slint:2547
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr ""
 
-#: ui/app.slint:2529
+#: ui/app.slint:2549
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr ""
 
-#: ui/app.slint:2530
+#: ui/app.slint:2550
 msgid "Permanently delete this conversation from Trash?"
 msgstr ""
 
-#: ui/app.slint:2531 ui/components/calendar.slint:1138
+#: ui/app.slint:2551 ui/components/calendar.slint:1138
 msgid "This action cannot be undone."
 msgstr "Bu işlem geri alınamaz."
 
-#: ui/app.slint:2532
+#: ui/app.slint:2552
 msgid "Empty Trash"
 msgstr ""
 
-#: ui/app.slint:2532 ui/views/files-view.slint:679
+#: ui/app.slint:2552 ui/views/files-view.slint:679
 msgid "Delete permanently"
 msgstr "Kalıcı olarak sil"
 
-#: ui/app.slint:2710
+#: ui/app.slint:2730
 msgid "Mailbox startup failed"
 msgstr "Posta kutusu başlatılamadı"
 
-#: ui/app.slint:2716
+#: ui/app.slint:2736
 msgid "Evanya could not open local storage"
 msgstr "Evanya yerel depolamayı açamadı"
 
-#: ui/app.slint:2729
+#: ui/app.slint:2749
 msgid "Diagnostic ID: {}"
 msgstr "Tanılama kimliği: {}"
 
-#: ui/app.slint:2732
+#: ui/app.slint:2752
 msgid "Diagnostic ID {}"
 msgstr "Tanılama kimliği {}"
 
-#: ui/app.slint:2737
+#: ui/app.slint:2757
 msgid "Retry"
 msgstr "Yeniden dene"
 
-#: ui/app.slint:2745 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2765 ui/components/copyable-diagnostic.slint:43
 msgid "Copy diagnostics"
 msgstr "Tanılama bilgilerini kopyala"
 
@@ -2069,7 +2073,7 @@ msgid "Invitations for events you create here are sent from {}."
 msgstr ""
 
 #: ui/components/account-calendars.slint:264
-#: ui/dialogs/settings-dialog.slint:3184
+#: ui/dialogs/settings-dialog.slint:3114
 msgid "Add CalDAV calendar"
 msgstr ""
 
@@ -2194,7 +2198,7 @@ msgid ""
 msgstr ""
 
 #: ui/components/account-mail-preferences.slint:171
-#: ui/dialogs/settings-dialog.slint:3354 ui/views/onboarding-view.slint:276
+#: ui/dialogs/settings-dialog.slint:3284 ui/views/onboarding-view.slint:276
 msgid "Email address"
 msgstr "E-posta adresi"
 
@@ -2432,7 +2436,7 @@ msgid "Export decrypted message"
 msgstr "Şifresi çözülmüş iletiyi dışa aktar"
 
 #: ui/components/account-mail-preferences.slint:265
-#: ui/dialogs/settings-dialog.slint:3330 ui/views/files-view.slint:524
+#: ui/dialogs/settings-dialog.slint:3260 ui/views/files-view.slint:524
 #: ui/views/files-view.slint:714 ui/window-chrome.slint:201
 msgid "Close"
 msgstr "Kapat"
@@ -2480,7 +2484,7 @@ msgid "Show calendars"
 msgstr "Takvimleri göster"
 
 #: ui/components/calendar-agenda.slint:68 ui/components/theme-editor.slint:782
-#: ui/dialogs/settings-dialog.slint:1901
+#: ui/dialogs/settings-dialog.slint:1789
 msgid "Reset"
 msgstr "Sıfırla"
 
@@ -2659,7 +2663,7 @@ msgstr "Takvimleri gizle"
 msgid "Zoom out"
 msgstr "Uzaklaştır"
 
-#: ui/components/calendar.slint:657 ui/dialogs/settings-dialog.slint:2851
+#: ui/components/calendar.slint:657 ui/dialogs/settings-dialog.slint:2739
 msgid "Reset zoom"
 msgstr ""
 
@@ -2918,7 +2922,7 @@ msgstr ""
 msgid "On"
 msgstr "Açık"
 
-#: ui/components/controls.slint:212 ui/dialogs/settings-dialog.slint:734
+#: ui/components/controls.slint:212 ui/dialogs/settings-dialog.slint:622
 msgid "Off"
 msgstr "Kapalı"
 
@@ -3497,13 +3501,13 @@ msgid_plural "{n} tabs open"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ui/components/tab-overview.slint:68 ui/dialogs/settings-dialog.slint:644
+#: ui/components/tab-overview.slint:68 ui/dialogs/settings-dialog.slint:529
 #: ui/views/files-view.slint:600
 msgid "Files"
 msgstr "Dosyalar"
 
-#: ui/components/tab-overview.slint:69 ui/dialogs/settings-dialog.slint:1128
-#: ui/dialogs/settings-dialog.slint:2466 ui/dialogs/settings-dialog.slint:3117
+#: ui/components/tab-overview.slint:69 ui/dialogs/settings-dialog.slint:1016
+#: ui/dialogs/settings-dialog.slint:2354 ui/dialogs/settings-dialog.slint:3047
 msgid "Contacts"
 msgstr "Kişiler"
 
@@ -3511,7 +3515,7 @@ msgstr "Kişiler"
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: ui/components/tab-overview.slint:71 ui/dialogs/settings-dialog.slint:2449
+#: ui/components/tab-overview.slint:71 ui/dialogs/settings-dialog.slint:2337
 msgid "Mail"
 msgstr "E-posta"
 
@@ -3520,7 +3524,7 @@ msgid "Close tab"
 msgstr ""
 
 #: ui/components/tab-overview.slint:198 ui/components/tab-overview.slint:222
-#: ui/dialogs/settings-dialog.slint:2854
+#: ui/dialogs/settings-dialog.slint:2742
 msgid "Tabs"
 msgstr ""
 
@@ -4063,11 +4067,11 @@ msgstr "Sağlayıcının standart giden posta sunucusu {} sunucusunun yerini al�
 msgid "This account syncs with {} instead of downloading mail with POP3."
 msgstr ""
 
-#: ui/dialogs/import-dialog.slint:156 ui/dialogs/settings-dialog.slint:2553
+#: ui/dialogs/import-dialog.slint:156 ui/dialogs/settings-dialog.slint:2441
 msgid "Mail is removed from the server once it's on this device."
 msgstr ""
 
-#: ui/dialogs/import-dialog.slint:157 ui/dialogs/settings-dialog.slint:2552
+#: ui/dialogs/import-dialog.slint:157 ui/dialogs/settings-dialog.slint:2440
 msgid "Mail you delete here is removed from the server too."
 msgstr ""
 
@@ -4251,7 +4255,7 @@ msgstr ""
 msgid "Continue in background"
 msgstr ""
 
-#: ui/dialogs/import-dialog.slint:338 ui/dialogs/settings-dialog.slint:1860
+#: ui/dialogs/import-dialog.slint:338 ui/dialogs/settings-dialog.slint:1748
 msgid "Choose folder…"
 msgstr "Klasör seç…"
 
@@ -4269,7 +4273,7 @@ msgid_plural "Import {n} accounts"
 msgstr[0] "Bir hesabı içe aktar"
 msgstr[1] "{n} hesabı içe aktar"
 
-#: ui/dialogs/import-dialog.slint:375 ui/dialogs/settings-dialog.slint:2759
+#: ui/dialogs/import-dialog.slint:375 ui/dialogs/settings-dialog.slint:2647
 msgid "Import"
 msgstr "İçe aktar"
 
@@ -4715,155 +4719,143 @@ msgstr "Bazı dosyaların boyutu ölçülemediğinden bu toplam eksik olabilir."
 msgid "Storage usage could not be refreshed. Try again."
 msgstr "Depolama kullanımı yenilenemedi. Tekrar deneyin."
 
-#: ui/dialogs/settings-dialog.slint:425 ui/dialogs/settings-dialog.slint:433
-msgid "Paid"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:426 ui/dialogs/settings-dialog.slint:434
-msgid "Coming soon"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:461
-msgid "Learn more"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:639
+#: ui/dialogs/settings-dialog.slint:524
 msgid "Sidebars"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:640
+#: ui/dialogs/settings-dialog.slint:525
 msgid "Message list"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:641
+#: ui/dialogs/settings-dialog.slint:526
 msgid "Reading pane"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:645
+#: ui/dialogs/settings-dialog.slint:530
 msgid "Writing messages"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:729
+#: ui/dialogs/settings-dialog.slint:617
 msgid "Every minute"
 msgstr "Her dakika"
 
-#: ui/dialogs/settings-dialog.slint:730
+#: ui/dialogs/settings-dialog.slint:618
 msgid "Every 5 minutes"
 msgstr "Her 5 dakikada bir"
 
-#: ui/dialogs/settings-dialog.slint:731
+#: ui/dialogs/settings-dialog.slint:619
 msgid "Every 15 minutes"
 msgstr "Her 15 dakikada bir"
 
-#: ui/dialogs/settings-dialog.slint:735
+#: ui/dialogs/settings-dialog.slint:623
 msgid "Important mail"
 msgstr "Önemli e-postalar"
 
-#: ui/dialogs/settings-dialog.slint:736
+#: ui/dialogs/settings-dialog.slint:624
 msgid "All new mail"
 msgstr "Tüm yeni e-postalar"
 
-#: ui/dialogs/settings-dialog.slint:739
+#: ui/dialogs/settings-dialog.slint:627
 msgid "1 month"
 msgstr "1 ay"
 
-#: ui/dialogs/settings-dialog.slint:740
+#: ui/dialogs/settings-dialog.slint:628
 msgid "3 months"
 msgstr "3 ay"
 
-#: ui/dialogs/settings-dialog.slint:741
+#: ui/dialogs/settings-dialog.slint:629
 msgid "6 months · Recommended"
 msgstr "6 ay · Önerilen"
 
-#: ui/dialogs/settings-dialog.slint:742
+#: ui/dialogs/settings-dialog.slint:630
 msgid "1 year"
 msgstr "1 yıl"
 
-#: ui/dialogs/settings-dialog.slint:743 ui/views/mail-list-pane.slint:725
+#: ui/dialogs/settings-dialog.slint:631 ui/views/mail-list-pane.slint:725
 msgid "All mail"
 msgstr "Tüm e-postalar"
 
-#: ui/dialogs/settings-dialog.slint:746
+#: ui/dialogs/settings-dialog.slint:634
 msgid "Always"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:747
+#: ui/dialogs/settings-dialog.slint:635
 msgid "Until deleted here"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:748
+#: ui/dialogs/settings-dialog.slint:636
 msgid "7 days"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:749
+#: ui/dialogs/settings-dialog.slint:637
 msgid "14 days"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:750
+#: ui/dialogs/settings-dialog.slint:638
 msgid "30 days"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:751
+#: ui/dialogs/settings-dialog.slint:639
 msgid "Until downloaded"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:754
+#: ui/dialogs/settings-dialog.slint:642
 msgid "System language"
 msgstr "Sistem dili"
 
-#: ui/dialogs/settings-dialog.slint:755
+#: ui/dialogs/settings-dialog.slint:643
 msgid "English"
 msgstr "İngilizce"
 
-#: ui/dialogs/settings-dialog.slint:756
+#: ui/dialogs/settings-dialog.slint:644
 msgid "Spanish"
 msgstr "İspanyolca"
 
-#: ui/dialogs/settings-dialog.slint:757
+#: ui/dialogs/settings-dialog.slint:645
 msgid "Turkish"
 msgstr "Türkçe"
 
-#: ui/dialogs/settings-dialog.slint:758
+#: ui/dialogs/settings-dialog.slint:646
 msgid "Simplified Chinese"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:759
+#: ui/dialogs/settings-dialog.slint:647
 msgid "Russian"
 msgstr "Rusça"
 
-#: ui/dialogs/settings-dialog.slint:760
+#: ui/dialogs/settings-dialog.slint:648
 msgid "Dutch"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:763
+#: ui/dialogs/settings-dialog.slint:651
 msgid "Automatic"
 msgstr "Otomatik"
 
-#: ui/dialogs/settings-dialog.slint:764
+#: ui/dialogs/settings-dialog.slint:652
 msgid "12-hour"
 msgstr "12 saat"
 
-#: ui/dialogs/settings-dialog.slint:765
+#: ui/dialogs/settings-dialog.slint:653
 msgid "24-hour"
 msgstr "24 saat"
 
-#: ui/dialogs/settings-dialog.slint:778
+#: ui/dialogs/settings-dialog.slint:666
 msgid "Smart"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:779
+#: ui/dialogs/settings-dialog.slint:667
 msgid "Date and time"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:780
+#: ui/dialogs/settings-dialog.slint:668
 msgid "Relative"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:781
+#: ui/dialogs/settings-dialog.slint:669
 msgid "ISO 8601"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:807
+#: ui/dialogs/settings-dialog.slint:695
 msgid ""
 "general theme appearance palette app icon dock taskbar launcher language "
 "time clock 12-hour 24-hour workspace layout window frameless title bar "
@@ -4872,13 +4864,13 @@ msgid ""
 "tabs conversations threads"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:809
+#: ui/dialogs/settings-dialog.slint:697
 msgid ""
 "accounts profiles personal work colors providers gmail outlook imap pop3 "
 "jmap caldav carddav mail history server oauth security signatures"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:811
+#: ui/dialogs/settings-dialog.slint:699
 msgid ""
 "contacts people suggestions autocomplete recipients senders address book "
 "privacy clear"
@@ -4886,17 +4878,17 @@ msgstr ""
 "kişiler insanlar öneriler otomatik tamamlama alıcılar gönderenler adres "
 "defteri gizlilik temizle"
 
-#: ui/dialogs/settings-dialog.slint:813
+#: ui/dialogs/settings-dialog.slint:701
 msgid "notifications alerts sounds desktop new mail"
 msgstr "bildirimler uyarılar sesler masaüstü yeni posta"
 
-#: ui/dialogs/settings-dialog.slint:815
+#: ui/dialogs/settings-dialog.slint:703
 msgid ""
 "shortcuts keyboard keys compose search archive spam junk trash delete "
 "navigation messages reading find zoom caret tabs"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:817
+#: ui/dialogs/settings-dialog.slint:705
 msgid ""
 "storage data usage mail attachments files databases backup snapshot import "
 "export delete"
@@ -4904,457 +4896,457 @@ msgstr ""
 "depolama veri kullanımı posta ekler dosyalar veritabanları yedek anlık "
 "görüntü içe aktar dışa aktar sil"
 
-#: ui/dialogs/settings-dialog.slint:819
+#: ui/dialogs/settings-dialog.slint:707
 msgid ""
 "services flectar base account sign in subscription paid sync devices "
 "business email custom domain mailbox"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:820
+#: ui/dialogs/settings-dialog.slint:708
 msgid "about version credits contributors license flectar"
 msgstr "hakkında sürüm emeği geçenler lisans flectar"
 
-#: ui/dialogs/settings-dialog.slint:1122 ui/dialogs/settings-dialog.slint:3112
+#: ui/dialogs/settings-dialog.slint:1010 ui/dialogs/settings-dialog.slint:3042
 msgid "SETTINGS"
 msgstr "AYARLAR"
 
-#: ui/dialogs/settings-dialog.slint:1125 ui/dialogs/settings-dialog.slint:3114
+#: ui/dialogs/settings-dialog.slint:1013 ui/dialogs/settings-dialog.slint:3044
 msgid "No settings found"
 msgstr "Ayar bulunamadı"
 
-#: ui/dialogs/settings-dialog.slint:1126 ui/dialogs/settings-dialog.slint:1166
-#: ui/dialogs/settings-dialog.slint:3115
+#: ui/dialogs/settings-dialog.slint:1014 ui/dialogs/settings-dialog.slint:1054
+#: ui/dialogs/settings-dialog.slint:3045
 msgid "General"
 msgstr "Genel"
 
-#: ui/dialogs/settings-dialog.slint:1127 ui/dialogs/settings-dialog.slint:2076
-#: ui/dialogs/settings-dialog.slint:3116 ui/dialogs/settings-dialog.slint:3565
+#: ui/dialogs/settings-dialog.slint:1015 ui/dialogs/settings-dialog.slint:1964
+#: ui/dialogs/settings-dialog.slint:3046 ui/dialogs/settings-dialog.slint:3495
 msgid "Accounts"
 msgstr "Hesaplar"
 
-#: ui/dialogs/settings-dialog.slint:1129 ui/dialogs/settings-dialog.slint:2783
-#: ui/dialogs/settings-dialog.slint:3118
+#: ui/dialogs/settings-dialog.slint:1017 ui/dialogs/settings-dialog.slint:2671
+#: ui/dialogs/settings-dialog.slint:3048
 msgid "Notifications"
 msgstr "Bildirimler"
 
-#: ui/dialogs/settings-dialog.slint:1130 ui/dialogs/settings-dialog.slint:3048
+#: ui/dialogs/settings-dialog.slint:1018 ui/dialogs/settings-dialog.slint:2978
 msgid "Shortcuts"
 msgstr "Kısayollar"
 
-#: ui/dialogs/settings-dialog.slint:1131 ui/dialogs/settings-dialog.slint:2691
-#: ui/dialogs/settings-dialog.slint:3120
+#: ui/dialogs/settings-dialog.slint:1019 ui/dialogs/settings-dialog.slint:2579
+#: ui/dialogs/settings-dialog.slint:3050
 msgid "Storage"
 msgstr "Depolama"
 
-#: ui/dialogs/settings-dialog.slint:1132 ui/dialogs/settings-dialog.slint:2880
-#: ui/dialogs/settings-dialog.slint:3121
+#: ui/dialogs/settings-dialog.slint:1020 ui/dialogs/settings-dialog.slint:2768
+#: ui/dialogs/settings-dialog.slint:3051
 msgid "Services"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1133 ui/dialogs/settings-dialog.slint:2925
-#: ui/dialogs/settings-dialog.slint:3122
+#: ui/dialogs/settings-dialog.slint:1021 ui/dialogs/settings-dialog.slint:2855
+#: ui/dialogs/settings-dialog.slint:3052
 msgid "About"
 msgstr "Hakkında"
 
-#: ui/dialogs/settings-dialog.slint:1143
+#: ui/dialogs/settings-dialog.slint:1031
 msgid "Settings sidebar width"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1167
+#: ui/dialogs/settings-dialog.slint:1055
 msgid "Manage appearance, privacy, and synchronization."
 msgstr "Görünüm, gizlilik ve eşitlemeyi yönetin."
 
-#: ui/dialogs/settings-dialog.slint:1179
+#: ui/dialogs/settings-dialog.slint:1067
 msgid "Message appearance"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1180
+#: ui/dialogs/settings-dialog.slint:1068
 msgid "Choose the background and text colors used to read messages."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1181
+#: ui/dialogs/settings-dialog.slint:1069
 msgid "Follow app theme"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1240
+#: ui/dialogs/settings-dialog.slint:1128
 msgid "Interface"
 msgstr "Arayüz"
 
-#: ui/dialogs/settings-dialog.slint:1243
+#: ui/dialogs/settings-dialog.slint:1131
 msgid "Monochrome sidebar icons"
 msgstr "Tek renkli kenar çubuğu simgeleri"
 
-#: ui/dialogs/settings-dialog.slint:1244
+#: ui/dialogs/settings-dialog.slint:1132
 msgid "Use one neutral color for mailbox and folder icons."
 msgstr "Posta kutusu ve klasör simgeleri için tek bir nötr renk kullanılır."
 
-#: ui/dialogs/settings-dialog.slint:1256
+#: ui/dialogs/settings-dialog.slint:1144
 msgid "No avatars"
 msgstr "Avatar yok"
 
-#: ui/dialogs/settings-dialog.slint:1257
+#: ui/dialogs/settings-dialog.slint:1145
 msgid "Hide sender images in the message list and reader."
 msgstr "Gönderen görsellerini ileti listesinde ve okuyucuda gizler."
 
-#: ui/dialogs/settings-dialog.slint:1270
+#: ui/dialogs/settings-dialog.slint:1158
 msgid "Keep several mailboxes, conversations and other places open in tabs."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1282
+#: ui/dialogs/settings-dialog.slint:1170
 msgid "Status line"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1283
+#: ui/dialogs/settings-dialog.slint:1171
 msgid ""
 "Show along the bottom of the window how mail synchronization is progressing."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1295
+#: ui/dialogs/settings-dialog.slint:1183
 msgid "Unread counts on every folder"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1296
+#: ui/dialogs/settings-dialog.slint:1184
 msgid "Show the number of unread messages beside each folder in the sidebar."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1308
+#: ui/dialogs/settings-dialog.slint:1196
 msgid "Frameless window"
 msgstr "Çerçevesiz pencere"
 
-#: ui/dialogs/settings-dialog.slint:1309
+#: ui/dialogs/settings-dialog.slint:1197
 msgid "Replace the system title bar with window controls in the toolbar."
 msgstr ""
 "Sistem başlık çubuğunu araç çubuğundaki pencere denetimleriyle değiştirin."
 
-#: ui/dialogs/settings-dialog.slint:1316
+#: ui/dialogs/settings-dialog.slint:1204
 msgid "Workspace layout"
 msgstr "Çalışma alanı düzeni"
 
-#: ui/dialogs/settings-dialog.slint:1328
+#: ui/dialogs/settings-dialog.slint:1216
 msgid "Minimal"
 msgstr "En az"
 
-#: ui/dialogs/settings-dialog.slint:1336
+#: ui/dialogs/settings-dialog.slint:1224
 msgid "Unified mailbox"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1337
+#: ui/dialogs/settings-dialog.slint:1225
 msgid ""
 "Show shared Inbox, Starred and other mailboxes that combine all accounts."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1349
+#: ui/dialogs/settings-dialog.slint:1237
 msgid "Preview at the bottom"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1350
+#: ui/dialogs/settings-dialog.slint:1238
 msgid ""
 "Show the message list on top and the message below it, instead of side by "
 "side."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1362
+#: ui/dialogs/settings-dialog.slint:1250
 msgid "Message list as a table"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1363
+#: ui/dialogs/settings-dialog.slint:1251
 msgid ""
 "One line per message, with columns you can drag to resize and click to sort."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1387
+#: ui/dialogs/settings-dialog.slint:1275
 msgid "Language and time"
 msgstr "Dil ve saat"
 
-#: ui/dialogs/settings-dialog.slint:1390
+#: ui/dialogs/settings-dialog.slint:1278
 msgid "Display language"
 msgstr "Görüntüleme dili"
 
-#: ui/dialogs/settings-dialog.slint:1391
+#: ui/dialogs/settings-dialog.slint:1279
 msgid "Follow your device language when a translation is available."
 msgstr "Bir çeviri mevcut olduğunda cihazınızın dilini kullanın."
 
-#: ui/dialogs/settings-dialog.slint:1391
+#: ui/dialogs/settings-dialog.slint:1279
 msgid "Choose the language used throughout Evanya."
 msgstr "Evanya genelinde kullanılacak dili seçin."
 
-#: ui/dialogs/settings-dialog.slint:1401
+#: ui/dialogs/settings-dialog.slint:1289
 msgid "Time format"
 msgstr "Saat biçimi"
 
-#: ui/dialogs/settings-dialog.slint:1402
+#: ui/dialogs/settings-dialog.slint:1290
 msgid "Follow your region, for example {}."
 msgstr "Bölgenizin biçimini kullanır, örneğin {}."
 
-#: ui/dialogs/settings-dialog.slint:1402
+#: ui/dialogs/settings-dialog.slint:1290
 msgid "Times appear as {}."
 msgstr "Saatler {} biçiminde gösterilir."
 
-#: ui/dialogs/settings-dialog.slint:1412
+#: ui/dialogs/settings-dialog.slint:1300
 msgid "Dates in the message list"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1413
+#: ui/dialogs/settings-dialog.slint:1301
 msgid "Always the date and the time."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1414
+#: ui/dialogs/settings-dialog.slint:1302
 msgid "How long ago, such as \"5 min ago\", for the last four weeks."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1415
+#: ui/dialogs/settings-dialog.slint:1303
 msgid "Year, month and day, such as 2026-11-04 14:32."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1416
+#: ui/dialogs/settings-dialog.slint:1304
 msgid "The time for today and yesterday, otherwise the date."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1441
+#: ui/dialogs/settings-dialog.slint:1329
 msgid "Fonts"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1442
+#: ui/dialogs/settings-dialog.slint:1330
 msgid ""
 "Choose a font and size for each part. The message itself keeps the fonts its "
 "sender chose."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1488
+#: ui/dialogs/settings-dialog.slint:1376
 msgid "Inbox behavior"
 msgstr "Gelen kutusu davranışı"
 
-#: ui/dialogs/settings-dialog.slint:1491
+#: ui/dialogs/settings-dialog.slint:1379
 msgid "Unified Inbox"
 msgstr "Birleşik Gelen Kutusu"
 
-#: ui/dialogs/settings-dialog.slint:1492
+#: ui/dialogs/settings-dialog.slint:1380
 msgid "DEFAULT"
 msgstr "VARSAYILAN"
 
-#: ui/dialogs/settings-dialog.slint:1494
+#: ui/dialogs/settings-dialog.slint:1382
 msgid "Combines incoming messages from every connected account."
 msgstr "Bağlı tüm hesaplardan gelen iletileri birleştirir."
 
-#: ui/dialogs/settings-dialog.slint:1498
+#: ui/dialogs/settings-dialog.slint:1386
 msgid "Group messages by date"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1499
+#: ui/dialogs/settings-dialog.slint:1387
 msgid "Show collapsible date sections in the mail list."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1511
+#: ui/dialogs/settings-dialog.slint:1399
 msgid "Conversation view"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1512
+#: ui/dialogs/settings-dialog.slint:1400
 msgid ""
 "Group replies with the messages they answer. Turn this off to list, open and "
 "act on each message on its own."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1524
+#: ui/dialogs/settings-dialog.slint:1412
 msgid "Write messages in plain text"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1525
+#: ui/dialogs/settings-dialog.slint:1413
 msgid ""
 "Send new messages, replies and forwards without formatting. Hold Shift while "
 "choosing New message, Reply or Forward to use the other format."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1537
+#: ui/dialogs/settings-dialog.slint:1425
 msgid "Check spelling while writing"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1539
+#: ui/dialogs/settings-dialog.slint:1427
 msgid ""
 "Misspelled words get a red line. Right-click one for suggestions. A word is "
 "correct when any chosen language knows it."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1540
+#: ui/dialogs/settings-dialog.slint:1428
 msgid ""
 "No spelling dictionaries were found. Install Hunspell dictionaries, such as "
 "hunspell-nl and hunspell-en-us."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1574
+#: ui/dialogs/settings-dialog.slint:1462
 msgid "Spelling languages"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1576
+#: ui/dialogs/settings-dialog.slint:1464
 msgid "Following the interface language, with English."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1577
+#: ui/dialogs/settings-dialog.slint:1465
 msgid "Chosen by you."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1592
+#: ui/dialogs/settings-dialog.slint:1480
 msgid "Follow the interface language"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1605
+#: ui/dialogs/settings-dialog.slint:1493
 msgid "Mark messages as read when opened"
 msgstr "İletiler açıldığında okundu olarak işaretle"
 
-#: ui/dialogs/settings-dialog.slint:1606
+#: ui/dialogs/settings-dialog.slint:1494
 msgid "Turn this off to keep unread status until you change it manually."
 msgstr "Okunmadı durumunu elle değiştirene kadar korumak için bunu kapatın."
 
-#: ui/dialogs/settings-dialog.slint:1633
+#: ui/dialogs/settings-dialog.slint:1521
 msgid "Remote images"
 msgstr "Uzak görseller"
 
-#: ui/dialogs/settings-dialog.slint:1634
+#: ui/dialogs/settings-dialog.slint:1522
 msgid "Load sender favicons and images embedded in message bodies."
 msgstr "Gönderen favikonlarını ve ileti gövdelerine gömülü görselleri yükler."
 
-#: ui/dialogs/settings-dialog.slint:1634
+#: ui/dialogs/settings-dialog.slint:1522
 msgid "Unavailable in this minimal build."
 msgstr "Bu minimal derlemede kullanılamaz."
 
-#: ui/dialogs/settings-dialog.slint:1635
+#: ui/dialogs/settings-dialog.slint:1523
 msgid "Off by default to block tracking pixels and minimize memory use."
 msgstr ""
 "İzleme piksellerini engellemek ve bellek kullanımını azaltmak için "
 "varsayılan olarak kapalıdır."
 
-#: ui/dialogs/settings-dialog.slint:1661
+#: ui/dialogs/settings-dialog.slint:1549
 msgid "Keep running in system tray"
 msgstr "Sistem tepsisinde çalışmayı sürdür"
 
-#: ui/dialogs/settings-dialog.slint:1662
+#: ui/dialogs/settings-dialog.slint:1550
 msgid "Closing the window hides Evanya while mail continues syncing."
 msgstr ""
 "Pencere kapatıldığında Evanya gizlenir; e-postalar eşitlenmeye devam eder."
 
-#: ui/dialogs/settings-dialog.slint:1663
+#: ui/dialogs/settings-dialog.slint:1551
 msgid "Disabled by default; Quit from the tray menu stops the app."
 msgstr ""
 "Varsayılan olarak kapalıdır; uygulamayı durdurmak için tepsi menüsünden "
 "Çıkış'ı seçin."
 
-#: ui/dialogs/settings-dialog.slint:1690
+#: ui/dialogs/settings-dialog.slint:1578
 msgid "Unread mail in the tray icon"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1691
+#: ui/dialogs/settings-dialog.slint:1579
 msgid ""
 "Mark the tray icon with a red dot while the inbox has unread mail; its "
 "tooltip says how much."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1719
+#: ui/dialogs/settings-dialog.slint:1607
 msgid "Start automatically"
 msgstr "Otomatik başlat"
 
-#: ui/dialogs/settings-dialog.slint:1720
+#: ui/dialogs/settings-dialog.slint:1608
 msgid "Starts Evanya in the system tray when you sign in."
 msgstr "Oturum açtığınızda Evanya'yı sistem tepsisinde başlatır."
 
-#: ui/dialogs/settings-dialog.slint:1720
+#: ui/dialogs/settings-dialog.slint:1608
 msgid "Opens Evanya when you sign in."
 msgstr "Oturum açtığınızda Evanya'yı açar."
 
-#: ui/dialogs/settings-dialog.slint:1721
+#: ui/dialogs/settings-dialog.slint:1609
 msgid "Disabled by default; also listed in your system's startup apps."
 msgstr ""
 "Varsayılan olarak kapalı; sisteminizin başlangıç uygulamalarında da "
 "listelenir."
 
-#: ui/dialogs/settings-dialog.slint:1745
+#: ui/dialogs/settings-dialog.slint:1633
 msgid "Sync and notifications"
 msgstr "Eşitleme ve bildirimler"
 
-#: ui/dialogs/settings-dialog.slint:1748
+#: ui/dialogs/settings-dialog.slint:1636
 msgid "Check for new mail"
 msgstr "Yeni e-postaları denetle"
 
-#: ui/dialogs/settings-dialog.slint:1749
+#: ui/dialogs/settings-dialog.slint:1637
 msgid "How often to refresh when an instant provider update is unavailable."
 msgstr "Anlık sağlayıcı güncellemesi olmadığında yenileme sıklığı."
 
-#: ui/dialogs/settings-dialog.slint:1759 ui/dialogs/settings-dialog.slint:2800
+#: ui/dialogs/settings-dialog.slint:1647 ui/dialogs/settings-dialog.slint:2688
 msgid "Desktop notifications"
 msgstr "Masaüstü bildirimleri"
 
-#: ui/dialogs/settings-dialog.slint:1760 ui/dialogs/settings-dialog.slint:2801
+#: ui/dialogs/settings-dialog.slint:1648 ui/dialogs/settings-dialog.slint:2689
 msgid "Choose which incoming messages can alert you."
 msgstr "Hangi gelen iletilerin sizi uyarabileceğini seçin."
 
-#: ui/dialogs/settings-dialog.slint:1773
+#: ui/dialogs/settings-dialog.slint:1661
 msgid "Provider synchronization is ready."
 msgstr "Sağlayıcı eşitlemesi hazır."
 
-#: ui/dialogs/settings-dialog.slint:1781 ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:1669 ui/dialogs/settings-dialog.slint:2304
 msgid "Syncing…"
 msgstr "Eşitleniyor…"
 
-#: ui/dialogs/settings-dialog.slint:1781
+#: ui/dialogs/settings-dialog.slint:1669 ui/dialogs/settings-dialog.slint:2827
 msgid "Sync now"
 msgstr "Şimdi eşitle"
 
-#: ui/dialogs/settings-dialog.slint:1800
+#: ui/dialogs/settings-dialog.slint:1688
 msgid "Renderer"
 msgstr "Görüntüleyici"
 
-#: ui/dialogs/settings-dialog.slint:1801
+#: ui/dialogs/settings-dialog.slint:1689
 msgid "Changes take effect after restarting Evanya."
 msgstr "Değişiklikler Evanya yeniden başlatıldığında etkili olur."
 
-#: ui/dialogs/settings-dialog.slint:1801
+#: ui/dialogs/settings-dialog.slint:1689
 msgid "GPU mode is unavailable in this build."
 msgstr "GPU modu bu derlemede kullanılamıyor."
 
-#: ui/dialogs/settings-dialog.slint:1802
+#: ui/dialogs/settings-dialog.slint:1690
 msgid "CPU — Low Memory"
 msgstr "CPU — Düşük Bellek"
 
-#: ui/dialogs/settings-dialog.slint:1802
+#: ui/dialogs/settings-dialog.slint:1690
 msgid "GPU — WGPU"
 msgstr "GPU — WGPU"
 
-#: ui/dialogs/settings-dialog.slint:1816
+#: ui/dialogs/settings-dialog.slint:1704
 msgid "GPU — WGPU could not start, so CPU — Low Memory is active."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1816
+#: ui/dialogs/settings-dialog.slint:1704
 msgid "Restart required. Your current renderer is still active."
 msgstr "Yeniden başlatma gerekiyor. Geçerli görüntüleyiciniz hâlâ etkin."
 
-#: ui/dialogs/settings-dialog.slint:1816
+#: ui/dialogs/settings-dialog.slint:1704
 msgid "Active: GPU — WGPU"
 msgstr "Etkin: GPU — WGPU"
 
-#: ui/dialogs/settings-dialog.slint:1816
+#: ui/dialogs/settings-dialog.slint:1704
 msgid "Active: CPU — Low Memory"
 msgstr "Etkin: CPU — Düşük Bellek"
 
-#: ui/dialogs/settings-dialog.slint:1842 ui/dialogs/settings-dialog.slint:1875
+#: ui/dialogs/settings-dialog.slint:1730 ui/dialogs/settings-dialog.slint:1763
 msgid "Download location"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1851 ui/dialogs/settings-dialog.slint:1884
+#: ui/dialogs/settings-dialog.slint:1739 ui/dialogs/settings-dialog.slint:1772
 msgid ""
 "Saving an attachment asks where to put it, starting in the folder your "
 "system suggests."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:1929
+#: ui/dialogs/settings-dialog.slint:1817
 msgid ""
 "Keep your address book clean while still making frequent recipients easy to "
 "find."
 msgstr ""
 "Sık kullanılan alıcıları kolayca bulurken adres defterinizi düzenli tutun."
 
-#: ui/dialogs/settings-dialog.slint:1951
+#: ui/dialogs/settings-dialog.slint:1839
 msgid "Remember people I email"
 msgstr "E-posta gönderdiğim kişileri hatırla"
 
-#: ui/dialogs/settings-dialog.slint:1952
+#: ui/dialogs/settings-dialog.slint:1840
 msgid ""
 "While enabled, remember To, Cc, and Bcc recipients from new sends and synced "
 "Sent mail."
@@ -5362,11 +5354,11 @@ msgstr ""
 "Etkin olduğunda, yeni gönderilerdeki ve eşitlenen Gönderilmiş postalarındaki "
 "Kime, Bilgi ve Gizli alıcılarını hatırlar."
 
-#: ui/dialogs/settings-dialog.slint:1967
+#: ui/dialogs/settings-dialog.slint:1855
 msgid "Remember incoming senders"
 msgstr "Gelen göndericileri hatırla"
 
-#: ui/dialogs/settings-dialog.slint:1968
+#: ui/dialogs/settings-dialog.slint:1856
 msgid ""
 "Remember human senders from new mail. Automated, spam, trash, and existing "
 "mail are excluded."
@@ -5374,11 +5366,11 @@ msgstr ""
 "Yeni e-postalardaki gerçek göndericileri hatırlayın. Otomatik, spam, çöp "
 "kutusu ve mevcut iletiler hariç tutulur."
 
-#: ui/dialogs/settings-dialog.slint:1983
+#: ui/dialogs/settings-dialog.slint:1871
 msgid "Use suggestions from all accounts"
 msgstr "Tüm hesaplardaki önerileri kullan"
 
-#: ui/dialogs/settings-dialog.slint:1984
+#: ui/dialogs/settings-dialog.slint:1872
 msgid ""
 "Include people emailed from any connected account. Turn off to keep learned "
 "recipients account-specific."
@@ -5386,11 +5378,11 @@ msgstr ""
 "Bağlı herhangi bir hesaptan e-posta gönderilen kişileri dahil edin. "
 "Öğrenilen alıcıları hesaba özel tutmak için kapatın."
 
-#: ui/dialogs/settings-dialog.slint:1999
+#: ui/dialogs/settings-dialog.slint:1887
 msgid "Use suggestions when composing"
 msgstr "Yazarken önerileri kullan"
 
-#: ui/dialogs/settings-dialog.slint:2000
+#: ui/dialogs/settings-dialog.slint:1888
 msgid ""
 "Include learned people in recipient autocomplete. Saved and CardDAV contacts "
 "are always available."
@@ -5398,11 +5390,11 @@ msgstr ""
 "Öğrenilen kişileri alıcı otomatik tamamlamasına dahil edin. Kaydedilmiş ve "
 "CardDAV kişileri her zaman kullanılabilir."
 
-#: ui/dialogs/settings-dialog.slint:2021
+#: ui/dialogs/settings-dialog.slint:1909
 msgid "Suggested people"
 msgstr "Önerilen kişiler"
 
-#: ui/dialogs/settings-dialog.slint:2024
+#: ui/dialogs/settings-dialog.slint:1912
 msgid ""
 "People you email remain available as local suggestions and never sync to "
 "CardDAV. Clear them any time to restart learning."
@@ -5411,15 +5403,15 @@ msgstr ""
 "CardDAV ile hiçbir zaman eşitlenmez. Öğrenmeyi yeniden başlatmak için "
 "istediğiniz zaman temizleyin."
 
-#: ui/dialogs/settings-dialog.slint:2042
+#: ui/dialogs/settings-dialog.slint:1930
 msgid "Clear now"
 msgstr "Şimdi temizle"
 
-#: ui/dialogs/settings-dialog.slint:2042
+#: ui/dialogs/settings-dialog.slint:1930
 msgid "Clear suggested people"
 msgstr "Önerilen kişileri temizle"
 
-#: ui/dialogs/settings-dialog.slint:2077
+#: ui/dialogs/settings-dialog.slint:1965
 msgid ""
 "Manage connected mailboxes and add providers. Drag an account to change its "
 "order everywhere."
@@ -5427,7 +5419,7 @@ msgstr ""
 "Bağlı posta kutularını yönetin ve sağlayıcı ekleyin. Bir hesabın sırasını "
 "her yerde değiştirmek için sürükleyin."
 
-#: ui/dialogs/settings-dialog.slint:2104
+#: ui/dialogs/settings-dialog.slint:1992
 msgid ""
 "Group accounts as Personal or Work and identify them by color in the mail "
 "list."
@@ -5435,15 +5427,15 @@ msgstr ""
 "Hesapları Kişisel veya İş olarak gruplandırın ve posta listesinde "
 "renkleriyle ayırt edin."
 
-#: ui/dialogs/settings-dialog.slint:2113 ui/dialogs/settings-dialog.slint:2143
+#: ui/dialogs/settings-dialog.slint:2001 ui/dialogs/settings-dialog.slint:2031
 msgid "Add profile"
 msgstr "Profil ekle"
 
-#: ui/dialogs/settings-dialog.slint:2127 ui/dialogs/settings-dialog.slint:2135
+#: ui/dialogs/settings-dialog.slint:2015 ui/dialogs/settings-dialog.slint:2023
 msgid "Show account color at the left edge of each message"
 msgstr "Her iletinin sol kenarında hesap rengini göster"
 
-#: ui/dialogs/settings-dialog.slint:2157
+#: ui/dialogs/settings-dialog.slint:2045
 msgid ""
 "No profiles yet. Accounts keep their individual or generated colors until "
 "you create one."
@@ -5451,107 +5443,107 @@ msgstr ""
 "Henüz profil yok. Bir profil oluşturana kadar hesaplar kendi renklerini veya "
 "oluşturulan renkleri kullanır."
 
-#: ui/dialogs/settings-dialog.slint:2202 ui/dialogs/settings-dialog.slint:3461
+#: ui/dialogs/settings-dialog.slint:2090 ui/dialogs/settings-dialog.slint:3391
 msgid "Edit profile"
 msgstr "Profili düzenle"
 
-#: ui/dialogs/settings-dialog.slint:2212 ui/dialogs/settings-dialog.slint:3793
+#: ui/dialogs/settings-dialog.slint:2100 ui/dialogs/settings-dialog.slint:3723
 msgid "Delete profile"
 msgstr "Profili sil"
 
-#: ui/dialogs/settings-dialog.slint:2228 ui/dialogs/settings-dialog.slint:2274
+#: ui/dialogs/settings-dialog.slint:2116 ui/dialogs/settings-dialog.slint:2162
 msgid "Add Gmail"
 msgstr "Gmail ekle"
 
-#: ui/dialogs/settings-dialog.slint:2241 ui/dialogs/settings-dialog.slint:2275
+#: ui/dialogs/settings-dialog.slint:2129 ui/dialogs/settings-dialog.slint:2163
 msgid "Add Outlook"
 msgstr "Outlook ekle"
 
-#: ui/dialogs/settings-dialog.slint:2254 ui/dialogs/settings-dialog.slint:2276
+#: ui/dialogs/settings-dialog.slint:2142 ui/dialogs/settings-dialog.slint:2164
 msgid "Add mail account"
 msgstr "E-posta hesabı ekle"
 
-#: ui/dialogs/settings-dialog.slint:2267 ui/dialogs/settings-dialog.slint:2277
+#: ui/dialogs/settings-dialog.slint:2155 ui/dialogs/settings-dialog.slint:2165
 msgid "Cancel sign-in"
 msgstr "Oturum açmayı iptal et"
 
-#: ui/dialogs/settings-dialog.slint:2383 ui/views/files-view.slint:597
+#: ui/dialogs/settings-dialog.slint:2271 ui/views/files-view.slint:597
 msgid "Rename"
 msgstr "Yeniden adlandır"
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Connected · Gmail"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Connected · JMAP"
 msgstr "Bağlı · JMAP"
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Connected without encryption · POP3 + SMTP"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Connected · POP3 + SMTP"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Connected without encryption · IMAP + SMTP"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Connected · IMAP + SMTP"
 msgstr "Bağlı · IMAP + SMTP"
 
-#: ui/dialogs/settings-dialog.slint:2416
+#: ui/dialogs/settings-dialog.slint:2304
 msgid "Account status: {}"
 msgstr "Hesap durumu: {}"
 
-#: ui/dialogs/settings-dialog.slint:2419
+#: ui/dialogs/settings-dialog.slint:2307
 msgid "Edit account settings"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2419
+#: ui/dialogs/settings-dialog.slint:2307
 msgid "Sign in to this account again"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2436 ui/views/files-view.slint:600
+#: ui/dialogs/settings-dialog.slint:2324 ui/views/files-view.slint:600
 msgid "Folders"
 msgstr "Klasörler"
 
-#: ui/dialogs/settings-dialog.slint:2453
+#: ui/dialogs/settings-dialog.slint:2341
 msgid "Show this account's mail"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2477
+#: ui/dialogs/settings-dialog.slint:2365
 msgid "Reconnect contacts"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2478 ui/views/files-view.slint:523
+#: ui/dialogs/settings-dialog.slint:2366 ui/views/files-view.slint:523
 msgid "Manage"
 msgstr "Yönet"
 
-#: ui/dialogs/settings-dialog.slint:2478
+#: ui/dialogs/settings-dialog.slint:2366
 msgid "Fix CardDAV"
 msgstr "CardDAV'ı onar"
 
-#: ui/dialogs/settings-dialog.slint:2479
+#: ui/dialogs/settings-dialog.slint:2367
 msgid "Google contacts"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2479
+#: ui/dialogs/settings-dialog.slint:2367
 msgid "CardDAV"
 msgstr "CardDAV"
 
-#: ui/dialogs/settings-dialog.slint:2500
+#: ui/dialogs/settings-dialog.slint:2388
 msgid "Mail synchronization error: {}"
 msgstr "E-posta eşitleme hatası: {}"
 
-#: ui/dialogs/settings-dialog.slint:2516
+#: ui/dialogs/settings-dialog.slint:2404
 msgid "Mail history"
 msgstr "E-posta geçmişi"
 
-#: ui/dialogs/settings-dialog.slint:2519
+#: ui/dialogs/settings-dialog.slint:2407
 msgid ""
 "Download the full mailbox. Large accounts can take considerable time and "
 "storage."
@@ -5559,191 +5551,191 @@ msgstr ""
 "Posta kutusunun tamamını indirir. Büyük hesaplar önemli ölçüde zaman ve "
 "depolama gerektirebilir."
 
-#: ui/dialogs/settings-dialog.slint:2520
+#: ui/dialogs/settings-dialog.slint:2408
 msgid "How far back to download. Mail already stored on this device is kept."
 msgstr ""
 "Ne kadar geriye indirileceği. Bu cihazda zaten depolanan e-postalar korunur."
 
-#: ui/dialogs/settings-dialog.slint:2533
+#: ui/dialogs/settings-dialog.slint:2421
 msgid "Sent copies"
 msgstr "Gönderilen kopyalar"
 
-#: ui/dialogs/settings-dialog.slint:2535
+#: ui/dialogs/settings-dialog.slint:2423
 msgid ""
 "Choose who saves sent mail. Use Evanya if your server does not save a copy."
 msgstr ""
 "Gönderilen postaları kimin kaydedeceğini seçin. Sunucunuz bir kopya "
 "kaydetmiyorsa Evanya kullanın."
 
-#: ui/dialogs/settings-dialog.slint:2536
+#: ui/dialogs/settings-dialog.slint:2424
 msgid "Provider default"
 msgstr "Sağlayıcı varsayılanı"
 
-#: ui/dialogs/settings-dialog.slint:2536
+#: ui/dialogs/settings-dialog.slint:2424
 msgid "Server saves a copy"
 msgstr "Sunucu bir kopya kaydeder"
 
-#: ui/dialogs/settings-dialog.slint:2536
+#: ui/dialogs/settings-dialog.slint:2424
 msgid "Evanya saves a copy"
 msgstr "Evanya bir kopya kaydeder"
 
-#: ui/dialogs/settings-dialog.slint:2550
+#: ui/dialogs/settings-dialog.slint:2438
 msgid "Keep mail on the server"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2554
+#: ui/dialogs/settings-dialog.slint:2442
 msgid "Evanya never removes mail from the server."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2555
+#: ui/dialogs/settings-dialog.slint:2443
 msgid "Mail is removed after this time, or once deleted here."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2571
+#: ui/dialogs/settings-dialog.slint:2459
 msgid "This server removes mail as soon as it's downloaded."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2572
+#: ui/dialogs/settings-dialog.slint:2460
 msgid "This server removes downloaded mail after one day."
 msgid_plural "This server removes downloaded mail after {n} days."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ui/dialogs/settings-dialog.slint:2583
+#: ui/dialogs/settings-dialog.slint:2471
 msgid ""
 "Mail removed from the server is kept only on this device. Database snapshots "
 "in Storage include it."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2607
+#: ui/dialogs/settings-dialog.slint:2495
 msgid "Uses the {} color in the mail list"
 msgstr "Posta listesinde {} rengini kullanır"
 
-#: ui/dialogs/settings-dialog.slint:2609
+#: ui/dialogs/settings-dialog.slint:2497
 msgid "Uses a custom account color"
 msgstr "Özel hesap rengi kullanır"
 
-#: ui/dialogs/settings-dialog.slint:2610
+#: ui/dialogs/settings-dialog.slint:2498
 msgid "Uses a generated account color"
 msgstr "Oluşturulan hesap rengini kullanır"
 
-#: ui/dialogs/settings-dialog.slint:2654
+#: ui/dialogs/settings-dialog.slint:2542
 msgid "OAuth app credentials"
 msgstr "OAuth uygulama kimlik bilgileri"
 
-#: ui/dialogs/settings-dialog.slint:2654
+#: ui/dialogs/settings-dialog.slint:2542
 msgid "Custom desktop app credentials are configured."
 msgstr "Özel masaüstü uygulaması kimlik bilgileri yapılandırıldı."
 
-#: ui/dialogs/settings-dialog.slint:2654
+#: ui/dialogs/settings-dialog.slint:2542
 msgid "Advanced: use your own Gmail or Microsoft desktop app registration."
 msgstr ""
 "Gelişmiş: kendi Gmail veya Microsoft masaüstü uygulaması kaydınızı kullanın."
 
-#: ui/dialogs/settings-dialog.slint:2655
+#: ui/dialogs/settings-dialog.slint:2543
 msgid "Hide"
 msgstr "Gizle"
 
-#: ui/dialogs/settings-dialog.slint:2655
+#: ui/dialogs/settings-dialog.slint:2543
 msgid "Configure"
 msgstr "Yapılandır"
 
-#: ui/dialogs/settings-dialog.slint:2658 ui/dialogs/settings-dialog.slint:2659
+#: ui/dialogs/settings-dialog.slint:2546 ui/dialogs/settings-dialog.slint:2547
 msgid "Gmail desktop client ID"
 msgstr "Gmail masaüstü istemci kimliği"
 
-#: ui/dialogs/settings-dialog.slint:2658 ui/dialogs/settings-dialog.slint:2659
+#: ui/dialogs/settings-dialog.slint:2546 ui/dialogs/settings-dialog.slint:2547
 msgid "Gmail client secret (optional)"
 msgstr "Gmail istemci gizli anahtarı (isteğe bağlı)"
 
-#: ui/dialogs/settings-dialog.slint:2658
+#: ui/dialogs/settings-dialog.slint:2546
 msgid "Save Gmail"
 msgstr "Gmail'i kaydet"
 
-#: ui/dialogs/settings-dialog.slint:2659
+#: ui/dialogs/settings-dialog.slint:2547
 msgid "Save Gmail settings"
 msgstr "Gmail ayarlarını kaydet"
 
-#: ui/dialogs/settings-dialog.slint:2660
+#: ui/dialogs/settings-dialog.slint:2548
 msgid "Save Outlook"
 msgstr "Outlook'u kaydet"
 
-#: ui/dialogs/settings-dialog.slint:2661
+#: ui/dialogs/settings-dialog.slint:2549
 msgid ""
 "Outlook public desktop clients use PKCE and do not need a client secret."
 msgstr ""
 "Outlook genel masaüstü istemcileri PKCE kullanır ve istemci gizli anahtarı "
 "gerektirmez."
 
-#: ui/dialogs/settings-dialog.slint:2667
+#: ui/dialogs/settings-dialog.slint:2555
 msgid "Connect CardDAV"
 msgstr "CardDAV bağla"
 
-#: ui/dialogs/settings-dialog.slint:2667
+#: ui/dialogs/settings-dialog.slint:2555
 msgid "Sync contacts with a standards-compliant CardDAV server."
 msgstr "Kişileri standartlara uygun bir CardDAV sunucusuyla eşitleyin."
 
-#: ui/dialogs/settings-dialog.slint:2670
+#: ui/dialogs/settings-dialog.slint:2558
 msgid "https://contacts.example.com/"
 msgstr "https://kisiler.ornek.com/"
 
-#: ui/dialogs/settings-dialog.slint:2671 ui/dialogs/settings-dialog.slint:3225
-#: ui/dialogs/settings-dialog.slint:3355
+#: ui/dialogs/settings-dialog.slint:2559 ui/dialogs/settings-dialog.slint:3155
+#: ui/dialogs/settings-dialog.slint:3285
 msgid "Username"
 msgstr "Kullanıcı adı"
 
-#: ui/dialogs/settings-dialog.slint:2671 ui/dialogs/settings-dialog.slint:3233
+#: ui/dialogs/settings-dialog.slint:2559 ui/dialogs/settings-dialog.slint:3163
 msgid "App password"
 msgstr "Uygulama parolası"
 
-#: ui/dialogs/settings-dialog.slint:2672
+#: ui/dialogs/settings-dialog.slint:2560
 msgid "Disconnect"
 msgstr "Bağlantıyı kes"
 
-#: ui/dialogs/settings-dialog.slint:2672 ui/dialogs/settings-dialog.slint:3260
+#: ui/dialogs/settings-dialog.slint:2560 ui/dialogs/settings-dialog.slint:3190
 msgid "Reconnect"
 msgstr "Yeniden bağlan"
 
-#: ui/dialogs/settings-dialog.slint:2672 ui/dialogs/settings-dialog.slint:3260
+#: ui/dialogs/settings-dialog.slint:2560 ui/dialogs/settings-dialog.slint:3190
 msgid "Connect"
 msgstr "Bağlan"
 
-#: ui/dialogs/settings-dialog.slint:2694
+#: ui/dialogs/settings-dialog.slint:2582
 msgid "See what Evanya stores locally and manage the data on this device."
 msgstr ""
 "Evanya'nın yerel olarak neleri depoladığını görün ve bu cihazdaki verileri "
 "yönetin."
 
-#: ui/dialogs/settings-dialog.slint:2720
+#: ui/dialogs/settings-dialog.slint:2608
 msgid "Mail on this device"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2720
+#: ui/dialogs/settings-dialog.slint:2608
 msgid ""
 "Mail you imported. It is kept only here, so export it to keep a copy "
 "elsewhere."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2722 ui/dialogs/settings-dialog.slint:3742
+#: ui/dialogs/settings-dialog.slint:2610 ui/dialogs/settings-dialog.slint:3672
 msgid "One message"
 msgid_plural "{} messages"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ui/dialogs/settings-dialog.slint:2730 ui/dialogs/settings-dialog.slint:3722
-#: ui/dialogs/settings-dialog.slint:3770
+#: ui/dialogs/settings-dialog.slint:2618 ui/dialogs/settings-dialog.slint:3652
+#: ui/dialogs/settings-dialog.slint:3700
 msgid "Export mail…"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2731 ui/views/files-view.slint:619
+#: ui/dialogs/settings-dialog.slint:2619 ui/views/files-view.slint:619
 msgid "Delete…"
 msgstr "Sil…"
 
-#: ui/dialogs/settings-dialog.slint:2739
+#: ui/dialogs/settings-dialog.slint:2627
 msgid "Database snapshot"
 msgstr "Veritabanı anlık görüntüsü"
 
-#: ui/dialogs/settings-dialog.slint:2739
+#: ui/dialogs/settings-dialog.slint:2627
 msgid ""
 "Export verified copies of the mail and calendar databases with their schema "
 "versions."
@@ -5751,7 +5743,7 @@ msgstr ""
 "E-posta ve takvim veritabanlarının doğrulanmış kopyalarını şema sürümleriyle "
 "birlikte dışa aktarın."
 
-#: ui/dialogs/settings-dialog.slint:2741
+#: ui/dialogs/settings-dialog.slint:2629
 msgid ""
 "The snapshot contains private local mail and settings, but not passwords or "
 "OAuth tokens. Store it securely."
@@ -5759,15 +5751,15 @@ msgstr ""
 "Anlık görüntü özel yerel e-postaları ve ayarları içerir; parolaları veya "
 "OAuth belirteçlerini içermez. Güvenli biçimde saklayın."
 
-#: ui/dialogs/settings-dialog.slint:2742
+#: ui/dialogs/settings-dialog.slint:2630
 msgid "Export snapshot"
 msgstr "Anlık görüntüyü dışa aktar"
 
-#: ui/dialogs/settings-dialog.slint:2749
+#: ui/dialogs/settings-dialog.slint:2637
 msgid "Transfer account setup"
 msgstr "Hesap kurulumunu aktar"
 
-#: ui/dialogs/settings-dialog.slint:2749
+#: ui/dialogs/settings-dialog.slint:2637
 msgid ""
 "Import accounts and mail from Thunderbird, K-9 Mail, mail files, or a "
 "backup, or export one connected account and your preferences."
@@ -5777,7 +5769,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: ui/dialogs/settings-dialog.slint:2751
+#: ui/dialogs/settings-dialog.slint:2639
 msgid ""
 "Passwords and OAuth tokens stay in the system keyring. A restored device "
 "asks you to sign in securely."
@@ -5785,15 +5777,15 @@ msgstr ""
 "Parolalar ve OAuth belirteçleri sistem anahtarlığında kalır. Geri yüklenen "
 "bir cihaz sizden güvenli oturum açmanızı ister."
 
-#: ui/dialogs/settings-dialog.slint:2760
+#: ui/dialogs/settings-dialog.slint:2648
 msgid "Export"
 msgstr "Dışa aktar"
 
-#: ui/dialogs/settings-dialog.slint:2767
+#: ui/dialogs/settings-dialog.slint:2655
 msgid "Delete all local data"
 msgstr "Tüm yerel verileri sil"
 
-#: ui/dialogs/settings-dialog.slint:2767
+#: ui/dialogs/settings-dialog.slint:2655
 msgid ""
 "Remove accounts, downloaded mail, calendars, contacts, preferences, and "
 "credentials from this device."
@@ -5801,247 +5793,255 @@ msgstr ""
 "Hesapları, indirilen e-postaları, takvimleri, kişileri, tercihleri ve kimlik "
 "bilgilerini bu cihazdan kaldırır."
 
-#: ui/dialogs/settings-dialog.slint:2769
+#: ui/dialogs/settings-dialog.slint:2657
 msgid ""
 "Imported mail and the mail of any POP3 account are stored only on this "
 "device. Nothing is deleted from Gmail, Outlook, or IMAP servers."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2769
+#: ui/dialogs/settings-dialog.slint:2657
 msgid ""
 "POP3 mail is stored only on this device. Nothing is deleted from Gmail, "
 "Outlook, or IMAP servers."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2769
+#: ui/dialogs/settings-dialog.slint:2657
 msgid "This does not delete anything from Gmail, Outlook, or your IMAP server."
 msgstr "Bu işlem Gmail, Outlook veya IMAP sunucunuzdaki hiçbir şeyi silmez."
 
-#: ui/dialogs/settings-dialog.slint:2770 ui/dialogs/settings-dialog.slint:3726
+#: ui/dialogs/settings-dialog.slint:2658 ui/dialogs/settings-dialog.slint:3656
 msgid "Delete everything"
 msgstr "Tümünü sil"
 
-#: ui/dialogs/settings-dialog.slint:2784
+#: ui/dialogs/settings-dialog.slint:2672
 msgid "Choose how Evanya gets your attention."
 msgstr "Evanya'nın sizi nasıl uyaracağını seçin."
 
-#: ui/dialogs/settings-dialog.slint:2811
+#: ui/dialogs/settings-dialog.slint:2699
 msgid "Notification sounds"
 msgstr "Bildirim sesleri"
 
-#: ui/dialogs/settings-dialog.slint:2812
+#: ui/dialogs/settings-dialog.slint:2700
 msgid "Play a sound for new mail and sent messages."
 msgstr "Yeni e-postalar ve gönderilen iletiler için ses çalar."
 
-#: ui/dialogs/settings-dialog.slint:2832
+#: ui/dialogs/settings-dialog.slint:2720
 msgid "Keyboard shortcuts"
 msgstr "Klavye kısayolları"
 
-#: ui/dialogs/settings-dialog.slint:2833
+#: ui/dialogs/settings-dialog.slint:2721
 msgid "Move through mail without leaving the keyboard."
 msgstr "E-postalara klavyeden ayrılmadan göz atın."
 
-#: ui/dialogs/settings-dialog.slint:2835
+#: ui/dialogs/settings-dialog.slint:2723
 msgid "Compose a new message"
 msgstr "Yeni ileti yaz"
 
-#: ui/dialogs/settings-dialog.slint:2836 ui/views/mail-list-pane.slint:723
+#: ui/dialogs/settings-dialog.slint:2724 ui/views/mail-list-pane.slint:723
 msgid "Search mail"
 msgstr "E-posta ara"
 
 #. Local mail has no archive or spam.
-#: ui/dialogs/settings-dialog.slint:2837 ui/views/mail-list-pane.slint:1639
+#: ui/dialogs/settings-dialog.slint:2725 ui/views/mail-list-pane.slint:1639
 #: ui/views/mail-reading-pane.slint:365
 msgid "Archive"
 msgstr "Arşivle"
 
-#: ui/dialogs/settings-dialog.slint:2838 ui/views/mail-list-pane.slint:805
+#: ui/dialogs/settings-dialog.slint:2726 ui/views/mail-list-pane.slint:805
 #: ui/views/mail-reading-pane.slint:349 ui/views/mail-reading-pane.slint:795
 msgid "Move to spam"
 msgstr "İstenmeyene taşı"
 
-#: ui/dialogs/settings-dialog.slint:2839 ui/views/mail-list-pane.slint:814
+#: ui/dialogs/settings-dialog.slint:2727 ui/views/mail-list-pane.slint:814
 #: ui/views/mail-reading-pane.slint:332 ui/views/mail-reading-pane.slint:367
 #: ui/views/mail-reading-pane.slint:399
 msgid "Move to trash"
 msgstr "Çöp kutusuna taşı"
 
-#: ui/dialogs/settings-dialog.slint:2841
+#: ui/dialogs/settings-dialog.slint:2729
 msgid "Navigation"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2842
+#: ui/dialogs/settings-dialog.slint:2730
 msgid "Move between messages"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2843
+#: ui/dialogs/settings-dialog.slint:2731
 msgid "Open message"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2844
+#: ui/dialogs/settings-dialog.slint:2732
 msgid "Select message"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2845
+#: ui/dialogs/settings-dialog.slint:2733
 msgid "Switch between list and message"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2847
+#: ui/dialogs/settings-dialog.slint:2735
 msgid "Reading"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2848 ui/views/mail-reading-pane.slint:1260
+#: ui/dialogs/settings-dialog.slint:2736 ui/views/mail-reading-pane.slint:1260
 msgid "Find in message"
 msgstr "İletide bul"
 
-#: ui/dialogs/settings-dialog.slint:2852 ui/views/mail-reading-pane.slint:1589
+#: ui/dialogs/settings-dialog.slint:2740 ui/views/mail-reading-pane.slint:1589
 msgid "Caret browsing"
 msgstr "İmleçle gezinme"
 
-#: ui/dialogs/settings-dialog.slint:2858
+#: ui/dialogs/settings-dialog.slint:2746
 msgid "Next tab"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2859
+#: ui/dialogs/settings-dialog.slint:2747
 msgid "Previous tab"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2860
+#: ui/dialogs/settings-dialog.slint:2748
 msgid "Go to tab 1–8"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2861
+#: ui/dialogs/settings-dialog.slint:2749
 msgid "Go to last tab"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2881
-msgid ""
-"Optional paid services from Flectar. Evanya stays free and works without "
-"them."
+#: ui/dialogs/settings-dialog.slint:2769
+msgid "Keep Evanya the same on all your computers."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2886
+#: ui/dialogs/settings-dialog.slint:2786
 msgid "Sync"
 msgstr "Eşitle"
 
-#: ui/dialogs/settings-dialog.slint:2887
-msgid "Your setup on every device"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:2888
+#: ui/dialogs/settings-dialog.slint:2789
 msgid ""
-"Sign in on a new phone or computer and your accounts, calendars, contacts, "
-"and preferences are ready without setting them up again."
+"Your accounts, profiles, account colors and preferences are kept in one file "
+"in a directory that Nextcloud, Syncthing, Dropbox or a similar tool keeps in "
+"step between your computers. Evanya takes over what changed on another "
+"computer and adds its accounts."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2890
-msgid "Mail accounts, profiles, and signatures"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:2891
-msgid "Calendar and contact connections"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:2892
-msgid "Themes, layout, and notification preferences"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:2893
-msgid "Account credentials, encrypted on this device before upload"
-msgstr ""
-
-#: ui/dialogs/settings-dialog.slint:2895
+#: ui/dialogs/settings-dialog.slint:2795
 msgid ""
-"Your messages stay with your mail provider. Sync only carries your Evanya "
-"setup."
+"Passwords stay on each computer: sign in once to an account that arrives "
+"this way. Mail comes from your mail servers, as always."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2907
-msgid ""
-"These services are in development. Plans and availability will be announced "
-"on flectar.com/mail."
+#: ui/dialogs/settings-dialog.slint:2801
+msgid "No directory chosen."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:2926
+#: ui/dialogs/settings-dialog.slint:2808
+msgid "Synchronizing…"
+msgstr ""
+
+#: ui/dialogs/settings-dialog.slint:2810
+msgid "Not synchronized yet."
+msgstr ""
+
+#: ui/dialogs/settings-dialog.slint:2811
+msgid "Synchronized at {}; added one account."
+msgid_plural "Synchronized at {}; added {n} accounts."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ui/dialogs/settings-dialog.slint:2812
+msgid "Synchronized at {}."
+msgstr ""
+
+#: ui/dialogs/settings-dialog.slint:2822
+msgid "Choose directory…"
+msgstr ""
+
+#: ui/dialogs/settings-dialog.slint:2822
+msgid "Change directory…"
+msgstr ""
+
+#: ui/dialogs/settings-dialog.slint:2832
+msgid "Stop syncing"
+msgstr ""
+
+#: ui/dialogs/settings-dialog.slint:2856
 msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr ""
 "Evanya, Flectar ve topluluğu tarafından geliştirilen Flectar Mail'e dayanır."
 
-#: ui/dialogs/settings-dialog.slint:2942 ui/views/onboarding-view.slint:130
+#: ui/dialogs/settings-dialog.slint:2872 ui/views/onboarding-view.slint:130
 msgid "Evanya logo"
 msgstr "Evanya logosu"
 
-#: ui/dialogs/settings-dialog.slint:2962
+#: ui/dialogs/settings-dialog.slint:2892
 msgid "A native mail client for a calm, private inbox."
 msgstr "Sakin ve özel bir gelen kutusu için yerel bir e-posta istemcisi."
 
-#: ui/dialogs/settings-dialog.slint:2974
+#: ui/dialogs/settings-dialog.slint:2904
 msgid "Version {}"
 msgstr "Sürüm {}"
 
-#: ui/dialogs/settings-dialog.slint:2985
+#: ui/dialogs/settings-dialog.slint:2915
 msgid "Credits"
 msgstr "Emeği geçenler"
 
-#: ui/dialogs/settings-dialog.slint:2985
+#: ui/dialogs/settings-dialog.slint:2915
 msgid "Built by Flectar with help from the open-source community."
 msgstr "Flectar tarafından açık kaynak topluluğunun yardımıyla geliştirildi."
 
-#: ui/dialogs/settings-dialog.slint:2995
+#: ui/dialogs/settings-dialog.slint:2925
 msgid "Flectar"
 msgstr "Flectar"
 
-#: ui/dialogs/settings-dialog.slint:2996
+#: ui/dialogs/settings-dialog.slint:2926
 msgid "Company website"
 msgstr "Şirket web sitesi"
 
-#: ui/dialogs/settings-dialog.slint:3006
+#: ui/dialogs/settings-dialog.slint:2936
 msgid "Open-source contributors"
 msgstr "Açık kaynak katkıcıları"
 
-#: ui/dialogs/settings-dialog.slint:3007
+#: ui/dialogs/settings-dialog.slint:2937
 msgid "Meet the people who have contributed on GitHub"
 msgstr "GitHub'da katkıda bulunan kişilerle tanışın"
 
-#: ui/dialogs/settings-dialog.slint:3020
+#: ui/dialogs/settings-dialog.slint:2950
 msgid "License"
 msgstr "Lisans"
 
-#: ui/dialogs/settings-dialog.slint:3020
+#: ui/dialogs/settings-dialog.slint:2950
 msgid "AGPL-3.0-only."
 msgstr "Yalnızca AGPL-3.0."
 
-#: ui/dialogs/settings-dialog.slint:3020
+#: ui/dialogs/settings-dialog.slint:2950
 msgid ""
 "Evanya is released under the GNU Affero General Public License v3.0 only."
 msgstr ""
 "Evanya yalnızca GNU Affero Genel Kamu Lisansı v3.0 kapsamında yayımlanır."
 
-#: ui/dialogs/settings-dialog.slint:3026
+#: ui/dialogs/settings-dialog.slint:2956
 msgid "Third-party components retain their own licenses and notices."
 msgstr "Üçüncü taraf bileşenler kendi lisanslarını ve bildirimlerini korur."
 
-#: ui/dialogs/settings-dialog.slint:3053
+#: ui/dialogs/settings-dialog.slint:2983
 msgid "Settings sections"
 msgstr "Ayarlar bölümleri"
 
-#: ui/dialogs/settings-dialog.slint:3065
+#: ui/dialogs/settings-dialog.slint:2995
 msgid "Close settings"
 msgstr "Ayarları kapat"
 
-#: ui/dialogs/settings-dialog.slint:3087
+#: ui/dialogs/settings-dialog.slint:3017
 msgid "Close settings sections"
 msgstr "Ayarlar bölümlerini kapat"
 
-#: ui/dialogs/settings-dialog.slint:3135 ui/dialogs/settings-dialog.slint:3184
+#: ui/dialogs/settings-dialog.slint:3065 ui/dialogs/settings-dialog.slint:3114
 msgid "CalDAV settings"
 msgstr "CalDAV ayarları"
 
-#: ui/dialogs/settings-dialog.slint:3185
+#: ui/dialogs/settings-dialog.slint:3115
 msgid "Discover new calendars."
 msgstr "Yeni takvimler keşfedin."
 
-#: ui/dialogs/settings-dialog.slint:3185
+#: ui/dialogs/settings-dialog.slint:3115
 msgid ""
 "Works with iCloud, Fastmail, Nextcloud, and standards-compliant CalDAV "
 "servers."
@@ -6049,168 +6049,168 @@ msgstr ""
 "iCloud, Fastmail, Nextcloud ve standartlara uygun CalDAV sunucularıyla "
 "çalışır."
 
-#: ui/dialogs/settings-dialog.slint:3210
+#: ui/dialogs/settings-dialog.slint:3140
 msgid "Server address"
 msgstr "Sunucu adresi"
 
-#: ui/dialogs/settings-dialog.slint:3212
+#: ui/dialogs/settings-dialog.slint:3142
 msgid "https://calendar.example.com/"
 msgstr "https://takvim.ornek.com/"
 
-#: ui/dialogs/settings-dialog.slint:3217
+#: ui/dialogs/settings-dialog.slint:3147
 msgid ""
 "To sync one calendar, such as a shared mailbox's, enter that calendar's own "
 "address."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3227
+#: ui/dialogs/settings-dialog.slint:3157
 msgid "Usually your email address"
 msgstr "Genellikle e-posta adresiniz"
 
-#: ui/dialogs/settings-dialog.slint:3233
+#: ui/dialogs/settings-dialog.slint:3163
 msgid "New app password · Optional"
 msgstr "Yeni uygulama parolası · İsteğe bağlı"
 
-#: ui/dialogs/settings-dialog.slint:3235
+#: ui/dialogs/settings-dialog.slint:3165
 msgid "Leave blank to keep the current password"
 msgstr "Geçerli parolayı korumak için boş bırakın"
 
-#: ui/dialogs/settings-dialog.slint:3235 ui/dialogs/settings-dialog.slint:3357
+#: ui/dialogs/settings-dialog.slint:3165 ui/dialogs/settings-dialog.slint:3287
 msgid "Stored securely in your system keyring"
 msgstr "Sistem anahtarlığınızda güvenle saklanır"
 
-#: ui/dialogs/settings-dialog.slint:3260 ui/dialogs/settings-dialog.slint:3440
+#: ui/dialogs/settings-dialog.slint:3190 ui/dialogs/settings-dialog.slint:3370
 msgid "Connecting…"
 msgstr "Bağlanıyor…"
 
-#: ui/dialogs/settings-dialog.slint:3278
+#: ui/dialogs/settings-dialog.slint:3208
 msgid "Edit mail account"
 msgstr "E-posta hesabını düzenle"
 
-#: ui/dialogs/settings-dialog.slint:3278 ui/dialogs/settings-dialog.slint:3326
+#: ui/dialogs/settings-dialog.slint:3208 ui/dialogs/settings-dialog.slint:3256
 msgid "Connect a mail account"
 msgstr "E-posta hesabı bağla"
 
-#: ui/dialogs/settings-dialog.slint:3326
+#: ui/dialogs/settings-dialog.slint:3256
 msgid "Edit {}"
 msgstr "Düzenle: {}"
 
-#: ui/dialogs/settings-dialog.slint:3327
+#: ui/dialogs/settings-dialog.slint:3257
 msgid "Uses JMAP for mail sync and sending, with automatic discovery."
 msgstr "Otomatik keşifle eşitleme ve gönderme için JMAP kullanır."
 
-#: ui/dialogs/settings-dialog.slint:3327
+#: ui/dialogs/settings-dialog.slint:3257
 msgid ""
 "Downloads mail from a POP3 server to this device and sends through SMTP."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3327
+#: ui/dialogs/settings-dialog.slint:3257
 msgid "Uses separate IMAP and SMTP servers for mail sync and sending."
 msgstr "Eşitleme ve gönderme için ayrı IMAP ve SMTP sunucuları kullanır."
 
-#: ui/dialogs/settings-dialog.slint:3347 ui/dialogs/settings-dialog.slint:3354
+#: ui/dialogs/settings-dialog.slint:3277 ui/dialogs/settings-dialog.slint:3284
 msgid "name@example.com"
 msgstr "ad@ornek.com"
 
-#: ui/dialogs/settings-dialog.slint:3348 ui/dialogs/settings-dialog.slint:3355
+#: ui/dialogs/settings-dialog.slint:3278 ui/dialogs/settings-dialog.slint:3285
 msgid "POP3 username"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3348 ui/dialogs/settings-dialog.slint:3355
+#: ui/dialogs/settings-dialog.slint:3278 ui/dialogs/settings-dialog.slint:3285
 msgid "IMAP username"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3348 ui/dialogs/settings-dialog.slint:3355
+#: ui/dialogs/settings-dialog.slint:3278 ui/dialogs/settings-dialog.slint:3285
 #: ui/views/onboarding-view.slint:296
 msgid "A name or an email address"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3357 ui/views/onboarding-view.slint:309
+#: ui/dialogs/settings-dialog.slint:3287 ui/views/onboarding-view.slint:309
 msgid "Password, app password, or API token"
 msgstr "Parola, uygulama parolası veya API belirteci"
 
-#: ui/dialogs/settings-dialog.slint:3357 ui/views/onboarding-view.slint:309
+#: ui/dialogs/settings-dialog.slint:3287 ui/views/onboarding-view.slint:309
 msgid "Password or app password"
 msgstr "Parola veya uygulama parolası"
 
-#: ui/dialogs/settings-dialog.slint:3358
+#: ui/dialogs/settings-dialog.slint:3288
 msgid "SMTP username · Optional"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3358
+#: ui/dialogs/settings-dialog.slint:3288
 msgid "Same as the incoming username"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3359
+#: ui/dialogs/settings-dialog.slint:3289
 msgid "SMTP password · Optional"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3359
+#: ui/dialogs/settings-dialog.slint:3289
 msgid "Leave empty to keep the current one"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3359 ui/views/onboarding-view.slint:321
+#: ui/dialogs/settings-dialog.slint:3289 ui/views/onboarding-view.slint:321
 msgid "Only when sending needs another password"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3360 ui/views/onboarding-view.slint:301
+#: ui/dialogs/settings-dialog.slint:3290 ui/views/onboarding-view.slint:301
 msgid "Account name · Optional"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3360 ui/views/onboarding-view.slint:304
+#: ui/dialogs/settings-dialog.slint:3290 ui/views/onboarding-view.slint:304
 msgid "Shown in the sidebar instead of the email address"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3367 ui/views/onboarding-view.slint:331
+#: ui/dialogs/settings-dialog.slint:3297 ui/views/onboarding-view.slint:331
 msgid "IMAP"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3368 ui/views/onboarding-view.slint:339
+#: ui/dialogs/settings-dialog.slint:3298 ui/views/onboarding-view.slint:339
 msgid "POP3"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3369 ui/views/onboarding-view.slint:347
+#: ui/dialogs/settings-dialog.slint:3299 ui/views/onboarding-view.slint:347
 msgid "JMAP"
 msgstr "JMAP"
 
-#: ui/dialogs/settings-dialog.slint:3373
+#: ui/dialogs/settings-dialog.slint:3303
 msgid "Server address · Optional"
 msgstr "Sunucu adresi · İsteğe bağlı"
 
-#: ui/dialogs/settings-dialog.slint:3375
+#: ui/dialogs/settings-dialog.slint:3305
 msgid "Discovered from your email domain"
 msgstr "E-posta etki alanınızdan keşfedilir"
 
-#: ui/dialogs/settings-dialog.slint:3382 ui/views/onboarding-view.slint:371
+#: ui/dialogs/settings-dialog.slint:3312 ui/views/onboarding-view.slint:371
 msgid "POP3 server"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3382 ui/views/onboarding-view.slint:371
+#: ui/dialogs/settings-dialog.slint:3312 ui/views/onboarding-view.slint:371
 msgid "IMAP server"
 msgstr "IMAP sunucusu"
 
-#: ui/dialogs/settings-dialog.slint:3382
+#: ui/dialogs/settings-dialog.slint:3312
 msgid "pop.example.com"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3382
+#: ui/dialogs/settings-dialog.slint:3312
 msgid "imap.example.com"
 msgstr "imap.ornek.com"
 
-#: ui/dialogs/settings-dialog.slint:3383 ui/dialogs/settings-dialog.slint:3390
+#: ui/dialogs/settings-dialog.slint:3313 ui/dialogs/settings-dialog.slint:3320
 #: ui/views/onboarding-view.slint:401
 msgid "Port"
 msgstr "Bağlantı noktası"
 
-#: ui/dialogs/settings-dialog.slint:3389 ui/views/onboarding-view.slint:393
+#: ui/dialogs/settings-dialog.slint:3319 ui/views/onboarding-view.slint:393
 msgid "SMTP server"
 msgstr "SMTP sunucusu"
 
-#: ui/dialogs/settings-dialog.slint:3389
+#: ui/dialogs/settings-dialog.slint:3319
 msgid "smtp.example.com"
 msgstr "smtp.ornek.com"
 
-#: ui/dialogs/settings-dialog.slint:3393 ui/views/onboarding-view.slint:409
+#: ui/dialogs/settings-dialog.slint:3323 ui/views/onboarding-view.slint:409
 msgid ""
 "Proton Bridge: use the local servers, ports and password shown in Bridge, "
 "and match its encryption settings."
@@ -6218,71 +6218,71 @@ msgstr ""
 "Proton Bridge: Bridge'de gösterilen yerel sunucuları, bağlantı noktalarını "
 "ve parolayı kullanın ve şifreleme ayarlarını ona uygun yapın."
 
-#: ui/dialogs/settings-dialog.slint:3440
+#: ui/dialogs/settings-dialog.slint:3370
 msgid "Save account"
 msgstr "Hesabı kaydet"
 
-#: ui/dialogs/settings-dialog.slint:3440 ui/views/onboarding-view.slint:442
+#: ui/dialogs/settings-dialog.slint:3370 ui/views/onboarding-view.slint:442
 msgid "Connect account"
 msgstr "Hesabı bağla"
 
-#: ui/dialogs/settings-dialog.slint:3461 ui/dialogs/settings-dialog.slint:3517
+#: ui/dialogs/settings-dialog.slint:3391 ui/dialogs/settings-dialog.slint:3447
 msgid "Create profile"
 msgstr "Profil oluştur"
 
-#: ui/dialogs/settings-dialog.slint:3518
+#: ui/dialogs/settings-dialog.slint:3448
 msgid ""
 "Its color marks its accounts' mail, and choosing it shows only their mail."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3523
+#: ui/dialogs/settings-dialog.slint:3453
 msgid "Profile name"
 msgstr "Profil adı"
 
-#: ui/dialogs/settings-dialog.slint:3525
+#: ui/dialogs/settings-dialog.slint:3455
 msgid "Personal or Work"
 msgstr "Kişisel veya İş"
 
-#: ui/dialogs/settings-dialog.slint:3531 ui/views/mail-reading-pane.slint:1992
+#: ui/dialogs/settings-dialog.slint:3461 ui/views/mail-reading-pane.slint:1992
 msgid "Color"
 msgstr "Renk"
 
-#: ui/dialogs/settings-dialog.slint:3540
+#: ui/dialogs/settings-dialog.slint:3470
 msgid "Profile color {}"
 msgstr "Profil rengi {}"
 
-#: ui/dialogs/settings-dialog.slint:3582
+#: ui/dialogs/settings-dialog.slint:3512
 msgid "Save profile"
 msgstr "Profili kaydet"
 
-#: ui/dialogs/settings-dialog.slint:3590
+#: ui/dialogs/settings-dialog.slint:3520
 msgid "Could not save this profile. Check the name and try again."
 msgstr "Bu profil kaydedilemedi. Adı kontrol edip tekrar deneyin."
 
-#: ui/dialogs/settings-dialog.slint:3608
+#: ui/dialogs/settings-dialog.slint:3538
 msgid "Choose a profile for {}"
 msgstr "{} için bir profil seçin"
 
-#: ui/dialogs/settings-dialog.slint:3656
+#: ui/dialogs/settings-dialog.slint:3586
 msgid "Folders in the sidebar"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3658
+#: ui/dialogs/settings-dialog.slint:3588
 msgid ""
 "Switch off the folders and labels you don't want to see. They keep "
 "synchronizing and stay searchable. Inbox, Sent and the other standard "
 "mailboxes always show."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3664
+#: ui/dialogs/settings-dialog.slint:3594
 msgid "This account has no folders or labels of its own."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3715
+#: ui/dialogs/settings-dialog.slint:3645
 msgid "Delete all local data?"
 msgstr "Tüm yerel veriler silinsin mi?"
 
-#: ui/dialogs/settings-dialog.slint:3716
+#: ui/dialogs/settings-dialog.slint:3646
 msgid ""
 "This removes every account, downloaded message, calendar, contact, "
 "preference, and credential stored by Evanya on this device."
@@ -6290,84 +6290,84 @@ msgstr ""
 "Bu işlem Evanya'nın bu cihazda depoladığı tüm hesapları, indirilen "
 "iletileri, takvimleri, kişileri, tercihleri ve kimlik bilgilerini kaldırır."
 
-#: ui/dialogs/settings-dialog.slint:3718
+#: ui/dialogs/settings-dialog.slint:3648
 msgid ""
 "Imported mail and the mail of any POP3 account are stored only on this "
 "device and will be deleted. Mail and events on Gmail, Outlook, and IMAP "
 "servers will not be deleted."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3720
+#: ui/dialogs/settings-dialog.slint:3650
 msgid ""
 "POP3 mail is stored only on this device and will be deleted. Mail and events "
 "on Gmail, Outlook, and IMAP servers will not be deleted."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3721
+#: ui/dialogs/settings-dialog.slint:3651
 msgid ""
 "Mail and events on Gmail, Outlook, and IMAP servers will not be deleted."
 msgstr ""
 "Gmail, Outlook ve IMAP sunucularındaki e-postalar ve etkinlikler silinmez."
 
-#: ui/dialogs/settings-dialog.slint:3722
+#: ui/dialogs/settings-dialog.slint:3652
 msgid "Export POP3 mail…"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3727
+#: ui/dialogs/settings-dialog.slint:3657
 msgid "Keep my data"
 msgstr "Verilerimi koru"
 
-#: ui/dialogs/settings-dialog.slint:3741
+#: ui/dialogs/settings-dialog.slint:3671
 msgid "Delete mail on this device?"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3743
+#: ui/dialogs/settings-dialog.slint:3673
 msgid "Delete the mail you imported and its folders from this device."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3744
+#: ui/dialogs/settings-dialog.slint:3674
 msgid "It exists only here. Export it first to keep a copy."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3749
+#: ui/dialogs/settings-dialog.slint:3679
 msgid "Delete mail"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3750
+#: ui/dialogs/settings-dialog.slint:3680
 msgid "Keep mail"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3764
+#: ui/dialogs/settings-dialog.slint:3694
 msgid "Remove account?"
 msgstr "Hesap kaldırılsın mı?"
 
-#: ui/dialogs/settings-dialog.slint:3766
+#: ui/dialogs/settings-dialog.slint:3696
 msgid "Remove this account and its downloaded mail from this device."
 msgstr "Bu hesabı ve indirilmiş e-postalarını bu cihazdan kaldırır."
 
-#: ui/dialogs/settings-dialog.slint:3768
+#: ui/dialogs/settings-dialog.slint:3698
 msgid ""
 "This account's mail is stored only on this device. Export it first to keep a "
 "copy."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3769
+#: ui/dialogs/settings-dialog.slint:3699
 msgid "Messages on the mail server will not be deleted."
 msgstr "E-posta sunucusundaki iletiler silinmez."
 
-#: ui/dialogs/settings-dialog.slint:3774
+#: ui/dialogs/settings-dialog.slint:3704
 msgid "Remove account"
 msgstr "Hesabı kaldır"
 
-#: ui/dialogs/settings-dialog.slint:3775
+#: ui/dialogs/settings-dialog.slint:3705
 msgid "Keep account"
 msgstr "Hesabı koru"
 
-#: ui/dialogs/settings-dialog.slint:3789
+#: ui/dialogs/settings-dialog.slint:3719
 msgid "Delete profile?"
 msgstr "Profil silinsin mi?"
 
-#: ui/dialogs/settings-dialog.slint:3791
+#: ui/dialogs/settings-dialog.slint:3721
 msgid ""
 "Accounts assigned to this profile will return to their individual or "
 "generated account colors."
@@ -6375,27 +6375,27 @@ msgstr ""
 "Bu profile atanmış hesaplar kendi hesap renklerine veya oluşturulan renklere "
 "dönecek."
 
-#: ui/dialogs/settings-dialog.slint:3792
+#: ui/dialogs/settings-dialog.slint:3722
 msgid "Accounts and provider data are not changed."
 msgstr "Hesaplar ve sağlayıcı verileri değiştirilmez."
 
-#: ui/dialogs/settings-dialog.slint:3794
+#: ui/dialogs/settings-dialog.slint:3724
 msgid "Keep profile"
 msgstr "Profili koru"
 
-#: ui/dialogs/settings-dialog.slint:3808
+#: ui/dialogs/settings-dialog.slint:3738
 msgid "Remove calendar?"
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3810
+#: ui/dialogs/settings-dialog.slint:3740
 msgid "Stop syncing it and remove its events from this device."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3811
+#: ui/dialogs/settings-dialog.slint:3741
 msgid "Events on the server will not be deleted."
 msgstr ""
 
-#: ui/dialogs/settings-dialog.slint:3813
+#: ui/dialogs/settings-dialog.slint:3743
 msgid "Keep calendar"
 msgstr ""
 

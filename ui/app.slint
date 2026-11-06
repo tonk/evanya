@@ -543,6 +543,7 @@ export global I18n {
         if (key == "Folder created.") { return @tr("Folder created."); }
         if (key == "Folder renamed.") { return @tr("Folder renamed."); }
         if (key == "Unread counts preference saved.") { return @tr("Unread counts preference saved."); }
+        if (key == "Choose the directory to sync through") { return @tr("Choose the directory to sync through"); }
         if (key == "Could not save unread counts preference: {}") { return @tr("Could not save unread counts preference: {}", argument); }
         if (key == "Folder deleted.") { return @tr("Folder deleted."); }
         if (key == "Could not create folder: {}") { return @tr("Could not create folder: {}", argument); }
@@ -692,6 +693,9 @@ export component AppWindow inherits Window {
     callback save_show_status_bar(bool);
     callback save_folder_unread_counts(bool);
     callback save_tray_unread_mark(bool);
+    callback choose_setup_sync_directory();
+    callback sync_setup_now();
+    callback stop_setup_sync();
     callback save_conversation_view(bool);
     callback save_compose_plain_text(bool);
     // Fonts per part: the font names to choose from (the first is the app's
@@ -1105,6 +1109,13 @@ export component AppWindow inherits Window {
     in-out property <bool> show_folder_unread_counts: false;
     // A red dot on the tray icon while the inbox has unread mail.
     in-out property <bool> tray_unread_mark: true;
+    // Setup sync through a shared directory; see src/setup_sync.rs.
+    in-out property <string> setup_sync_directory: "";
+    in-out property <bool> setup_sync_busy: false;
+    in-out property <string> setup_sync_error: "";
+    // When the last run finished, and how many accounts it added, or -1.
+    in-out property <string> setup_sync_time: "";
+    in-out property <int> setup_sync_received: -1;
     in property <[SyncStatusLine]> sync_status_lines;
     in-out property <bool> group_mail_by_date: true;
     // Group replies into conversations; off lists each message on its own.
@@ -2197,6 +2208,12 @@ export component AppWindow inherits Window {
             show_status_bar <=> root.show_status_bar;
             show_folder_unread_counts <=> root.show_folder_unread_counts;
             tray_unread_mark <=> root.tray_unread_mark;
+            setup_sync_available: root.desktop_host;
+            setup_sync_directory: root.setup_sync_directory;
+            setup_sync_busy: root.setup_sync_busy;
+            setup_sync_error: root.setup_sync_error;
+            setup_sync_time: root.setup_sync_time;
+            setup_sync_received: root.setup_sync_received;
             group_mail_by_date <=> root.group_mail_by_date;
             conversation_view <=> root.conversation_view;
             compose_plain_text <=> root.compose_plain_text_default;
@@ -2304,6 +2321,9 @@ export component AppWindow inherits Window {
             save_show_status_bar(enabled) => { root.save_show_status_bar(enabled); }
             save_folder_unread_counts(enabled) => { root.save_folder_unread_counts(enabled); }
             save_tray_unread_mark(enabled) => { root.save_tray_unread_mark(enabled); }
+            choose_setup_sync_directory => { root.choose_setup_sync_directory(); }
+            sync_setup_now => { root.sync_setup_now(); }
+            stop_setup_sync => { root.stop_setup_sync(); }
             prepare_profile_members(profile-id, account-id) => {
                 root.prepare_profile_members(profile-id, account-id);
             }

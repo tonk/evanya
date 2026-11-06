@@ -849,6 +849,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_close_to_tray(settings.close_to_tray && !cfg!(feature = "flatpak"));
     app.set_tray_unread_mark(settings.tray_unread_mark);
     crate::app_icon::set_tray_unread_shown(settings.tray_unread_mark);
+    crate::setup_sync::apply(app, settings);
     crate::window_chrome::apply_preference(
         app,
         crate::window_chrome::WindowFrame::parse(&settings.window_frame),

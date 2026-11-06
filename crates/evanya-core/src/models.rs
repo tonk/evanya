@@ -1943,6 +1943,17 @@ pub struct Settings {
     /// Mark the tray icon while the inbox has unread mail.
     #[serde(default = "default_true")]
     pub tray_unread_mark: bool,
+    /// The directory that a file sync tool shares between computers, where
+    /// setup sync keeps `evanya-setup.json`. Empty turns setup sync off.
+    #[serde(default)]
+    pub setup_sync_directory: String,
+    /// What this computer last read or wrote there, as a content hash, so
+    /// only changes made elsewhere are taken over.
+    #[serde(default)]
+    pub setup_sync_hash: String,
+    /// When setup sync last succeeded, in milliseconds since the epoch.
+    #[serde(default)]
+    pub setup_sync_at: i64,
     /// Group replies with the messages they answer into conversations. Off
     /// lists, opens and acts on every message on its own.
     #[serde(default = "default_true")]
@@ -2389,6 +2400,9 @@ impl Default for Settings {
             show_status_bar: true,
             show_folder_unread_counts: false,
             tray_unread_mark: true,
+            setup_sync_directory: String::new(),
+            setup_sync_hash: String::new(),
+            setup_sync_at: 0,
             conversation_view: true,
             workspace_layout: default_workspace_layout(),
             unified_mailbox: true,

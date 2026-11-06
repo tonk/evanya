@@ -66,6 +66,7 @@ mod screenshot_frameless;
 #[cfg(test)]
 mod screenshot_traffic_lights;
 mod settings_controller;
+mod setup_sync;
 mod sidebar_model;
 #[cfg(desktop)]
 mod single_instance;
@@ -8280,6 +8281,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     });
 
     settings_controller::register_oauth_settings_callbacks(&app, &state, &runtime);
+
+    setup_sync::register(&app, &state, &runtime);
 
     register_data_management_callbacks(
         &app,

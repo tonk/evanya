@@ -346,127 +346,6 @@ component StorageUsageCard inherits Rectangle {
     }
 }
 
-component ServiceBadge inherits Rectangle {
-    in property <string> text;
-    in property <color> foreground;
-    in property <color> fill;
-
-    width: badge-label.preferred-width + 16px;
-    height: max(20px, badge-label.preferred-height);
-    border-radius: self.height / 2;
-    background: root.fill;
-
-    badge-label := Text {
-        x: 8px;
-        height: parent.height;
-        text: root.text;
-        color: root.foreground;
-        font-size: TypeScale.caption;
-        font-weight: 600;
-        vertical-alignment: center;
-    }
-}
-
-// Paid Flectar Base services are previewed before they can be purchased, so
-// each card describes what is planned without implying anything is connected.
-component ServicePreviewCard inherits Rectangle {
-    in property <bool> compact: false;
-    in property <image> icon;
-    in property <string> title;
-    in property <string> tagline;
-    in property <string> description;
-    in property <[string]> features: [];
-    in property <string> note;
-    in property <color> surface;
-    in property <color> card-border-color;
-    in property <color> heading;
-    in property <color> body-text;
-    in property <color> secondary-text;
-    in property <color> faint-text;
-    in property <color> accent;
-    in property <color> accent-soft;
-    callback learn-more();
-
-    background: root.surface;
-    border-radius: 10px;
-    border-width: 1px;
-    border-color: root.card-border-color;
-
-    VerticalBox {
-        padding-top: 18px;
-        padding-right: 20px;
-        padding-bottom: 18px;
-        padding-left: 20px;
-        spacing: 10px;
-
-        HorizontalBox {
-            padding: 0px;
-            spacing: 12px;
-            height: max(38px, self.preferred-height);
-            Rectangle {
-                width: 38px;
-                height: 38px;
-                border-radius: 9px;
-                background: root.accent-soft;
-                Image { width: 24px; height: 24px; source: root.icon; colorize: root.accent; image-fit: contain; accessible-role: none; }
-            }
-            VerticalBox {
-                padding: 0px;
-                spacing: 1px;
-                horizontal-stretch: 1;
-                Text { height: max(20px, self.preferred-height); text: root.title; color: root.heading; font-size: TypeScale.subtitle; font-weight: 600; letter-spacing: -0.3px; vertical-alignment: center; overflow: elide; }
-                Text { height: max(17px, self.preferred-height); text: root.tagline; color: root.faint-text; font-size: TypeScale.caption; vertical-alignment: center; overflow: elide; }
-            }
-            if !root.compact : HorizontalBox {
-                padding: 0px;
-                spacing: 6px;
-                alignment: end;
-                cross-axis-alignment: center;
-                ServiceBadge { text: @tr("Paid"); foreground: root.secondary-text; fill: root.card-border-color; }
-                ServiceBadge { text: @tr("Coming soon"); foreground: root.accent; fill: root.accent-soft; }
-            }
-        }
-        if root.compact : HorizontalBox {
-            padding: 0px;
-            spacing: 6px;
-            alignment: start;
-            ServiceBadge { text: @tr("Paid"); foreground: root.secondary-text; fill: root.card-border-color; }
-            ServiceBadge { text: @tr("Coming soon"); foreground: root.accent; fill: root.accent-soft; }
-        }
-
-        Text { height: max(root.compact ? 51px : 34px, self.preferred-height); text: root.description; color: root.body-text; font-size: TypeScale.secondary; wrap: word-wrap; }
-
-        VerticalBox {
-            padding: 0px;
-            spacing: 2px;
-            for feature in root.features : HorizontalBox {
-                padding: 0px;
-                spacing: 9px;
-                height: max(root.compact ? 34px : 22px, self.preferred-height);
-                Image { y: 3px; width: 16px; height: 16px; source: @image-url("../icons/lucide/outline/check-circle.svg"); colorize: root.accent; image-fit: contain; accessible-role: none; }
-                Text { horizontal-stretch: 1; text: feature; color: root.secondary-text; font-size: TypeScale.caption; wrap: word-wrap; vertical-alignment: root.compact ? top : center; }
-            }
-        }
-
-        Rectangle { height: 1px; background: root.card-border-color; }
-
-        if root.compact : Text { height: max(34px, self.preferred-height); text: root.note; color: root.faint-text; font-size: TypeScale.caption; wrap: word-wrap; }
-        HorizontalBox {
-            padding: 0px;
-            spacing: 16px;
-            height: 32px;
-            if !root.compact : Text { horizontal-stretch: 1; text: root.note; color: root.faint-text; font-size: TypeScale.caption; vertical-alignment: center; overflow: elide; }
-            Button {
-                width: root.compact ? parent.width : 140px;
-                text: @tr("Learn more");
-                icon: @image-url("../icons/lucide/outline/link.svg");
-                has-icon: true;
-                clicked => { root.learn-more(); }
-            }
-        }
-    }
-}
-
 export component SettingsDialog inherits Rectangle {
     in property <bool> compact: false;
     in property <[AccountRow]> connected_accounts: [];
@@ -538,6 +417,12 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> remote-images-enabled: false;
     in-out property <bool> close_to_tray: false;
     in-out property <bool> tray_unread_mark: true;
+    in property <bool> setup_sync_available: false;
+    in property <string> setup_sync_directory;
+    in property <bool> setup_sync_busy;
+    in property <string> setup_sync_error;
+    in property <string> setup_sync_time;
+    in property <int> setup_sync_received: -1;
     in-out property <bool> launch_at_login: false;
     in property <bool> launch_at_login_available: false;
     in-out property <string> account_email: "";
@@ -678,6 +563,9 @@ export component SettingsDialog inherits Rectangle {
     callback clear_contact_suggestions() -> bool;
     callback set_close_to_tray(bool);
     callback save_tray_unread_mark(bool);
+    callback choose_setup_sync_directory();
+    callback sync_setup_now();
+    callback stop_setup_sync();
     callback set_launch_at_login(bool);
     callback sync_mail();
     callback sync_account(int);
@@ -2878,33 +2766,75 @@ export component SettingsDialog inherits Rectangle {
                             spacing: 12px;
 
                             SettingsPageTitle { label: @tr("Services"); title-color: root.title-color; }
-                            Text { height: max(root.compact ? 34px : 17px, self.preferred-height); text: @tr("Optional paid services from Flectar. Evanya stays free and works without them."); color: root.secondary-text; font-size: TypeScale.secondary; vertical-alignment: center; wrap: word-wrap; }
+                            Text { height: max(root.compact ? 34px : 17px, self.preferred-height); text: @tr("Keep Evanya the same on all your computers."); color: root.secondary-text; font-size: TypeScale.secondary; vertical-alignment: center; wrap: word-wrap; }
 
-                            ServicePreviewCard {
-                                compact: root.compact;
-                                icon: @image-url("../icons/lucide/filled/cloud-sync.svg");
-                                title: @tr("Sync");
-                                tagline: @tr("Your setup on every device");
-                                description: @tr("Sign in on a new phone or computer and your accounts, calendars, contacts, and preferences are ready without setting them up again.");
-                                features: [
-                                    @tr("Mail accounts, profiles, and signatures"),
-                                    @tr("Calendar and contact connections"),
-                                    @tr("Themes, layout, and notification preferences"),
-                                    @tr("Account credentials, encrypted on this device before upload"),
-                                ];
-                                note: @tr("Your messages stay with your mail provider. Sync only carries your Evanya setup.");
-                                surface: root.surface;
-                                card-border-color: root.border-subtle;
-                                heading: root.heading;
-                                body-text: root.body-text;
-                                secondary-text: root.secondary-text;
-                                faint-text: root.faint-text;
-                                accent: ServiceIconPalette.sync;
-                                accent-soft: ServiceIconPalette.sync.with-alpha(AppTheme.dark ? 0.16 : 0.10);
-                                learn-more => { root.open-link("https://flectar.com/mail"); }
+                            // Setup sync through a directory a file sync tool shares.
+                            Rectangle {
+                                visible: root.setup_sync_available;
+                                height: self.visible ? sync-box.preferred-height : 0px;
+                                background: root.surface;
+                                border-radius: 8px;
+                                border-width: 1px;
+                                border-color: root.border-subtle;
+                                sync-box := VerticalBox {
+                                    padding: 20px;
+                                    spacing: 8px;
+                                    HorizontalBox {
+                                        padding: 0px;
+                                        spacing: 12px;
+                                        Image { width: 22px; height: 22px; source: @image-url("../icons/lucide/filled/cloud-sync.svg"); colorize: ServiceIconPalette.sync; image-fit: contain; }
+                                        Text { text: @tr("Sync"); color: root.heading; font-size: TypeScale.subtitle; font-weight: 700; vertical-alignment: center; }
+                                    }
+                                    Text {
+                                        text: @tr("Your accounts, profiles, account colors and preferences are kept in one file in a directory that Nextcloud, Syncthing, Dropbox or a similar tool keeps in step between your computers. Evanya takes over what changed on another computer and adds its accounts.");
+                                        color: root.secondary-text;
+                                        font-size: TypeScale.secondary;
+                                        wrap: word-wrap;
+                                    }
+                                    Text {
+                                        text: @tr("Passwords stay on each computer: sign in once to an account that arrives this way. Mail comes from your mail servers, as always.");
+                                        color: root.faint-text;
+                                        font-size: TypeScale.caption;
+                                        wrap: word-wrap;
+                                    }
+                                    Text {
+                                        text: root.setup_sync_directory == "" ? @tr("No directory chosen.") : root.setup_sync_directory;
+                                        color: root.setup_sync_directory == "" ? root.faint-text : root.body-text;
+                                        font-size: TypeScale.secondary;
+                                        overflow: elide;
+                                    }
+                                    Text {
+                                        visible: root.setup_sync_directory != "";
+                                        text: root.setup_sync_busy ? @tr("Synchronizing…")
+                                            : root.setup_sync_error != "" ? @tr("Sync failed: {}", root.setup_sync_error)
+                                            : root.setup_sync_time == "" ? @tr("Not synchronized yet.")
+                                            : root.setup_sync_received > 0 ? @tr("Synchronized at {}; added one account." | "Synchronized at {}; added {n} accounts." % root.setup_sync_received, root.setup_sync_time)
+                                            : @tr("Synchronized at {}.", root.setup_sync_time);
+                                        color: root.setup_sync_error != "" ? AppTheme.destructive : root.faint-text;
+                                        font-size: TypeScale.caption;
+                                        wrap: word-wrap;
+                                    }
+                                    HorizontalBox {
+                                        padding: 0px;
+                                        spacing: 8px;
+                                        alignment: start;
+                                        Button {
+                                            text: root.setup_sync_directory == "" ? @tr("Choose directory…") : @tr("Change directory…");
+                                            primary: root.setup_sync_directory == "";
+                                            clicked => { root.choose_setup_sync_directory(); }
+                                        }
+                                        if root.setup_sync_directory != "" : Button {
+                                            text: @tr("Sync now");
+                                            enabled: !root.setup_sync_busy;
+                                            clicked => { root.sync_setup_now(); }
+                                        }
+                                        if root.setup_sync_directory != "" : Button {
+                                            text: @tr("Stop syncing");
+                                            clicked => { root.stop_setup_sync(); }
+                                        }
+                                    }
+                                }
                             }
-
-                            Text { height: max(root.compact ? 34px : 17px, self.preferred-height); text: @tr("These services are in development. Plans and availability will be announced on flectar.com/mail."); color: root.faint-text; font-size: TypeScale.caption; vertical-alignment: center; wrap: word-wrap; }
                         }
                     }
 
