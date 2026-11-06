@@ -149,6 +149,7 @@ pub(super) fn reconcile_removed_account(state: &mut InboxState, account_id: i64)
     state.profile_avatar_images.remove(&account_id);
     state.profile_avatar_missing.remove(&account_id);
     state.profile_avatar_pending.remove(&account_id);
+    crate::account_avatars::remove(account_id);
     state.initialized_sidebar_accounts.remove(&account_id);
     state
         .collapsed_sidebar_sections
@@ -251,6 +252,7 @@ pub(super) fn apply_connected_accounts(
                     .map(|images| slint_image(&images.small))
                     .unwrap_or_default(),
                 has_avatar: avatar.is_some(),
+                has_chosen_avatar: crate::account_avatars::has_chosen(account.id),
                 profile_id: profile
                     .map(|profile| profile.id.clone())
                     .unwrap_or_default()
@@ -359,6 +361,7 @@ pub(super) fn apply_connected_accounts(
 }
 
 pub(super) fn refresh_connected_accounts(app: &AppWindow, state: &Rc<RefCell<InboxState>>) {
+    crate::custom_headers::refresh_scopes(app, &state.borrow());
     let state = state.borrow();
     apply_connected_accounts(
         app,
@@ -466,11 +469,19 @@ pub(super) fn update_connected_accounts(
         let previous_urls = state
             .connected_accounts
             .iter()
-            .map(|account| (account.id, account.avatar_url.clone()))
+            .map(|account| {
+                let source =
+                    crate::account_avatars::source(account.id, account.avatar_url.as_deref());
+                (account.id, source)
+            })
             .collect::<HashMap<_, _>>();
         let current_urls = accounts
             .iter()
-            .map(|account| (account.id, account.avatar_url.clone()))
+            .map(|account| {
+                let source =
+                    crate::account_avatars::source(account.id, account.avatar_url.as_deref());
+                (account.id, source)
+            })
             .collect::<HashMap<_, _>>();
         let unchanged = |account_id: &i64| {
             current_urls.get(account_id) == previous_urls.get(account_id)

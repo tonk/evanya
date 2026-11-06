@@ -445,6 +445,80 @@ pub struct AccountSettings {
     /// POP3 accounts only.
     #[serde(default)]
     pub keep_on_server: KeepOnServer,
+    /// Header fields added to every message this account sends, after the
+    /// global ones; a field here replaces a global field of the same name.
+    #[serde(default)]
+    pub custom_headers: Vec<CustomHeader>,
+}
+
+/// A header field the user adds to outgoing mail, such as `X-Mailer` or
+/// `Organization`.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CustomHeader {
+    pub name: String,
+    pub value: String,
+}
+
+/// Fields that describe the message itself; Evanya writes them, and a
+/// custom header must not repeat or replace them.
+const RESERVED_HEADERS: [&str; 17] = [
+    "bcc",
+    "cc",
+    "date",
+    "from",
+    "in-reply-to",
+    "message-id",
+    "mime-version",
+    "received",
+    "references",
+    "reply-to",
+    "return-path",
+    "sender",
+    "subject",
+    "to",
+    "content-type",
+    "content-transfer-encoding",
+    "x-evanya-submission-id",
+];
+
+/// Why a custom header cannot be sent, or `None` when it can.
+pub fn custom_header_problem(name: &str, value: &str) -> Option<&'static str> {
+    let lower = name.to_ascii_lowercase();
+    if name.is_empty() {
+        Some("a header needs a name")
+    } else if !name
+        .bytes()
+        .all(|byte| (33..=126).contains(&byte) && byte != b':')
+    {
+        Some("a header name has only letters, digits and punctuation other than ':'")
+    } else if RESERVED_HEADERS.contains(&lower.as_str()) || lower.starts_with("content-") {
+        Some("this header is written by Evanya itself")
+    } else if value.chars().any(|c| c == '\r' || c == '\n') {
+        Some("a header value is one line")
+    } else if name.len() + value.len() > 900 {
+        Some("a header is limited to 900 characters")
+    } else {
+        None
+    }
+}
+
+/// The header fields to add to a message: the global ones, then the
+/// account's, which replace global ones of the same name. Fields that cannot
+/// be sent are left out.
+pub fn merged_custom_headers(
+    global: &[CustomHeader],
+    account: &[CustomHeader],
+) -> Vec<(String, String)> {
+    let mut merged: Vec<(String, String)> = Vec::new();
+    for header in global.iter().chain(account) {
+        let (name, value) = (header.name.trim(), header.value.trim());
+        if custom_header_problem(name, value).is_some() {
+            continue;
+        }
+        merged.retain(|(existing, _)| !existing.eq_ignore_ascii_case(name));
+        merged.push((name.to_owned(), value.to_owned()));
+    }
+    merged
 }
 
 impl AccountSettings {
@@ -458,6 +532,7 @@ impl AccountSettings {
             default_sender_email: None,
             sent_copy_policy: SentCopyPolicy::Auto,
             keep_on_server: KeepOnServer::Always,
+            custom_headers: Vec::new(),
         }
     }
 }
@@ -1954,6 +2029,9 @@ pub struct Settings {
     /// When setup sync last succeeded, in milliseconds since the epoch.
     #[serde(default)]
     pub setup_sync_at: i64,
+    /// Header fields added to every message sent from any account.
+    #[serde(default)]
+    pub custom_headers: Vec<CustomHeader>,
     /// Group replies with the messages they answer into conversations. Off
     /// lists, opens and acts on every message on its own.
     #[serde(default = "default_true")]
@@ -2403,6 +2481,7 @@ impl Default for Settings {
             setup_sync_directory: String::new(),
             setup_sync_hash: String::new(),
             setup_sync_at: 0,
+            custom_headers: Vec::new(),
             conversation_view: true,
             workspace_layout: default_workspace_layout(),
             unified_mailbox: true,

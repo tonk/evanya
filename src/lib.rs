@@ -5,6 +5,7 @@
 // thin desktop and mobile platform launchers.
 pub use evanya_core;
 
+mod account_avatars;
 mod account_controller;
 mod account_mail_preferences;
 #[cfg(test)]
@@ -20,6 +21,7 @@ mod calendar;
 mod compose_controller;
 mod compose_editor;
 mod contacts;
+mod custom_headers;
 mod data_controller;
 mod date_format;
 mod document_preview;
@@ -1721,6 +1723,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     // when the window is created. This is the same zero-wait lookup used for
     // the rest of the first frame's presentation state.
     let startup_presentation = evanya_core::startup_presentation(&platform.paths);
+    account_avatars::set_directory(&platform.paths.data_dir);
     let window_frame = startup_presentation.window_frame.as_deref().map_or_else(
         window_chrome::WindowFrame::default,
         window_chrome::WindowFrame::parse,
@@ -4480,7 +4483,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             let still_current = state.profile_avatar_pixel_sides == update.pixel_sides
                 && state.connected_accounts.iter().any(|account| {
                     account.id == update.account_id
-                        && account.avatar_url.as_deref() == Some(update.source_url.as_str())
+                        && crate::account_avatars::source(account.id, account.avatar_url.as_deref())
+                            .as_deref()
+                            == Some(update.source_url.as_str())
                 });
             if !still_current {
                 continue;
@@ -8302,6 +8307,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     settings_controller::register_oauth_settings_callbacks(&app, &state, &runtime);
 
     setup_sync::register(&app, &state, &runtime);
+    account_avatars::register(&app, &state, &runtime);
+    custom_headers::register(&app, &state, &runtime);
 
     register_data_management_callbacks(
         &app,

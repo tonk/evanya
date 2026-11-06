@@ -971,7 +971,9 @@ async fn send_action(
         });
     }
 
+    let extra_headers = crate::outgoing_headers(&ctx.db, config).await?;
     let out = crate::mime::OutgoingMessage {
+        extra_headers: &extra_headers,
         from: from.clone(),
         reply_to: identity.reply_to(),
         to: &detail.to,

@@ -1496,10 +1496,8 @@ pub(super) fn schedule_profile_avatar_fetches(
             .connected_accounts
             .iter()
             .filter_map(|account| {
-                account
-                    .avatar_url
-                    .as_ref()
-                    .map(|source_url| (account.id, source_url.clone()))
+                crate::account_avatars::source(account.id, account.avatar_url.as_deref())
+                    .map(|source_url| (account.id, source_url))
             })
             .collect::<Vec<_>>();
         let mut to_fetch = Vec::new();

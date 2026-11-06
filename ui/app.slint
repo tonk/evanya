@@ -544,6 +544,16 @@ export global I18n {
         if (key == "Folder renamed.") { return @tr("Folder renamed."); }
         if (key == "Unread counts preference saved.") { return @tr("Unread counts preference saved."); }
         if (key == "Choose the directory to sync through") { return @tr("Choose the directory to sync through"); }
+if (key == "All accounts") { return @tr("All accounts"); }
+        if (key == "a header needs a name") { return @tr("a header needs a name"); }
+        if (key == "a header name has only letters, digits and punctuation other than ':'") { return @tr("a header name has only letters, digits and punctuation other than ':'"); }
+        if (key == "this header is written by Evanya itself") { return @tr("this header is written by Evanya itself"); }
+        if (key == "a header value is one line") { return @tr("a header value is one line"); }
+        if (key == "a header is limited to 900 characters") { return @tr("a header is limited to 900 characters"); }
+        if (key == "a header is written as Name: value") { return @tr("a header is written as Name: value"); }
+        if (key == "Line {}") { return @tr("Line {}", argument); }
+        if (key == "Choose a picture for this account") { return @tr("Choose a picture for this account"); }
+        if (key == "Could not use this picture: {}") { return @tr("Could not use this picture: {}", argument); }
         if (key == "Could not save unread counts preference: {}") { return @tr("Could not save unread counts preference: {}", argument); }
         if (key == "Folder deleted.") { return @tr("Folder deleted."); }
         if (key == "Could not create folder: {}") { return @tr("Could not create folder: {}", argument); }
@@ -694,6 +704,10 @@ export component AppWindow inherits Window {
     callback save_show_status_bar(bool);
     callback save_folder_unread_counts(bool);
     callback save_tray_unread_mark(bool);
+    callback choose_account_avatar(int);
+    callback select_custom_headers_scope(int);
+    callback save_custom_headers(int, string);
+    callback remove_account_avatar(int);
     callback choose_setup_sync_directory();
     callback sync_setup_now();
     callback stop_setup_sync();
@@ -1117,6 +1131,12 @@ export component AppWindow inherits Window {
     // When the last run finished, and how many accounts it added, or -1.
     in-out property <string> setup_sync_time: "";
     in-out property <int> setup_sync_received: -1;
+    // Settings → Accounts → Mail headers; see src/custom_headers.rs.
+    in property <[string]> custom_headers_scopes;
+    in-out property <int> custom_headers_scope_index: 0;
+    in-out property <string> custom_headers_text;
+    in-out property <string> custom_headers_error;
+    in-out property <bool> custom_headers_saved;
     in property <[SyncStatusLine]> sync_status_lines;
     in-out property <bool> group_mail_by_date: true;
     // Group replies into conversations; off lists each message on its own.
@@ -2211,6 +2231,11 @@ export component AppWindow inherits Window {
             show_folder_unread_counts <=> root.show_folder_unread_counts;
             tray_unread_mark <=> root.tray_unread_mark;
             setup_sync_available: root.desktop_host;
+            custom_headers_scopes: root.custom_headers_scopes;
+            custom_headers_scope_index <=> root.custom_headers_scope_index;
+            custom_headers_text <=> root.custom_headers_text;
+            custom_headers_error: root.custom_headers_error;
+            custom_headers_saved <=> root.custom_headers_saved;
             setup_sync_directory: root.setup_sync_directory;
             setup_sync_busy: root.setup_sync_busy;
             setup_sync_error: root.setup_sync_error;
@@ -2323,6 +2348,10 @@ export component AppWindow inherits Window {
             save_show_status_bar(enabled) => { root.save_show_status_bar(enabled); }
             save_folder_unread_counts(enabled) => { root.save_folder_unread_counts(enabled); }
             save_tray_unread_mark(enabled) => { root.save_tray_unread_mark(enabled); }
+            choose_account_avatar(account-id) => { root.choose_account_avatar(account-id); }
+            select_custom_headers_scope(index) => { root.select_custom_headers_scope(index); }
+            save_custom_headers(index, text) => { root.save_custom_headers(index, text); }
+            remove_account_avatar(account-id) => { root.remove_account_avatar(account-id); }
             choose_setup_sync_directory => { root.choose_setup_sync_directory(); }
             sync_setup_now => { root.sync_setup_now(); }
             stop_setup_sync => { root.stop_setup_sync(); }

@@ -2089,7 +2089,9 @@ async fn build_draft_message(
         .rsplit_once('@')
         .map(|(_, value)| value)
         .unwrap_or("localhost");
+    let extra_headers = crate::outgoing_headers(&ctx.db, config).await?;
     let outgoing = crate::mime::OutgoingMessage {
+        extra_headers: &extra_headers,
         from: detail.from.clone(),
         reply_to,
         to: &detail.to,

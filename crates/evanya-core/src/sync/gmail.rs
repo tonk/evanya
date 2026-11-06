@@ -2854,7 +2854,9 @@ async fn prepare_draft(
         .nth(1)
         .unwrap_or("localhost")
         .to_owned();
+    let extra_headers = crate::outgoing_headers(&ctx.db, config).await?;
     let outgoing = crate::mime::OutgoingMessage {
+        extra_headers: &extra_headers,
         from,
         reply_to,
         to: &detail.to,

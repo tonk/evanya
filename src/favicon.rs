@@ -232,6 +232,13 @@ impl ProfileAvatarLoader {
         small_pixel_side: u32,
         regular_pixel_side: u32,
     ) -> Option<ProfileAvatarImages> {
+        // A picture the user chose is read from its file.
+        if let Some(path) = crate::account_avatars::file_of(source_url) {
+            let bytes = read_fresh(&path, Duration::MAX, crate::account_avatars::MAX_BYTES).await?;
+            return decode_profile_avatars(bytes, small_pixel_side, regular_pixel_side)
+                .await
+                .ok();
+        }
         let source_url = trusted_profile_avatar_url(source_url)?;
         let cache_path = self.cache_dir.join(format!(
             "{}.profile-v1.icon",
@@ -697,6 +704,24 @@ mod tests {
                 .iter()
                 .any(|pixel| (1..=254).contains(&pixel[3]))
         );
+    }
+
+    #[tokio::test]
+    async fn a_chosen_picture_loads_from_its_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let picture = directory.path().join("7");
+        let mut png = Vec::new();
+        image::RgbaImage::from_pixel(64, 64, image::Rgba([200, 30, 30, 255]))
+            .write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png)
+            .unwrap();
+        std::fs::write(&picture, png).unwrap();
+        let loader = ProfileAvatarLoader::new(directory.path()).unwrap();
+        let source = format!("evanya-file:1:{}", picture.display());
+        let images = loader.load(&source, 24, 48).await.expect("decoded");
+        assert_eq!((images.regular.width, images.regular.height), (48, 48));
+        // A missing file shows the fallback instead.
+        let missing = format!("evanya-file:1:{}", directory.path().join("8").display());
+        assert!(loader.load(&missing, 24, 48).await.is_none());
     }
 
     #[test]

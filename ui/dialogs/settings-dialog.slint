@@ -12,7 +12,7 @@ import { AccountCalendars } from "../components/account-calendars.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
 import { ConfirmationDialog } from "../components/confirmation-dialog.slint";
-import { IconButton, LineEdit, RadioButton, Switch } from "../components/controls.slint";
+import { IconButton, LineEdit, RadioButton, Switch, TextEdit } from "../components/controls.slint";
 import { CopyableDiagnostic } from "../components/copyable-diagnostic.slint";
 import { FocusVisibleScope } from "../components/focus-visible-scope.slint";
 import { OnScreenSurface } from "../components/on-screen-surface.slint";
@@ -418,6 +418,12 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> close_to_tray: false;
     in-out property <bool> tray_unread_mark: true;
     in property <bool> setup_sync_available: false;
+    in property <[string]> custom_headers_scopes;
+    in-out property <int> custom_headers_scope_index: 0;
+    in-out property <string> custom_headers_text;
+    in property <string> custom_headers_error;
+    // Set after a save; editing the text clears it again.
+    in-out property <bool> custom_headers_saved;
     in property <string> setup_sync_directory;
     in property <bool> setup_sync_busy;
     in property <string> setup_sync_error;
@@ -563,6 +569,10 @@ export component SettingsDialog inherits Rectangle {
     callback clear_contact_suggestions() -> bool;
     callback set_close_to_tray(bool);
     callback save_tray_unread_mark(bool);
+    callback choose_account_avatar(int);
+    callback select_custom_headers_scope(int);
+    callback save_custom_headers(int, string);
+    callback remove_account_avatar(int);
     callback choose_setup_sync_directory();
     callback sync_setup_now();
     callback stop_setup_sync();
@@ -2236,6 +2246,26 @@ export component SettingsDialog inherits Rectangle {
                                                 image-fit: contain;
                                                 accessible-role: none;
                                             }
+                                            // Click to choose the account's picture; right-click
+                                            // to choose or remove it.
+                                            if avatar-touch.has-hover : Rectangle {
+                                                border-radius: parent.border-radius;
+                                                background: #00000066;
+                                                Image { width: 20px; height: 20px; source: @image-url("../icons/lucide/outline/pencil.svg"); colorize: #ffffff; image-fit: contain; accessible-role: none; }
+                                            }
+                                            avatar-touch := TouchArea {
+                                                mouse-cursor: pointer;
+                                                accessible-role: button;
+                                                accessible-label: @tr("Choose a picture for {}", account.name);
+                                                accessible-action-default => { root.choose_account_avatar(account.id); }
+                                                clicked => { root.choose_account_avatar(account.id); }
+                                            }
+                                            ContextMenuArea {
+                                                Menu {
+                                                    MenuItem { title: @tr("Choose picture…"); activated => { root.choose_account_avatar(account.id); } }
+                                                    MenuItem { title: @tr("Remove picture"); enabled: account.has_chosen_avatar; activated => { root.remove_account_avatar(account.id); } }
+                                                }
+                                            }
                                         }
                                         // Names and addresses elide before the account's controls
                                         // can push past the card.
@@ -2558,6 +2588,60 @@ export component SettingsDialog inherits Rectangle {
                                     LineEdit { text <=> root.carddav_url; placeholder-text: @tr("https://contacts.example.com/"); }
                                     HorizontalBox { spacing: 8px; LineEdit { text <=> root.carddav_username; placeholder-text: @tr("Username"); } LineEdit { text <=> root.carddav_password; input-type: password; placeholder-text: @tr("App password"); } }
                                     HorizontalBox { spacing: 8px; if root.carddav_manage_existing : Button { text: @tr("Disconnect"); clicked => { root.disconnect_carddav(root.carddav_account_id); root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } } Rectangle { horizontal-stretch: 1; } Button { text: @tr("Cancel"); clicked => { root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } } Button { text: root.carddav_manage_existing ? @tr("Reconnect") : @tr("Connect"); primary: true; clicked => { if (root.carddav_url == "https://people.googleapis.com/") { root.connect_google_contacts(root.carddav_account_id); root.carddav_account_id = -1; root.carddav_password = ""; root.carddav_manage_existing = false; } else { root.connect_carddav(root.carddav_account_id, root.carddav_url, root.carddav_username, root.carddav_password); } } } }
+                                }
+                            }
+
+                            // Header fields added to sent mail; see src/custom_headers.rs.
+                            Rectangle {
+                                height: headers-box.preferred-height;
+                                background: root.surface;
+                                border-radius: 8px;
+                                border-width: 1px;
+                                border-color: root.border-subtle;
+                                headers-box := VerticalBox {
+                                    padding: 20px;
+                                    spacing: 8px;
+                                    Text { text: @tr("Mail headers"); color: root.heading; font-size: TypeScale.subtitle; font-weight: 700; }
+                                    Text {
+                                        text: @tr("Header fields added to every message you send, one per line as Name: value. Headers for one account add to those for all accounts and replace any with the same name.");
+                                        color: root.faint-text;
+                                        font-size: TypeScale.secondary;
+                                        wrap: word-wrap;
+                                    }
+                                    HorizontalBox {
+                                        padding: 0px;
+                                        spacing: 8px;
+                                        Text { text: @tr("Applies to"); color: root.body-text; font-size: TypeScale.secondary; vertical-alignment: center; }
+                                        SettingsSelect {
+                                            horizontal-stretch: 1;
+                                            choices: root.custom_headers_scopes;
+                                            selected-index <=> root.custom_headers_scope_index;
+                                            selection-changed(index, value) => { root.select_custom_headers_scope(index); }
+                                        }
+                                    }
+                                    TextEdit {
+                                        height: 110px;
+                                        text <=> root.custom_headers_text;
+                                        placeholder-text: "Organization: Example Ltd\nX-Mailer: Evanya";
+                                        edited => { root.custom_headers_saved = false; }
+                                    }
+                                    if root.custom_headers_error != "" : Text {
+                                        text: root.custom_headers_error;
+                                        color: AppTheme.destructive;
+                                        font-size: TypeScale.caption;
+                                        wrap: word-wrap;
+                                    }
+                                    HorizontalBox {
+                                        padding: 0px;
+                                        spacing: 8px;
+                                        alignment: end;
+                                        if root.custom_headers_saved : Text { text: @tr("Saved"); color: root.faint-text; font-size: TypeScale.caption; vertical-alignment: center; }
+                                        Button {
+                                            text: @tr("Save headers");
+                                            primary: true;
+                                            clicked => { root.save_custom_headers(root.custom_headers_scope_index, root.custom_headers_text); }
+                                        }
+                                    }
                                 }
                             }
                         }

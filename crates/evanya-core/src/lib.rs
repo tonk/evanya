@@ -176,6 +176,21 @@ pub fn startup_presentation(paths: &Paths) -> models::StartupPresentation {
     db::startup_presentation(&paths.db_file())
 }
 
+/// The header fields the user configured for mail sent from this account:
+/// the global ones, then the account's own.
+pub(crate) async fn outgoing_headers(
+    db: &db::Db,
+    config: &models::AccountConfig,
+) -> Result<Vec<(String, String)>> {
+    let global = db
+        .read(|conn| repo::settings::get(conn).map(|settings| settings.custom_headers))
+        .await?;
+    Ok(models::merged_custom_headers(
+        &global,
+        &config.settings.custom_headers,
+    ))
+}
+
 /// The saved settings for the first application frame, read without waiting
 /// for the database. Normal core startup still loads and validates them.
 pub fn startup_settings(paths: &Paths) -> Option<models::Settings> {
@@ -1487,6 +1502,30 @@ impl Core {
                 handle.update_settings(settings);
             }
             self.bus.emit(CoreEvent::MailUpdated { thread_ids: vec![] });
+        }
+        Ok(())
+    }
+
+    /// The header fields added to every message this account sends.
+    pub async fn set_account_custom_headers(
+        &self,
+        account_id: i64,
+        headers: Vec<CustomHeader>,
+    ) -> Result<()> {
+        let settings = self
+            .db
+            .write(move |conn| {
+                let tx = conn.transaction()?;
+                let mut config = repo::accounts::get_config(&tx, account_id)?
+                    .ok_or_else(|| CoreError::NotFound(format!("account {account_id}")))?;
+                config.settings.custom_headers = headers;
+                repo::accounts::set_settings(&tx, account_id, &config.settings)?;
+                tx.commit()?;
+                Ok(config.settings)
+            })
+            .await?;
+        if let Some(handle) = self.handles.read().await.get(&account_id).cloned() {
+            handle.update_settings(settings);
         }
         Ok(())
     }
@@ -2943,6 +2982,7 @@ impl Core {
             .unwrap_or("localhost")
             .to_owned();
         let (_, raw) = crate::mime::build_message_owned(crate::mime::OutgoingMessage {
+            extra_headers: &[],
             from: detail.from.clone(),
             reply_to: None,
             to: &detail.to,
@@ -3532,6 +3572,7 @@ impl Core {
             email: to.to_string(),
         }];
         let out = crate::mime::OutgoingMessage {
+            extra_headers: &[],
             from,
             reply_to: None,
             to: &recipients,

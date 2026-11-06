@@ -2059,6 +2059,9 @@ pub struct OutgoingMessage<'a> {
     pub message_id: Option<&'a str>,
     pub message_id_domain: &'a str,
     pub attachments: Vec<OutgoingAttachment>,
+    /// Header fields the user configured, already checked and merged; see
+    /// [`crate::models::merged_custom_headers`].
+    pub extra_headers: &'a [(String, String)],
 }
 
 /// An image extracted from the HTML body, to be sent as an inline CID part.
@@ -2213,6 +2216,12 @@ fn build_message_with_attachments<'a>(
         ))
         .subject(out.subject)
         .text_body(out.body_text);
+    for (name, value) in out.extra_headers {
+        builder = builder.header(
+            name.as_str(),
+            mail_builder::headers::raw::Raw::new(value.as_str()),
+        );
+    }
     if let Some(reply_to) = &out.reply_to {
         builder = builder.reply_to(mail_builder::headers::address::Address::new_address(
             reply_to
@@ -2805,7 +2814,51 @@ mod tests {
             message_id: None,
             message_id_domain: "example.com",
             attachments: Vec::new(),
+            extra_headers: &[],
         }
+    }
+
+    #[test]
+    fn configured_headers_are_sent() {
+        let headers = vec![
+            ("Organization".to_owned(), "Kersten & Co".to_owned()),
+            ("X-Mailer".to_owned(), "Evanya".to_owned()),
+        ];
+        let message = OutgoingMessage {
+            extra_headers: &headers,
+            ..outgoing("hello", None)
+        };
+        let (_, raw) = build_message(&message).unwrap();
+        let raw = String::from_utf8_lossy(&raw);
+        assert!(raw.contains("Organization: Kersten & Co\r\n"), "{raw}");
+        assert!(raw.contains("X-Mailer: Evanya\r\n"), "{raw}");
+    }
+
+    #[test]
+    fn account_headers_replace_global_ones_and_bad_ones_are_dropped() {
+        use crate::models::{CustomHeader, custom_header_problem, merged_custom_headers};
+        let header = |name: &str, value: &str| CustomHeader {
+            name: name.into(),
+            value: value.into(),
+        };
+        let merged = merged_custom_headers(
+            &[header("X-Mailer", "Evanya"), header("Organization", "Home")],
+            &[
+                header("organization", "Work"),
+                header("Subject", "no"),
+                header("Bad Name", "x"),
+            ],
+        );
+        assert_eq!(
+            merged,
+            [
+                ("X-Mailer".to_owned(), "Evanya".to_owned()),
+                ("organization".to_owned(), "Work".to_owned())
+            ]
+        );
+        assert!(custom_header_problem("X-Ok", "one\nline").is_some());
+        assert!(custom_header_problem("Content-Language", "nl").is_some());
+        assert_eq!(custom_header_problem("X-Ok", "fine"), None);
     }
 
     #[test]

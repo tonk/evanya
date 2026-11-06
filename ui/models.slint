@@ -241,6 +241,8 @@ export struct AccountRow {
     avatar: image,
     avatar_small: image,
     has_avatar: bool,
+    // The user chose this account's picture, rather than the provider.
+    has_chosen_avatar: bool,
     profile_id: string,
     profile_name: string,
     profile_color: color,

@@ -850,6 +850,17 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_tray_unread_mark(settings.tray_unread_mark);
     crate::app_icon::set_tray_unread_shown(settings.tray_unread_mark);
     crate::setup_sync::apply(app, settings);
+    if app.get_custom_headers_scope_index() == 0 {
+        app.set_custom_headers_text(
+            settings
+                .custom_headers
+                .iter()
+                .map(|header| format!("{}: {}", header.name, header.value))
+                .collect::<Vec<_>>()
+                .join("\n")
+                .into(),
+        );
+    }
     crate::window_chrome::apply_preference(
         app,
         crate::window_chrome::WindowFrame::parse(&settings.window_frame),
