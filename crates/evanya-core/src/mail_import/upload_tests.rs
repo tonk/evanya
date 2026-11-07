@@ -177,6 +177,16 @@ impl ImapServer {
                                         continue;
                                     }
                                     let text = String::from_utf8_lossy(&stored.raw);
+                                    // The whole message, as `BODY.PEEK[]` asks.
+                                    if upper.contains("BODY.PEEK[]") {
+                                        out.push_str(&format!(
+                                            "* {} FETCH (UID {} BODY[] {{{}}}\r\n{text})\r\n",
+                                            number + 1,
+                                            stored.uid,
+                                            stored.raw.len()
+                                        ));
+                                        continue;
+                                    }
                                     let header = text
                                         .lines()
                                         .find(|line| {
@@ -261,6 +271,21 @@ impl ImapServer {
 
     fn appends(&self) -> usize {
         self.state.lock().unwrap().appends
+    }
+
+    /// Put a message in a mailbox, as mail that arrived there; its UID.
+    fn put(&self, name: &str, raw: &str) -> u32 {
+        let mut state = self.state.lock().unwrap();
+        let (next, messages) = state.boxes.get_mut(name).unwrap();
+        let uid = *next;
+        *next += 1;
+        messages.push(Stored {
+            uid,
+            flags: String::new(),
+            date: String::new(),
+            raw: raw.as_bytes().to_vec(),
+        });
+        uid
     }
 
     /// Make a mailbox, as another app would.
@@ -736,6 +761,190 @@ async fn mail_is_imported_into_gmail_with_its_labels() {
             .target
             .contains("includeSpamTrash=true&q=rfc822msgid%3A%3Ca%40example.org%3E")
     );
+}
+
+#[tokio::test]
+async fn the_whole_message_is_downloaded_from_gmail_for_a_copy() {
+    use base64::Engine as _;
+    use base64::engine::general_purpose::URL_SAFE;
+    let original = message("g", "Fetched from Gmail", "");
+    // Gmail may or may not pad its URL-safe base64.
+    let encoded = URL_SAFE.encode(original.as_bytes());
+    let gmail = HttpServer::start(move |request| {
+        let json = "application/json";
+        if request.target == "/gmail/v1/users/me/messages/18c0ffee?format=raw" {
+            (
+                200,
+                json,
+                json!({ "id": "18c0ffee", "raw": encoded }).to_string(),
+            )
+        } else {
+            (404, json, json!({ "error": { "code": 404 } }).to_string())
+        }
+    })
+    .await;
+    let (_directory, core, account_id) = account(MailProtocol::Gmail, String::new(), 0).await;
+    let ctx = core.sync_ctx();
+    ctx.tokens
+        .store_initial(
+            account_id,
+            "access".into(),
+            Some(3600),
+            Some("refresh".into()),
+            "client".into(),
+            None,
+        )
+        .await
+        .unwrap();
+    let config = core.folder_account_config(account_id).await.unwrap();
+    let client = sync::gmail::Uploader::with_base(ctx, config, &gmail.origin).unwrap();
+
+    let raw = client.download_raw("18c0ffee").await.unwrap();
+
+    assert_eq!(raw, original.as_bytes());
+    assert_eq!(
+        gmail.requests()[0].authorization.as_deref(),
+        Some("Bearer access")
+    );
+    // A message Gmail does not have is an error, not an empty copy.
+    assert!(client.download_raw("missing").await.is_err());
+}
+
+/// Another IMAP account in `core`, on the server at `port`.
+async fn add_imap_account(core: &crate::Core, port: u16, email: &'static str) -> i64 {
+    let account_id = core
+        .db
+        .write(move |conn| {
+            let mut settings = crate::db::testutil::account_settings();
+            settings.connection = MailConnectionSettings {
+                incoming_security: ConnectionSecurity::Tls,
+                smtp_security: ConnectionSecurity::Tls,
+                trusted_certificate_pem: CERT.into(),
+                invalid_certificates: Default::default(),
+                smtp_username: String::new(),
+            };
+            repo::accounts::insert(
+                conn,
+                &repo::accounts::NewAccount {
+                    email,
+                    display_name: None,
+                    avatar_url: None,
+                    provider: Provider::Generic,
+                    auth_kind: AuthKind::Password,
+                    mail_protocol: MailProtocol::Imap,
+                    username: email,
+                    jmap_url: "",
+                    jmap_account_id: None,
+                    incoming_host: "127.0.0.1",
+                    incoming_port: port,
+                    smtp_host: "127.0.0.1",
+                    smtp_port: 465,
+                },
+                &settings,
+            )
+        })
+        .await
+        .unwrap();
+    credentials::store_async(
+        core.credentials.clone(),
+        account_id,
+        Slot::Password,
+        "secret".into(),
+    )
+    .await
+    .unwrap();
+    account_id
+}
+
+/// A message of an IMAP account as its sync leaves it: a row, and no file.
+/// Sync keeps only the readable parts of mail from a server, so the whole
+/// message is only on the server.
+async fn synced_message(
+    core: &crate::Core,
+    account_id: i64,
+    folder_id: i64,
+    uid: u32,
+    uid_validity: i64,
+) -> i64 {
+    core.db
+        .write(move |conn| {
+            conn.execute(
+                "UPDATE folders SET uidvalidity = ?2 WHERE id = ?1",
+                rusqlite::params![folder_id, uid_validity],
+            )?;
+            conn.execute(
+                "INSERT INTO threads (account_id, subject_norm, unread_count, last_message_at)
+                 VALUES (?1, 'fetched from the server', 0, 1000)",
+                [account_id],
+            )?;
+            let thread_id = conn.last_insert_rowid();
+            conn.execute(
+                "INSERT INTO messages (thread_id, account_id, folder_id, uid, message_id, subject,
+                 from_addr, date, is_read, is_automated, is_draft, is_outgoing, body_state)
+                 VALUES (?1, ?2, ?3, ?4, 'copied@example.org', 'Fetched from the server',
+                 'ana@example.org', 1000, 1, 0, 0, 0, 'cached')",
+                rusqlite::params![thread_id, account_id, folder_id, uid],
+            )?;
+            Ok(conn.last_insert_rowid())
+        })
+        .await
+        .unwrap()
+}
+
+#[tokio::test]
+async fn a_copy_fetches_the_original_from_the_imap_server_of_its_account() {
+    let server = ImapServer::start(false, None).await;
+    let (_directory, core, source) = imap_account(server.port).await;
+    let destination = add_imap_account(&core, server.port, "home@example.com").await;
+    server.create("Copies");
+    let uid = server.put("INBOX", &message("copied", "Fetched from the server", ""));
+    let inbox = folder(&core, source, "INBOX").await;
+    let message_id = synced_message(&core, source, inbox.id, uid, 7).await;
+    let copies = core
+        .db
+        .write(move |conn| repo::folders::upsert(conn, destination, "Copies", Some("/"), None))
+        .await
+        .unwrap();
+
+    let report = core
+        .copy_messages_to_folder(vec![], vec![message_id], copies, false)
+        .await
+        .unwrap();
+
+    // Nothing was kept here, so the original came from the server it is on.
+    assert_eq!((report.copied, report.unavailable), (1, 0));
+    let stored = server.mailbox("Copies").unwrap();
+    assert_eq!(stored.len(), 1);
+    assert!(
+        String::from_utf8_lossy(&stored[0].raw).contains("Subject: Fetched from the server"),
+        "the whole message is copied"
+    );
+}
+
+#[tokio::test]
+async fn a_copy_never_takes_mail_from_a_renumbered_imap_folder() {
+    let server = ImapServer::start(false, None).await;
+    let (_directory, core, source) = imap_account(server.port).await;
+    let destination = add_imap_account(&core, server.port, "home@example.com").await;
+    server.create("Copies");
+    let uid = server.put("INBOX", &message("copied", "Other mail now", ""));
+    let inbox = folder(&core, source, "INBOX").await;
+    // The folder was renumbered since sync (the server says 7), so this UID
+    // may name different mail now.
+    let message_id = synced_message(&core, source, inbox.id, uid, 6).await;
+    let copies = core
+        .db
+        .write(move |conn| repo::folders::upsert(conn, destination, "Copies", Some("/"), None))
+        .await
+        .unwrap();
+
+    let report = core
+        .copy_messages_to_folder(vec![], vec![message_id], copies, false)
+        .await
+        .unwrap();
+
+    assert_eq!((report.copied, report.unavailable), (0, 1));
+    assert!(server.mailbox("Copies").unwrap().is_empty());
 }
 
 /// A JMAP server's mailboxes, uploads and mail.

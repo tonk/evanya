@@ -653,9 +653,6 @@ pub struct MailCopyReport {
     pub moved: usize,
 }
 
-/// How long a copy waits for the original of a message not downloaded yet.
-const ORIGINAL_WAIT: Duration = Duration::from_secs(60);
-
 impl crate::Core {
     /// Copy messages into a mailbox, usually of another account, by
     /// uploading their originals with their read and starred states. With
@@ -736,8 +733,9 @@ impl crate::Core {
 
         let mut report = MailCopyReport::default();
         let mut done = Vec::new();
+        let mut sources = SourceConnections::default();
         for message_id in message_ids {
-            let Some((row, raw)) = self.original_for_copy(message_id).await else {
+            let Some((row, raw)) = self.original_for_copy(message_id, &mut sources).await else {
                 report.unavailable += 1;
                 continue;
             };
@@ -769,6 +767,7 @@ impl crate::Core {
                 Err(error) => report.refused.push(error.to_string()),
             }
         }
+        sources.close().await;
         self.finish_upload(account_id, &mut remote).await?;
 
         if move_messages && !done.is_empty() {
@@ -783,46 +782,131 @@ impl crate::Core {
         Ok(report)
     }
 
-    /// A message's original, downloading it first when only its headers or
-    /// part of it are here.
+    /// A message's original: the file kept here when there is one, and
+    /// otherwise the account's server's copy. Sync keeps only the readable
+    /// parts of mail from a server, never the whole message, so most mail has
+    /// no file here.
     async fn original_for_copy(
         &self,
         message_id: i64,
+        sources: &mut SourceConnections,
     ) -> Option<(repo::messages::MessageRow, Vec<u8>)> {
-        let started = std::time::Instant::now();
-        let mut requested = false;
-        loop {
-            let row = self
-                .db
-                .read(move |conn| repo::messages::get_row(conn, message_id))
+        let row = self
+            .db
+            .read(move |conn| repo::messages::get_row(conn, message_id))
+            .await
+            .ok()
+            .flatten()?;
+        if let Some(path) = row.raw_path.clone() {
+            let raw = self
+                .read_original(
+                    row.account_id,
+                    message_id,
+                    &path,
+                    crate::MAX_CACHED_MESSAGE_BYTES,
+                    "copied message",
+                )
                 .await
-                .ok()
-                .flatten()?;
-            if let Some(path) = row.raw_path.clone() {
-                let raw = self
-                    .read_original(
-                        row.account_id,
-                        message_id,
-                        &path,
-                        crate::MAX_CACHED_MESSAGE_BYTES,
-                        "copied message",
-                    )
-                    .await
-                    .inspect_err(|error| {
-                        tracing::warn!(message_id, %error, "original of a copied message unreadable");
-                    })
-                    .ok()?;
-                return Some((row, raw));
+                .inspect_err(|error| {
+                    tracing::warn!(message_id, %error, "original of a copied message unreadable");
+                })
+                .ok()?;
+            return Some((row, raw));
+        }
+        match self.original_from_server(&row, sources).await {
+            Ok(Some(raw)) => Some((row, raw)),
+            Ok(None) => {
+                tracing::warn!(
+                    message_id,
+                    account_id = row.account_id,
+                    "the original of a copied message is not kept here and cannot be fetched from this kind of account yet"
+                );
+                None
             }
-            if !requested {
-                self.request_body(row.account_id, message_id).await;
-                requested = true;
+            Err(error) => {
+                tracing::warn!(message_id, %error, "the original of a copied message could not be fetched");
+                None
             }
-            if started.elapsed() >= ORIGINAL_WAIT {
-                tracing::warn!(message_id, "original of a copied message never arrived");
-                return None;
+        }
+    }
+
+    /// The whole message from the server of the account it is in, over IMAP
+    /// or the Gmail API. `None` for an account type that cannot do this yet.
+    async fn original_from_server(
+        &self,
+        row: &repo::messages::MessageRow,
+        sources: &mut SourceConnections,
+    ) -> Result<Option<Vec<u8>>> {
+        let account_id = row.account_id;
+        match self.account_protocol(account_id).await? {
+            MailProtocol::Imap => {
+                let (Some(folder_id), Some(uid)) = (row.folder_id, row.uid) else {
+                    return Ok(None);
+                };
+                let folder = self
+                    .db
+                    .read(move |conn| repo::folders::get(conn, folder_id))
+                    .await?
+                    .ok_or_else(|| CoreError::NotFound(format!("folder {folder_id}")))?;
+                let config = self.folder_account_config(account_id).await?;
+                let slot = sources.imap.entry(account_id).or_default();
+                if slot.is_none() {
+                    sources.selected.remove(&account_id);
+                }
+                let session = self.imap_session(&config, slot).await?;
+                if sources.selected.get(&account_id) != Some(&folder_id) {
+                    let mailbox = imap::select(session, &folder.path).await?;
+                    // A UID names other mail once the server has renumbered
+                    // the folder; never copy that.
+                    if mailbox.uid_validity != folder.uidvalidity {
+                        return Err(CoreError::Imap(format!(
+                            "folder {} was renumbered on the server; synchronize the account and try again",
+                            folder.path
+                        )));
+                    }
+                    sources.selected.insert(account_id, folder_id);
+                }
+                let uid = u32::try_from(uid)
+                    .map_err(|_| CoreError::Imap(format!("{uid} is not a valid UID")))?;
+                imap::fetch_full(session, uid).await
             }
-            tokio::time::sleep(Duration::from_millis(250)).await;
+            MailProtocol::Gmail => {
+                let message_id = row.id;
+                let Some(gmail_id) = self
+                    .db
+                    .read(move |conn| repo::gmail::provider_message_id(conn, message_id))
+                    .await?
+                else {
+                    return Ok(None);
+                };
+                let client = match sources.gmail.entry(account_id) {
+                    std::collections::hash_map::Entry::Occupied(entry) => entry.into_mut(),
+                    std::collections::hash_map::Entry::Vacant(entry) => {
+                        let config = self.folder_account_config(account_id).await?;
+                        entry.insert(sync::gmail::Uploader::new(self.sync_ctx(), config)?)
+                    }
+                };
+                client.download_raw(&gmail_id).await.map(Some)
+            }
+            MailProtocol::Jmap | MailProtocol::Pop3 | MailProtocol::Local => Ok(None),
+        }
+    }
+}
+
+/// Connections to the accounts copied mail comes from, kept open for the
+/// whole copy so a conversation's messages do not each open their own.
+#[derive(Default)]
+struct SourceConnections {
+    imap: HashMap<i64, Option<imap::Session>>,
+    /// The folder each IMAP session has selected.
+    selected: HashMap<i64, i64>,
+    gmail: HashMap<i64, sync::gmail::Uploader>,
+}
+
+impl SourceConnections {
+    async fn close(self) {
+        for session in self.imap.into_values().flatten() {
+            imap::logout(session).await;
         }
     }
 }

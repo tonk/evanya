@@ -1316,6 +1316,28 @@ impl Uploader {
         sync_labels(&self.api.ctx, &self.api.account, &self.api).await
     }
 
+    /// The whole message, as Gmail's API has it, for copying it elsewhere.
+    pub(crate) async fn download_raw(&self, provider_message_id: &str) -> Result<Vec<u8>> {
+        let value = self
+            .api
+            .get_json(&format!(
+                "{}/messages/{}?format=raw",
+                self.base,
+                urlencode(provider_message_id)
+            ))
+            .await?;
+        let raw = value
+            .get("raw")
+            .and_then(Value::as_str)
+            .ok_or_else(|| CoreError::Other("Gmail returned no message to copy".into()))?;
+        // Gmail's encoding is URL-safe base64, with or without padding.
+        URL_SAFE_NO_PAD
+            .decode(raw.trim_end_matches('='))
+            .map_err(|error| {
+                CoreError::Other(format!("Gmail returned an unreadable message: {error}"))
+            })
+    }
+
     /// Whether the mailbox has a message with this Message-ID anywhere,
     /// Spam and Trash included.
     pub(crate) async fn has_message(&self, message_id: &str) -> Result<bool> {

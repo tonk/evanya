@@ -118,6 +118,18 @@ pub fn set_message_folders(conn: &Connection, message_id: i64, folder_ids: &[i64
     Ok(())
 }
 
+/// The id Gmail's API knows a message by, when it has one.
+pub fn provider_message_id(conn: &Connection, message_id: i64) -> Result<Option<String>> {
+    Ok(conn
+        .query_row(
+            "SELECT gm_msgid FROM messages WHERE id = ?1",
+            [message_id],
+            |row| row.get::<_, Option<String>>(0),
+        )
+        .optional()?
+        .flatten())
+}
+
 pub fn provider_label_for_local(
     conn: &Connection,
     account_id: i64,
