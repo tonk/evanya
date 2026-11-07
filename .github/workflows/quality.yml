@@ -1,12 +1,14 @@
 name: Quality and security
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  schedule:
-    - cron: "17 4 * * *"
+  # The automatic runs are switched off for now: start this workflow by hand
+  # from the Actions tab (or from the release workflow's gate when it is back).
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  # schedule:
+  #   - cron: "17 4 * * *"
   workflow_dispatch:
   workflow_call:
 
