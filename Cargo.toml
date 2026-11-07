@@ -120,6 +120,7 @@ slint = { version = "1.18.1", default-features = false, features = [
 ] }
 tokio = { version = "1", features = ["rt-multi-thread", "sync", "time", "net", "io-util", "fs", "process"] }
 tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 unicode-properties = { version = "0.1", default-features = false, features = ["emoji"] }
 url = "2"
 webbrowser = "1.2"

@@ -11,6 +11,7 @@ mod account_mail_preferences;
 #[cfg(test)]
 mod account_removal_tests;
 mod app_icon;
+mod app_log;
 mod attachment_controller;
 #[cfg(desktop)]
 mod autostart;
@@ -1734,6 +1735,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         }
     };
 
+    app_log::init(&platform.paths.data_dir);
     spellcheck::set_data_dir(&platform.paths.data_dir);
     let renderer_preference_path = platform.paths.data_dir.join("renderer.json");
     let tabs_path = platform.paths.data_dir.join("tabs.json");
@@ -2181,19 +2183,29 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 return false;
             };
             let Some(payload) = mail_drag_payload(&data) else {
+                tracing::warn!("a message drop carried no usable payload");
                 app.set_render_status(UiMessage::detail(
                     "Message action failed: {}",
                     "invalid drag payload",
                 ));
                 return false;
             };
+            let raw_scope = target_scope.to_string();
             let Ok(target_scope) = target_scope.parse::<Scope>() else {
+                tracing::warn!(scope = %raw_scope, "a message drop on an unknown mailbox");
                 app.set_render_status(UiMessage::detail(
                     "Message action failed: {}",
                     "invalid mailbox destination",
                 ));
                 return false;
             };
+            tracing::info!(
+                scope = %raw_scope,
+                target_account_id,
+                target_folder_id,
+                items = payload.items.len(),
+                "messages dropped on a mailbox"
+            );
             // Another account's mailbox: ask whether to move or copy.
             let cross = resolve_cross_account_drop(
                 &state_for_mail_drop.borrow(),
@@ -2218,15 +2230,22 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                             &drop.destination,
                         ),
                     ));
+                    tracing::info!(
+                        count,
+                        destination = %drop.destination,
+                        folder_id = drop.folder_id,
+                        "asking whether to move or copy to another account"
+                    );
                     *pending_for_drop.borrow_mut() = Some(drop);
                     app.set_cross_account_drop_open(true);
                     return true;
                 }
                 Some(Err(error)) => {
+                    tracing::warn!(%error, "a drop on another account was refused");
                     app.set_render_status(UiMessage::detail("Message action failed: {}", error));
                     return false;
                 }
-                None => {}
+                None => tracing::info!("the drop stays within one account"),
             }
             match perform_mail_drop(
                 &app,
@@ -2256,15 +2275,21 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             return;
         };
         app.set_cross_account_drop_open(false);
+        tracing::info!(choice = %choice, "the move or copy question was answered");
         let Some(drop) = pending_cross_drop.borrow_mut().take() else {
+            tracing::warn!("no message drop was waiting for an answer");
             return;
         };
         let move_messages = match choice.as_str() {
             "move" => true,
             "copy" => false,
-            _ => return,
+            _ => {
+                tracing::info!("the move or copy question was cancelled");
+                return;
+            }
         };
         let Some(core) = state_for_cross_drop.borrow().core.clone() else {
+            tracing::warn!("the mail core is not available, so nothing was copied");
             return;
         };
         app.set_sync_status(if move_messages {
@@ -2275,6 +2300,13 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         let app = app.as_weak();
         runtime_for_cross_drop.spawn(async move {
             let destination = drop.destination.clone();
+            tracing::info!(
+                move_messages,
+                destination = %destination,
+                threads = drop.thread_ids.len(),
+                messages = drop.message_ids.len(),
+                "copying messages to another account"
+            );
             let result = core
                 .copy_to_folder(
                     drop.thread_ids,
@@ -2283,6 +2315,10 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                     move_messages,
                 )
                 .await;
+            match &result {
+                Ok(report) => tracing::info!(?report, "copying to another account finished"),
+                Err(error) => tracing::warn!(%error, "copying to another account failed"),
+            }
             let message = match result {
                 Ok(report) if report.unavailable == 0 && report.refused.is_empty() => {
                     let count = report.copied + report.present;
