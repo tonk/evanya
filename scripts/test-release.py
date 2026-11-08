@@ -429,24 +429,37 @@ for name in ("libxkbcommon-x11.so.0", "libxkbcommon.so.0"):
             pack = root / "bin/appimagetool"
             pack.write_text('''#!/usr/bin/env python3
 import json, os, pathlib, sys
-appdir = pathlib.Path(sys.argv[1])
-pathlib.Path(sys.argv[2]).write_text(json.dumps({
+# appimagetool fetches its runtime itself, once; the packager hands it over.
+args = sys.argv[1:]
+runtime = None
+if args[:1] == ["--runtime-file"]:
+    runtime = pathlib.Path(args[1]).read_text()
+    args = args[2:]
+appdir = pathlib.Path(args[0])
+pathlib.Path(args[1]).write_text(json.dumps({
     "version": os.environ.get("VERSION"),
+    "runtime": runtime,
     "desktop": (appdir / "com.evanya.mail.desktop").read_text(),
     "metainfo": (appdir / "usr/share/metainfo/com.evanya.mail.metainfo.xml").read_text(),
 }))
 ''')
             deploy.chmod(0o755)
             pack.chmod(0o755)
+            # The packager would fetch the runtime from GitHub; this test is offline.
+            runtime = root / "bin/runtime-x86_64"
+            runtime.write_text("runtime fixture")
+            runtime.chmod(0o755)
             result = subprocess.run(
                 ["bash", str(root / "scripts/build-appimage.sh")], cwd=root,
                 env={**os.environ, "PATH": f"{root / 'bin'}:{os.environ['PATH']}",
-                     "LINUXDEPLOY": str(deploy), "APPIMAGETOOL": str(pack), "VERSION": "stale",
+                     "LINUXDEPLOY": str(deploy), "APPIMAGETOOL": str(pack),
+                     "APPIMAGE_RUNTIME": str(runtime), "VERSION": "stale",
                      "EVANYA_SKIP_BUILD": "0", "EVANYA_APP_FEATURES": ""},
                 capture_output=True, text=True,
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             packaged = json.loads((root / "target/appimage/evanya.AppImage").read_text())
+            self.assertEqual(packaged["runtime"], "runtime fixture")
             self.assertEqual(packaged["version"], "0.1.0-alpha.1")
             self.assertIn("X-AppImage-Version=0.1.0-alpha.1\n", packaged["desktop"])
             release = ET.fromstring(packaged["metainfo"]).find("./releases/release")
@@ -468,6 +481,36 @@ pathlib.Path(sys.argv[2]).write_text(json.dumps({
                     for feature in args[index + 1].split(",")
                 }
                 self.assertTrue({"remote-content", "gpu-renderer"} <= enabled)
+
+    def test_appimage_downloads_ask_curl_to_try_again(self):
+        # GitHub's release downloads now and then answer 502, 503 or 504. Run
+        # the packager's own download function with a curl that only records
+        # how it is called: one bad answer must not fail a long build.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "bin").mkdir()
+            curl = root / "bin/curl"
+            curl.write_text(
+                "#!/usr/bin/env python3\n"
+                "import json, pathlib, sys\n"
+                f"pathlib.Path({str(root / 'curl-args.json')!r}).write_text(json.dumps(sys.argv[1:]))\n"
+                "pathlib.Path(sys.argv[sys.argv.index('--output') + 1]).write_text('tool')\n"
+            )
+            curl.chmod(0o755)
+            script = (SCRIPTS / "build-appimage.sh").read_text()
+            function = script[script.index("download_tool() {"):]
+            function = function[:function.index("\n}\n") + 3]
+            result = subprocess.run(
+                ["bash", "-c", f"set -euo pipefail\n{function}\ndownload_tool https://example.test/tool {root / 'tools/tool'}"],
+                env={**os.environ, "PATH": f"{root / 'bin'}:{os.environ['PATH']}"},
+                capture_output=True, text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            args = json.loads((root / "curl-args.json").read_text())
+            self.assertEqual(args[args.index("--retry") + 1], "5")
+            self.assertIn("--retry-all-errors", args)
+            self.assertIn("--max-time", args)
+            self.assertTrue(os.access(root / "tools/tool", os.X_OK))
 
     def test_versions_and_tags(self):
         for version in ("0.1.0", "1.2.3-alpha.1", "1.2.3-beta.2", "1.2.3-rc.3"):
