@@ -101,22 +101,23 @@ rm -rf "$staging"
 mkdir -p "$staging"
 ditto "$app_dir" "$staging/Evanya.app"
 ln -s /Applications "$staging/Applications"
-hdiutil create -volname "Evanya" -srcfolder "$staging" -ov -format UDZO \
-  "$archive_path.dmg"
-# Right after create, verify can fail with "unable to recognize ... as a disk
-# image (Resource temporarily unavailable)": the disk image helper still holds
-# the file. That passes, so try again before calling the image bad.
+# On the CI runners hdiutil now and then fails while the disk image helper is
+# busy: create with "Resource busy", verify with "unable to recognize ... as a
+# disk image (Resource temporarily unavailable)". Neither is a bad image; both
+# pass when tried again. So make and verify the image together, up to five
+# times, and only then fail. -ov replaces what a failed attempt left behind.
 attempts=5
 for attempt in $(seq 1 "$attempts"); do
-  if hdiutil verify "$archive_path.dmg"; then
+  if hdiutil create -volname "Evanya" -srcfolder "$staging" -ov -format UDZO \
+    "$archive_path.dmg" && hdiutil verify "$archive_path.dmg"; then
     break
   fi
   if (( attempt == attempts )); then
-    printf 'The disk image did not verify in %s attempts.\n' "$attempts" >&2
+    printf 'The disk image could not be made and verified in %s attempts.\n' "$attempts" >&2
     exit 1
   fi
-  printf 'hdiutil verify failed (attempt %s of %s); trying again.\n' "$attempt" "$attempts" >&2
-  sleep $((attempt * 5))
+  printf 'hdiutil failed (attempt %s of %s); trying again.\n' "$attempt" "$attempts" >&2
+  sleep $((attempt * 10))
 done
 codesign --verify --deep --strict "$app_dir"
 rm -rf "$staging"
