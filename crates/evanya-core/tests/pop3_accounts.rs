@@ -258,6 +258,7 @@ async fn a_pop3_account_downloads_files_and_sends_mail_on_this_device() {
                 wake_at: None,
                 target_folder_id: Some(projects),
                 label_id: None,
+                ..Default::default()
             }),
         })
         .await

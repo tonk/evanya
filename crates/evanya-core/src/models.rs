@@ -1478,12 +1478,17 @@ impl ActionKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ActionParams {
     pub wake_at: Option<i64>,
     pub target_folder_id: Option<i64>,
     pub label_id: Option<i64>,
+    /// For a move: the folder the messages are moved out of, when that is not
+    /// their first folder. A message that is in several mailboxes, as in
+    /// Gmail, leaves the one it is shown in and stays in the others.
+    #[serde(default)]
+    pub source_folder_id: Option<i64>,
 }
 
 /// What an action applies to: whole conversations, or single messages, as a

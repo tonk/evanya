@@ -1990,6 +1990,7 @@ impl CoreMailSource {
                     wake_at: None,
                     target_folder_id: None,
                     label_id: Some(label_id),
+                    ..Default::default()
                 }),
             })
             .await
@@ -2010,8 +2011,30 @@ impl CoreMailSource {
                     wake_at: None,
                     target_folder_id: Some(target_folder_id),
                     label_id: None,
+                    ..Default::default()
                 }),
             })
+            .await
+            .map(|_| ())
+            .map_err(|error| error.to_string())
+    }
+
+    /// Move into one of the account's own labels like into a folder: see
+    /// [`evanya_core::Core::move_to_label`].
+    pub async fn move_to_label(
+        &self,
+        target: MailTarget,
+        label_id: i64,
+        source_folder_id: Option<i64>,
+        source_label_id: Option<i64>,
+    ) -> Result<(), String> {
+        self.core
+            .move_to_label(
+                target.action_target(),
+                label_id,
+                source_folder_id,
+                source_label_id,
+            )
             .await
             .map(|_| ())
             .map_err(|error| error.to_string())

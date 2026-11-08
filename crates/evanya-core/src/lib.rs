@@ -4336,6 +4336,70 @@ impl Core {
         .await
     }
 
+    /// Move messages into one of an account's own labels the way a mail
+    /// program moves them into a folder. In Gmail a label is the folder: the
+    /// messages gain this label and lose the one they are moved out of
+    /// (`source_folder_id`, or the folder behind `source_label_id`), and keep
+    /// their other labels. Without a source to leave, which is the case in a
+    /// search or a view that combines labels, and for an account whose labels
+    /// are no folders, the label is only added.
+    pub async fn move_to_label(
+        &self,
+        target: ActionTarget,
+        label_id: i64,
+        source_folder_id: Option<i64>,
+        source_label_id: Option<i64>,
+    ) -> Result<ActionResult> {
+        let label = self
+            .db
+            .read(move |conn| repo::labels::get(conn, label_id))
+            .await?
+            .ok_or_else(|| CoreError::NotFound(format!("label {label_id}")))?;
+        let folders = match label.owner_account_id {
+            Some(account_id) => {
+                self.db
+                    .read(move |conn| {
+                        let folder = repo::gmail::folder_for_label(conn, account_id, label_id)?;
+                        let source = match (source_folder_id, source_label_id) {
+                            (Some(folder), _) => Some(folder),
+                            (None, Some(source)) => {
+                                repo::gmail::folder_for_label(conn, account_id, source)?
+                            }
+                            (None, None) => None,
+                        };
+                        Ok(folder.zip(source))
+                    })
+                    .await?
+            }
+            None => None,
+        };
+        match folders {
+            Some((folder, source)) => {
+                self.perform_action(PerformActionArgs {
+                    kind: ActionKind::Move,
+                    target,
+                    params: Some(ActionParams {
+                        target_folder_id: Some(folder),
+                        source_folder_id: Some(source),
+                        ..Default::default()
+                    }),
+                })
+                .await
+            }
+            None => {
+                self.perform_action(PerformActionArgs {
+                    kind: ActionKind::AddLabel,
+                    target,
+                    params: Some(ActionParams {
+                        label_id: Some(label_id),
+                        ..Default::default()
+                    }),
+                })
+                .await
+            }
+        }
+    }
+
     pub async fn perform_action(&self, args: PerformActionArgs) -> Result<ActionResult> {
         let mut action_ids: Vec<i64> = Vec::new();
         let mut touched_accounts: Vec<i64> = Vec::new();
@@ -8563,6 +8627,7 @@ impl Core {
                                 wake_at: None,
                                 target_folder_id: None,
                                 label_id: Some(label_id),
+                                ..Default::default()
                             }),
                         )
                     }
@@ -9724,14 +9789,34 @@ fn apply_thread_action(
                     "messages cannot be moved between accounts".into(),
                 ));
             }
+            // A message that is in several mailboxes, as in Gmail, leaves the
+            // one it is moved out of, which need not be its first. It stays in
+            // the others.
+            let leaving = params
+                .and_then(|p| p.source_folder_id)
+                .filter(|_| multi_mailbox);
             for (id, f, u, _r, _s, _role) in &msgs {
-                if f.is_some() && *f != Some(target) {
+                let source = match leaving {
+                    Some(source)
+                        if *f == Some(source)
+                            || tx.query_row(
+                                "SELECT EXISTS(SELECT 1 FROM message_folders
+                                 WHERE message_id = ?1 AND folder_id = ?2)",
+                                rusqlite::params![id, source],
+                                |row| row.get::<_, bool>(0),
+                            )? =>
+                    {
+                        Some(source)
+                    }
+                    _ => *f,
+                };
+                if source.is_some() && source != Some(target) {
                     let aid = enqueue_move(
                         &tx,
                         account_id,
                         thread_id,
                         *id,
-                        *f,
+                        source,
                         *u,
                         target,
                         "move",
@@ -10195,6 +10280,128 @@ mod move_action_validation_tests {
         }
     }
 
+    /// A Gmail message in labels A (its first folder) and B, and a label C.
+    fn gmail_message_in_two_labels() -> (rusqlite::Connection, i64, i64) {
+        let conn = db::testutil::conn();
+        db::testutil::seed_account(&conn);
+        conn.execute(
+            "UPDATE accounts SET provider = 'gmail', auth_kind = 'oauth2', mail_protocol = 'gmail'
+             WHERE id = 1",
+            [],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO folders (id, account_id, path, role)
+             VALUES (2, 1, 'A', NULL), (3, 1, 'B', NULL), (4, 1, 'C', NULL)",
+            [],
+        )
+        .unwrap();
+        let (thread_id, message_id) =
+            db::testutil::seed_message(&conn, "sender@test.dev", "in two labels", false);
+        conn.execute(
+            "UPDATE messages SET folder_id = 2 WHERE id = ?1",
+            [message_id],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO message_folders (message_id, folder_id) VALUES (?1, 2), (?1, 3)",
+            [message_id],
+        )
+        .unwrap();
+        (conn, thread_id, message_id)
+    }
+
+    fn folders_of(conn: &rusqlite::Connection, message_id: i64) -> Vec<i64> {
+        let mut statement = conn
+            .prepare("SELECT folder_id FROM message_folders WHERE message_id = ?1 ORDER BY 1")
+            .unwrap();
+        statement
+            .query_map([message_id], |row| row.get(0))
+            .unwrap()
+            .map(|folder| folder.unwrap())
+            .collect()
+    }
+
+    #[test]
+    fn a_gmail_move_leaves_the_label_it_is_dragged_out_of() {
+        let (mut conn, thread_id, message_id) = gmail_message_in_two_labels();
+
+        // Dragged out of B, which is not the message's first folder.
+        let actions = apply_thread_action(
+            &mut conn,
+            thread_id,
+            Some(&[message_id]),
+            ActionKind::Move,
+            Some(&ActionParams {
+                target_folder_id: Some(4),
+                source_folder_id: Some(3),
+                ..Default::default()
+            }),
+        )
+        .unwrap();
+
+        assert_eq!(actions.len(), 1);
+        // It keeps A, loses B and gains C.
+        assert_eq!(folders_of(&conn, message_id), [2, 4]);
+        let payload: String = conn
+            .query_row(
+                "SELECT payload FROM pending_actions WHERE id = ?1",
+                [actions[0].0],
+                |row| row.get(0),
+            )
+            .unwrap();
+        let payload: serde_json::Value = serde_json::from_str(&payload).unwrap();
+        assert_eq!(payload["srcFolderId"], 3);
+        assert_eq!(payload["targetFolderId"], 4);
+    }
+
+    #[test]
+    fn a_gmail_move_without_a_source_leaves_the_first_folder_as_before() {
+        let (mut conn, thread_id, message_id) = gmail_message_in_two_labels();
+
+        apply_thread_action(
+            &mut conn,
+            thread_id,
+            Some(&[message_id]),
+            ActionKind::Move,
+            Some(&ActionParams {
+                target_folder_id: Some(4),
+                ..Default::default()
+            }),
+        )
+        .unwrap();
+
+        assert_eq!(folders_of(&conn, message_id), [3, 4]);
+    }
+
+    #[test]
+    fn a_source_the_message_is_not_in_falls_back_to_its_first_folder() {
+        let (mut conn, thread_id, message_id) = gmail_message_in_two_labels();
+        conn.execute(
+            "INSERT INTO folders (id, account_id, path, role) VALUES (5, 1, 'D', NULL)",
+            [],
+        )
+        .unwrap();
+
+        // The message is not in D, so there is nothing to leave there: a stale
+        // source must not take a label away from the wrong place.
+        apply_thread_action(
+            &mut conn,
+            thread_id,
+            Some(&[message_id]),
+            ActionKind::Move,
+            Some(&ActionParams {
+                target_folder_id: Some(4),
+                source_folder_id: Some(5),
+                ..Default::default()
+            }),
+        )
+        .unwrap();
+
+        // It left its first folder, A, as a move always did.
+        assert_eq!(folders_of(&conn, message_id), [3, 4]);
+    }
+
     #[test]
     fn move_rejects_a_folder_owned_by_another_account_without_local_mutation() {
         let mut conn = db::testutil::conn();
@@ -10225,6 +10432,7 @@ mod move_action_validation_tests {
                 wake_at: None,
                 target_folder_id: Some(2),
                 label_id: None,
+                ..Default::default()
             }),
         )
         .unwrap_err();
@@ -10265,6 +10473,7 @@ mod move_action_validation_tests {
                 wake_at: None,
                 target_folder_id: None,
                 label_id: Some(label.id),
+                ..Default::default()
             }),
         )
         .unwrap_err();
@@ -10304,6 +10513,7 @@ mod move_action_validation_tests {
                 wake_at: None,
                 target_folder_id: None,
                 label_id: Some(label.id),
+                ..Default::default()
             }),
         )
         .unwrap();

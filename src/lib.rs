@@ -724,6 +724,13 @@ enum MailDropDestination {
     Action(&'static str),
     Folder(i64),
     Label(i64),
+    /// Into one of an account's own labels like into a folder: the messages
+    /// gain the label and leave the folder or label they were dragged out of.
+    MoveToLabel {
+        label_id: i64,
+        source_folder_id: Option<i64>,
+        source_label_id: Option<i64>,
+    },
     Route(String),
 }
 
@@ -762,6 +769,30 @@ fn standard_mailbox_folder(
         .iter()
         .find(|entry| entry.scope == Some(scope) && entry.is_selectable && entry.folder_id >= 0)
         .map(|entry| entry.folder_id)
+}
+
+/// What Gmail mail dragged out of the current view leaves: the folder or the
+/// label it is shown in, as (folder, label). `None` where the view is not one
+/// label of this account, such as a search, a combined view or a system
+/// mailbox other than the Inbox, so that a drop there only adds the label.
+fn gmail_move_source(state: &InboxState, account_id: i64) -> Option<(Option<i64>, Option<i64>)> {
+    match state.scope {
+        Scope::Label { id, .. } => state
+            .labels
+            .iter()
+            .find(|label| {
+                label.id == id && !label.is_auto && label.owner_account_id == Some(account_id)
+            })
+            .map(|_| (None, Some(id))),
+        Scope::Account {
+            account_id: scope_account,
+            mailbox: StandardMailbox::Inbox,
+        } if scope_account == account_id => {
+            standard_mailbox_folder(state, account_id, StandardMailbox::Inbox)
+                .map(|folder| (Some(folder), None))
+        }
+        _ => None,
+    }
 }
 
 fn resolve_single_mail_drop(
@@ -810,6 +841,16 @@ fn resolve_single_mail_drop(
             }
             if label.is_auto {
                 MailDropDestination::Route(format!("label:{label_id}"))
+            } else if let Some((source_folder_id, source_label_id)) = message
+                .account_uses_labels
+                .then(|| gmail_move_source(state, message.account_id))
+                .flatten()
+            {
+                MailDropDestination::MoveToLabel {
+                    label_id,
+                    source_folder_id,
+                    source_label_id,
+                }
             } else {
                 MailDropDestination::Label(label_id)
             }

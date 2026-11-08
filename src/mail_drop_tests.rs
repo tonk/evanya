@@ -147,3 +147,122 @@ fn drops_resolve_by_scope_not_by_mailbox_name() {
         Some(Err(_))
     ));
 }
+
+fn label(id: i64, name: &str, owner_account_id: Option<i64>, is_auto: bool) -> Label {
+    Label {
+        id,
+        name: name.into(),
+        color: "#123456".into(),
+        keyword: String::new(),
+        position: 0,
+        owner_account_id,
+        is_auto,
+    }
+}
+
+#[test]
+fn a_gmail_label_drop_moves_out_of_the_view_it_comes_from() {
+    let window = MinimalSoftwareWindow::new(RepaintBufferType::NewBuffer);
+    slint::platform::set_platform(Box::new(Headless(window))).unwrap();
+    let app = AppWindow::new().unwrap();
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .unwrap();
+    let dir = tempfile::tempdir().unwrap();
+    let core = runtime
+        .block_on(CoreMailSource::start(
+            evanya_core::config::Paths::for_tests(dir.path()),
+            Arc::new(DevelopmentFileCredentialStore::new(
+                dir.path().join("credentials.json"),
+            )),
+            Arc::new(evanya_core::oauth::redirect::LoopbackRedirectBroker::default()),
+        ))
+        .unwrap();
+    let (favicons, _) = bounded_ui_channel();
+    let (avatars, _) = bounded_ui_channel();
+    let mut state = InboxState::empty(
+        None,
+        UiSender::new(favicons, UiWake::new(app.as_weak(), |_| {})),
+        None,
+        UiSender::new(avatars, UiWake::new(app.as_weak(), |_| {})),
+        false,
+        false,
+        WarmStartCacheWriter::spawn(&runtime, dir.path().join("warm.json")),
+    );
+    state.core = Some(core);
+    state.using_core = true;
+    let inbox = Scope::Account {
+        account_id: 1,
+        mailbox: StandardMailbox::Inbox,
+    };
+    let label_scope = |id| Scope::Label {
+        kind: mail_scope::LabelKind::Account,
+        id,
+    };
+    state.mailboxes = vec![mailbox(inbox, 10, "Inbox")];
+    // Travel and Work are the account's own labels; News is an automatic one.
+    state.labels = vec![
+        label(5, "Travel", Some(1), false),
+        label(6, "Work", Some(1), false),
+        label(7, "News", None, true),
+    ];
+    let mut message = mail::fixture_messages().remove(0);
+    message.account_id = 1;
+    message.thread_id = Some(77);
+    message.folder = "Inbox".into();
+    message.labels.clear();
+    message.account_uses_labels = true;
+    state.messages = vec![message.clone()];
+    let item = MailDragItem {
+        message_id: message.id,
+        account_id: 1,
+    };
+    let drop = |state: &InboxState, scope| {
+        resolve_single_mail_drop(state, &item, scope, 1, -1).map(|(_, destination)| destination)
+    };
+
+    // Out of the Inbox into a label: it leaves the Inbox, like into a folder.
+    state.scope = inbox;
+    assert_eq!(
+        drop(&state, label_scope(5)),
+        Ok(MailDropDestination::MoveToLabel {
+            label_id: 5,
+            source_folder_id: Some(10),
+            source_label_id: None,
+        })
+    );
+    // Out of one label into another: it leaves the first.
+    state.scope = label_scope(6);
+    assert_eq!(
+        drop(&state, label_scope(5)),
+        Ok(MailDropDestination::MoveToLabel {
+            label_id: 5,
+            source_folder_id: None,
+            source_label_id: Some(6),
+        })
+    );
+    // From a view that is not one label of the account, nothing is left, so
+    // the label is only added.
+    state.scope = Scope::Unified(StandardMailbox::Inbox);
+    assert_eq!(
+        drop(&state, label_scope(5)),
+        Ok(MailDropDestination::Label(5))
+    );
+    // An automatic category is a route, as before.
+    state.scope = inbox;
+    assert_eq!(
+        drop(&state, label_scope(7)),
+        Ok(MailDropDestination::Route("label:7".into()))
+    );
+    // A label the message has already is no destination.
+    state.messages[0].labels = vec![5];
+    assert!(drop(&state, label_scope(5)).is_err());
+    // An account whose labels are no folders only adds the label.
+    state.messages[0].labels.clear();
+    state.messages[0].account_uses_labels = false;
+    assert_eq!(
+        drop(&state, label_scope(5)),
+        Ok(MailDropDestination::Label(5))
+    );
+}

@@ -325,6 +325,7 @@ async fn full_sync_triage_and_search() {
             wake_at: Some(now_ms() + 3_600_000),
             target_folder_id: None,
             label_id: None,
+            ..Default::default()
         }),
     })
     .await

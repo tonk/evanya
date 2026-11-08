@@ -118,6 +118,24 @@ pub fn set_message_folders(conn: &Connection, message_id: i64, folder_ids: &[i64
     Ok(())
 }
 
+/// The folder that stands for one of an account's own Gmail labels, so that
+/// a message can be moved into the label like into a folder.
+pub fn folder_for_label(
+    conn: &Connection,
+    account_id: i64,
+    local_label_id: i64,
+) -> Result<Option<i64>> {
+    Ok(conn
+        .query_row(
+            "SELECT folder_id FROM gmail_labels
+             WHERE account_id = ?1 AND local_label_id = ?2 AND kind = 'user'
+               AND folder_id IS NOT NULL LIMIT 1",
+            params![account_id, local_label_id],
+            |row| row.get(0),
+        )
+        .optional()?)
+}
+
 /// The id Gmail's API knows a message by, when it has one.
 pub fn provider_message_id(conn: &Connection, message_id: i64) -> Result<Option<String>> {
     Ok(conn

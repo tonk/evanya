@@ -63,7 +63,9 @@ impl Operation {
                 "archive" | "spam" | "trash" | "not_spam" | "unarchive"
             ),
             Self::EmptyTrash(_) => false,
-            Self::Drop(MailDropDestination::Folder(_)) => true,
+            Self::Drop(
+                MailDropDestination::Folder(_) | MailDropDestination::MoveToLabel { .. },
+            ) => true,
             Self::Drop(MailDropDestination::Action(a)) => Self::Action((*a).into()).moves(),
             _ => false,
         }
@@ -80,6 +82,14 @@ impl Operation {
             Self::Drop(MailDropDestination::Folder(id)) => core.move_to_folder(target, *id).await,
             Self::Drop(MailDropDestination::Label(id)) => {
                 core.perform_label_action(target, *id, true).await
+            }
+            Self::Drop(MailDropDestination::MoveToLabel {
+                label_id,
+                source_folder_id,
+                source_label_id,
+            }) => {
+                core.move_to_label(target, *label_id, *source_folder_id, *source_label_id)
+                    .await
             }
             Self::Drop(MailDropDestination::Route(tab)) => {
                 core.route_to_tab(target, tab.clone()).await
