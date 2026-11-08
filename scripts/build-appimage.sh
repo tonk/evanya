@@ -15,10 +15,15 @@ download_tool() {
     return
   fi
   mkdir -p "$(dirname "$destination")"
+  # GitHub's release downloads now and then answer 502, 503 or 504, or stall;
+  # try again rather than fail a build that has run for a quarter of an hour.
   if command -v curl >/dev/null 2>&1; then
-    curl --fail --location --silent --show-error "$url" --output "$destination.new"
+    curl --fail --location --silent --show-error \
+      --retry 5 --retry-delay 5 --retry-all-errors \
+      --connect-timeout 30 --max-time 600 \
+      "$url" --output "$destination.new"
   elif command -v wget >/dev/null 2>&1; then
-    wget -q "$url" -O "$destination.new"
+    wget -q --tries=5 --waitretry=5 --timeout=60 "$url" -O "$destination.new"
   else
     printf 'curl or wget is required to obtain the AppImage deployment tools.\n' >&2
     exit 1
@@ -81,6 +86,13 @@ appimagetool="${APPIMAGETOOL:-$tools_dir/appimagetool-x86_64.AppImage}"
 download_tool \
   'https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage' \
   "$appimagetool"
+# appimagetool fetches its runtime itself, once and without trying again, so
+# one bad answer from GitHub failed the build with "Failed to download runtime
+# file". Fetch the same runtime here, with new attempts, and hand it over.
+appimage_runtime="${APPIMAGE_RUNTIME:-$tools_dir/runtime-x86_64}"
+download_tool \
+  'https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64' \
+  "$appimage_runtime"
 
 # Winit opens libxkbcommon-x11 with dlopen(), so linuxdeploy cannot discover
 # it from the executable. Hosts without it (Ubuntu without Qt, minimal X11
@@ -140,7 +152,7 @@ ln -sfn evanya.png "$app_dir/.DirIcon"
 mkdir -p "$(dirname "$output_path")"
 rm -f "$staged_output"
 VERSION="$app_version" APPIMAGE_EXTRACT_AND_RUN="${APPIMAGE_EXTRACT_AND_RUN:-1}" \
-  "$appimagetool" "$app_dir" "$staged_output"
+  "$appimagetool" --runtime-file "$appimage_runtime" "$app_dir" "$staged_output"
 # Renaming over an executing AppImage is atomic on Linux; the running process
 # keeps its old inode while new launches receive the freshly packaged build.
 mv -f "$staged_output" "$output_path"

@@ -28,6 +28,24 @@ builder_args=(
 if [[ -n "${SOURCE_DATE_EPOCH:-}" ]] && flatpak-builder --help | grep -- --override-source-date-epoch >/dev/null; then
   builder_args+=(--override-source-date-epoch="$SOURCE_DATE_EPOCH")
 fi
+
+# The sources come from crates.io and GitHub, which now and then answer 502,
+# 503 or 504, and flatpak-builder does not try again: one bad answer failed
+# the whole build ("Failed to download sources"). Fetch them first, with new
+# attempts; the build then finds them in the download cache.
+attempts=5
+for attempt in $(seq 1 "$attempts"); do
+  if flatpak-builder --download-only --disable-rofiles-fuse --user "$build_dir" "$manifest"; then
+    break
+  fi
+  if (( attempt == attempts )); then
+    printf 'Could not download the Flatpak sources in %s attempts.\n' "$attempts" >&2
+    exit 1
+  fi
+  printf 'Downloading the Flatpak sources failed (attempt %s of %s); trying again.\n' "$attempt" "$attempts" >&2
+  sleep $((attempt * 20))
+done
+
 flatpak-builder "${builder_args[@]}" "$build_dir" "$manifest"
 flatpak build-bundle \
   --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo \

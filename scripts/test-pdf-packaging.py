@@ -71,6 +71,50 @@ class PackagingTests(unittest.TestCase):
                     stage.stage("fixture", root / "rejected", cache)
                 self.assertFalse((root / "rejected").exists())
 
+    def test_download_is_tried_again_after_server_errors(self):
+        data = archive({"lib/libpdfium.so": b"library"})
+        checksum = hashlib.sha256(data).hexdigest()
+        failures = [
+            stage.urllib.error.HTTPError("https://example.test", 503, "Service Unavailable", {}, io.BytesIO(b"")),
+            TimeoutError("The read operation timed out"),
+            stage.urllib.error.HTTPError("https://example.test", 502, "Bad Gateway", {}, io.BytesIO(b"")),
+            io.BytesIO(data),
+        ]
+        pauses = []
+        with patch.object(stage.urllib.request, "urlopen", side_effect=failures), patch.object(stage.time, "sleep", side_effect=pauses.append):
+            self.assertEqual(stage.download("https://example.test", checksum), data)
+        # The pauses grow, as the pinned schedule says.
+        self.assertEqual(pauses, list(stage.PAUSES[:3]))
+
+    def test_download_gives_up_after_the_last_attempt(self):
+        error = stage.urllib.error.HTTPError("https://example.test", 504, "Gateway Time-out", {}, io.BytesIO(b""))
+        pauses = []
+        with patch.object(stage.urllib.request, "urlopen", side_effect=error) as opened, patch.object(stage.time, "sleep", side_effect=pauses.append):
+            with self.assertRaises(stage.urllib.error.HTTPError) as caught:
+                stage.download("https://example.test", "0" * 64)
+        caught.exception.close()
+        self.assertEqual(opened.call_count, stage.ATTEMPTS)
+        self.assertEqual(pauses, list(stage.PAUSES))
+
+    def test_a_missing_archive_is_not_tried_again(self):
+        error = stage.urllib.error.HTTPError("https://example.test", 404, "Not Found", {}, io.BytesIO(b""))
+        with patch.object(stage.urllib.request, "urlopen", side_effect=error) as opened, patch.object(stage.time, "sleep", side_effect=AssertionError("a 404 must not wait")):
+            with self.assertRaises(stage.urllib.error.HTTPError) as caught:
+                stage.download("https://example.test", "0" * 64)
+        caught.exception.close()
+        self.assertEqual(opened.call_count, 1)
+
+    def test_bytes_that_do_not_match_are_downloaded_again(self):
+        data = archive({"lib/libpdfium.so": b"library"})
+        checksum = hashlib.sha256(data).hexdigest()
+        # An error page or a cut-off body is not the archive.
+        replies = [io.BytesIO(b"<html>503</html>"), io.BytesIO(data[:10]), io.BytesIO(data)]
+        with patch.object(stage.urllib.request, "urlopen", side_effect=replies), patch.object(stage.time, "sleep"):
+            self.assertEqual(stage.download("https://example.test", checksum), data)
+        with patch.object(stage.urllib.request, "urlopen", side_effect=lambda *a, **k: io.BytesIO(b"never right")), patch.object(stage.time, "sleep"):
+            with self.assertRaisesRegex(ValueError, "checksum mismatch"):
+                stage.download("https://example.test", checksum)
+
     def test_archive_traversal_is_rejected(self):
         data = archive({"licenses/../../outside": b"unexpected"})
         checksum = hashlib.sha256(data).hexdigest()

@@ -6,12 +6,23 @@ packaging calls this explicitly; developers can target target/debug.
 """
 import argparse
 import hashlib
+import http.client
 import io
 import json
+import os
 import pathlib
 import shutil
+import sys
 import tarfile
+import time
+import urllib.error
 import urllib.request
+
+# GitHub's release downloads now and then answer 502, 503 or 504, or stall.
+# One such answer must not fail a package build that has run for a quarter of
+# an hour, so a download is tried again, after these pauses in seconds.
+ATTEMPTS = 5
+PAUSES = (5, 15, 45, 90)
 
 RELEASE = "chromium/8044"
 ASSETS = {
@@ -27,6 +38,35 @@ ASSETS = {
 }
 
 
+def download(url, checksum):
+    """The archive at `url`, tried again when the server fails or the bytes are wrong."""
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(url, timeout=60) as response:
+                data = response.read(64 * 1024 * 1024 + 1)
+        except urllib.error.HTTPError as error:
+            # Another client error does not pass by waiting.
+            if error.code < 500 and error.code not in (408, 429):
+                raise
+            failure = error
+        except (OSError, http.client.HTTPException) as error:
+            failure = error
+        else:
+            if hashlib.sha256(data).hexdigest() == checksum:
+                return data
+            failure = ValueError("PDFium archive checksum mismatch")
+        if attempt == ATTEMPTS:
+            raise failure
+        pause = PAUSES[attempt - 1]
+        print(
+            f"PDFium download attempt {attempt} of {ATTEMPTS} failed ({failure}); trying again in {pause}s",
+            file=sys.stderr,
+        )
+        if isinstance(failure, urllib.error.HTTPError):
+            failure.close()  # an error answer holds its connection open
+        time.sleep(pause)
+
+
 def stage(target, destination, cache=None, licenses_destination=None):
     checksum, library = ASSETS[target]
     url = f"https://github.com/bblanchon/pdfium-binaries/releases/download/{RELEASE}/pdfium-{target}.tgz"
@@ -34,8 +74,7 @@ def stage(target, destination, cache=None, licenses_destination=None):
     if cached and cached.is_file():
         data = cached.read_bytes()
     else:
-        with urllib.request.urlopen(url, timeout=60) as response:
-            data = response.read(64 * 1024 * 1024 + 1)
+        data = download(url, checksum)
     if hashlib.sha256(data).hexdigest() != checksum:
         raise ValueError("PDFium archive checksum mismatch")
     if cached and not cached.is_file():
@@ -80,4 +119,9 @@ if __name__ == "__main__":
         help="place PDFium notices outside the runtime-library directory",
     )
     args = parser.parse_args()
-    stage(args.target, args.destination, args.cache, args.licenses_destination)
+    # EVANYA_PDFIUM_CACHE gives every caller the same cache without each
+    # packaging script passing --cache; the option wins when it is given.
+    cache = args.cache
+    if cache is None and os.environ.get("EVANYA_PDFIUM_CACHE"):
+        cache = pathlib.Path(os.environ["EVANYA_PDFIUM_CACHE"])
+    stage(args.target, args.destination, cache, args.licenses_destination)
