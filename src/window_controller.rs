@@ -163,6 +163,16 @@ fn restore_window_state(app: &AppWindow, maximized: bool, fullscreen: bool) {
 /// it is hidden, restore it if it is minimized, and ask for focus with the
 /// launcher's activation token when one was forwarded.
 pub(super) fn activate(app: &AppWindow, activation_token: Option<String>) {
+    activate_and_maximize(app, activation_token, false);
+}
+
+/// [`activate`], and maximize the window as well when another launch asked
+/// for it with `--maximized`.
+pub(super) fn activate_and_maximize(
+    app: &AppWindow,
+    activation_token: Option<String>,
+    maximize: bool,
+) {
     let window = app.window();
     if !window.is_visible() {
         show_from_tray(app);
@@ -173,6 +183,17 @@ pub(super) fn activate(app: &AppWindow, activation_token: Option<String>) {
     crate::window_chrome::focus(app, activation_token);
     #[cfg(mobile)]
     let _ = activation_token;
+    if maximize {
+        maximize_window(app);
+    }
+}
+
+/// Maximize the native window. Asking Slint to is not enough: on X11 a window
+/// maximized before it is mapped stays normal, and Slint then follows what the
+/// window manager did. This goes to the native window, as restoring one from
+/// the tray does.
+pub(super) fn maximize_window(app: &AppWindow) {
+    restore_window_state(app, true, false);
 }
 
 /// Return memory freed by startup work that ran while the window is hidden,

@@ -1760,6 +1760,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         } else {
             Request::Show {
                 activation_token: window_chrome::launch_activation_token(),
+                maximize: autostart::launched_maximized(),
             }
         };
         match single_instance::acquire(&runtime, &platform.paths.data_dir, request) {
@@ -1852,11 +1853,11 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     if let Some(settings) = &startup_settings {
         startup::apply_presentation(&app, settings);
     }
-    if autostart::launched_maximized()
+    let start_maximized = autostart::launched_maximized()
         || startup_settings
             .as_ref()
-            .is_some_and(|settings| settings.start_maximized)
-    {
+            .is_some_and(|settings| settings.start_maximized);
+    if start_maximized {
         app.window().set_maximized(true);
     }
     app.set_app_version(env!("CARGO_PKG_VERSION").into());
@@ -1904,6 +1905,18 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 "wayland_display": std::env::var("WAYLAND_DISPLAY").ok(),
             }),
         );
+    }
+    // On X11 a window that is maximized before it is mapped stays normal, so
+    // ask the native window again once it is shown, or on its first show from
+    // the tray.
+    #[cfg(desktop)]
+    if start_maximized {
+        let weak = app.as_weak();
+        window_controller::when_first_shown(&app, move || {
+            if let Some(app) = weak.upgrade() {
+                window_controller::maximize_window(&app);
+            }
+        });
     }
     startup_metrics.schedule_rendered_frame(app.as_weak(), "first_frame");
     let favicon_wake = UiWake::new(app.as_weak(), |app| app.invoke_drain_favicon_updates());
@@ -1974,9 +1987,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     #[cfg(desktop)]
     if let Some(instance) = instance.as_mut() {
         let app = app.as_weak();
-        instance.serve(&runtime, move |activation_token| {
+        instance.serve(&runtime, move |activation_token, maximize| {
             let _ = app.upgrade_in_event_loop(move |app| {
-                window_controller::activate(&app, activation_token);
+                window_controller::activate_and_maximize(&app, activation_token, maximize);
             });
         });
     }

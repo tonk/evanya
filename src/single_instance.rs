@@ -15,15 +15,17 @@ use sha2::{Digest, Sha256};
 use std::{io, path::Path, sync::Arc, time::Duration};
 use tokio::{io::AsyncReadExt, runtime::Runtime, task::JoinHandle};
 
-/// The only request: show and focus the main window, optionally followed by
-/// the launcher's activation token so the compositor lets the window take
-/// focus.
+/// Show and focus the main window, optionally followed by the launcher's
+/// activation token so the compositor lets the window take focus.
 const SHOW: &str = "show";
+/// The same, and maximize the window: a launch with `--maximized` while
+/// Evanya runs. A process of an older version does not know it and ignores it.
+const SHOW_MAXIMIZED: &str = "show-maximized";
 /// Activation tokens are short opaque strings; bound what we accept.
 const MAX_TOKEN: usize = 512;
 /// Longer than any valid request, so a misbehaving client cannot make the
 /// owner buffer more.
-const MAX_REQUEST: u64 = (SHOW.len() + 1 + MAX_TOKEN + 1) as u64;
+const MAX_REQUEST: u64 = (SHOW_MAXIMIZED.len() + 1 + MAX_TOKEN + 1) as u64;
 /// How long the owner waits for a connected client to send its request.
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(2);
 /// How long a later launch waits for a starting owner to accept requests.
@@ -43,14 +45,19 @@ pub(crate) enum Acquired {
 /// What a launch should ask of an already running instance.
 #[derive(Clone, PartialEq, Eq)]
 pub(crate) enum Request {
-    /// Show the window, passing on the launcher's activation token.
-    Show { activation_token: Option<String> },
+    /// Show the window, passing on the launcher's activation token, and
+    /// maximize it when the launch asked for that.
+    Show {
+        activation_token: Option<String>,
+        maximize: bool,
+    },
     /// A sign-in launch: leave a running instance exactly as it is.
     Nothing,
 }
 
-/// Runs on a runtime worker thread with the forwarded activation token.
-type ShowCallback = Arc<dyn Fn(Option<String>) + Send + Sync>;
+/// Runs on a runtime worker thread with the forwarded activation token and
+/// whether to maximize the window.
+type ShowCallback = Arc<dyn Fn(Option<String>, bool) + Send + Sync>;
 
 pub(crate) struct Primary {
     endpoint: imp::Endpoint,
@@ -59,12 +66,12 @@ pub(crate) struct Primary {
 
 impl Primary {
     /// Start answering later launches. `show` receives the forwarded
-    /// activation token on a runtime worker thread and must forward to the
-    /// UI thread itself.
+    /// activation token, and whether to maximize, on a runtime worker thread
+    /// and must forward to the UI thread itself.
     pub(crate) fn serve(
         &mut self,
         runtime: &Runtime,
-        show: impl Fn(Option<String>) + Send + Sync + 'static,
+        show: impl Fn(Option<String>, bool) + Send + Sync + 'static,
     ) {
         let show: ShowCallback = Arc::new(show);
         let _context = runtime.enter();
@@ -102,10 +109,14 @@ pub(crate) fn acquire(
                 server: None,
             }));
         }
-        let Request::Show { activation_token } = &request else {
+        let Request::Show {
+            activation_token,
+            maximize,
+        } = &request
+        else {
             return Ok(Acquired::Forwarded);
         };
-        let message = encode_show(activation_token.as_deref());
+        let message = encode_show(activation_token.as_deref(), *maximize);
         match runtime.block_on(imp::forward(data_dir, &message)) {
             Ok(()) => return Ok(Acquired::Forwarded),
             // The owner may have exited after the claim failed; claim again.
@@ -139,26 +150,36 @@ fn valid_token(token: &str) -> bool {
     (1..=MAX_TOKEN).contains(&token.len()) && token.bytes().all(|byte| byte.is_ascii_graphic())
 }
 
-fn encode_show(activation_token: Option<&str>) -> Vec<u8> {
+fn encode_show(activation_token: Option<&str>, maximize: bool) -> Vec<u8> {
+    let command = if maximize { SHOW_MAXIMIZED } else { SHOW };
     match activation_token.filter(|token| valid_token(token)) {
-        Some(token) => format!("{SHOW} {token}\n").into_bytes(),
-        None => format!("{SHOW}\n").into_bytes(),
+        Some(token) => format!("{command} {token}\n").into_bytes(),
+        None => format!("{command}\n").into_bytes(),
     }
 }
 
-/// `Some(token)` for a well-formed show request; anything else is ignored.
-fn parse_show(request: &[u8]) -> Option<Option<String>> {
+/// `Some((token, maximize))` for a well-formed show request; anything else
+/// is ignored.
+fn parse_show(request: &[u8]) -> Option<(Option<String>, bool)> {
     let line = std::str::from_utf8(request).ok()?.strip_suffix('\n')?;
-    match line.split_once(' ') {
-        None => (line == SHOW).then_some(None),
-        Some((SHOW, token)) => valid_token(token).then(|| Some(token.to_owned())),
-        Some(_) => None,
+    let (command, token) = match line.split_once(' ') {
+        None => (line, None),
+        Some((command, token)) => (command, Some(token)),
+    };
+    let maximize = match command {
+        SHOW => false,
+        SHOW_MAXIMIZED => true,
+        _ => return None,
+    };
+    match token {
+        None => Some((None, maximize)),
+        Some(token) => valid_token(token).then(|| (Some(token.to_owned()), maximize)),
     }
 }
 
-fn handle_request(request: Option<Vec<u8>>, show: &(dyn Fn(Option<String>) + Send + Sync)) {
-    if let Some(activation_token) = request.as_deref().and_then(parse_show) {
-        show(activation_token);
+fn handle_request(request: Option<Vec<u8>>, show: &(dyn Fn(Option<String>, bool) + Send + Sync)) {
+    if let Some((activation_token, maximize)) = request.as_deref().and_then(parse_show) {
+        show(activation_token, maximize);
     }
 }
 
@@ -424,6 +445,7 @@ mod tests {
     fn show(activation_token: Option<&str>) -> Request {
         Request::Show {
             activation_token: activation_token.map(str::to_owned),
+            maximize: false,
         }
     }
 
@@ -437,18 +459,35 @@ mod tests {
             panic!("the first launch must own the profile");
         };
         let (shown_tx, shown_rx) = std::sync::mpsc::channel();
-        primary.serve(&runtime, move |token| shown_tx.send(token).unwrap());
+        primary.serve(&runtime, move |token, maximize| {
+            shown_tx.send((token, maximize)).unwrap()
+        });
 
         assert!(matches!(
             acquire(&runtime, directory.path(), show(Some("launcher-token_1"))).unwrap(),
             Acquired::Forwarded
         ));
         assert_eq!(
-            shown_rx
-                .recv_timeout(Duration::from_secs(5))
-                .unwrap()
-                .as_deref(),
-            Some("launcher-token_1")
+            shown_rx.recv_timeout(Duration::from_secs(5)).unwrap(),
+            (Some("launcher-token_1".to_owned()), false)
+        );
+
+        // A launch with --maximized asks the running window to maximize.
+        assert!(matches!(
+            acquire(
+                &runtime,
+                directory.path(),
+                Request::Show {
+                    activation_token: Some("launcher-token_2".to_owned()),
+                    maximize: true,
+                }
+            )
+            .unwrap(),
+            Acquired::Forwarded
+        ));
+        assert_eq!(
+            shown_rx.recv_timeout(Duration::from_secs(5)).unwrap(),
+            (Some("launcher-token_2".to_owned()), true)
         );
 
         assert!(matches!(
@@ -484,16 +523,31 @@ mod tests {
 
     #[test]
     fn only_well_formed_show_requests_are_accepted() {
-        assert_eq!(parse_show(&encode_show(None)), Some(None));
+        assert_eq!(parse_show(&encode_show(None, false)), Some((None, false)));
         assert_eq!(
-            parse_show(&encode_show(Some("abc:123"))),
-            Some(Some("abc:123".to_owned()))
+            parse_show(&encode_show(Some("abc:123"), false)),
+            Some((Some("abc:123".to_owned()), false))
+        );
+        // The request every earlier version sends is still understood.
+        assert_eq!(parse_show(b"show\n"), Some((None, false)));
+        assert_eq!(
+            parse_show(b"show tok\n"),
+            Some((Some("tok".to_owned()), false))
+        );
+        // Maximizing is its own request, with or without a token.
+        assert_eq!(parse_show(&encode_show(None, true)), Some((None, true)));
+        assert_eq!(
+            parse_show(&encode_show(Some("abc:123"), true)),
+            Some((Some("abc:123".to_owned()), true))
         );
         // Invalid tokens are dropped by the sender rather than the request.
-        assert_eq!(parse_show(&encode_show(Some("has space"))), Some(None));
         assert_eq!(
-            parse_show(&encode_show(Some(&"x".repeat(MAX_TOKEN + 1)))),
-            Some(None)
+            parse_show(&encode_show(Some("has space"), false)),
+            Some((None, false))
+        );
+        assert_eq!(
+            parse_show(&encode_show(Some(&"x".repeat(MAX_TOKEN + 1)), true)),
+            Some((None, true))
         );
 
         for request in [
@@ -504,9 +558,12 @@ mod tests {
             b"show a b\n",
             b"shows\n",
             b"show \xff\n",
+            b"show-maximized",
+            b"show-maximized a b\n",
+            b"show-maximizedx\n",
         ] {
             assert_eq!(parse_show(request), None, "{request:?}");
         }
-        assert!(MAX_REQUEST as usize >= encode_show(Some(&"x".repeat(MAX_TOKEN))).len());
+        assert!(MAX_REQUEST as usize >= encode_show(Some(&"x".repeat(MAX_TOKEN)), true).len());
     }
 }
