@@ -4805,6 +4805,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         if changed {
             refresh_connected_accounts(&app, &profile_avatar_state);
             refresh_list_metadata(&app, &profile_avatar_state);
+            refresh_rows_only(&app, &profile_avatar_state, &profile_avatar_runtime);
         }
         schedule_profile_avatar_fetches(&app, &profile_avatar_state, &profile_avatar_runtime);
     });

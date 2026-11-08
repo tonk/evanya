@@ -6,6 +6,62 @@ mod removal_tests;
 use super::*;
 use chrono::{Datelike, Timelike};
 
+/// The avatars of the user's own accounts, by account. Mail from one of the
+/// user's own addresses shows the account's avatar (or initials) rather than
+/// the favicon of its domain, which would be the mail provider's logo.
+#[derive(Default)]
+pub(super) struct OwnSenders {
+    account_by_address: HashMap<String, i64>,
+    avatars: HashMap<i64, FaviconImages>,
+}
+
+impl OwnSenders {
+    pub(super) fn from_state(state: &InboxState) -> Self {
+        Self {
+            account_by_address: state
+                .connected_accounts
+                .iter()
+                .map(|account| (account.email.trim().to_lowercase(), account.id))
+                .collect(),
+            avatars: state
+                .profile_avatar_images
+                .iter()
+                .map(|(id, images)| {
+                    (
+                        *id,
+                        FaviconImages {
+                            small: images.small.clone(),
+                            regular: images.regular.clone(),
+                        },
+                    )
+                })
+                .collect(),
+        }
+    }
+
+    /// The account that sent `message`: the one whose address it is from, or
+    /// the account a sent message was filed under.
+    fn owner(&self, message: &MailMessage) -> Option<i64> {
+        self.account_by_address
+            .get(&message.address.trim().to_lowercase())
+            .copied()
+            .or_else(|| message.is_outgoing.then_some(message.account_id))
+    }
+
+    /// The icon for `message`'s sender: the avatar of the user's own account
+    /// (none when it has no avatar), else the favicon of the sender's domain.
+    pub(super) fn icons<'a>(
+        &'a self,
+        favicons: &'a HashMap<String, FaviconImages>,
+        message: &MailMessage,
+    ) -> Option<&'a FaviconImages> {
+        match self.owner(message) {
+            Some(account_id) => self.avatars.get(&account_id),
+            None => favicons.get(&message.domain),
+        }
+    }
+}
+
 pub(super) fn refresh_from_source(
     app: &AppWindow,
     state: &Rc<RefCell<InboxState>>,
@@ -488,6 +544,7 @@ pub(super) fn render_current(
             selected_id,
             &checked_ids,
             &favicon_icons,
+            &OwnSenders::from_state(&state),
             &labels,
             &account_presentation,
         );
@@ -573,6 +630,7 @@ pub(super) fn render_current(
                         &state.conversation_messages,
                         state.conversation_selected_index,
                         &favicon_icons,
+                        &OwnSenders::from_state(&state),
                     ),
                     |row| row.index,
                     PartialEq::eq,
@@ -602,7 +660,10 @@ pub(super) fn render_current(
                     email_id
                 });
         }
-        apply_selected_favicon(app, favicon_icons.get(&display_email.domain));
+        apply_selected_favicon(
+            app,
+            OwnSenders::from_state(&state.borrow()).icons(&favicon_icons, &display_email),
+        );
         apply_email(
             app,
             display_email,
@@ -677,13 +738,14 @@ fn make_thread_rows(
     messages: &[MailMessage],
     selected_index: usize,
     favicon_icons: &HashMap<String, FaviconImages>,
+    own_senders: &OwnSenders,
 ) -> Vec<ThreadMessageRow> {
     let now = Local::now();
     messages
         .iter()
         .enumerate()
         .map(|(index, message)| {
-            let favicons = favicon_icons.get(&message.domain);
+            let favicons = own_senders.icons(favicon_icons, message);
             let favicon = favicons.map(|icons| slint_image(&icons.regular));
             ThreadMessageRow {
                 index: i32::try_from(index).unwrap_or(i32::MAX),
@@ -956,6 +1018,7 @@ pub(super) fn make_rows<M: std::borrow::Borrow<MailMessage>>(
     selected_id: Option<i32>,
     checked_ids: &HashSet<i32>,
     favicon_icons: &HashMap<String, FaviconImages>,
+    own_senders: &OwnSenders,
     labels: &[evanya_core::models::Label],
     account_presentation: &AccountPresentationSettings,
 ) -> Vec<EmailRow> {
@@ -964,7 +1027,7 @@ pub(super) fn make_rows<M: std::borrow::Borrow<MailMessage>>(
         .iter()
         .map(|email| {
             let email = std::borrow::Borrow::borrow(email);
-            let favicons = favicon_icons.get(&email.domain);
+            let favicons = own_senders.icons(favicon_icons, email);
             let favicon = favicons.map(|icons| slint_image(&icons.regular));
             let favicon_small = favicons.map(|icons| slint_image(&icons.small));
             let profile = account_presentation.profile(email.account_id);
@@ -1222,6 +1285,7 @@ pub(super) fn refresh_rows_only(
             selected_id,
             &checked_ids,
             &state.favicon_icons,
+            &OwnSenders::from_state(&state),
             &state.labels,
             &state.account_presentation,
         );
@@ -1272,22 +1336,25 @@ pub(super) fn refresh_rows_only(
         }));
     apply_label_rows(app, &labels, selected_email.as_ref());
     refresh_sidebar(state);
-    let selected_domain = selected_email.as_ref().map(|email| {
+    let selected_message = selected_email.as_ref().map(|email| {
         let state = state.borrow();
         if state.conversation_owner_id == selected_id {
             state
                 .conversation_messages
                 .get(state.conversation_selected_index)
-                .map(|message| message.domain.clone())
-                .unwrap_or_else(|| email.domain.clone())
+                .cloned()
+                .unwrap_or_else(|| email.clone())
         } else {
-            email.domain.clone()
+            email.clone()
         }
     });
-    let selected_icon = selected_domain
-        .as_deref()
-        .and_then(|domain| favicon_icons.get(domain));
-    apply_selected_favicon(app, selected_icon);
+    let own_senders = OwnSenders::from_state(&state.borrow());
+    apply_selected_favicon(
+        app,
+        selected_message
+            .as_ref()
+            .and_then(|message| own_senders.icons(&favicon_icons, message)),
+    );
     let conversation_projection = {
         let state = state.borrow();
         (state.conversation_owner_id == selected_id && !state.conversation_messages.is_empty())
@@ -1297,6 +1364,7 @@ pub(super) fn refresh_rows_only(
                         &state.conversation_messages,
                         state.conversation_selected_index,
                         &favicon_icons,
+                        &own_senders,
                     ),
                     Rc::clone(&state.conversation_rows),
                 )
@@ -1756,6 +1824,7 @@ mod tests {
                 Some(selected),
                 &HashSet::new(),
                 &HashMap::new(),
+                &OwnSenders::default(),
                 &[],
                 &presentation,
             )
@@ -1813,7 +1882,7 @@ mod tests {
         sent.preview = "Tuesday works for me.".into();
         sent.is_outgoing = true;
 
-        let rows = make_thread_rows(&[received, sent], 1, &HashMap::new());
+        let rows = make_thread_rows(&[received, sent], 1, &HashMap::new(), &OwnSenders::default());
 
         assert_eq!(rows.len(), 2);
         assert_eq!(rows[0].sender, "Maya");
@@ -1906,6 +1975,7 @@ mod tests {
             None,
             &HashSet::new(),
             &HashMap::new(),
+            &OwnSenders::default(),
             &[],
             &presentation,
         );
@@ -2190,6 +2260,7 @@ mod tests {
             None,
             &HashSet::new(),
             &HashMap::new(),
+            &OwnSenders::default(),
             &[],
             &AccountPresentationSettings::default(),
         )
@@ -2361,6 +2432,7 @@ mod tests {
             None,
             &HashSet::new(),
             &HashMap::new(),
+            &OwnSenders::default(),
             &labels,
             &AccountPresentationSettings::default(),
         );
