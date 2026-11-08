@@ -830,6 +830,37 @@ impl crate::Core {
         }
     }
 
+    /// The whole message as it is stored, headers and all, for showing its
+    /// source: the file kept here when there is one, otherwise the copy on the
+    /// server of its account (IMAP or Gmail). The error says why it cannot be
+    /// had.
+    pub async fn raw_message(&self, message_id: i64) -> Result<Vec<u8>> {
+        let row = self
+            .db
+            .read(move |conn| repo::messages::get_row(conn, message_id))
+            .await?
+            .ok_or_else(|| CoreError::NotFound(format!("message {message_id}")))?;
+        if let Some(path) = row.raw_path.clone() {
+            return self
+                .read_original(
+                    row.account_id,
+                    message_id,
+                    &path,
+                    crate::MAX_CACHED_MESSAGE_BYTES,
+                    "message source",
+                )
+                .await;
+        }
+        let mut sources = SourceConnections::default();
+        let fetched = self.original_from_server(&row, &mut sources).await;
+        sources.close().await;
+        fetched?.ok_or_else(|| {
+            CoreError::Other(
+                "the full message cannot be fetched from this kind of account yet".into(),
+            )
+        })
+    }
+
     /// The whole message from the server of the account it is in, over IMAP
     /// or the Gmail API. `None` for an account type that cannot do this yet.
     async fn original_from_server(
@@ -868,7 +899,13 @@ impl crate::Core {
                 }
                 let uid = u32::try_from(uid)
                     .map_err(|_| CoreError::Imap(format!("{uid} is not a valid UID")))?;
-                imap::fetch_full(session, uid).await
+                match imap::fetch_full(session, uid).await? {
+                    Some(raw) => Ok(Some(raw)),
+                    // The account can do this; the message is gone from it.
+                    None => Err(CoreError::NotFound(
+                        "the server no longer has this message".into(),
+                    )),
+                }
             }
             MailProtocol::Gmail => {
                 let message_id = row.id;

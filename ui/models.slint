@@ -533,6 +533,16 @@ export global EmailReader {
     in-out property <[ReaderItem]> items;
     in-out property <string> authored-text;
     in-out property <bool> use-authored-text: false;
+    // The source view's "full message": the whole message as stored, headers
+    // and all. Raw mode is a variant of the source view, so it is always
+    // shown together with the pane's source mode. The text arrives after
+    // `load-raw`; `raw-error` holds why it could not.
+    in-out property <bool> raw-mode: false;
+    in-out property <bool> raw-loading: false;
+    in-out property <bool> raw-shortened: false;
+    in-out property <string> raw-text;
+    in-out property <string> raw-error;
+    callback load-raw();
 }
 
 export struct MailAttachment {

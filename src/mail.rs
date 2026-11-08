@@ -1646,6 +1646,14 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    /// The whole message, headers included, for showing its source.
+    pub async fn raw_message(&self, message_id: i64) -> Result<Vec<u8>, String> {
+        self.core
+            .raw_message(message_id)
+            .await
+            .map_err(|error| error.to_string())
+    }
+
     /// Copy conversations and messages into a mailbox of another account,
     /// moving them to their own Trash afterwards when `move_messages`.
     pub async fn copy_to_folder(

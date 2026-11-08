@@ -54,6 +54,7 @@ mod on_screen_surface_tests;
 pub mod pdf_preview;
 pub mod platform;
 mod preview_controls;
+mod raw_message;
 mod reader_clipboard;
 #[cfg(test)]
 mod reader_validation;
@@ -8657,6 +8658,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     setup_sync::register(&app, &state, &runtime);
     account_avatars::register(&app, &state, &runtime);
     custom_headers::register(&app, &state, &runtime);
+    raw_message::register(&app, &state, &runtime);
     move_picker::register(&app, &state);
     #[cfg(desktop)]
     mail_notifications::start(&app, &state, &runtime);

@@ -326,7 +326,7 @@ export component MailReadingPane inherits FocusScope {
     private property <[ActionMenuEntry]> draft-action-menu: [
         { id: "edit_draft", title: @tr("Continue editing"), icon: @image-url("../icons/lucide/outline/compose.svg") },
         { id: "rendering_info", title: @tr("About email rendering"), icon: @image-url("../icons/lucide/outline/info.svg") },
-        { id: "source", title: root.source_mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "source", title: root.source_mode && !EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode && !EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
         { id: "plain_text", title: root.text_mode ? @tr("Show rendered message") : @tr("View plain text"), icon: root.text_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/file.svg") },
         { id: "original_colors", title: MessageColors.original ? @tr("Use message appearance") : @tr("Show original colors"), icon: @image-url("../icons/lucide/outline/contrast.svg") },
         { id: root.trash_view ? "delete_permanently" : "trash", title: root.trash_view ? @tr("Delete permanently…") : @tr("Move to trash"), icon: @image-url("../icons/lucide/outline/trash.svg"), destructive: true },
@@ -341,7 +341,8 @@ export component MailReadingPane inherits FocusScope {
         { id: "print", title: @tr("Print message"), icon: @image-url("../icons/lucide/outline/printer.svg") },
         { id: "browser", title: @tr("Open in browser"), icon: @image-url("../icons/lucide/outline/browser.svg") },
         { id: "rendering_info", title: @tr("About email rendering"), icon: @image-url("../icons/lucide/outline/info.svg") },
-        { id: "source", title: root.source_mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "source", title: root.source_mode && !EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode && !EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "raw", title: EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show full message"), icon: EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/list-unordered.svg") },
         { id: "plain_text", title: root.text_mode ? @tr("Show rendered message") : @tr("View plain text"), icon: root.text_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/file.svg") },
         { id: "original_colors", title: MessageColors.original ? @tr("Use message appearance") : @tr("Show original colors"), icon: @image-url("../icons/lucide/outline/contrast.svg") },
         { id: "read", title: root.selected_unread ? @tr("Mark as read") : @tr("Mark as unread"), icon: root.selected_unread ? @image-url("../icons/lucide/outline/mail-open.svg") : @image-url("../icons/lucide/outline/mail.svg") },
@@ -358,7 +359,8 @@ export component MailReadingPane inherits FocusScope {
         { id: "openpgp", title: @tr("Decrypt / verify OpenPGP"), icon: @image-url("../icons/lucide/outline/lock.svg") },
         { id: "browser", title: @tr("Open in browser"), icon: @image-url("../icons/lucide/outline/browser.svg") },
         { id: "rendering_info", title: @tr("About email rendering"), icon: @image-url("../icons/lucide/outline/info.svg") },
-        { id: "source", title: root.source_mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "source", title: root.source_mode && !EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode && !EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "raw", title: EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show full message"), icon: EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/list-unordered.svg") },
         { id: "plain_text", title: root.text_mode ? @tr("Show rendered message") : @tr("View plain text"), icon: root.text_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/file.svg") },
         { id: "original_colors", title: MessageColors.original ? @tr("Use message appearance") : @tr("Show original colors"), icon: @image-url("../icons/lucide/outline/contrast.svg") },
         { id: "read", title: root.selected_unread ? @tr("Mark as read") : @tr("Mark as unread"), icon: root.selected_unread ? @image-url("../icons/lucide/outline/mail-open.svg") : @image-url("../icons/lucide/outline/mail.svg") },
@@ -377,7 +379,8 @@ export component MailReadingPane inherits FocusScope {
         { id: "print", title: @tr("Print message"), icon: @image-url("../icons/lucide/outline/printer.svg") },
         { id: "browser", title: @tr("Open in browser"), icon: @image-url("../icons/lucide/outline/browser.svg") },
         { id: "rendering_info", title: @tr("About email rendering"), icon: @image-url("../icons/lucide/outline/info.svg") },
-        { id: "source", title: root.source_mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "source", title: root.source_mode && !EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode && !EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "raw", title: EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show full message"), icon: EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/list-unordered.svg") },
         { id: "plain_text", title: root.text_mode ? @tr("Show rendered message") : @tr("View plain text"), icon: root.text_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/file.svg") },
         { id: "original_colors", title: MessageColors.original ? @tr("Use message appearance") : @tr("Show original colors"), icon: @image-url("../icons/lucide/outline/contrast.svg") },
         { id: "read", title: root.selected_unread ? @tr("Mark as read") : @tr("Mark as unread"), icon: root.selected_unread ? @image-url("../icons/lucide/outline/mail-open.svg") : @image-url("../icons/lucide/outline/mail.svg") },
@@ -392,7 +395,8 @@ export component MailReadingPane inherits FocusScope {
         { id: "openpgp", title: @tr("Decrypt / verify OpenPGP"), icon: @image-url("../icons/lucide/outline/lock.svg") },
         { id: "browser", title: @tr("Open in browser"), icon: @image-url("../icons/lucide/outline/browser.svg") },
         { id: "rendering_info", title: @tr("About email rendering"), icon: @image-url("../icons/lucide/outline/info.svg") },
-        { id: "source", title: root.source_mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "source", title: root.source_mode && !EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show source"), icon: root.source_mode && !EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/code.svg") },
+        { id: "raw", title: EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show full message"), icon: EmailReader.raw-mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/list-unordered.svg") },
         { id: "plain_text", title: root.text_mode ? @tr("Show rendered message") : @tr("View plain text"), icon: root.text_mode ? @image-url("../icons/lucide/outline/browser.svg") : @image-url("../icons/lucide/outline/file.svg") },
         { id: "original_colors", title: MessageColors.original ? @tr("Use message appearance") : @tr("Show original colors"), icon: @image-url("../icons/lucide/outline/contrast.svg") },
         { id: "read", title: root.selected_unread ? @tr("Mark as read") : @tr("Mark as unread"), icon: root.selected_unread ? @image-url("../icons/lucide/outline/mail-open.svg") : @image-url("../icons/lucide/outline/mail.svg") },
@@ -528,6 +532,24 @@ export component MailReadingPane inherits FocusScope {
     callback email-key-event(string, bool, bool, bool, bool, bool, bool);
     callback select-email-text();
     callback load-remote-images-for-message();
+
+    // Raw mode is the source view with the whole message in it. Leaving the
+    // source view, by whatever way, leaves raw mode too.
+    function toggle-raw() {
+        if EmailReader.raw-mode {
+            root.source_mode = false;
+        } else {
+            root.text_mode = false;
+            EmailReader.reader-mode = false;
+            EmailReader.find-open = false;
+            root.source_mode = true;
+            EmailReader.raw-mode = true;
+            EmailReader.load-raw();
+        }
+    }
+    changed source_mode => {
+        if !root.source_mode { EmailReader.raw-mode = false; }
+    }
 
     public function focus-content() {
         if root.source_mode { source-editor.focus(); }
@@ -1041,8 +1063,16 @@ export component MailReadingPane inherits FocusScope {
                                     } else if action == "rendering_info" {
                                         root.rendering_info_open = true;
                                     } else if action == "source" {
-                                        root.source_mode = !root.source_mode;
-                                        if root.source_mode { root.text_mode = false; EmailReader.reader-mode = false; }
+                                        if root.source_mode && !EmailReader.raw-mode {
+                                            root.source_mode = false;
+                                        } else {
+                                            EmailReader.raw-mode = false;
+                                            root.source_mode = true;
+                                            root.text_mode = false;
+                                            EmailReader.reader-mode = false;
+                                        }
+                                    } else if action == "raw" {
+                                        root.toggle-raw();
                                     } else if action == "plain_text" {
                                         root.text_mode = !root.text_mode;
                                         if root.text_mode { root.source_mode = false; EmailReader.reader-mode = false; }
@@ -1259,6 +1289,7 @@ export component MailReadingPane inherits FocusScope {
                                         }
                                         ReaderControl { compact: root.compact; icon: EmailReader.find-open ? @image-url("../icons/lucide/filled/search.svg") : @image-url("../icons/lucide/outline/search.svg"); tooltip-text: @tr("Find in message"); active: EmailReader.find-open; clicked => { EmailReader.find-open = !EmailReader.find-open; if EmailReader.find-open { EmailReader.reader-mode = false; root.text_mode = false; root.source_mode = false; find-input.focus(); } } }
                                         if !root.compact : ReaderControl { compact: root.compact; icon: @image-url("../icons/lucide/outline/contrast.svg"); tooltip-text: MessageColors.original ? @tr("Use message appearance") : @tr("Show original colors"); active: MessageColors.original; accessible-checked: MessageColors.original; accessible-id: "message-original-colors"; clicked => { MessageColors.original = !MessageColors.original; } }
+                                        if !root.compact : ReaderControl { compact: root.compact; icon: @image-url("../icons/lucide/outline/list-unordered.svg"); tooltip-text: EmailReader.raw-mode ? @tr("Show rendered message") : @tr("Show full message"); active: EmailReader.raw-mode; accessible-checked: EmailReader.raw-mode; accessible-id: "message-raw-source"; clicked => { root.toggle-raw(); } }
                                         ReaderControl { compact: root.compact; icon: EmailReader.reader-mode ? @image-url("../icons/lucide/filled/code.svg") : @image-url("../icons/lucide/outline/book.svg"); tooltip-text: EmailReader.reader-mode ? @tr("Show original layout") : @tr("Reader mode"); active: EmailReader.reader-mode; clicked => { EmailReader.reader-mode = !EmailReader.reader-mode; if EmailReader.reader-mode { root.text_mode = false; root.source_mode = false; EmailReader.find-open = false; } } }
                                     }
                                     HorizontalBox {
@@ -1543,7 +1574,11 @@ export component MailReadingPane inherits FocusScope {
                                         y: 64px;
                                         width: parent.width - 32px;
                                         height: parent.height - 80px;
-                                        text: root.selected_source;
+                                        text: EmailReader.raw-mode
+                                            ? (EmailReader.raw-loading ? @tr("Loading the full message…")
+                                                : EmailReader.raw-error != "" ? @tr("Could not load the full message: {}", EmailReader.raw-error)
+                                                : EmailReader.raw-text)
+                                            : root.selected_source;
                                         read-only: true;
                                         font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                     }
@@ -1556,22 +1591,28 @@ export component MailReadingPane inherits FocusScope {
                                         spacing: 8px;
                                         cross-axis-alignment: center;
                                         Text {
-                                            text: @tr("Copy this HTML into your GitHub rendering issue.");
+                                            text: EmailReader.raw-mode
+                                                ? (EmailReader.raw-shortened ? @tr("Only the start, with headers.") : @tr("The whole message, with headers."))
+                                                : @tr("Copy this HTML into your GitHub rendering issue.");
                                             color: root.secondary-text;
                                             font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                             horizontal-stretch: 1;
+                                            min-width: 0px;
                                             overflow: elide;
                                         }
                                         Button {
+                                            width: max(110px, self.content-width);
                                             height: 30px;
-                                            text: @tr("Copy source");
+                                            text: EmailReader.raw-mode ? @tr("Copy message") : @tr("Copy source");
+                                            enabled: !EmailReader.raw-mode || (!EmailReader.raw-loading && EmailReader.raw-error == "");
                                             clicked => {
                                                 source-editor.select-all();
                                                 source-editor.copy();
-                                                root.copy_email_status("Copied HTML source");
+                                                root.copy_email_status(EmailReader.raw-mode ? "Copied full message" : "Copied HTML source");
                                             }
                                         }
                                         Button {
+                                            width: max(96px, self.content-width);
                                             height: 30px;
                                             text: @tr("Show email");
                                             clicked => { root.source_mode = false; }

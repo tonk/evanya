@@ -947,6 +947,46 @@ async fn a_copy_never_takes_mail_from_a_renumbered_imap_folder() {
     assert!(server.mailbox("Copies").unwrap().is_empty());
 }
 
+#[tokio::test]
+async fn the_whole_message_is_fetched_from_the_imap_server_to_show_its_source() {
+    let server = ImapServer::start(false, None).await;
+    let (_directory, core, account) = imap_account(server.port).await;
+    let raw = message("shown", "Source of a message", "X-Extra: kept\r\n");
+    let uid = server.put("INBOX", &raw);
+    let inbox = folder(&core, account, "INBOX").await;
+    let message_id = synced_message(&core, account, inbox.id, uid, 7).await;
+
+    let fetched = core.raw_message(message_id).await.unwrap();
+
+    // Everything, headers included, byte for byte.
+    assert_eq!(fetched, raw.as_bytes());
+    assert!(String::from_utf8_lossy(&fetched).contains("X-Extra: kept"));
+}
+
+#[tokio::test]
+async fn a_message_the_server_no_longer_has_says_so() {
+    let server = ImapServer::start(false, None).await;
+    let (_directory, core, account) = imap_account(server.port).await;
+    let inbox = folder(&core, account, "INBOX").await;
+    // UID 99 is not on the server.
+    let message_id = synced_message(&core, account, inbox.id, 99, 7).await;
+
+    let error = core.raw_message(message_id).await.unwrap_err();
+
+    assert!(
+        error.to_string().contains("no longer has this message"),
+        "{error}"
+    );
+}
+
+#[tokio::test]
+async fn a_message_that_does_not_exist_has_no_source() {
+    let server = ImapServer::start(false, None).await;
+    let (_directory, core, _account) = imap_account(server.port).await;
+
+    assert!(core.raw_message(424_242).await.is_err());
+}
+
 /// A JMAP server's mailboxes, uploads and mail.
 #[derive(Default)]
 struct JmapState {

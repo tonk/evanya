@@ -238,6 +238,9 @@ pub(super) fn register_renderer_input_callbacks(
                 "Copied HTML source" => {
                     app.set_render_status(UiMessage::plain("Copied HTML source"))
                 }
+                "Copied full message" => {
+                    app.set_render_status(UiMessage::plain("Copied full message"))
+                }
                 "Copied selected text" => {
                     app.set_render_status(UiMessage::plain("Copied selected text"))
                 }

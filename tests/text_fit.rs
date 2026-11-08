@@ -16,7 +16,7 @@ use evanya::{
     AccountImport, AccountRow, AppIcon, AppTheme, AppWindow, CalendarAgendaRow,
     CalendarConnectionRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay,
     ContactAccountRow, ContactRow, ContactSidebarRow, ContactSidebarRowKind, ContactSyncState,
-    ContactValueRow, EmailRow, ImportAccountRow, ImportFailureRow, ImportFindingRow,
+    ContactValueRow, EmailReader, EmailRow, ImportAccountRow, ImportFailureRow, ImportFindingRow,
     ImportProfileRow, LocalizedMessage, MailAttachment, MailAttachments, MailLabelRow,
     MailListEntry, MailProfileRow, MailboxRow, MotionSettings, ProfileMemberRow, SidebarRow,
     SidebarRowKind, StorageUsageRow, ThreadMessageRow,
@@ -929,6 +929,28 @@ fn states() -> Vec<State> {
                 })
                 .collect(),
             ))
+        }),
+        // The source view with the whole message in it, headers and all, and
+        // with the note for a message that was cut short.
+        state("mail full message", |app| {
+            // The source view and the plain text view exclude each other.
+            app.set_text_mode(false);
+            app.set_source_mode(true);
+            let reader = app.global::<EmailReader>();
+            reader.set_raw_mode(true);
+            reader.set_raw_text(
+                "Return-Path: <ana@example.org>\nReceived: from mail.example.org (mail.example.org [192.0.2.7])\n\tby mx.example.com with ESMTPS id 4f3a for <me@example.com>;\n\tFri, 05 Jan 2024 10:00:01 +0000\nFrom: Ana Rivera <ana@example.org>\nTo: me@example.com\nSubject: Quarterly planning review\nMessage-ID: <q3@example.org>\nMIME-Version: 1.0\nContent-Type: text/plain; charset=utf-8\n\nHello.\n"
+                    .into(),
+            );
+        }),
+        state("mail full message shortened", |app| {
+            // The source view and the plain text view exclude each other.
+            app.set_text_mode(false);
+            app.set_source_mode(true);
+            let reader = app.global::<EmailReader>();
+            reader.set_raw_mode(true);
+            reader.set_raw_shortened(true);
+            reader.set_raw_text("From: Ana Rivera <ana@example.org>\n\nHello.\n".into());
         }),
         State {
             desktop_only: true,
