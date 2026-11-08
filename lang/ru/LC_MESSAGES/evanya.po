@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-07 10:00+0000\n"
+"POT-Creation-Date: 2026-11-08 10:45+0000\n"
 "PO-Revision-Date: 2026-10-08 15:11+0000\n"
 "Last-Translator: Flectar contributors\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -25,7 +25,7 @@ msgid "Graphite"
 msgstr "Графитовая"
 
 #: ui/app-icon.slint:21 ui/components/theme-editor.slint:612
-#: ui/dialogs/settings-dialog.slint:1080
+#: ui/dialogs/settings-dialog.slint:1082
 msgid "Light"
 msgstr "Светлая"
 
@@ -388,7 +388,7 @@ msgstr "История переписки доступна"
 msgid "New address-book entry"
 msgstr "Новая запись в адресной книге"
 
-#: ui/app.slint:188 ui/app.slint:1260 ui/components/composer-fields.slint:80
+#: ui/app.slint:188 ui/app.slint:1263 ui/components/composer-fields.slint:80
 #: ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr "Нет подключённой учётной записи"
@@ -1492,7 +1492,7 @@ msgstr "Синхронизация завершена, обновление не
 msgid "Sync complete."
 msgstr "Синхронизация завершена."
 
-#: ui/app.slint:525 ui/dialogs/settings-dialog.slint:2895
+#: ui/app.slint:525 ui/dialogs/settings-dialog.slint:2910
 msgid "Sync failed: {}"
 msgstr "Синхронизация не удалась: {}"
 
@@ -2014,8 +2014,8 @@ msgstr ""
 "Другая авторизация в браузере уже выполняется; завершите её или выберите "
 "«Отмена»."
 
-#: ui/app.slint:662 ui/dialogs/settings-dialog.slint:2130
-#: ui/dialogs/settings-dialog.slint:2173 ui/views/onboarding-view.slint:170
+#: ui/app.slint:662 ui/dialogs/settings-dialog.slint:2145
+#: ui/dialogs/settings-dialog.slint:2188 ui/views/onboarding-view.slint:170
 msgid "Add app keys in Sign-in settings to enable this provider."
 msgstr ""
 "Добавьте ключи приложения в настройках входа, чтобы включить этого "
@@ -2091,15 +2091,15 @@ msgstr "Загрузка сообщения…"
 msgid "Evanya"
 msgstr "Evanya"
 
-#: ui/app.slint:1503 ui/app.slint:1516
+#: ui/app.slint:1506 ui/app.slint:1519
 msgid "Global Labels (local only)"
 msgstr "Глобальные метки (только локально)"
 
-#: ui/app.slint:2167
+#: ui/app.slint:2170
 msgid "Another account"
 msgstr "Другая учётная запись"
 
-#: ui/app.slint:2179
+#: ui/app.slint:2182
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
@@ -2107,82 +2107,82 @@ msgstr ""
 "При перемещении письма копируются туда, а затем попадают в корзину своей "
 "учётной записи. При копировании они остаются на месте."
 
-#: ui/app.slint:2188 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2191 ui/components/account-mail-preferences.slint:198
 #: ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
-#: ui/dialogs/settings-dialog.slint:2329 ui/dialogs/settings-dialog.slint:3275
-#: ui/dialogs/settings-dialog.slint:3598 ui/views/files-view.slint:491
+#: ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3290
+#: ui/dialogs/settings-dialog.slint:3613 ui/views/files-view.slint:491
 #: ui/views/mail-reading-pane.slint:2023
 msgid "Cancel"
 msgstr "Отмена"
 
-#: ui/app.slint:2192 ui/components/controls.slint:87
+#: ui/app.slint:2195 ui/components/controls.slint:87
 msgid "Copy"
 msgstr "Копировать"
 
-#: ui/app.slint:2196
+#: ui/app.slint:2199
 msgid "Move"
 msgstr "Переместить"
 
-#: ui/app.slint:2685
+#: ui/app.slint:2690
 msgid "Empty Trash?"
 msgstr "Очистить корзину?"
 
-#: ui/app.slint:2685 ui/views/files-view.slint:597
+#: ui/app.slint:2690 ui/views/files-view.slint:597
 msgid "Delete permanently?"
 msgstr "Удалить безвозвратно?"
 
-#: ui/app.slint:2689
+#: ui/app.slint:2694
 msgid ""
 "Permanently delete all messages in Trash across every connected account?"
 msgstr ""
 "Безвозвратно удалить все письма из корзины во всех подключённых учётных "
 "записях?"
 
-#: ui/app.slint:2690
+#: ui/app.slint:2695
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr "Безвозвратно удалить все письма из корзины этой учётной записи?"
 
-#: ui/app.slint:2692
+#: ui/app.slint:2697
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr "Безвозвратно удалить выбранные переписки из корзины?"
 
-#: ui/app.slint:2693
+#: ui/app.slint:2698
 msgid "Permanently delete this conversation from Trash?"
 msgstr "Безвозвратно удалить эту переписку из корзины?"
 
-#: ui/app.slint:2694 ui/components/calendar.slint:1167
+#: ui/app.slint:2699 ui/components/calendar.slint:1167
 msgid "This action cannot be undone."
 msgstr "Это действие нельзя отменить."
 
-#: ui/app.slint:2695
+#: ui/app.slint:2700
 msgid "Empty Trash"
 msgstr "Очистить корзину"
 
-#: ui/app.slint:2695 ui/views/files-view.slint:679
+#: ui/app.slint:2700 ui/views/files-view.slint:679
 msgid "Delete permanently"
 msgstr "Удалить безвозвратно"
 
-#: ui/app.slint:2873
+#: ui/app.slint:2878
 msgid "Mailbox startup failed"
 msgstr "Запуск почтового ящика не удался"
 
-#: ui/app.slint:2879
+#: ui/app.slint:2884
 msgid "Evanya could not open local storage"
 msgstr "Evanya не смог открыть локальное хранилище"
 
-#: ui/app.slint:2892
+#: ui/app.slint:2897
 msgid "Diagnostic ID: {}"
 msgstr "Идентификатор диагностики: {}"
 
-#: ui/app.slint:2895
+#: ui/app.slint:2900
 msgid "Diagnostic ID {}"
 msgstr "Идентификатор диагностики {}"
 
-#: ui/app.slint:2900
+#: ui/app.slint:2905
 msgid "Retry"
 msgstr "Повторить"
 
-#: ui/app.slint:2908 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2913 ui/components/copyable-diagnostic.slint:43
 msgid "Copy diagnostics"
 msgstr "Копировать диагностику"
 
@@ -2258,7 +2258,7 @@ msgid "Invitations for events you create here are sent from {}."
 msgstr "Приглашения на созданные здесь события отправляются с адреса {}."
 
 #: ui/components/account-calendars.slint:264
-#: ui/dialogs/settings-dialog.slint:3203
+#: ui/dialogs/settings-dialog.slint:3218
 msgid "Add CalDAV calendar"
 msgstr "Добавить календарь CalDAV"
 
@@ -2412,7 +2412,7 @@ msgstr ""
 "показывает, принял ли он последнее сообщение."
 
 #: ui/components/account-mail-preferences.slint:191
-#: ui/dialogs/settings-dialog.slint:3373 ui/views/onboarding-view.slint:276
+#: ui/dialogs/settings-dialog.slint:3388 ui/views/onboarding-view.slint:276
 msgid "Email address"
 msgstr "Адрес электронной почты"
 
@@ -2650,7 +2650,7 @@ msgid "Export decrypted message"
 msgstr "Экспортировать расшифрованное сообщение"
 
 #: ui/components/account-mail-preferences.slint:285
-#: ui/dialogs/settings-dialog.slint:3349 ui/views/files-view.slint:524
+#: ui/dialogs/settings-dialog.slint:3364 ui/views/files-view.slint:524
 #: ui/views/files-view.slint:714 ui/window-chrome.slint:201
 msgid "Close"
 msgstr "Закрыть"
@@ -2702,7 +2702,7 @@ msgid "Show calendars"
 msgstr "Показать календари"
 
 #: ui/components/calendar-agenda.slint:68 ui/components/theme-editor.slint:782
-#: ui/dialogs/settings-dialog.slint:1800
+#: ui/dialogs/settings-dialog.slint:1815
 msgid "Reset"
 msgstr "Сбросить"
 
@@ -2888,7 +2888,7 @@ msgstr "Скрыть календари"
 msgid "Zoom out"
 msgstr "Уменьшить"
 
-#: ui/components/calendar.slint:685 ui/dialogs/settings-dialog.slint:2825
+#: ui/components/calendar.slint:685 ui/dialogs/settings-dialog.slint:2840
 msgid "Reset zoom"
 msgstr "Сбросить масштаб"
 
@@ -3147,7 +3147,7 @@ msgstr "Выделить всё"
 msgid "On"
 msgstr "Вкл."
 
-#: ui/components/controls.slint:212 ui/dialogs/settings-dialog.slint:633
+#: ui/components/controls.slint:212 ui/dialogs/settings-dialog.slint:635
 msgid "Off"
 msgstr "Выкл."
 
@@ -3736,13 +3736,13 @@ msgstr[0] "{n} вкладка открыта"
 msgstr[1] "{n} вкладки открыты"
 msgstr[2] "{n} вкладок открыто"
 
-#: ui/components/tab-overview.slint:68 ui/dialogs/settings-dialog.slint:535
+#: ui/components/tab-overview.slint:68 ui/dialogs/settings-dialog.slint:536
 #: ui/views/files-view.slint:600
 msgid "Files"
 msgstr "Файлы"
 
-#: ui/components/tab-overview.slint:69 ui/dialogs/settings-dialog.slint:1027
-#: ui/dialogs/settings-dialog.slint:2385 ui/dialogs/settings-dialog.slint:3136
+#: ui/components/tab-overview.slint:69 ui/dialogs/settings-dialog.slint:1029
+#: ui/dialogs/settings-dialog.slint:2400 ui/dialogs/settings-dialog.slint:3151
 msgid "Contacts"
 msgstr "Контакты"
 
@@ -3750,7 +3750,7 @@ msgstr "Контакты"
 msgid "Settings"
 msgstr "Настройки"
 
-#: ui/components/tab-overview.slint:71 ui/dialogs/settings-dialog.slint:2368
+#: ui/components/tab-overview.slint:71 ui/dialogs/settings-dialog.slint:2383
 msgid "Mail"
 msgstr "Почта"
 
@@ -3759,7 +3759,7 @@ msgid "Close tab"
 msgstr "Закрыть вкладку"
 
 #: ui/components/tab-overview.slint:198 ui/components/tab-overview.slint:222
-#: ui/dialogs/settings-dialog.slint:2828
+#: ui/dialogs/settings-dialog.slint:2843
 msgid "Tabs"
 msgstr "Вкладки"
 
@@ -3931,7 +3931,7 @@ msgstr "Сбросить эту палитру"
 msgid "Revert"
 msgstr "Вернуть"
 
-#: ui/components/theme-editor.slint:785 ui/dialogs/settings-dialog.slint:2321
+#: ui/components/theme-editor.slint:785 ui/dialogs/settings-dialog.slint:2336
 #: ui/views/mail-reading-pane.slint:2028
 msgid "Save"
 msgstr "Сохранить"
@@ -4152,7 +4152,7 @@ msgstr[1] "{} содержит {n} события."
 msgstr[2] "{} содержит {n} событий."
 
 #: ui/dialogs/calendar-event-dialog.slint:216
-#: ui/dialogs/settings-dialog.slint:2733
+#: ui/dialogs/settings-dialog.slint:2748
 msgid "Import"
 msgstr "Импорт"
 
@@ -4359,11 +4359,11 @@ msgid "This account syncs with {} instead of downloading mail with POP3."
 msgstr ""
 "Эта учётная запись синхронизируется с {}, а не загружает почту по POP3."
 
-#: ui/dialogs/import-dialog.slint:156 ui/dialogs/settings-dialog.slint:2472
+#: ui/dialogs/import-dialog.slint:156 ui/dialogs/settings-dialog.slint:2487
 msgid "Mail is removed from the server once it's on this device."
 msgstr "Почта удаляется с сервера, как только она есть на этом устройстве."
 
-#: ui/dialogs/import-dialog.slint:157 ui/dialogs/settings-dialog.slint:2471
+#: ui/dialogs/import-dialog.slint:157 ui/dialogs/settings-dialog.slint:2486
 msgid "Mail you delete here is removed from the server too."
 msgstr "Почта, удалённая здесь, удаляется и с сервера."
 
@@ -4558,7 +4558,7 @@ msgstr "Остановить"
 msgid "Continue in background"
 msgstr "Продолжить в фоне"
 
-#: ui/dialogs/import-dialog.slint:338 ui/dialogs/settings-dialog.slint:1759
+#: ui/dialogs/import-dialog.slint:338 ui/dialogs/settings-dialog.slint:1774
 msgid "Choose folder…"
 msgstr "Выбрать папку…"
 
@@ -5054,147 +5054,147 @@ msgstr "Некоторые файлы не удалось измерить, по
 msgid "Storage usage could not be refreshed. Try again."
 msgstr "Не удалось обновить использование хранилища. Попробуйте ещё раз."
 
-#: ui/dialogs/settings-dialog.slint:530
+#: ui/dialogs/settings-dialog.slint:531
 msgid "Sidebars"
 msgstr "Боковые панели"
 
-#: ui/dialogs/settings-dialog.slint:531
+#: ui/dialogs/settings-dialog.slint:532
 msgid "Message list"
 msgstr "Список писем"
 
-#: ui/dialogs/settings-dialog.slint:532
+#: ui/dialogs/settings-dialog.slint:533
 msgid "Reading pane"
 msgstr "Область чтения"
 
-#: ui/dialogs/settings-dialog.slint:536
+#: ui/dialogs/settings-dialog.slint:537
 msgid "Plain text, reading and writing"
 msgstr "Обычный текст: чтение и написание"
 
-#: ui/dialogs/settings-dialog.slint:537
+#: ui/dialogs/settings-dialog.slint:538
 msgid "Writing messages"
 msgstr "Написание писем"
 
-#: ui/dialogs/settings-dialog.slint:628
+#: ui/dialogs/settings-dialog.slint:630
 msgid "Every minute"
 msgstr "Каждую минуту"
 
-#: ui/dialogs/settings-dialog.slint:629
+#: ui/dialogs/settings-dialog.slint:631
 msgid "Every 5 minutes"
 msgstr "Каждые 5 минут"
 
-#: ui/dialogs/settings-dialog.slint:630
+#: ui/dialogs/settings-dialog.slint:632
 msgid "Every 15 minutes"
 msgstr "Каждые 15 минут"
 
-#: ui/dialogs/settings-dialog.slint:634
+#: ui/dialogs/settings-dialog.slint:636
 msgid "Important mail"
 msgstr "Важная почта"
 
-#: ui/dialogs/settings-dialog.slint:635
+#: ui/dialogs/settings-dialog.slint:637
 msgid "All new mail"
 msgstr "Вся новая почта"
 
-#: ui/dialogs/settings-dialog.slint:638
+#: ui/dialogs/settings-dialog.slint:640
 msgid "1 month"
 msgstr "1 месяц"
 
-#: ui/dialogs/settings-dialog.slint:639
+#: ui/dialogs/settings-dialog.slint:641
 msgid "3 months"
 msgstr "3 месяца"
 
-#: ui/dialogs/settings-dialog.slint:640
+#: ui/dialogs/settings-dialog.slint:642
 msgid "6 months · Recommended"
 msgstr "6 месяцев · Рекомендуется"
 
-#: ui/dialogs/settings-dialog.slint:641
+#: ui/dialogs/settings-dialog.slint:643
 msgid "1 year"
 msgstr "1 год"
 
-#: ui/dialogs/settings-dialog.slint:642 ui/views/mail-list-pane.slint:727
+#: ui/dialogs/settings-dialog.slint:644 ui/views/mail-list-pane.slint:727
 msgid "All mail"
 msgstr "Вся почта"
 
-#: ui/dialogs/settings-dialog.slint:645
+#: ui/dialogs/settings-dialog.slint:647
 msgid "Always"
 msgstr "Всегда"
 
-#: ui/dialogs/settings-dialog.slint:646
+#: ui/dialogs/settings-dialog.slint:648
 msgid "Until deleted here"
 msgstr "До удаления здесь"
 
-#: ui/dialogs/settings-dialog.slint:647
+#: ui/dialogs/settings-dialog.slint:649
 msgid "7 days"
 msgstr "7 дней"
 
-#: ui/dialogs/settings-dialog.slint:648
+#: ui/dialogs/settings-dialog.slint:650
 msgid "14 days"
 msgstr "14 дней"
 
-#: ui/dialogs/settings-dialog.slint:649
+#: ui/dialogs/settings-dialog.slint:651
 msgid "30 days"
 msgstr "30 дней"
 
-#: ui/dialogs/settings-dialog.slint:650
+#: ui/dialogs/settings-dialog.slint:652
 msgid "Until downloaded"
 msgstr "До загрузки"
 
-#: ui/dialogs/settings-dialog.slint:653
+#: ui/dialogs/settings-dialog.slint:655
 msgid "System language"
 msgstr "Системный язык"
 
-#: ui/dialogs/settings-dialog.slint:654
+#: ui/dialogs/settings-dialog.slint:656
 msgid "English"
 msgstr "Английский"
 
-#: ui/dialogs/settings-dialog.slint:655
+#: ui/dialogs/settings-dialog.slint:657
 msgid "Spanish"
 msgstr "Испанский"
 
-#: ui/dialogs/settings-dialog.slint:656
+#: ui/dialogs/settings-dialog.slint:658
 msgid "Turkish"
 msgstr "Турецкий"
 
-#: ui/dialogs/settings-dialog.slint:657
+#: ui/dialogs/settings-dialog.slint:659
 msgid "Simplified Chinese"
 msgstr "Китайский (упрощённый)"
 
-#: ui/dialogs/settings-dialog.slint:658
+#: ui/dialogs/settings-dialog.slint:660
 msgid "Russian"
 msgstr "Русский"
 
-#: ui/dialogs/settings-dialog.slint:659
+#: ui/dialogs/settings-dialog.slint:661
 msgid "Dutch"
 msgstr "Нидерландский"
 
-#: ui/dialogs/settings-dialog.slint:662
+#: ui/dialogs/settings-dialog.slint:664
 msgid "Automatic"
 msgstr "Автоматически"
 
-#: ui/dialogs/settings-dialog.slint:663
+#: ui/dialogs/settings-dialog.slint:665
 msgid "12-hour"
 msgstr "12-часовой"
 
-#: ui/dialogs/settings-dialog.slint:664
+#: ui/dialogs/settings-dialog.slint:666
 msgid "24-hour"
 msgstr "24-часовой"
 
-#: ui/dialogs/settings-dialog.slint:677
+#: ui/dialogs/settings-dialog.slint:679
 msgid "Smart"
 msgstr "Умный"
 
-#: ui/dialogs/settings-dialog.slint:678
+#: ui/dialogs/settings-dialog.slint:680
 msgid "Date and time"
 msgstr "Дата и время"
 
-#: ui/dialogs/settings-dialog.slint:679
+#: ui/dialogs/settings-dialog.slint:681
 msgid "Relative"
 msgstr "Относительная"
 
-#: ui/dialogs/settings-dialog.slint:680
+#: ui/dialogs/settings-dialog.slint:682
 msgid "ISO 8601"
 msgstr "ISO 8601"
 
-#: ui/dialogs/settings-dialog.slint:706
+#: ui/dialogs/settings-dialog.slint:708
 msgid ""
 "general theme appearance palette app icon dock taskbar launcher language "
 "time clock 12-hour 24-hour workspace layout window frameless title bar "
@@ -5209,7 +5209,7 @@ msgstr ""
 "режим автозапуск автозагрузка вход в систему загрузка скачивание папка "
 "вложения сохранение вкладки цепочки переписки"
 
-#: ui/dialogs/settings-dialog.slint:708
+#: ui/dialogs/settings-dialog.slint:710
 msgid ""
 "accounts profiles personal work colors providers gmail outlook imap pop3 "
 "jmap caldav carddav mail history server oauth security signatures"
@@ -5217,7 +5217,7 @@ msgstr ""
 "учётные записи профили личное работа цвета провайдеры gmail outlook imap "
 "pop3 jmap caldav carddav история почты сервер oauth безопасность подписи"
 
-#: ui/dialogs/settings-dialog.slint:710
+#: ui/dialogs/settings-dialog.slint:712
 msgid ""
 "contacts people suggestions autocomplete recipients senders address book "
 "privacy clear"
@@ -5225,11 +5225,11 @@ msgstr ""
 "контакты люди предложения автодополнение получатели отправители адресная "
 "книга приватность очистить"
 
-#: ui/dialogs/settings-dialog.slint:712
+#: ui/dialogs/settings-dialog.slint:714
 msgid "notifications alerts sounds desktop new mail"
 msgstr "уведомления оповещения звуки рабочий стол новая почта"
 
-#: ui/dialogs/settings-dialog.slint:714
+#: ui/dialogs/settings-dialog.slint:716
 msgid ""
 "shortcuts keyboard keys compose search archive spam junk trash delete "
 "navigation messages reading find zoom caret tabs"
@@ -5237,7 +5237,7 @@ msgstr ""
 "горячие клавиши клавиатура клавиши написать поиск архив спам нежелательные "
 "корзина удалить навигация письма чтение найти масштаб курсор вкладки"
 
-#: ui/dialogs/settings-dialog.slint:716
+#: ui/dialogs/settings-dialog.slint:718
 msgid ""
 "storage data usage mail attachments files databases backup snapshot import "
 "export delete"
@@ -5245,7 +5245,7 @@ msgstr ""
 "хранилище данные использование почта вложения файлы базы данных резервная "
 "копия снимок импорт экспорт удалить"
 
-#: ui/dialogs/settings-dialog.slint:718
+#: ui/dialogs/settings-dialog.slint:720
 msgid ""
 "services flectar base account sign in subscription paid sync devices "
 "business email custom domain mailbox"
@@ -5253,221 +5253,233 @@ msgstr ""
 "сервисы flectar base аккаунт вход подписка платно синхронизация устройства "
 "корпоративная почта собственный домен почтовый ящик"
 
-#: ui/dialogs/settings-dialog.slint:719
+#: ui/dialogs/settings-dialog.slint:721
 msgid "about version credits contributors license flectar"
 msgstr "о программе версия благодарности участники лицензия flectar"
 
-#: ui/dialogs/settings-dialog.slint:1021 ui/dialogs/settings-dialog.slint:3131
+#: ui/dialogs/settings-dialog.slint:1023 ui/dialogs/settings-dialog.slint:3146
 msgid "SETTINGS"
 msgstr "НАСТРОЙКИ"
 
-#: ui/dialogs/settings-dialog.slint:1024 ui/dialogs/settings-dialog.slint:3133
+#: ui/dialogs/settings-dialog.slint:1026 ui/dialogs/settings-dialog.slint:3148
 msgid "No settings found"
 msgstr "Настройки не найдены"
 
-#: ui/dialogs/settings-dialog.slint:1025 ui/dialogs/settings-dialog.slint:1065
-#: ui/dialogs/settings-dialog.slint:3134
+#: ui/dialogs/settings-dialog.slint:1027 ui/dialogs/settings-dialog.slint:1067
+#: ui/dialogs/settings-dialog.slint:3149
 msgid "General"
 msgstr "Общие"
 
-#: ui/dialogs/settings-dialog.slint:1026 ui/dialogs/settings-dialog.slint:1975
-#: ui/dialogs/settings-dialog.slint:3135 ui/dialogs/settings-dialog.slint:3584
+#: ui/dialogs/settings-dialog.slint:1028 ui/dialogs/settings-dialog.slint:1990
+#: ui/dialogs/settings-dialog.slint:3150 ui/dialogs/settings-dialog.slint:3599
 msgid "Accounts"
 msgstr "Учётные записи"
 
-#: ui/dialogs/settings-dialog.slint:1028 ui/dialogs/settings-dialog.slint:2757
-#: ui/dialogs/settings-dialog.slint:3137
+#: ui/dialogs/settings-dialog.slint:1030 ui/dialogs/settings-dialog.slint:2772
+#: ui/dialogs/settings-dialog.slint:3152
 msgid "Notifications"
 msgstr "Уведомления"
 
-#: ui/dialogs/settings-dialog.slint:1029 ui/dialogs/settings-dialog.slint:3067
+#: ui/dialogs/settings-dialog.slint:1031 ui/dialogs/settings-dialog.slint:3082
 msgid "Shortcuts"
 msgstr "Горячие клавиши"
 
-#: ui/dialogs/settings-dialog.slint:1030 ui/dialogs/settings-dialog.slint:2665
-#: ui/dialogs/settings-dialog.slint:3139
+#: ui/dialogs/settings-dialog.slint:1032 ui/dialogs/settings-dialog.slint:2680
+#: ui/dialogs/settings-dialog.slint:3154
 msgid "Storage"
 msgstr "Хранилище"
 
-#: ui/dialogs/settings-dialog.slint:1031 ui/dialogs/settings-dialog.slint:2854
-#: ui/dialogs/settings-dialog.slint:3140
+#: ui/dialogs/settings-dialog.slint:1033 ui/dialogs/settings-dialog.slint:2869
+#: ui/dialogs/settings-dialog.slint:3155
 msgid "Services"
 msgstr "Сервисы"
 
-#: ui/dialogs/settings-dialog.slint:1032 ui/dialogs/settings-dialog.slint:2944
-#: ui/dialogs/settings-dialog.slint:3141
+#: ui/dialogs/settings-dialog.slint:1034 ui/dialogs/settings-dialog.slint:2959
+#: ui/dialogs/settings-dialog.slint:3156
 msgid "About"
 msgstr "О программе"
 
-#: ui/dialogs/settings-dialog.slint:1042
+#: ui/dialogs/settings-dialog.slint:1044
 msgid "Settings sidebar width"
 msgstr "Ширина боковой панели настроек"
 
-#: ui/dialogs/settings-dialog.slint:1066
+#: ui/dialogs/settings-dialog.slint:1068
 msgid "Manage appearance, privacy, and synchronization."
 msgstr "Управление внешним видом, приватностью и синхронизацией."
 
-#: ui/dialogs/settings-dialog.slint:1078
+#: ui/dialogs/settings-dialog.slint:1080
 msgid "Message appearance"
 msgstr "Оформление писем"
 
-#: ui/dialogs/settings-dialog.slint:1079
+#: ui/dialogs/settings-dialog.slint:1081
 msgid "Choose the background and text colors used to read messages."
 msgstr "Выберите цвета фона и текста для чтения писем."
 
-#: ui/dialogs/settings-dialog.slint:1080
+#: ui/dialogs/settings-dialog.slint:1082
 msgid "Follow app theme"
 msgstr "Как в теме приложения"
 
-#: ui/dialogs/settings-dialog.slint:1139
+#: ui/dialogs/settings-dialog.slint:1141
 msgid "Interface"
 msgstr "Интерфейс"
 
-#: ui/dialogs/settings-dialog.slint:1142
+#: ui/dialogs/settings-dialog.slint:1144
 msgid "Monochrome sidebar icons"
 msgstr "Одноцветные значки боковой панели"
 
-#: ui/dialogs/settings-dialog.slint:1143
+#: ui/dialogs/settings-dialog.slint:1145
 msgid "Use one neutral color for mailbox and folder icons."
 msgstr ""
 "Использовать один нейтральный цвет для значков почтовых ящиков и папок."
 
-#: ui/dialogs/settings-dialog.slint:1155
+#: ui/dialogs/settings-dialog.slint:1157
 msgid "No avatars"
 msgstr "Без аватаров"
 
-#: ui/dialogs/settings-dialog.slint:1156
+#: ui/dialogs/settings-dialog.slint:1158
 msgid "Hide sender images in the message list and reader."
 msgstr ""
 "Скрывать изображения отправителей в списке сообщений и средстве чтения."
 
-#: ui/dialogs/settings-dialog.slint:1169
+#: ui/dialogs/settings-dialog.slint:1170
+msgid "Start maximized"
+msgstr "Запускать развёрнутым"
+
+#: ui/dialogs/settings-dialog.slint:1171
+msgid ""
+"Open the main window maximized. The --maximized option does this for one "
+"launch."
+msgstr ""
+"Открывать главное окно развёрнутым на весь экран. Параметр --maximized "
+"делает это для одного запуска."
+
+#: ui/dialogs/settings-dialog.slint:1184
 msgid "Keep several mailboxes, conversations and other places open in tabs."
 msgstr ""
 "Держите открытыми во вкладках несколько папок, переписок и других разделов."
 
-#: ui/dialogs/settings-dialog.slint:1181
+#: ui/dialogs/settings-dialog.slint:1196
 msgid "Status line"
 msgstr "Строка состояния"
 
-#: ui/dialogs/settings-dialog.slint:1182
+#: ui/dialogs/settings-dialog.slint:1197
 msgid ""
 "Show along the bottom of the window how mail synchronization is progressing."
 msgstr "Показывать внизу окна ход синхронизации почты."
 
-#: ui/dialogs/settings-dialog.slint:1194
+#: ui/dialogs/settings-dialog.slint:1209
 msgid "Unread counts on every folder"
 msgstr "Счётчики непрочитанных у каждой папки"
 
-#: ui/dialogs/settings-dialog.slint:1195
+#: ui/dialogs/settings-dialog.slint:1210
 msgid "Show the number of unread messages beside each folder in the sidebar."
 msgstr ""
 "Показывать число непрочитанных писем рядом с каждой папкой в боковой панели."
 
-#: ui/dialogs/settings-dialog.slint:1207
+#: ui/dialogs/settings-dialog.slint:1222
 msgid "Frameless window"
 msgstr "Окно без рамки"
 
-#: ui/dialogs/settings-dialog.slint:1208
+#: ui/dialogs/settings-dialog.slint:1223
 msgid "Replace the system title bar with window controls in the toolbar."
 msgstr ""
 "Заменить системный заголовок окна кнопками управления окном на панели "
 "инструментов."
 
-#: ui/dialogs/settings-dialog.slint:1215
+#: ui/dialogs/settings-dialog.slint:1230
 msgid "Workspace layout"
 msgstr "Расположение рабочей области"
 
-#: ui/dialogs/settings-dialog.slint:1227
+#: ui/dialogs/settings-dialog.slint:1242
 msgid "Minimal"
 msgstr "Минимальное"
 
-#: ui/dialogs/settings-dialog.slint:1235
+#: ui/dialogs/settings-dialog.slint:1250
 msgid "Unified mailbox"
 msgstr "Единый почтовый ящик"
 
-#: ui/dialogs/settings-dialog.slint:1236
+#: ui/dialogs/settings-dialog.slint:1251
 msgid ""
 "Show shared Inbox, Starred and other mailboxes that combine all accounts."
 msgstr ""
 "Показывать общие «Входящие», «Со звёздочкой» и другие ящики, объединяющие "
 "все учётные записи."
 
-#: ui/dialogs/settings-dialog.slint:1248
+#: ui/dialogs/settings-dialog.slint:1263
 msgid "Preview at the bottom"
 msgstr "Предпросмотр снизу"
 
-#: ui/dialogs/settings-dialog.slint:1249
+#: ui/dialogs/settings-dialog.slint:1264
 msgid ""
 "Show the message list on top and the message below it, instead of side by "
 "side."
 msgstr "Показывать список писем сверху, а письмо под ним, а не рядом."
 
-#: ui/dialogs/settings-dialog.slint:1261
+#: ui/dialogs/settings-dialog.slint:1276
 msgid "Message list as a table"
 msgstr "Список писем в виде таблицы"
 
-#: ui/dialogs/settings-dialog.slint:1262
+#: ui/dialogs/settings-dialog.slint:1277
 msgid ""
 "One line per message, with columns you can drag to resize and click to sort."
 msgstr ""
 "Одна строка на письмо; ширину столбцов можно менять перетаскиванием, а "
 "щелчок по столбцу сортирует."
 
-#: ui/dialogs/settings-dialog.slint:1286
+#: ui/dialogs/settings-dialog.slint:1301
 msgid "Language and time"
 msgstr "Язык и время"
 
-#: ui/dialogs/settings-dialog.slint:1289
+#: ui/dialogs/settings-dialog.slint:1304
 msgid "Display language"
 msgstr "Язык интерфейса"
 
-#: ui/dialogs/settings-dialog.slint:1290
+#: ui/dialogs/settings-dialog.slint:1305
 msgid "Follow your device language when a translation is available."
 msgstr "Следовать языку устройства, когда доступен перевод."
 
-#: ui/dialogs/settings-dialog.slint:1290
+#: ui/dialogs/settings-dialog.slint:1305
 msgid "Choose the language used throughout Evanya."
 msgstr "Выберите язык, используемый в Evanya."
 
-#: ui/dialogs/settings-dialog.slint:1300
+#: ui/dialogs/settings-dialog.slint:1315
 msgid "Time format"
 msgstr "Формат времени"
 
-#: ui/dialogs/settings-dialog.slint:1301
+#: ui/dialogs/settings-dialog.slint:1316
 msgid "Follow your region, for example {}."
 msgstr "Как принято в вашем регионе, например {}."
 
-#: ui/dialogs/settings-dialog.slint:1301
+#: ui/dialogs/settings-dialog.slint:1316
 msgid "Times appear as {}."
 msgstr "Время отображается как {}."
 
-#: ui/dialogs/settings-dialog.slint:1311
+#: ui/dialogs/settings-dialog.slint:1326
 msgid "Dates in the message list"
 msgstr "Даты в списке писем"
 
-#: ui/dialogs/settings-dialog.slint:1312
+#: ui/dialogs/settings-dialog.slint:1327
 msgid "Always the date and the time."
 msgstr "Всегда дата и время."
 
-#: ui/dialogs/settings-dialog.slint:1313
+#: ui/dialogs/settings-dialog.slint:1328
 msgid "How long ago, such as \"5 min ago\", for the last four weeks."
 msgstr ""
 "Сколько времени назад, например «5 мин. назад», за последние четыре недели."
 
-#: ui/dialogs/settings-dialog.slint:1314
+#: ui/dialogs/settings-dialog.slint:1329
 msgid "Year, month and day, such as 2026-11-04 14:32."
 msgstr "Год, месяц и день, например 2026-11-04 14:32."
 
-#: ui/dialogs/settings-dialog.slint:1315
+#: ui/dialogs/settings-dialog.slint:1330
 msgid "The time for today and yesterday, otherwise the date."
 msgstr "Время для сегодняшних и вчерашних писем, для остальных — дата."
 
-#: ui/dialogs/settings-dialog.slint:1340
+#: ui/dialogs/settings-dialog.slint:1355
 msgid "Fonts"
 msgstr "Шрифты"
 
-#: ui/dialogs/settings-dialog.slint:1341
+#: ui/dialogs/settings-dialog.slint:1356
 msgid ""
 "Choose a font and size for each part. The message itself keeps the fonts its "
 "sender chose."
@@ -5475,35 +5487,35 @@ msgstr ""
 "Выберите шрифт и размер для каждой части. Само письмо сохраняет шрифты, "
 "выбранные отправителем."
 
-#: ui/dialogs/settings-dialog.slint:1387
+#: ui/dialogs/settings-dialog.slint:1402
 msgid "Inbox behavior"
 msgstr "Поведение входящих"
 
-#: ui/dialogs/settings-dialog.slint:1390
+#: ui/dialogs/settings-dialog.slint:1405
 msgid "Unified Inbox"
 msgstr "Объединённые входящие"
 
-#: ui/dialogs/settings-dialog.slint:1391
+#: ui/dialogs/settings-dialog.slint:1406
 msgid "DEFAULT"
 msgstr "ПО УМОЛЧАНИЮ"
 
-#: ui/dialogs/settings-dialog.slint:1393
+#: ui/dialogs/settings-dialog.slint:1408
 msgid "Combines incoming messages from every connected account."
 msgstr "Объединяет входящие сообщения со всех подключённых учётных записей."
 
-#: ui/dialogs/settings-dialog.slint:1397
+#: ui/dialogs/settings-dialog.slint:1412
 msgid "Group messages by date"
 msgstr "Группировать письма по дате"
 
-#: ui/dialogs/settings-dialog.slint:1398
+#: ui/dialogs/settings-dialog.slint:1413
 msgid "Show collapsible date sections in the mail list."
 msgstr "Показывать сворачиваемые разделы по датам в списке писем."
 
-#: ui/dialogs/settings-dialog.slint:1410
+#: ui/dialogs/settings-dialog.slint:1425
 msgid "Conversation view"
 msgstr "Цепочки писем"
 
-#: ui/dialogs/settings-dialog.slint:1411
+#: ui/dialogs/settings-dialog.slint:1426
 msgid ""
 "Group replies with the messages they answer. Turn this off to list, open and "
 "act on each message on its own."
@@ -5511,11 +5523,11 @@ msgstr ""
 "Объединять ответы с письмами, на которые они отвечают. Отключите, чтобы "
 "показывать, открывать и обрабатывать каждое письмо отдельно."
 
-#: ui/dialogs/settings-dialog.slint:1423
+#: ui/dialogs/settings-dialog.slint:1438
 msgid "Write messages in plain text"
 msgstr "Писать письма обычным текстом"
 
-#: ui/dialogs/settings-dialog.slint:1424
+#: ui/dialogs/settings-dialog.slint:1439
 msgid ""
 "Send new messages, replies and forwards without formatting. Hold Shift while "
 "choosing New message, Reply or Forward to use the other format."
@@ -5524,11 +5536,11 @@ msgstr ""
 "Удерживайте Shift при выборе «Новое сообщение», «Ответить» или «Переслать», "
 "чтобы использовать другой формат."
 
-#: ui/dialogs/settings-dialog.slint:1436
+#: ui/dialogs/settings-dialog.slint:1451
 msgid "Check spelling while writing"
 msgstr "Проверять орфографию при вводе"
 
-#: ui/dialogs/settings-dialog.slint:1438
+#: ui/dialogs/settings-dialog.slint:1453
 msgid ""
 "Misspelled words get a red line. Right-click one for suggestions. A word is "
 "correct when any chosen language knows it."
@@ -5537,7 +5549,7 @@ msgstr ""
 "кнопкой, чтобы увидеть варианты. Слово считается верным, если его знает "
 "любой из выбранных языков."
 
-#: ui/dialogs/settings-dialog.slint:1439
+#: ui/dialogs/settings-dialog.slint:1454
 msgid ""
 "No spelling dictionaries were found. Install Hunspell dictionaries, such as "
 "hunspell-nl and hunspell-en-us."
@@ -5545,66 +5557,66 @@ msgstr ""
 "Словари для проверки орфографии не найдены. Установите словари Hunspell, "
 "например hunspell-nl и hunspell-en-us."
 
-#: ui/dialogs/settings-dialog.slint:1473
+#: ui/dialogs/settings-dialog.slint:1488
 msgid "Spelling languages"
 msgstr "Языки проверки орфографии"
 
-#: ui/dialogs/settings-dialog.slint:1475
+#: ui/dialogs/settings-dialog.slint:1490
 msgid "Following the interface language, with English."
 msgstr "Язык интерфейса и английский."
 
-#: ui/dialogs/settings-dialog.slint:1476
+#: ui/dialogs/settings-dialog.slint:1491
 msgid "Chosen by you."
 msgstr "Выбраны вами."
 
-#: ui/dialogs/settings-dialog.slint:1491
+#: ui/dialogs/settings-dialog.slint:1506
 msgid "Follow the interface language"
 msgstr "Использовать язык интерфейса"
 
-#: ui/dialogs/settings-dialog.slint:1504
+#: ui/dialogs/settings-dialog.slint:1519
 msgid "Mark messages as read when opened"
 msgstr "Отмечать сообщения как прочитанные при открытии"
 
-#: ui/dialogs/settings-dialog.slint:1505
+#: ui/dialogs/settings-dialog.slint:1520
 msgid "Turn this off to keep unread status until you change it manually."
 msgstr ""
 "Отключите, чтобы сохранять статус «не прочитано», пока не измените его "
 "вручную."
 
-#: ui/dialogs/settings-dialog.slint:1532
+#: ui/dialogs/settings-dialog.slint:1547
 msgid "Remote images"
 msgstr "Внешние изображения"
 
-#: ui/dialogs/settings-dialog.slint:1533
+#: ui/dialogs/settings-dialog.slint:1548
 msgid "Load sender favicons and images embedded in message bodies."
 msgstr "Загружать значки отправителей и изображения из тел сообщений."
 
-#: ui/dialogs/settings-dialog.slint:1533
+#: ui/dialogs/settings-dialog.slint:1548
 msgid "Unavailable in this minimal build."
 msgstr "Недоступно в этой минимальной сборке."
 
-#: ui/dialogs/settings-dialog.slint:1534
+#: ui/dialogs/settings-dialog.slint:1549
 msgid "Off by default to block tracking pixels and minimize memory use."
 msgstr ""
 "Отключено по умолчанию для блокировки следящих пикселей и экономии памяти."
 
-#: ui/dialogs/settings-dialog.slint:1560
+#: ui/dialogs/settings-dialog.slint:1575
 msgid "Keep running in system tray"
 msgstr "Продолжать работу в системном трее"
 
-#: ui/dialogs/settings-dialog.slint:1561
+#: ui/dialogs/settings-dialog.slint:1576
 msgid "Closing the window hides Evanya while mail continues syncing."
 msgstr "Закрытие окна скрывает Evanya, а почта продолжает синхронизироваться."
 
-#: ui/dialogs/settings-dialog.slint:1562
+#: ui/dialogs/settings-dialog.slint:1577
 msgid "Disabled by default; Quit from the tray menu stops the app."
 msgstr "Отключено по умолчанию; «Выход» в меню трея останавливает приложение."
 
-#: ui/dialogs/settings-dialog.slint:1589
+#: ui/dialogs/settings-dialog.slint:1604
 msgid "Unread mail in the tray icon"
 msgstr "Непрочитанная почта на значке в трее"
 
-#: ui/dialogs/settings-dialog.slint:1590
+#: ui/dialogs/settings-dialog.slint:1605
 msgid ""
 "Mark the tray icon with a red dot while the inbox has unread mail; its "
 "tooltip says how much."
@@ -5612,98 +5624,98 @@ msgstr ""
 "Отмечать значок в трее красной точкой, пока во входящих есть непрочитанные "
 "письма; во всплывающей подсказке указано, сколько их."
 
-#: ui/dialogs/settings-dialog.slint:1618
+#: ui/dialogs/settings-dialog.slint:1633
 msgid "Start automatically"
 msgstr "Запускать автоматически"
 
-#: ui/dialogs/settings-dialog.slint:1619
+#: ui/dialogs/settings-dialog.slint:1634
 msgid "Starts Evanya in the system tray when you sign in."
 msgstr "Запускает Evanya в системном трее при входе в систему."
 
-#: ui/dialogs/settings-dialog.slint:1619
+#: ui/dialogs/settings-dialog.slint:1634
 msgid "Opens Evanya when you sign in."
 msgstr "Открывает Evanya при входе в систему."
 
-#: ui/dialogs/settings-dialog.slint:1620
+#: ui/dialogs/settings-dialog.slint:1635
 msgid "Disabled by default; also listed in your system's startup apps."
 msgstr ""
 "Отключено по умолчанию; также отображается в списке автозагрузки системы."
 
-#: ui/dialogs/settings-dialog.slint:1644
+#: ui/dialogs/settings-dialog.slint:1659
 msgid "Sync and notifications"
 msgstr "Синхронизация и уведомления"
 
-#: ui/dialogs/settings-dialog.slint:1647
+#: ui/dialogs/settings-dialog.slint:1662
 msgid "Check for new mail"
 msgstr "Проверять новую почту"
 
-#: ui/dialogs/settings-dialog.slint:1648
+#: ui/dialogs/settings-dialog.slint:1663
 msgid "How often to refresh when an instant provider update is unavailable."
 msgstr ""
 "Как часто обновлять, когда мгновенное обновление провайдера недоступно."
 
-#: ui/dialogs/settings-dialog.slint:1658 ui/dialogs/settings-dialog.slint:2774
+#: ui/dialogs/settings-dialog.slint:1673 ui/dialogs/settings-dialog.slint:2789
 msgid "Desktop notifications"
 msgstr "Уведомления на рабочем столе"
 
-#: ui/dialogs/settings-dialog.slint:1659 ui/dialogs/settings-dialog.slint:2775
+#: ui/dialogs/settings-dialog.slint:1674 ui/dialogs/settings-dialog.slint:2790
 msgid "Choose which incoming messages can alert you."
 msgstr "Выберите, какие входящие сообщения могут вас уведомлять."
 
-#: ui/dialogs/settings-dialog.slint:1672
+#: ui/dialogs/settings-dialog.slint:1687
 msgid "Provider synchronization is ready."
 msgstr "Синхронизация провайдера готова."
 
-#: ui/dialogs/settings-dialog.slint:1680 ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:1695 ui/dialogs/settings-dialog.slint:2350
 msgid "Syncing…"
 msgstr "Синхронизация…"
 
-#: ui/dialogs/settings-dialog.slint:1680 ui/dialogs/settings-dialog.slint:2915
+#: ui/dialogs/settings-dialog.slint:1695 ui/dialogs/settings-dialog.slint:2930
 msgid "Sync now"
 msgstr "Синхронизировать сейчас"
 
-#: ui/dialogs/settings-dialog.slint:1699
+#: ui/dialogs/settings-dialog.slint:1714
 msgid "Renderer"
 msgstr "Движок отрисовки"
 
-#: ui/dialogs/settings-dialog.slint:1700
+#: ui/dialogs/settings-dialog.slint:1715
 msgid "Changes take effect after restarting Evanya."
 msgstr "Изменения вступят в силу после перезапуска Evanya."
 
-#: ui/dialogs/settings-dialog.slint:1700
+#: ui/dialogs/settings-dialog.slint:1715
 msgid "GPU mode is unavailable in this build."
 msgstr "Режим GPU недоступен в этой сборке."
 
-#: ui/dialogs/settings-dialog.slint:1701
+#: ui/dialogs/settings-dialog.slint:1716
 msgid "CPU — Low Memory"
 msgstr "CPU — экономия памяти"
 
-#: ui/dialogs/settings-dialog.slint:1701
+#: ui/dialogs/settings-dialog.slint:1716
 msgid "GPU — WGPU"
 msgstr "GPU — WGPU"
 
-#: ui/dialogs/settings-dialog.slint:1715
+#: ui/dialogs/settings-dialog.slint:1730
 msgid "GPU — WGPU could not start, so CPU — Low Memory is active."
 msgstr ""
 "Не удалось запустить GPU — WGPU, поэтому используется CPU — экономия памяти."
 
-#: ui/dialogs/settings-dialog.slint:1715
+#: ui/dialogs/settings-dialog.slint:1730
 msgid "Restart required. Your current renderer is still active."
 msgstr "Требуется перезапуск. Текущий движок отрисовки всё ещё активен."
 
-#: ui/dialogs/settings-dialog.slint:1715
+#: ui/dialogs/settings-dialog.slint:1730
 msgid "Active: GPU — WGPU"
 msgstr "Активен: GPU — WGPU"
 
-#: ui/dialogs/settings-dialog.slint:1715
+#: ui/dialogs/settings-dialog.slint:1730
 msgid "Active: CPU — Low Memory"
 msgstr "Активен: CPU — экономия памяти"
 
-#: ui/dialogs/settings-dialog.slint:1741 ui/dialogs/settings-dialog.slint:1774
+#: ui/dialogs/settings-dialog.slint:1756 ui/dialogs/settings-dialog.slint:1789
 msgid "Download location"
 msgstr "Папка для загрузок"
 
-#: ui/dialogs/settings-dialog.slint:1750 ui/dialogs/settings-dialog.slint:1783
+#: ui/dialogs/settings-dialog.slint:1765 ui/dialogs/settings-dialog.slint:1798
 msgid ""
 "Saving an attachment asks where to put it, starting in the folder your "
 "system suggests."
@@ -5711,7 +5723,7 @@ msgstr ""
 "При сохранении вложения приложение спрашивает, куда его поместить, и "
 "открывает папку, предложенную системой."
 
-#: ui/dialogs/settings-dialog.slint:1828
+#: ui/dialogs/settings-dialog.slint:1843
 msgid ""
 "Keep your address book clean while still making frequent recipients easy to "
 "find."
@@ -5719,11 +5731,11 @@ msgstr ""
 "Поддерживайте адресную книгу в порядке, сохраняя возможность легко находить "
 "частых получателей."
 
-#: ui/dialogs/settings-dialog.slint:1850
+#: ui/dialogs/settings-dialog.slint:1865
 msgid "Remember people I email"
 msgstr "Запоминать адресатов моих писем"
 
-#: ui/dialogs/settings-dialog.slint:1851
+#: ui/dialogs/settings-dialog.slint:1866
 msgid ""
 "While enabled, remember To, Cc, and Bcc recipients from new sends and synced "
 "Sent mail."
@@ -5731,11 +5743,11 @@ msgstr ""
 "Когда включено, запоминать получателей в полях «Кому», «Копия» и «Скрытая "
 "копия» из новых отправок и синхронизированной папки «Отправленные»."
 
-#: ui/dialogs/settings-dialog.slint:1866
+#: ui/dialogs/settings-dialog.slint:1881
 msgid "Remember incoming senders"
 msgstr "Запоминать отправителей входящих писем"
 
-#: ui/dialogs/settings-dialog.slint:1867
+#: ui/dialogs/settings-dialog.slint:1882
 msgid ""
 "Remember human senders from new mail. Automated, spam, trash, and existing "
 "mail are excluded."
@@ -5743,11 +5755,11 @@ msgstr ""
 "Запоминать реальных отправителей из новой почты. Автоматические сообщения, "
 "спам, корзина и уже существующая почта исключаются."
 
-#: ui/dialogs/settings-dialog.slint:1882
+#: ui/dialogs/settings-dialog.slint:1897
 msgid "Use suggestions from all accounts"
 msgstr "Предлагать контакты из всех учётных записей"
 
-#: ui/dialogs/settings-dialog.slint:1883
+#: ui/dialogs/settings-dialog.slint:1898
 msgid ""
 "Include people emailed from any connected account. Turn off to keep learned "
 "recipients account-specific."
@@ -5755,11 +5767,11 @@ msgstr ""
 "Предлагать адресатов писем из всех подключённых учётных записей. Отключите, "
 "чтобы использовать только адресатов текущей учётной записи."
 
-#: ui/dialogs/settings-dialog.slint:1898
+#: ui/dialogs/settings-dialog.slint:1913
 msgid "Use suggestions when composing"
 msgstr "Предлагать контакты при написании писем"
 
-#: ui/dialogs/settings-dialog.slint:1899
+#: ui/dialogs/settings-dialog.slint:1914
 msgid ""
 "Include learned people in recipient autocomplete. Saved and CardDAV contacts "
 "are always available."
@@ -5767,11 +5779,11 @@ msgstr ""
 "Предлагать запомненных адресатов при вводе получателей. Сохранённые контакты "
 "и контакты CardDAV доступны всегда."
 
-#: ui/dialogs/settings-dialog.slint:1920
+#: ui/dialogs/settings-dialog.slint:1935
 msgid "Suggested people"
 msgstr "Предлагаемые контакты"
 
-#: ui/dialogs/settings-dialog.slint:1923
+#: ui/dialogs/settings-dialog.slint:1938
 msgid ""
 "People you email remain available as local suggestions and never sync to "
 "CardDAV. Clear them any time to restart learning."
@@ -5780,15 +5792,15 @@ msgstr ""
 "не синхронизируются с CardDAV. Их можно удалить в любой момент, чтобы начать "
 "запоминание заново."
 
-#: ui/dialogs/settings-dialog.slint:1941
+#: ui/dialogs/settings-dialog.slint:1956
 msgid "Clear now"
 msgstr "Очистить сейчас"
 
-#: ui/dialogs/settings-dialog.slint:1941
+#: ui/dialogs/settings-dialog.slint:1956
 msgid "Clear suggested people"
 msgstr "Удалить предлагаемые контакты"
 
-#: ui/dialogs/settings-dialog.slint:1976
+#: ui/dialogs/settings-dialog.slint:1991
 msgid ""
 "Manage connected mailboxes and add providers. Drag an account to change its "
 "order everywhere."
@@ -5796,7 +5808,7 @@ msgstr ""
 "Управляйте подключёнными почтовыми ящиками и добавляйте провайдеров. "
 "Перетащите учётную запись, чтобы изменить её порядок везде."
 
-#: ui/dialogs/settings-dialog.slint:2003
+#: ui/dialogs/settings-dialog.slint:2018
 msgid ""
 "Group accounts as Personal or Work and identify them by color in the mail "
 "list."
@@ -5804,15 +5816,15 @@ msgstr ""
 "Группируйте учётные записи как «Личные» или «Рабочие» и определяйте их по "
 "цвету в списке почты."
 
-#: ui/dialogs/settings-dialog.slint:2012 ui/dialogs/settings-dialog.slint:2042
+#: ui/dialogs/settings-dialog.slint:2027 ui/dialogs/settings-dialog.slint:2057
 msgid "Add profile"
 msgstr "Добавить профиль"
 
-#: ui/dialogs/settings-dialog.slint:2026 ui/dialogs/settings-dialog.slint:2034
+#: ui/dialogs/settings-dialog.slint:2041 ui/dialogs/settings-dialog.slint:2049
 msgid "Show account color at the left edge of each message"
 msgstr "Показывать цвет учётной записи у левого края каждого сообщения"
 
-#: ui/dialogs/settings-dialog.slint:2056
+#: ui/dialogs/settings-dialog.slint:2071
 msgid ""
 "No profiles yet. Accounts keep their individual or generated colors until "
 "you create one."
@@ -5820,119 +5832,119 @@ msgstr ""
 "Профилей пока нет. Учётные записи сохраняют свои индивидуальные или "
 "автоматически сгенерированные цвета, пока вы не создадите профиль."
 
-#: ui/dialogs/settings-dialog.slint:2101 ui/dialogs/settings-dialog.slint:3480
+#: ui/dialogs/settings-dialog.slint:2116 ui/dialogs/settings-dialog.slint:3495
 msgid "Edit profile"
 msgstr "Редактировать профиль"
 
-#: ui/dialogs/settings-dialog.slint:2111 ui/dialogs/settings-dialog.slint:3812
+#: ui/dialogs/settings-dialog.slint:2126 ui/dialogs/settings-dialog.slint:3827
 msgid "Delete profile"
 msgstr "Удалить профиль"
 
-#: ui/dialogs/settings-dialog.slint:2127 ui/dialogs/settings-dialog.slint:2173
+#: ui/dialogs/settings-dialog.slint:2142 ui/dialogs/settings-dialog.slint:2188
 msgid "Add Gmail"
 msgstr "Добавить Gmail"
 
-#: ui/dialogs/settings-dialog.slint:2140 ui/dialogs/settings-dialog.slint:2174
+#: ui/dialogs/settings-dialog.slint:2155 ui/dialogs/settings-dialog.slint:2189
 msgid "Add Outlook"
 msgstr "Добавить Outlook"
 
-#: ui/dialogs/settings-dialog.slint:2153 ui/dialogs/settings-dialog.slint:2175
+#: ui/dialogs/settings-dialog.slint:2168 ui/dialogs/settings-dialog.slint:2190
 msgid "Add mail account"
 msgstr "Добавить учётную запись почты"
 
-#: ui/dialogs/settings-dialog.slint:2166 ui/dialogs/settings-dialog.slint:2176
+#: ui/dialogs/settings-dialog.slint:2181 ui/dialogs/settings-dialog.slint:2191
 msgid "Cancel sign-in"
 msgstr "Отменить вход"
 
-#: ui/dialogs/settings-dialog.slint:2260
+#: ui/dialogs/settings-dialog.slint:2275
 msgid "Choose a picture for {}"
 msgstr "Выберите картинку для {}"
 
-#: ui/dialogs/settings-dialog.slint:2266
+#: ui/dialogs/settings-dialog.slint:2281
 msgid "Choose picture…"
 msgstr "Выбрать картинку…"
 
-#: ui/dialogs/settings-dialog.slint:2267
+#: ui/dialogs/settings-dialog.slint:2282
 msgid "Remove picture"
 msgstr "Убрать картинку"
 
-#: ui/dialogs/settings-dialog.slint:2302 ui/views/files-view.slint:597
+#: ui/dialogs/settings-dialog.slint:2317 ui/views/files-view.slint:597
 msgid "Rename"
 msgstr "Переименовать"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Connected · Gmail"
 msgstr "Подключено · Gmail"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Connected · JMAP"
 msgstr "Подключено · JMAP"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Connected without encryption · POP3 + SMTP"
 msgstr "Подключено без шифрования · POP3 + SMTP"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Connected · POP3 + SMTP"
 msgstr "Подключено · POP3 + SMTP"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Connected without encryption · IMAP + SMTP"
 msgstr "Подключено без шифрования · IMAP + SMTP"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Connected · IMAP + SMTP"
 msgstr "Подключено · IMAP + SMTP"
 
-#: ui/dialogs/settings-dialog.slint:2335
+#: ui/dialogs/settings-dialog.slint:2350
 msgid "Account status: {}"
 msgstr "Состояние учётной записи: {}"
 
-#: ui/dialogs/settings-dialog.slint:2338
+#: ui/dialogs/settings-dialog.slint:2353
 msgid "Edit account settings"
 msgstr "Изменить настройки учётной записи"
 
-#: ui/dialogs/settings-dialog.slint:2338
+#: ui/dialogs/settings-dialog.slint:2353
 msgid "Sign in to this account again"
 msgstr "Войти в эту учётную запись снова"
 
-#: ui/dialogs/settings-dialog.slint:2355 ui/views/files-view.slint:600
+#: ui/dialogs/settings-dialog.slint:2370 ui/views/files-view.slint:600
 msgid "Folders"
 msgstr "Папки"
 
-#: ui/dialogs/settings-dialog.slint:2372
+#: ui/dialogs/settings-dialog.slint:2387
 msgid "Show this account's mail"
 msgstr "Показывать почту этой учётной записи"
 
-#: ui/dialogs/settings-dialog.slint:2396
+#: ui/dialogs/settings-dialog.slint:2411
 msgid "Reconnect contacts"
 msgstr "Подключить контакты заново"
 
-#: ui/dialogs/settings-dialog.slint:2397 ui/views/files-view.slint:523
+#: ui/dialogs/settings-dialog.slint:2412 ui/views/files-view.slint:523
 msgid "Manage"
 msgstr "Управлять"
 
-#: ui/dialogs/settings-dialog.slint:2397
+#: ui/dialogs/settings-dialog.slint:2412
 msgid "Fix CardDAV"
 msgstr "Исправить CardDAV"
 
-#: ui/dialogs/settings-dialog.slint:2398
+#: ui/dialogs/settings-dialog.slint:2413
 msgid "Google contacts"
 msgstr "Контакты Google"
 
-#: ui/dialogs/settings-dialog.slint:2398
+#: ui/dialogs/settings-dialog.slint:2413
 msgid "CardDAV"
 msgstr "CardDAV"
 
-#: ui/dialogs/settings-dialog.slint:2419
+#: ui/dialogs/settings-dialog.slint:2434
 msgid "Mail synchronization error: {}"
 msgstr "Ошибка синхронизации почты: {}"
 
-#: ui/dialogs/settings-dialog.slint:2435
+#: ui/dialogs/settings-dialog.slint:2450
 msgid "Mail history"
 msgstr "История почты"
 
-#: ui/dialogs/settings-dialog.slint:2438
+#: ui/dialogs/settings-dialog.slint:2453
 msgid ""
 "Download the full mailbox. Large accounts can take considerable time and "
 "storage."
@@ -5940,59 +5952,59 @@ msgstr ""
 "Загрузить весь почтовый ящик. Для больших ящиков может потребоваться много "
 "времени и места."
 
-#: ui/dialogs/settings-dialog.slint:2439
+#: ui/dialogs/settings-dialog.slint:2454
 msgid "How far back to download. Mail already stored on this device is kept."
 msgstr ""
 "Насколько глубоко загружать. Почта, уже сохранённая на этом устройстве, "
 "сохраняется."
 
-#: ui/dialogs/settings-dialog.slint:2452
+#: ui/dialogs/settings-dialog.slint:2467
 msgid "Sent copies"
 msgstr "Копии отправленных писем"
 
-#: ui/dialogs/settings-dialog.slint:2454
+#: ui/dialogs/settings-dialog.slint:2469
 msgid ""
 "Choose who saves sent mail. Use Evanya if your server does not save a copy."
 msgstr ""
 "Выберите, кто сохраняет отправленные письма. Используйте Evanya, если сервер "
 "не сохраняет копию."
 
-#: ui/dialogs/settings-dialog.slint:2455
+#: ui/dialogs/settings-dialog.slint:2470
 msgid "Provider default"
 msgstr "По умолчанию для провайдера"
 
-#: ui/dialogs/settings-dialog.slint:2455
+#: ui/dialogs/settings-dialog.slint:2470
 msgid "Server saves a copy"
 msgstr "Копию сохраняет сервер"
 
-#: ui/dialogs/settings-dialog.slint:2455
+#: ui/dialogs/settings-dialog.slint:2470
 msgid "Evanya saves a copy"
 msgstr "Копию сохраняет Evanya"
 
-#: ui/dialogs/settings-dialog.slint:2469
+#: ui/dialogs/settings-dialog.slint:2484
 msgid "Keep mail on the server"
 msgstr "Хранить почту на сервере"
 
-#: ui/dialogs/settings-dialog.slint:2473
+#: ui/dialogs/settings-dialog.slint:2488
 msgid "Evanya never removes mail from the server."
 msgstr "Evanya никогда не удаляет почту с сервера."
 
-#: ui/dialogs/settings-dialog.slint:2474
+#: ui/dialogs/settings-dialog.slint:2489
 msgid "Mail is removed after this time, or once deleted here."
 msgstr "Почта удаляется по истечении этого срока или после удаления здесь."
 
-#: ui/dialogs/settings-dialog.slint:2490
+#: ui/dialogs/settings-dialog.slint:2505
 msgid "This server removes mail as soon as it's downloaded."
 msgstr "Этот сервер удаляет почту сразу после загрузки."
 
-#: ui/dialogs/settings-dialog.slint:2491
+#: ui/dialogs/settings-dialog.slint:2506
 msgid "This server removes downloaded mail after one day."
 msgid_plural "This server removes downloaded mail after {n} days."
 msgstr[0] "Этот сервер удаляет загруженную почту через {n} день."
 msgstr[1] "Этот сервер удаляет загруженную почту через {n} дня."
 msgstr[2] "Этот сервер удаляет загруженную почту через {n} дней."
 
-#: ui/dialogs/settings-dialog.slint:2502
+#: ui/dialogs/settings-dialog.slint:2517
 msgid ""
 "Mail removed from the server is kept only on this device. Database snapshots "
 "in Storage include it."
@@ -6000,106 +6012,106 @@ msgstr ""
 "Почта, удалённая с сервера, хранится только на этом устройстве. Она входит в "
 "снимки базы данных в разделе «Хранилище»."
 
-#: ui/dialogs/settings-dialog.slint:2526
+#: ui/dialogs/settings-dialog.slint:2541
 msgid "Uses the {} color in the mail list"
 msgstr "Использует цвет {} в списке почты"
 
-#: ui/dialogs/settings-dialog.slint:2528
+#: ui/dialogs/settings-dialog.slint:2543
 msgid "Uses a custom account color"
 msgstr "Использует свой цвет учётной записи"
 
-#: ui/dialogs/settings-dialog.slint:2529
+#: ui/dialogs/settings-dialog.slint:2544
 msgid "Uses a generated account color"
 msgstr "Использует автоматически сгенерированный цвет учётной записи"
 
-#: ui/dialogs/settings-dialog.slint:2573
+#: ui/dialogs/settings-dialog.slint:2588
 msgid "OAuth app credentials"
 msgstr "Ключи приложения OAuth"
 
-#: ui/dialogs/settings-dialog.slint:2573
+#: ui/dialogs/settings-dialog.slint:2588
 msgid "Custom desktop app credentials are configured."
 msgstr "Настроены собственные ключи настольного приложения."
 
-#: ui/dialogs/settings-dialog.slint:2573
+#: ui/dialogs/settings-dialog.slint:2588
 msgid "Advanced: use your own Gmail or Microsoft desktop app registration."
 msgstr ""
 "Дополнительно: используйте собственную регистрацию настольного приложения "
 "Gmail или Microsoft."
 
-#: ui/dialogs/settings-dialog.slint:2574
+#: ui/dialogs/settings-dialog.slint:2589
 msgid "Hide"
 msgstr "Скрыть"
 
-#: ui/dialogs/settings-dialog.slint:2574
+#: ui/dialogs/settings-dialog.slint:2589
 msgid "Configure"
 msgstr "Настроить"
 
-#: ui/dialogs/settings-dialog.slint:2577 ui/dialogs/settings-dialog.slint:2578
+#: ui/dialogs/settings-dialog.slint:2592 ui/dialogs/settings-dialog.slint:2593
 msgid "Gmail desktop client ID"
 msgstr "Идентификатор настольного клиента Gmail"
 
-#: ui/dialogs/settings-dialog.slint:2577 ui/dialogs/settings-dialog.slint:2578
+#: ui/dialogs/settings-dialog.slint:2592 ui/dialogs/settings-dialog.slint:2593
 msgid "Gmail client secret (optional)"
 msgstr "Секрет клиента Gmail (необязательно)"
 
-#: ui/dialogs/settings-dialog.slint:2577
+#: ui/dialogs/settings-dialog.slint:2592
 msgid "Save Gmail"
 msgstr "Сохранить Gmail"
 
-#: ui/dialogs/settings-dialog.slint:2578
+#: ui/dialogs/settings-dialog.slint:2593
 msgid "Save Gmail settings"
 msgstr "Сохранить настройки Gmail"
 
-#: ui/dialogs/settings-dialog.slint:2579
+#: ui/dialogs/settings-dialog.slint:2594
 msgid "Save Outlook"
 msgstr "Сохранить Outlook"
 
-#: ui/dialogs/settings-dialog.slint:2580
+#: ui/dialogs/settings-dialog.slint:2595
 msgid ""
 "Outlook public desktop clients use PKCE and do not need a client secret."
 msgstr ""
 "Общедоступные настольные клиенты Outlook используют PKCE и не требуют "
 "секрета клиента."
 
-#: ui/dialogs/settings-dialog.slint:2586
+#: ui/dialogs/settings-dialog.slint:2601
 msgid "Connect CardDAV"
 msgstr "Подключить CardDAV"
 
-#: ui/dialogs/settings-dialog.slint:2586
+#: ui/dialogs/settings-dialog.slint:2601
 msgid "Sync contacts with a standards-compliant CardDAV server."
 msgstr ""
 "Синхронизируйте контакты с сервером CardDAV, соответствующим стандарту."
 
-#: ui/dialogs/settings-dialog.slint:2589
+#: ui/dialogs/settings-dialog.slint:2604
 msgid "https://contacts.example.com/"
 msgstr "https://contacts.example.com/"
 
-#: ui/dialogs/settings-dialog.slint:2590 ui/dialogs/settings-dialog.slint:3244
-#: ui/dialogs/settings-dialog.slint:3374
+#: ui/dialogs/settings-dialog.slint:2605 ui/dialogs/settings-dialog.slint:3259
+#: ui/dialogs/settings-dialog.slint:3389
 msgid "Username"
 msgstr "Имя пользователя"
 
-#: ui/dialogs/settings-dialog.slint:2590 ui/dialogs/settings-dialog.slint:3252
+#: ui/dialogs/settings-dialog.slint:2605 ui/dialogs/settings-dialog.slint:3267
 msgid "App password"
 msgstr "Пароль приложения"
 
-#: ui/dialogs/settings-dialog.slint:2591
+#: ui/dialogs/settings-dialog.slint:2606
 msgid "Disconnect"
 msgstr "Отключить"
 
-#: ui/dialogs/settings-dialog.slint:2591 ui/dialogs/settings-dialog.slint:3279
+#: ui/dialogs/settings-dialog.slint:2606 ui/dialogs/settings-dialog.slint:3294
 msgid "Reconnect"
 msgstr "Переподключить"
 
-#: ui/dialogs/settings-dialog.slint:2591 ui/dialogs/settings-dialog.slint:3279
+#: ui/dialogs/settings-dialog.slint:2606 ui/dialogs/settings-dialog.slint:3294
 msgid "Connect"
 msgstr "Подключить"
 
-#: ui/dialogs/settings-dialog.slint:2605
+#: ui/dialogs/settings-dialog.slint:2620
 msgid "Mail headers"
 msgstr "Заголовки писем"
 
-#: ui/dialogs/settings-dialog.slint:2607
+#: ui/dialogs/settings-dialog.slint:2622
 msgid ""
 "Header fields added to every message you send, one per line as Name: value. "
 "Headers for one account add to those for all accounts and replace any with "
@@ -6109,25 +6121,25 @@ msgstr ""
 "строке в виде Имя: значение. Заголовки одной учётной записи добавляются к "
 "заголовкам для всех учётных записей и заменяют заголовки с тем же именем."
 
-#: ui/dialogs/settings-dialog.slint:2615
+#: ui/dialogs/settings-dialog.slint:2630
 msgid "Applies to"
 msgstr "Применяется к"
 
-#: ui/dialogs/settings-dialog.slint:2642
+#: ui/dialogs/settings-dialog.slint:2657
 msgid "Save headers"
 msgstr "Сохранить заголовки"
 
-#: ui/dialogs/settings-dialog.slint:2668
+#: ui/dialogs/settings-dialog.slint:2683
 msgid "See what Evanya stores locally and manage the data on this device."
 msgstr ""
 "Посмотрите, какие данные Evanya хранит локально, и управляйте данными на "
 "этом устройстве."
 
-#: ui/dialogs/settings-dialog.slint:2694
+#: ui/dialogs/settings-dialog.slint:2709
 msgid "Mail on this device"
 msgstr "Почта на этом устройстве"
 
-#: ui/dialogs/settings-dialog.slint:2694
+#: ui/dialogs/settings-dialog.slint:2709
 msgid ""
 "Mail you imported. It is kept only here, so export it to keep a copy "
 "elsewhere."
@@ -6135,27 +6147,27 @@ msgstr ""
 "Импортированная вами почта. Она хранится только здесь, поэтому экспортируйте "
 "её, чтобы сохранить копию в другом месте."
 
-#: ui/dialogs/settings-dialog.slint:2696 ui/dialogs/settings-dialog.slint:3761
+#: ui/dialogs/settings-dialog.slint:2711 ui/dialogs/settings-dialog.slint:3776
 msgid "One message"
 msgid_plural "{} messages"
 msgstr[0] "{} письмо"
 msgstr[1] "{} письма"
 msgstr[2] "{} писем"
 
-#: ui/dialogs/settings-dialog.slint:2704 ui/dialogs/settings-dialog.slint:3741
-#: ui/dialogs/settings-dialog.slint:3789
+#: ui/dialogs/settings-dialog.slint:2719 ui/dialogs/settings-dialog.slint:3756
+#: ui/dialogs/settings-dialog.slint:3804
 msgid "Export mail…"
 msgstr "Экспортировать почту…"
 
-#: ui/dialogs/settings-dialog.slint:2705 ui/views/files-view.slint:619
+#: ui/dialogs/settings-dialog.slint:2720 ui/views/files-view.slint:619
 msgid "Delete…"
 msgstr "Удалить…"
 
-#: ui/dialogs/settings-dialog.slint:2713
+#: ui/dialogs/settings-dialog.slint:2728
 msgid "Database snapshot"
 msgstr "Снимок базы данных"
 
-#: ui/dialogs/settings-dialog.slint:2713
+#: ui/dialogs/settings-dialog.slint:2728
 msgid ""
 "Export verified copies of the mail and calendar databases with their schema "
 "versions."
@@ -6163,7 +6175,7 @@ msgstr ""
 "Экспортируйте проверенные копии баз данных почты и календаря с указанием "
 "версий их схем."
 
-#: ui/dialogs/settings-dialog.slint:2715
+#: ui/dialogs/settings-dialog.slint:2730
 msgid ""
 "The snapshot contains private local mail and settings, but not passwords or "
 "OAuth tokens. Store it securely."
@@ -6171,15 +6183,15 @@ msgstr ""
 "Снимок содержит личную почту и настройки, хранящиеся локально, но не пароли "
 "и токены OAuth. Храните его в безопасном месте."
 
-#: ui/dialogs/settings-dialog.slint:2716
+#: ui/dialogs/settings-dialog.slint:2731
 msgid "Export snapshot"
 msgstr "Экспорт снимка"
 
-#: ui/dialogs/settings-dialog.slint:2723
+#: ui/dialogs/settings-dialog.slint:2738
 msgid "Transfer account setup"
 msgstr "Перенос настроек учётной записи"
 
-#: ui/dialogs/settings-dialog.slint:2723
+#: ui/dialogs/settings-dialog.slint:2738
 msgid ""
 "Import accounts and mail from Thunderbird, K-9 Mail, mail files, or a "
 "backup, or export one connected account and your preferences."
@@ -6199,7 +6211,7 @@ msgstr[2] ""
 "или резервной копии либо экспортируйте {n} подключённых учётных записей и "
 "настройки."
 
-#: ui/dialogs/settings-dialog.slint:2725
+#: ui/dialogs/settings-dialog.slint:2740
 msgid ""
 "Passwords and OAuth tokens stay in the system keyring. A restored device "
 "asks you to sign in securely."
@@ -6207,15 +6219,15 @@ msgstr ""
 "Пароли и токены OAuth остаются в системном хранилище ключей. На новом "
 "устройстве потребуется безопасный вход в учётную запись."
 
-#: ui/dialogs/settings-dialog.slint:2734
+#: ui/dialogs/settings-dialog.slint:2749
 msgid "Export"
 msgstr "Экспорт"
 
-#: ui/dialogs/settings-dialog.slint:2741
+#: ui/dialogs/settings-dialog.slint:2756
 msgid "Delete all local data"
 msgstr "Удалить все локальные данные"
 
-#: ui/dialogs/settings-dialog.slint:2741
+#: ui/dialogs/settings-dialog.slint:2756
 msgid ""
 "Remove accounts, downloaded mail, calendars, contacts, preferences, and "
 "credentials from this device."
@@ -6223,7 +6235,7 @@ msgstr ""
 "Удалите с этого устройства учётные записи, загруженную почту, календари, "
 "контакты, настройки и учётные данные."
 
-#: ui/dialogs/settings-dialog.slint:2743
+#: ui/dialogs/settings-dialog.slint:2758
 msgid ""
 "Imported mail and the mail of any POP3 account are stored only on this "
 "device. Nothing is deleted from Gmail, Outlook, or IMAP servers."
@@ -6231,7 +6243,7 @@ msgstr ""
 "Импортированная почта и почта учётных записей POP3 хранятся только на этом "
 "устройстве. Данные в Gmail, Outlook и на серверах IMAP не удаляются."
 
-#: ui/dialogs/settings-dialog.slint:2743
+#: ui/dialogs/settings-dialog.slint:2758
 msgid ""
 "POP3 mail is stored only on this device. Nothing is deleted from Gmail, "
 "Outlook, or IMAP servers."
@@ -6239,116 +6251,116 @@ msgstr ""
 "Почта POP3 хранится только на этом устройстве. Данные в Gmail, Outlook и на "
 "серверах IMAP не удаляются."
 
-#: ui/dialogs/settings-dialog.slint:2743
+#: ui/dialogs/settings-dialog.slint:2758
 msgid "This does not delete anything from Gmail, Outlook, or your IMAP server."
 msgstr "Это не удалит данные из Gmail, Outlook или с вашего сервера IMAP."
 
-#: ui/dialogs/settings-dialog.slint:2744 ui/dialogs/settings-dialog.slint:3745
+#: ui/dialogs/settings-dialog.slint:2759 ui/dialogs/settings-dialog.slint:3760
 msgid "Delete everything"
 msgstr "Удалить всё"
 
-#: ui/dialogs/settings-dialog.slint:2758
+#: ui/dialogs/settings-dialog.slint:2773
 msgid "Choose how Evanya gets your attention."
 msgstr "Выберите, как Evanya будет уведомлять вас."
 
-#: ui/dialogs/settings-dialog.slint:2785
+#: ui/dialogs/settings-dialog.slint:2800
 msgid "Notification sounds"
 msgstr "Звуки уведомлений"
 
-#: ui/dialogs/settings-dialog.slint:2786
+#: ui/dialogs/settings-dialog.slint:2801
 msgid "Play a sound for new mail and sent messages."
 msgstr "Воспроизводить звук при получении и отправке писем."
 
-#: ui/dialogs/settings-dialog.slint:2806
+#: ui/dialogs/settings-dialog.slint:2821
 msgid "Keyboard shortcuts"
 msgstr "Горячие клавиши"
 
-#: ui/dialogs/settings-dialog.slint:2807
+#: ui/dialogs/settings-dialog.slint:2822
 msgid "Move through mail without leaving the keyboard."
 msgstr "Управляйте почтой с помощью клавиатуры."
 
-#: ui/dialogs/settings-dialog.slint:2809
+#: ui/dialogs/settings-dialog.slint:2824
 msgid "Compose a new message"
 msgstr "Написать новое письмо"
 
-#: ui/dialogs/settings-dialog.slint:2810 ui/views/mail-list-pane.slint:725
+#: ui/dialogs/settings-dialog.slint:2825 ui/views/mail-list-pane.slint:725
 msgid "Search mail"
 msgstr "Поиск почты"
 
 #. Local mail has no archive or spam.
-#: ui/dialogs/settings-dialog.slint:2811 ui/views/mail-list-pane.slint:1641
+#: ui/dialogs/settings-dialog.slint:2826 ui/views/mail-list-pane.slint:1641
 #: ui/views/mail-reading-pane.slint:365
 msgid "Archive"
 msgstr "Архивировать"
 
-#: ui/dialogs/settings-dialog.slint:2812 ui/views/mail-list-pane.slint:807
+#: ui/dialogs/settings-dialog.slint:2827 ui/views/mail-list-pane.slint:807
 #: ui/views/mail-reading-pane.slint:349 ui/views/mail-reading-pane.slint:795
 msgid "Move to spam"
 msgstr "Переместить в спам"
 
-#: ui/dialogs/settings-dialog.slint:2813 ui/views/mail-list-pane.slint:816
+#: ui/dialogs/settings-dialog.slint:2828 ui/views/mail-list-pane.slint:816
 #: ui/views/mail-reading-pane.slint:332 ui/views/mail-reading-pane.slint:367
 #: ui/views/mail-reading-pane.slint:399
 msgid "Move to trash"
 msgstr "Переместить в корзину"
 
-#: ui/dialogs/settings-dialog.slint:2815
+#: ui/dialogs/settings-dialog.slint:2830
 msgid "Navigation"
 msgstr "Навигация"
 
-#: ui/dialogs/settings-dialog.slint:2816
+#: ui/dialogs/settings-dialog.slint:2831
 msgid "Move between messages"
 msgstr "Переход между письмами"
 
-#: ui/dialogs/settings-dialog.slint:2817
+#: ui/dialogs/settings-dialog.slint:2832
 msgid "Open message"
 msgstr "Открыть письмо"
 
-#: ui/dialogs/settings-dialog.slint:2818
+#: ui/dialogs/settings-dialog.slint:2833
 msgid "Select message"
 msgstr "Выбрать письмо"
 
-#: ui/dialogs/settings-dialog.slint:2819
+#: ui/dialogs/settings-dialog.slint:2834
 msgid "Switch between list and message"
 msgstr "Переключение между списком и письмом"
 
-#: ui/dialogs/settings-dialog.slint:2821
+#: ui/dialogs/settings-dialog.slint:2836
 msgid "Reading"
 msgstr "Чтение"
 
-#: ui/dialogs/settings-dialog.slint:2822 ui/views/mail-reading-pane.slint:1260
+#: ui/dialogs/settings-dialog.slint:2837 ui/views/mail-reading-pane.slint:1260
 msgid "Find in message"
 msgstr "Найти в письме"
 
-#: ui/dialogs/settings-dialog.slint:2826 ui/views/mail-reading-pane.slint:1589
+#: ui/dialogs/settings-dialog.slint:2841 ui/views/mail-reading-pane.slint:1589
 msgid "Caret browsing"
 msgstr "Навигация с текстовым курсором"
 
-#: ui/dialogs/settings-dialog.slint:2832
+#: ui/dialogs/settings-dialog.slint:2847
 msgid "Next tab"
 msgstr "Следующая вкладка"
 
-#: ui/dialogs/settings-dialog.slint:2833
+#: ui/dialogs/settings-dialog.slint:2848
 msgid "Previous tab"
 msgstr "Предыдущая вкладка"
 
-#: ui/dialogs/settings-dialog.slint:2834
+#: ui/dialogs/settings-dialog.slint:2849
 msgid "Go to tab 1–8"
 msgstr "Перейти к вкладке 1–8"
 
-#: ui/dialogs/settings-dialog.slint:2835
+#: ui/dialogs/settings-dialog.slint:2850
 msgid "Go to last tab"
 msgstr "Перейти к последней вкладке"
 
-#: ui/dialogs/settings-dialog.slint:2855
+#: ui/dialogs/settings-dialog.slint:2870
 msgid "Keep Evanya the same on all your computers."
 msgstr "Одинаковая настройка Evanya на всех ваших компьютерах."
 
-#: ui/dialogs/settings-dialog.slint:2872
+#: ui/dialogs/settings-dialog.slint:2887
 msgid "Sync"
 msgstr "Синхронизация"
 
-#: ui/dialogs/settings-dialog.slint:2875
+#: ui/dialogs/settings-dialog.slint:2890
 msgid ""
 "Your accounts, profiles, account colors and preferences are kept in one file "
 "in a directory that Nextcloud, Syncthing, Dropbox or a similar tool keeps in "
@@ -6360,7 +6372,7 @@ msgstr ""
 "программа синхронизирует между вашими компьютерами. Evanya подхватывает "
 "изменения, сделанные на другом компьютере, и добавляет его учётные записи."
 
-#: ui/dialogs/settings-dialog.slint:2881
+#: ui/dialogs/settings-dialog.slint:2896
 msgid ""
 "Passwords stay on each computer: sign in once to an account that arrives "
 "this way. Mail comes from your mail servers, as always."
@@ -6369,123 +6381,123 @@ msgstr ""
 "которая появилась таким образом. Почта, как всегда, приходит с ваших "
 "почтовых серверов."
 
-#: ui/dialogs/settings-dialog.slint:2887
+#: ui/dialogs/settings-dialog.slint:2902
 msgid "No directory chosen."
 msgstr "Каталог не выбран."
 
-#: ui/dialogs/settings-dialog.slint:2894
+#: ui/dialogs/settings-dialog.slint:2909
 msgid "Synchronizing…"
 msgstr "Синхронизация…"
 
-#: ui/dialogs/settings-dialog.slint:2896
+#: ui/dialogs/settings-dialog.slint:2911
 msgid "Not synchronized yet."
 msgstr "Ещё не синхронизировано."
 
-#: ui/dialogs/settings-dialog.slint:2897
+#: ui/dialogs/settings-dialog.slint:2912
 msgid "Synchronized at {}; added one account."
 msgid_plural "Synchronized at {}; added {n} accounts."
 msgstr[0] "Синхронизировано в {}; добавлена {n} учётная запись."
 msgstr[1] "Синхронизировано в {}; добавлено {n} учётные записи."
 msgstr[2] "Синхронизировано в {}; добавлено {n} учётных записей."
 
-#: ui/dialogs/settings-dialog.slint:2898
+#: ui/dialogs/settings-dialog.slint:2913
 msgid "Synchronized at {}."
 msgstr "Синхронизировано в {}."
 
-#: ui/dialogs/settings-dialog.slint:2909
+#: ui/dialogs/settings-dialog.slint:2924
 msgid "Choose directory…"
 msgstr "Выбрать каталог…"
 
-#: ui/dialogs/settings-dialog.slint:2909
+#: ui/dialogs/settings-dialog.slint:2924
 msgid "Change directory…"
 msgstr "Сменить каталог…"
 
-#: ui/dialogs/settings-dialog.slint:2921
+#: ui/dialogs/settings-dialog.slint:2936
 msgid "Stop syncing"
 msgstr "Остановить синхронизацию"
 
-#: ui/dialogs/settings-dialog.slint:2945
+#: ui/dialogs/settings-dialog.slint:2960
 msgid "Evanya is based on Flectar Mail, by Flectar and its community."
 msgstr "Evanya основана на Flectar Mail от Flectar и его сообщества."
 
-#: ui/dialogs/settings-dialog.slint:2961 ui/views/onboarding-view.slint:130
+#: ui/dialogs/settings-dialog.slint:2976 ui/views/onboarding-view.slint:130
 msgid "Evanya logo"
 msgstr "Логотип Evanya"
 
-#: ui/dialogs/settings-dialog.slint:2981
+#: ui/dialogs/settings-dialog.slint:2996
 msgid "A native mail client for a calm, private inbox."
 msgstr ""
 "Нативный почтовый клиент для спокойной работы с почтой и защиты вашей "
 "конфиденциальности."
 
-#: ui/dialogs/settings-dialog.slint:2993
+#: ui/dialogs/settings-dialog.slint:3008
 msgid "Version {}"
 msgstr "Версия {}"
 
-#: ui/dialogs/settings-dialog.slint:3004
+#: ui/dialogs/settings-dialog.slint:3019
 msgid "Credits"
 msgstr "Благодарности"
 
-#: ui/dialogs/settings-dialog.slint:3004
+#: ui/dialogs/settings-dialog.slint:3019
 msgid "Built by Flectar with help from the open-source community."
 msgstr "Разработано Flectar при участии сообщества открытого ПО."
 
-#: ui/dialogs/settings-dialog.slint:3014
+#: ui/dialogs/settings-dialog.slint:3029
 msgid "Flectar"
 msgstr "Flectar"
 
-#: ui/dialogs/settings-dialog.slint:3015
+#: ui/dialogs/settings-dialog.slint:3030
 msgid "Company website"
 msgstr "Сайт компании"
 
-#: ui/dialogs/settings-dialog.slint:3025
+#: ui/dialogs/settings-dialog.slint:3040
 msgid "Open-source contributors"
 msgstr "Участники разработки открытого ПО"
 
-#: ui/dialogs/settings-dialog.slint:3026
+#: ui/dialogs/settings-dialog.slint:3041
 msgid "Meet the people who have contributed on GitHub"
 msgstr "Познакомьтесь с участниками разработки на GitHub"
 
-#: ui/dialogs/settings-dialog.slint:3039
+#: ui/dialogs/settings-dialog.slint:3054
 msgid "License"
 msgstr "Лицензия"
 
-#: ui/dialogs/settings-dialog.slint:3039
+#: ui/dialogs/settings-dialog.slint:3054
 msgid "AGPL-3.0-only."
 msgstr "AGPL-3.0-only."
 
-#: ui/dialogs/settings-dialog.slint:3039
+#: ui/dialogs/settings-dialog.slint:3054
 msgid ""
 "Evanya is released under the GNU Affero General Public License v3.0 only."
 msgstr ""
 "Evanya распространяется на условиях GNU Affero General Public License версии "
 "3.0 (только эта версия)."
 
-#: ui/dialogs/settings-dialog.slint:3045
+#: ui/dialogs/settings-dialog.slint:3060
 msgid "Third-party components retain their own licenses and notices."
 msgstr "Сторонние компоненты сохраняют собственные лицензии и уведомления."
 
-#: ui/dialogs/settings-dialog.slint:3072
+#: ui/dialogs/settings-dialog.slint:3087
 msgid "Settings sections"
 msgstr "Разделы настроек"
 
-#: ui/dialogs/settings-dialog.slint:3084
+#: ui/dialogs/settings-dialog.slint:3099
 msgid "Close settings"
 msgstr "Закрыть настройки"
 
-#: ui/dialogs/settings-dialog.slint:3106
+#: ui/dialogs/settings-dialog.slint:3121
 msgid "Close settings sections"
 msgstr "Закрыть список разделов настроек"
 
-#: ui/dialogs/settings-dialog.slint:3154 ui/dialogs/settings-dialog.slint:3203
+#: ui/dialogs/settings-dialog.slint:3169 ui/dialogs/settings-dialog.slint:3218
 msgid "CalDAV settings"
 msgstr "Настройки CalDAV"
 
-#: ui/dialogs/settings-dialog.slint:3204
+#: ui/dialogs/settings-dialog.slint:3219
 msgid "Discover new calendars."
 msgstr "Найдите новые календари."
 
-#: ui/dialogs/settings-dialog.slint:3204
+#: ui/dialogs/settings-dialog.slint:3219
 msgid ""
 "Works with iCloud, Fastmail, Nextcloud, and standards-compliant CalDAV "
 "servers."
@@ -6493,15 +6505,15 @@ msgstr ""
 "Работает с iCloud, Fastmail, Nextcloud и серверами CalDAV, соответствующими "
 "стандарту."
 
-#: ui/dialogs/settings-dialog.slint:3229
+#: ui/dialogs/settings-dialog.slint:3244
 msgid "Server address"
 msgstr "Адрес сервера"
 
-#: ui/dialogs/settings-dialog.slint:3231
+#: ui/dialogs/settings-dialog.slint:3246
 msgid "https://calendar.example.com/"
 msgstr "https://calendar.example.com/"
 
-#: ui/dialogs/settings-dialog.slint:3236
+#: ui/dialogs/settings-dialog.slint:3251
 msgid ""
 "To sync one calendar, such as a shared mailbox's, enter that calendar's own "
 "address."
@@ -6509,158 +6521,158 @@ msgstr ""
 "Чтобы синхронизировать один календарь, например календарь общего почтового "
 "ящика, введите его собственный адрес."
 
-#: ui/dialogs/settings-dialog.slint:3246
+#: ui/dialogs/settings-dialog.slint:3261
 msgid "Usually your email address"
 msgstr "Обычно ваш адрес электронной почты"
 
-#: ui/dialogs/settings-dialog.slint:3252
+#: ui/dialogs/settings-dialog.slint:3267
 msgid "New app password · Optional"
 msgstr "Новый пароль приложения · Необязательно"
 
-#: ui/dialogs/settings-dialog.slint:3254
+#: ui/dialogs/settings-dialog.slint:3269
 msgid "Leave blank to keep the current password"
 msgstr "Оставьте пустым, чтобы сохранить текущий пароль"
 
-#: ui/dialogs/settings-dialog.slint:3254 ui/dialogs/settings-dialog.slint:3376
+#: ui/dialogs/settings-dialog.slint:3269 ui/dialogs/settings-dialog.slint:3391
 msgid "Stored securely in your system keyring"
 msgstr "Надёжно хранится в системном хранилище ключей"
 
-#: ui/dialogs/settings-dialog.slint:3279 ui/dialogs/settings-dialog.slint:3459
+#: ui/dialogs/settings-dialog.slint:3294 ui/dialogs/settings-dialog.slint:3474
 msgid "Connecting…"
 msgstr "Подключение…"
 
-#: ui/dialogs/settings-dialog.slint:3297
+#: ui/dialogs/settings-dialog.slint:3312
 msgid "Edit mail account"
 msgstr "Изменить почтовую учётную запись"
 
-#: ui/dialogs/settings-dialog.slint:3297 ui/dialogs/settings-dialog.slint:3345
+#: ui/dialogs/settings-dialog.slint:3312 ui/dialogs/settings-dialog.slint:3360
 msgid "Connect a mail account"
 msgstr "Подключить почтовую учётную запись"
 
-#: ui/dialogs/settings-dialog.slint:3345
+#: ui/dialogs/settings-dialog.slint:3360
 msgid "Edit {}"
 msgstr "Изменить {}"
 
-#: ui/dialogs/settings-dialog.slint:3346
+#: ui/dialogs/settings-dialog.slint:3361
 msgid "Uses JMAP for mail sync and sending, with automatic discovery."
 msgstr ""
 "Использует JMAP для синхронизации и отправки почты с автоматическим "
 "обнаружением сервера."
 
-#: ui/dialogs/settings-dialog.slint:3346
+#: ui/dialogs/settings-dialog.slint:3361
 msgid ""
 "Downloads mail from a POP3 server to this device and sends through SMTP."
 msgstr ""
 "Загружает почту с сервера POP3 на это устройство и отправляет через SMTP."
 
-#: ui/dialogs/settings-dialog.slint:3346
+#: ui/dialogs/settings-dialog.slint:3361
 msgid "Uses separate IMAP and SMTP servers for mail sync and sending."
 msgstr ""
 "Использует отдельные серверы IMAP и SMTP для синхронизации и отправки почты."
 
-#: ui/dialogs/settings-dialog.slint:3366 ui/dialogs/settings-dialog.slint:3373
+#: ui/dialogs/settings-dialog.slint:3381 ui/dialogs/settings-dialog.slint:3388
 msgid "name@example.com"
 msgstr "name@example.com"
 
-#: ui/dialogs/settings-dialog.slint:3367 ui/dialogs/settings-dialog.slint:3374
+#: ui/dialogs/settings-dialog.slint:3382 ui/dialogs/settings-dialog.slint:3389
 msgid "POP3 username"
 msgstr "Имя пользователя POP3"
 
-#: ui/dialogs/settings-dialog.slint:3367 ui/dialogs/settings-dialog.slint:3374
+#: ui/dialogs/settings-dialog.slint:3382 ui/dialogs/settings-dialog.slint:3389
 msgid "IMAP username"
 msgstr "Имя пользователя IMAP"
 
-#: ui/dialogs/settings-dialog.slint:3367 ui/dialogs/settings-dialog.slint:3374
+#: ui/dialogs/settings-dialog.slint:3382 ui/dialogs/settings-dialog.slint:3389
 #: ui/views/onboarding-view.slint:296
 msgid "A name or an email address"
 msgstr "Имя или адрес электронной почты"
 
-#: ui/dialogs/settings-dialog.slint:3376 ui/views/onboarding-view.slint:309
+#: ui/dialogs/settings-dialog.slint:3391 ui/views/onboarding-view.slint:309
 msgid "Password, app password, or API token"
 msgstr "Пароль, пароль приложения или токен API"
 
-#: ui/dialogs/settings-dialog.slint:3376 ui/views/onboarding-view.slint:309
+#: ui/dialogs/settings-dialog.slint:3391 ui/views/onboarding-view.slint:309
 msgid "Password or app password"
 msgstr "Пароль или пароль приложения"
 
-#: ui/dialogs/settings-dialog.slint:3377
+#: ui/dialogs/settings-dialog.slint:3392
 msgid "SMTP username · Optional"
 msgstr "Имя пользователя SMTP · Необязательно"
 
-#: ui/dialogs/settings-dialog.slint:3377
+#: ui/dialogs/settings-dialog.slint:3392
 msgid "Same as the incoming username"
 msgstr "Совпадает с именем для входящей почты"
 
-#: ui/dialogs/settings-dialog.slint:3378
+#: ui/dialogs/settings-dialog.slint:3393
 msgid "SMTP password · Optional"
 msgstr "Пароль SMTP · Необязательно"
 
-#: ui/dialogs/settings-dialog.slint:3378
+#: ui/dialogs/settings-dialog.slint:3393
 msgid "Leave empty to keep the current one"
 msgstr "Оставьте пустым, чтобы сохранить текущий"
 
-#: ui/dialogs/settings-dialog.slint:3378 ui/views/onboarding-view.slint:321
+#: ui/dialogs/settings-dialog.slint:3393 ui/views/onboarding-view.slint:321
 msgid "Only when sending needs another password"
 msgstr "Только если для отправки нужен другой пароль"
 
-#: ui/dialogs/settings-dialog.slint:3379 ui/views/onboarding-view.slint:301
+#: ui/dialogs/settings-dialog.slint:3394 ui/views/onboarding-view.slint:301
 msgid "Account name · Optional"
 msgstr "Название учётной записи · Необязательно"
 
-#: ui/dialogs/settings-dialog.slint:3379 ui/views/onboarding-view.slint:304
+#: ui/dialogs/settings-dialog.slint:3394 ui/views/onboarding-view.slint:304
 msgid "Shown in the sidebar instead of the email address"
 msgstr "Показывается в боковой панели вместо адреса электронной почты"
 
-#: ui/dialogs/settings-dialog.slint:3386 ui/views/onboarding-view.slint:331
+#: ui/dialogs/settings-dialog.slint:3401 ui/views/onboarding-view.slint:331
 msgid "IMAP"
 msgstr "IMAP"
 
-#: ui/dialogs/settings-dialog.slint:3387 ui/views/onboarding-view.slint:339
+#: ui/dialogs/settings-dialog.slint:3402 ui/views/onboarding-view.slint:339
 msgid "POP3"
 msgstr "POP3"
 
-#: ui/dialogs/settings-dialog.slint:3388 ui/views/onboarding-view.slint:347
+#: ui/dialogs/settings-dialog.slint:3403 ui/views/onboarding-view.slint:347
 msgid "JMAP"
 msgstr "JMAP"
 
-#: ui/dialogs/settings-dialog.slint:3392
+#: ui/dialogs/settings-dialog.slint:3407
 msgid "Server address · Optional"
 msgstr "Адрес сервера · Необязательно"
 
-#: ui/dialogs/settings-dialog.slint:3394
+#: ui/dialogs/settings-dialog.slint:3409
 msgid "Discovered from your email domain"
 msgstr "Определяется по домену вашей электронной почты"
 
-#: ui/dialogs/settings-dialog.slint:3401 ui/views/onboarding-view.slint:371
+#: ui/dialogs/settings-dialog.slint:3416 ui/views/onboarding-view.slint:371
 msgid "POP3 server"
 msgstr "Сервер POP3"
 
-#: ui/dialogs/settings-dialog.slint:3401 ui/views/onboarding-view.slint:371
+#: ui/dialogs/settings-dialog.slint:3416 ui/views/onboarding-view.slint:371
 msgid "IMAP server"
 msgstr "Сервер IMAP"
 
-#: ui/dialogs/settings-dialog.slint:3401
+#: ui/dialogs/settings-dialog.slint:3416
 msgid "pop.example.com"
 msgstr "pop.example.com"
 
-#: ui/dialogs/settings-dialog.slint:3401
+#: ui/dialogs/settings-dialog.slint:3416
 msgid "imap.example.com"
 msgstr "imap.example.com"
 
-#: ui/dialogs/settings-dialog.slint:3402 ui/dialogs/settings-dialog.slint:3409
+#: ui/dialogs/settings-dialog.slint:3417 ui/dialogs/settings-dialog.slint:3424
 #: ui/views/onboarding-view.slint:401
 msgid "Port"
 msgstr "Порт"
 
-#: ui/dialogs/settings-dialog.slint:3408 ui/views/onboarding-view.slint:393
+#: ui/dialogs/settings-dialog.slint:3423 ui/views/onboarding-view.slint:393
 msgid "SMTP server"
 msgstr "Сервер SMTP"
 
-#: ui/dialogs/settings-dialog.slint:3408
+#: ui/dialogs/settings-dialog.slint:3423
 msgid "smtp.example.com"
 msgstr "smtp.example.com"
 
-#: ui/dialogs/settings-dialog.slint:3412 ui/views/onboarding-view.slint:409
+#: ui/dialogs/settings-dialog.slint:3427 ui/views/onboarding-view.slint:409
 msgid ""
 "Proton Bridge: use the local servers, ports and password shown in Bridge, "
 "and match its encryption settings."
@@ -6668,59 +6680,59 @@ msgstr ""
 "Proton Bridge: используйте локальные серверы, порты и пароль, указанные в "
 "Bridge, и соответствующие им настройки шифрования."
 
-#: ui/dialogs/settings-dialog.slint:3459
+#: ui/dialogs/settings-dialog.slint:3474
 msgid "Save account"
 msgstr "Сохранить учётную запись"
 
-#: ui/dialogs/settings-dialog.slint:3459 ui/views/onboarding-view.slint:442
+#: ui/dialogs/settings-dialog.slint:3474 ui/views/onboarding-view.slint:442
 msgid "Connect account"
 msgstr "Подключить учётную запись"
 
-#: ui/dialogs/settings-dialog.slint:3480 ui/dialogs/settings-dialog.slint:3536
+#: ui/dialogs/settings-dialog.slint:3495 ui/dialogs/settings-dialog.slint:3551
 msgid "Create profile"
 msgstr "Создать профиль"
 
-#: ui/dialogs/settings-dialog.slint:3537
+#: ui/dialogs/settings-dialog.slint:3552
 msgid ""
 "Its color marks its accounts' mail, and choosing it shows only their mail."
 msgstr ""
 "Его цвет отмечает почту его учётных записей, а при выборе показывается "
 "только их почта."
 
-#: ui/dialogs/settings-dialog.slint:3542
+#: ui/dialogs/settings-dialog.slint:3557
 msgid "Profile name"
 msgstr "Название профиля"
 
-#: ui/dialogs/settings-dialog.slint:3544
+#: ui/dialogs/settings-dialog.slint:3559
 msgid "Personal or Work"
 msgstr "Личный или Рабочий"
 
-#: ui/dialogs/settings-dialog.slint:3550 ui/views/mail-reading-pane.slint:1992
+#: ui/dialogs/settings-dialog.slint:3565 ui/views/mail-reading-pane.slint:1992
 msgid "Color"
 msgstr "Цвет"
 
-#: ui/dialogs/settings-dialog.slint:3559
+#: ui/dialogs/settings-dialog.slint:3574
 msgid "Profile color {}"
 msgstr "Цвет профиля {}"
 
-#: ui/dialogs/settings-dialog.slint:3601
+#: ui/dialogs/settings-dialog.slint:3616
 msgid "Save profile"
 msgstr "Сохранить профиль"
 
-#: ui/dialogs/settings-dialog.slint:3609
+#: ui/dialogs/settings-dialog.slint:3624
 msgid "Could not save this profile. Check the name and try again."
 msgstr ""
 "Не удалось сохранить этот профиль. Проверьте название и попробуйте ещё раз."
 
-#: ui/dialogs/settings-dialog.slint:3627
+#: ui/dialogs/settings-dialog.slint:3642
 msgid "Choose a profile for {}"
 msgstr "Выберите профиль для {}"
 
-#: ui/dialogs/settings-dialog.slint:3675
+#: ui/dialogs/settings-dialog.slint:3690
 msgid "Folders in the sidebar"
 msgstr "Папки в боковой панели"
 
-#: ui/dialogs/settings-dialog.slint:3677
+#: ui/dialogs/settings-dialog.slint:3692
 msgid ""
 "Switch off the folders and labels you don't want to see. They keep "
 "synchronizing and stay searchable. Inbox, Sent and the other standard "
@@ -6730,15 +6742,15 @@ msgstr ""
 "синхронизироваться, и в них по-прежнему можно искать. «Входящие», "
 "«Отправленные» и другие стандартные ящики показываются всегда."
 
-#: ui/dialogs/settings-dialog.slint:3683
+#: ui/dialogs/settings-dialog.slint:3698
 msgid "This account has no folders or labels of its own."
 msgstr "У этой учётной записи нет собственных папок и меток."
 
-#: ui/dialogs/settings-dialog.slint:3734
+#: ui/dialogs/settings-dialog.slint:3749
 msgid "Delete all local data?"
 msgstr "Удалить все локальные данные?"
 
-#: ui/dialogs/settings-dialog.slint:3735
+#: ui/dialogs/settings-dialog.slint:3750
 msgid ""
 "This removes every account, downloaded message, calendar, contact, "
 "preference, and credential stored by Evanya on this device."
@@ -6746,7 +6758,7 @@ msgstr ""
 "Будут удалены все учётные записи, загруженные письма, календари, контакты, "
 "настройки и учётные данные, которые Evanya хранит на этом устройстве."
 
-#: ui/dialogs/settings-dialog.slint:3737
+#: ui/dialogs/settings-dialog.slint:3752
 msgid ""
 "Imported mail and the mail of any POP3 account are stored only on this "
 "device and will be deleted. Mail and events on Gmail, Outlook, and IMAP "
@@ -6756,7 +6768,7 @@ msgstr ""
 "устройстве и будут удалены. Почта и события в Gmail, Outlook и на серверах "
 "IMAP не будут удалены."
 
-#: ui/dialogs/settings-dialog.slint:3739
+#: ui/dialogs/settings-dialog.slint:3754
 msgid ""
 "POP3 mail is stored only on this device and will be deleted. Mail and events "
 "on Gmail, Outlook, and IMAP servers will not be deleted."
@@ -6764,49 +6776,49 @@ msgstr ""
 "Почта POP3 хранится только на этом устройстве и будет удалена. Почта и "
 "события в Gmail, Outlook и на серверах IMAP не будут удалены."
 
-#: ui/dialogs/settings-dialog.slint:3740
+#: ui/dialogs/settings-dialog.slint:3755
 msgid ""
 "Mail and events on Gmail, Outlook, and IMAP servers will not be deleted."
 msgstr "Почта и события в Gmail, Outlook и на серверах IMAP не будут удалены."
 
-#: ui/dialogs/settings-dialog.slint:3741
+#: ui/dialogs/settings-dialog.slint:3756
 msgid "Export POP3 mail…"
 msgstr "Экспортировать почту POP3…"
 
-#: ui/dialogs/settings-dialog.slint:3746
+#: ui/dialogs/settings-dialog.slint:3761
 msgid "Keep my data"
 msgstr "Сохранить мои данные"
 
-#: ui/dialogs/settings-dialog.slint:3760
+#: ui/dialogs/settings-dialog.slint:3775
 msgid "Delete mail on this device?"
 msgstr "Удалить почту с этого устройства?"
 
-#: ui/dialogs/settings-dialog.slint:3762
+#: ui/dialogs/settings-dialog.slint:3777
 msgid "Delete the mail you imported and its folders from this device."
 msgstr "Удалить с этого устройства импортированную вами почту и её папки."
 
-#: ui/dialogs/settings-dialog.slint:3763
+#: ui/dialogs/settings-dialog.slint:3778
 msgid "It exists only here. Export it first to keep a copy."
 msgstr ""
 "Она есть только здесь. Сначала экспортируйте её, чтобы сохранить копию."
 
-#: ui/dialogs/settings-dialog.slint:3768
+#: ui/dialogs/settings-dialog.slint:3783
 msgid "Delete mail"
 msgstr "Удалить почту"
 
-#: ui/dialogs/settings-dialog.slint:3769
+#: ui/dialogs/settings-dialog.slint:3784
 msgid "Keep mail"
 msgstr "Оставить почту"
 
-#: ui/dialogs/settings-dialog.slint:3783
+#: ui/dialogs/settings-dialog.slint:3798
 msgid "Remove account?"
 msgstr "Удалить учётную запись?"
 
-#: ui/dialogs/settings-dialog.slint:3785
+#: ui/dialogs/settings-dialog.slint:3800
 msgid "Remove this account and its downloaded mail from this device."
 msgstr "Удалить эту учётную запись и её загруженную почту с этого устройства."
 
-#: ui/dialogs/settings-dialog.slint:3787
+#: ui/dialogs/settings-dialog.slint:3802
 msgid ""
 "This account's mail is stored only on this device. Export it first to keep a "
 "copy."
@@ -6814,23 +6826,23 @@ msgstr ""
 "Почта этой учётной записи хранится только на этом устройстве. Сначала "
 "экспортируйте её, чтобы сохранить копию."
 
-#: ui/dialogs/settings-dialog.slint:3788
+#: ui/dialogs/settings-dialog.slint:3803
 msgid "Messages on the mail server will not be deleted."
 msgstr "Письма на почтовом сервере не будут удалены."
 
-#: ui/dialogs/settings-dialog.slint:3793
+#: ui/dialogs/settings-dialog.slint:3808
 msgid "Remove account"
 msgstr "Удалить учётную запись"
 
-#: ui/dialogs/settings-dialog.slint:3794
+#: ui/dialogs/settings-dialog.slint:3809
 msgid "Keep account"
 msgstr "Оставить учётную запись"
 
-#: ui/dialogs/settings-dialog.slint:3808
+#: ui/dialogs/settings-dialog.slint:3823
 msgid "Delete profile?"
 msgstr "Удалить профиль?"
 
-#: ui/dialogs/settings-dialog.slint:3810
+#: ui/dialogs/settings-dialog.slint:3825
 msgid ""
 "Accounts assigned to this profile will return to their individual or "
 "generated account colors."
@@ -6838,27 +6850,27 @@ msgstr ""
 "Учётные записи этого профиля вернутся к своим индивидуальным или "
 "автоматически назначенным цветам."
 
-#: ui/dialogs/settings-dialog.slint:3811
+#: ui/dialogs/settings-dialog.slint:3826
 msgid "Accounts and provider data are not changed."
 msgstr "Учётные записи и данные у провайдера не изменятся."
 
-#: ui/dialogs/settings-dialog.slint:3813
+#: ui/dialogs/settings-dialog.slint:3828
 msgid "Keep profile"
 msgstr "Оставить профиль"
 
-#: ui/dialogs/settings-dialog.slint:3827
+#: ui/dialogs/settings-dialog.slint:3842
 msgid "Remove calendar?"
 msgstr "Удалить календарь?"
 
-#: ui/dialogs/settings-dialog.slint:3829
+#: ui/dialogs/settings-dialog.slint:3844
 msgid "Stop syncing it and remove its events from this device."
 msgstr "Прекратить его синхронизацию и удалить его события с этого устройства."
 
-#: ui/dialogs/settings-dialog.slint:3830
+#: ui/dialogs/settings-dialog.slint:3845
 msgid "Events on the server will not be deleted."
 msgstr "События на сервере не будут удалены."
 
-#: ui/dialogs/settings-dialog.slint:3832
+#: ui/dialogs/settings-dialog.slint:3847
 msgid "Keep calendar"
 msgstr "Оставить календарь"
 
