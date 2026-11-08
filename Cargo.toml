@@ -24,7 +24,7 @@ i-slint-backend-winit = { path = "crates/i-slint-backend-winit" }
 
 [package]
 name = "evanya"
-version = "0.4.1"
+version = "0.5.0"
 description = "A native email client built with Rust, Slint, and Blitz"
 license = "AGPL-3.0-only"
 repository = "https://github.com/flectar/mail"
