@@ -3037,6 +3037,17 @@ export component SettingsDialog inherits Rectangle {
                                         clicked => { root.open-link("https://flectar.com"); }
                                     }
                                     SettingsLinkRow {
+                                        // A name is not translated.
+                                        text: "Ton Kersten";
+                                        description: @tr("Evanya developer");
+                                        icon: @image-url("../icons/lucide/outline/code.svg");
+                                        accent: root.accent;
+                                        body-text: root.body-text;
+                                        muted-text: root.faint-text;
+                                        hover-background: root.accent-soft;
+                                        clicked => { root.open-link("https://github.com/tonk"); }
+                                    }
+                                    SettingsLinkRow {
                                         text: @tr("Open-source contributors");
                                         description: @tr("Meet the people who have contributed on GitHub");
                                         icon: @image-url("../icons/lucide/outline/people.svg");
