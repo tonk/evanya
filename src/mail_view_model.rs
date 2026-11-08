@@ -1882,7 +1882,12 @@ mod tests {
         sent.preview = "Tuesday works for me.".into();
         sent.is_outgoing = true;
 
-        let rows = make_thread_rows(&[received, sent], 1, &HashMap::new(), &OwnSenders::default());
+        let rows = make_thread_rows(
+            &[received, sent],
+            1,
+            &HashMap::new(),
+            &OwnSenders::default(),
+        );
 
         assert_eq!(rows.len(), 2);
         assert_eq!(rows[0].sender, "Maya");
