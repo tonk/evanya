@@ -463,6 +463,9 @@ jobs:
         run: cargo build --locked --release --no-default-features --features remote-content,gpu-renderer --bin evanya
 
       - name: Create ad-hoc signed app bundle
+        # `shell: bash` runs with pipefail. Without it the pipe into tee hides a
+        # failing package script, the step passes, and only the upload fails.
+        shell: bash
         run: |
           mkdir -p target/macos
           if ./scripts/package-macos.sh \
