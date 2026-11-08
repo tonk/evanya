@@ -385,6 +385,8 @@ export struct CalendarEventRow {
     attendees: string,
     join_url: string,
     rsvp_status: string,
+    // An invitation from someone else, which we can answer.
+    can_respond: bool,
     recurrence: string,
     status: string,
     source: string,

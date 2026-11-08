@@ -3655,6 +3655,42 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     });
 
     let app_weak = app.as_weak();
+    let calendar_for_respond = Rc::clone(&calendar_state);
+    let runtime_for_calendar_respond = Rc::clone(&runtime);
+    let inbox_for_calendar_respond = Rc::clone(&state);
+    app.on_calendar_respond_event(move |event_id, response| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let Some(core) = inbox_for_calendar_respond.borrow().core.clone() else {
+            app.set_sync_status(UiMessage::plain("Calendar storage is unavailable."));
+            return;
+        };
+        if let Err(error) = runtime_for_calendar_respond
+            .block_on(core.rsvp_event(i64::from(event_id), response.as_str()))
+        {
+            app.set_sync_status(UiMessage::detail("Could not send your response: {}", error));
+            return;
+        }
+        let today = Local::now().date_naive();
+        let mut calendar = calendar_for_respond.borrow_mut();
+        if let Err(error) = refresh_calendar_events(
+            &core,
+            &runtime_for_calendar_respond,
+            &mut calendar,
+            &inbox_for_calendar_respond.borrow().connected_accounts,
+        ) {
+            app.set_sync_status(UiMessage::detail(
+                "Response sent, but refresh failed: {}",
+                error,
+            ));
+        } else {
+            app.set_sync_status(UiMessage::plain("Response sent."));
+        }
+        apply_calendar(&app, &calendar, today);
+    });
+
+    let app_weak = app.as_weak();
     let calendar_for_save = Rc::clone(&calendar_state);
     let runtime_for_calendar_save = Rc::clone(&runtime);
     let inbox_for_calendar_save = Rc::clone(&state);

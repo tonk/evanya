@@ -1141,6 +1141,20 @@ pub(crate) fn agenda_row_index(rows: ModelRc<CalendarAgendaRow>, key: SharedStri
         .unwrap_or(-1)
 }
 
+/// An invitation from someone else can be answered; our own events, and events
+/// without an organizer to tell, cannot.
+fn can_respond(event: &LocalCalendarEvent, account: Option<&LocalCalendarAccount>) -> bool {
+    let organizer = event
+        .organizer
+        .trim()
+        .trim_start_matches("mailto:")
+        .trim_start_matches("MAILTO:")
+        .to_lowercase();
+    !event.is_local
+        && !organizer.is_empty()
+        && account.is_none_or(|account| account.email.to_lowercase() != organizer)
+}
+
 fn event_row(
     app: &AppWindow,
     state: &LocalCalendarState,
@@ -1234,6 +1248,7 @@ fn event_row(
         attendees: event.attendees.clone().into(),
         join_url: event.join_url.clone().into(),
         rsvp_status: event.rsvp_status.clone().into(),
+        can_respond: can_respond(event, account),
         recurrence: repeat_description(app, formats, &event.recurrence, event.date).into(),
         status: event.status.clone().into(),
         source: if event.is_local { "local" } else { "provider" }.into(),
@@ -1403,6 +1418,30 @@ mod tests {
 
     fn date(day: u32) -> NaiveDate {
         NaiveDate::from_ymd_opt(2026, 10, day).unwrap()
+    }
+
+    #[test]
+    fn only_an_invitation_from_someone_else_can_be_answered() {
+        let me = LocalCalendarAccount {
+            id: 0,
+            name: "Ton".into(),
+            email: "ton@example.com".into(),
+            provider: "gmail".into(),
+        };
+        let mut invite = event(1, 5, 600, 60, false);
+        invite.is_local = false;
+        invite.organizer = "Boss@Example.com".into();
+        assert!(can_respond(&invite, Some(&me)));
+
+        invite.organizer = "mailto:TON@example.com".into();
+        assert!(!can_respond(&invite, Some(&me)), "our own event");
+
+        invite.organizer = String::new();
+        assert!(!can_respond(&invite, Some(&me)), "nobody to tell");
+
+        let mut local = event(2, 5, 600, 60, false);
+        local.organizer = "boss@example.com".into();
+        assert!(!can_respond(&local, Some(&me)), "created in Evanya");
     }
 
     fn event(id: i32, day: u32, start: i32, duration: i64, all_day: bool) -> LocalCalendarEvent {

@@ -476,6 +476,9 @@ export global I18n {
         if (key == "Could not delete event: {}") { return @tr("Could not delete event: {}", argument); }
         if (key == "Event deleted, but refresh failed: {}") { return @tr("Event deleted, but refresh failed: {}", argument); }
         if (key == "Event deleted.") { return @tr("Event deleted."); }
+        if (key == "Response sent.") { return @tr("Response sent."); }
+        if (key == "Could not send your response: {}") { return @tr("Could not send your response: {}", argument); }
+        if (key == "Response sent, but refresh failed: {}") { return @tr("Response sent, but refresh failed: {}", argument); }
         if (key == "Use YYYY-MM-DD for the date and a time such as {}.") { return @tr("Use YYYY-MM-DD for the date and a time such as {}.", argument); }
         if (key == "Event duration must be a number of minutes.") { return @tr("Event duration must be a number of minutes."); }
         if (key == "Add a title and choose a duration from 15 to 1440 minutes.") { return @tr("Add a title and choose a duration from 15 to 1440 minutes."); }
@@ -882,6 +885,7 @@ export component AppWindow inherits Window {
     callback calendar-open-editor();
     callback calendar-edit-event(int);
     callback calendar-delete-event(int);
+    callback calendar-respond-event(int, string);
     callback calendar-save-event(string, string, string, string, int);
     callback select-contact(int);
     callback search-contacts(string);
@@ -1973,6 +1977,7 @@ export component AppWindow inherits Window {
             import-ics => { root.calendar_import_ics(); }
             edit-event(event-id) => { root.calendar-edit-event(event-id); }
             delete-event(event-id) => { root.calendar-delete-event(event-id); }
+            respond-event(event-id, response) => { root.calendar-respond-event(event-id, response); }
             open-link(url) => { root.open_email_link(url); }
         }
         }

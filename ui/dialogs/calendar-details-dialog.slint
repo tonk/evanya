@@ -74,10 +74,14 @@ export component CalendarDetailsDialog inherits Rectangle {
     in property <color> border-subtle;
     in property <color> muted-text;
     in property <color> surface;
+    // An invitation from someone else: show Accept, Maybe and Decline.
+    in property <bool> can-respond: false;
     in property <color> title-color;
     callback open-link(string);
     callback edit-event;
     callback delete-event;
+    // accepted | tentative | declined
+    callback respond(string);
 
     visible: root.open;
     background: #20212466;
@@ -170,7 +174,7 @@ export component CalendarDetailsDialog inherits Rectangle {
             x: 24px;
             y: details-header.height + 16px;
             width: parent.width - 48px;
-            height: max(0px, parent.height - self.y - 70px);
+            height: max(0px, parent.height - self.y - 70px - (root.can-respond ? 52px : 0px));
             content-width: self.visible-width;
             horizontal-scrollbar-policy: always-off;
 
@@ -239,6 +243,35 @@ export component CalendarDetailsDialog inherits Rectangle {
         }
 
         Rectangle { x: 0px; y: parent.height - 64px; width: parent.width; height: 1px; background: root.border-subtle; }
+        respond-row := HorizontalLayout {
+            visible: root.kind == "event" && root.can-respond;
+            x: 24px;
+            y: parent.height - 64px - 52px;
+            width: parent.width - 48px;
+            height: 40px;
+            spacing: 8px;
+            Button {
+                horizontal-stretch: 1;
+                height: 40px;
+                text: @tr("Accept");
+                primary: root.rsvp == "ACCEPTED";
+                clicked => { root.respond("accepted"); }
+            }
+            Button {
+                horizontal-stretch: 1;
+                height: 40px;
+                text: @tr("Maybe");
+                primary: root.rsvp == "TENTATIVE";
+                clicked => { root.respond("tentative"); }
+            }
+            Button {
+                horizontal-stretch: 1;
+                height: 40px;
+                text: @tr("Decline");
+                primary: root.rsvp == "DECLINED";
+                clicked => { root.respond("declined"); }
+            }
+        }
         Button {
             visible: root.join-url != "" && !root.editable;
             x: 24px;

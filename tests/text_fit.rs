@@ -362,6 +362,7 @@ fn calendar_event(id: i32, title: &str, day_index: i32, start_minutes: i32) -> C
         // Left at 0, a month chip would be `0 days - 14px` wide.
         lanes: 1,
         span_days: 1,
+        can_respond: true,
         provider: "CalDAV".into(),
         account: "alex.morgan@example.com".into(),
         calendar: "Work".into(),

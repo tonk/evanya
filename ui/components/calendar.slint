@@ -454,6 +454,7 @@ export component FunctionalCalendarView inherits Rectangle {
     callback clear-agenda-filters;
     callback edit-event(int);
     callback delete-event(int);
+    callback respond-event(int, string);
 
     private property <bool> detail-open: false;
     private property <string> detail-kind: "event";
@@ -478,6 +479,7 @@ export component FunctionalCalendarView inherits Rectangle {
     private property <string> detail-join-url: "";
     private property <int> detail-event-id: 0;
     private property <bool> detail-event-editable: false;
+    private property <bool> detail-can-respond: false;
     private property <bool> delete-confirmation-open: false;
 
     function show-source(source: CalendarSourceRow) {
@@ -506,6 +508,7 @@ export component FunctionalCalendarView inherits Rectangle {
         root.detail-join-url = "";
         root.detail-event-id = 0;
         root.detail-event-editable = false;
+        root.detail-can-respond = false;
         root.detail-open = true;
     }
 
@@ -529,6 +532,7 @@ export component FunctionalCalendarView inherits Rectangle {
         root.detail-join-url = event.join-url;
         root.detail-event-id = event.id;
         root.detail-event-editable = event.editable;
+        root.detail-can-respond = event.can-respond;
         root.detail-open = true;
     }
 
@@ -1143,6 +1147,7 @@ export component FunctionalCalendarView inherits Rectangle {
         description: root.detail-description;
         join-url: root.detail-join-url;
         editable: root.detail-event-editable;
+        can-respond: root.detail-can-respond;
         accent: root.accent-color;
         accent-soft: root.accent-background;
         border: root.ui-border-color;
@@ -1156,6 +1161,7 @@ export component FunctionalCalendarView inherits Rectangle {
             root.edit-event(root.detail-event-id);
         }
         delete-event => { root.delete-confirmation-open = true; }
+        respond(response) => { root.respond-event(root.detail-event-id, response); }
     }
 
     ConfirmationDialog {

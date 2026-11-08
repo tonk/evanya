@@ -2184,6 +2184,17 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
+    pub async fn rsvp_event(&self, event_id: i64, response: &str) -> Result<(), String> {
+        self.core
+            .rsvp_event(evanya_core::models::RsvpEventArgs {
+                event_id,
+                response: response.to_owned(),
+            })
+            .await
+            .map(|_| ())
+            .map_err(|error| error.to_string())
+    }
+
     pub async fn load_calendar_connections(&self) -> Result<Vec<CalendarConnection>, String> {
         self.core
             .list_calendar_connections()
