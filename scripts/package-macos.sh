@@ -103,7 +103,21 @@ ditto "$app_dir" "$staging/Evanya.app"
 ln -s /Applications "$staging/Applications"
 hdiutil create -volname "Evanya" -srcfolder "$staging" -ov -format UDZO \
   "$archive_path.dmg"
-hdiutil verify "$archive_path.dmg"
+# Right after create, verify can fail with "unable to recognize ... as a disk
+# image (Resource temporarily unavailable)": the disk image helper still holds
+# the file. That passes, so try again before calling the image bad.
+attempts=5
+for attempt in $(seq 1 "$attempts"); do
+  if hdiutil verify "$archive_path.dmg"; then
+    break
+  fi
+  if (( attempt == attempts )); then
+    printf 'The disk image did not verify in %s attempts.\n' "$attempts" >&2
+    exit 1
+  fi
+  printf 'hdiutil verify failed (attempt %s of %s); trying again.\n' "$attempt" "$attempts" >&2
+  sleep $((attempt * 5))
+done
 codesign --verify --deep --strict "$app_dir"
 rm -rf "$staging"
 printf 'Built %s\n' "$archive_path.dmg"
