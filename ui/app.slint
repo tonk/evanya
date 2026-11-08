@@ -734,6 +734,7 @@ export component AppWindow inherits Window {
     callback save_show_status_bar(bool);
     callback save_folder_unread_counts(bool);
     callback save_tray_unread_mark(bool);
+    callback save_start_maximized(bool);
     callback choose_account_avatar(int);
     callback select_custom_headers_scope(int);
     callback save_custom_headers(int, string);
@@ -1180,6 +1181,8 @@ export component AppWindow inherits Window {
     in-out property <bool> show_folder_unread_counts: false;
     // A red dot on the tray icon while the inbox has unread mail.
     in-out property <bool> tray_unread_mark: true;
+    // Open the main window maximized.
+    in-out property <bool> start_maximized: false;
     // Setup sync through a shared directory; see src/setup_sync.rs.
     in-out property <string> setup_sync_directory: "";
     in-out property <bool> setup_sync_busy: false;
@@ -2342,6 +2345,7 @@ export component AppWindow inherits Window {
             show_status_bar <=> root.show_status_bar;
             show_folder_unread_counts <=> root.show_folder_unread_counts;
             tray_unread_mark <=> root.tray_unread_mark;
+            start_maximized <=> root.start_maximized;
             setup_sync_available: root.desktop_host;
             custom_headers_scopes: root.custom_headers_scopes;
             custom_headers_scope_index <=> root.custom_headers_scope_index;
@@ -2460,6 +2464,7 @@ export component AppWindow inherits Window {
             save_show_status_bar(enabled) => { root.save_show_status_bar(enabled); }
             save_folder_unread_counts(enabled) => { root.save_folder_unread_counts(enabled); }
             save_tray_unread_mark(enabled) => { root.save_tray_unread_mark(enabled); }
+            save_start_maximized(enabled) => { root.save_start_maximized(enabled); }
             choose_account_avatar(account-id) => { root.choose_account_avatar(account-id); }
             select_custom_headers_scope(index) => { root.select_custom_headers_scope(index); }
             save_custom_headers(index, text) => { root.save_custom_headers(index, text); }

@@ -15,6 +15,9 @@ use std::{io, path::PathBuf};
 
 /// Marks a launch from the sign-in entry.
 pub(crate) const BACKGROUND_ARGUMENT: &str = "--background";
+/// Opens the main window maximized for this launch, as the "Start maximized"
+/// setting does for every launch.
+pub(crate) const MAXIMIZED_ARGUMENT: &str = "--maximized";
 
 /// Whether this installation can register a sign-in entry.
 pub(crate) fn supported() -> bool {
@@ -33,6 +36,12 @@ pub(crate) enum Applied {
 
 pub(crate) fn launched_in_background() -> bool {
     is_background_launch(std::env::args_os().skip(1))
+}
+
+pub(crate) fn launched_maximized() -> bool {
+    std::env::args_os()
+        .skip(1)
+        .any(|argument| argument == MAXIMIZED_ARGUMENT)
 }
 
 fn is_background_launch(mut arguments: impl Iterator<Item = std::ffi::OsString>) -> bool {

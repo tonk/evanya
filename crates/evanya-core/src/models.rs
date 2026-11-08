@@ -2023,6 +2023,10 @@ pub struct Settings {
     /// Mark the tray icon while the inbox has unread mail.
     #[serde(default = "default_true")]
     pub tray_unread_mark: bool,
+    /// Open the main window maximized. The `--maximized` command-line option
+    /// does the same for one launch.
+    #[serde(default)]
+    pub start_maximized: bool,
     /// The directory that a file sync tool shares between computers, where
     /// setup sync keeps `evanya-setup.json`. Empty turns setup sync off.
     #[serde(default)]
@@ -2483,6 +2487,7 @@ impl Default for Settings {
             show_status_bar: true,
             show_folder_unread_counts: false,
             tray_unread_mark: true,
+            start_maximized: false,
             setup_sync_directory: String::new(),
             setup_sync_hash: String::new(),
             setup_sync_at: 0,
@@ -2919,6 +2924,7 @@ mod tests {
         assert_eq!(s.app_icon, AppIcon::Orange);
         assert!(s.group_mail_by_date);
         assert!(s.show_tabs);
+        assert!(!s.start_maximized);
         assert!(s.conversation_view);
         // New installs draw their own frame; a saved choice stays.
         assert_eq!(s.window_frame, "integrated");

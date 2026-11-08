@@ -5311,6 +5311,14 @@ msgstr "App-thema volgen"
 msgid "Interface"
 msgstr "Interface"
 
+#: ui/dialogs/settings-dialog.slint
+msgid "Start maximized"
+msgstr "Gemaximaliseerd starten"
+
+#: ui/dialogs/settings-dialog.slint
+msgid "Open the main window maximized. The --maximized option does this for one launch."
+msgstr "Open het hoofdvenster gemaximaliseerd. De optie --maximized doet dit voor één start."
+
 #: ui/dialogs/settings-dialog.slint:1142
 msgid "Monochrome sidebar icons"
 msgstr "Monochrome zijbalkpictogrammen"

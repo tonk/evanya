@@ -375,6 +375,7 @@ pub(super) fn account_backup_value(
                 "showStatusBar": settings.show_status_bar,
                 "showFolderUnreadCounts": settings.show_folder_unread_counts,
                 "trayUnreadMark": settings.tray_unread_mark,
+                "startMaximized": settings.start_maximized,
                 "conversationView": settings.conversation_view,
                 "composePlainText": settings.compose_plain_text,
                 "mailListLayout": settings.mail_list_layout,
@@ -532,6 +533,12 @@ pub(super) fn restore_account_backup(
                 .and_then(|value| value.as_bool())
             {
                 settings.tray_unread_mark = enabled;
+            }
+            if let Some(enabled) = preferences
+                .get("startMaximized")
+                .and_then(|value| value.as_bool())
+            {
+                settings.start_maximized = enabled;
             }
             if let Some(enabled) = preferences
                 .get("conversationView")
@@ -845,6 +852,7 @@ pub(super) fn restore_account_backup(
     crate::mail::set_folder_unread_counts(settings.show_folder_unread_counts);
     app.set_show_folder_unread_counts(settings.show_folder_unread_counts);
     app.set_tray_unread_mark(settings.tray_unread_mark);
+    app.set_start_maximized(settings.start_maximized);
     crate::app_icon::set_tray_unread_shown(settings.tray_unread_mark);
     apply_mail_grouping(app, state, runtime, settings.mail_grouping());
     app.set_show_account_markers(settings.show_account_badges);
@@ -1770,6 +1778,7 @@ pub(super) fn register_data_management_callbacks(
                     crate::mail::set_folder_unread_counts(false);
                     app.set_show_folder_unread_counts(false);
                     app.set_tray_unread_mark(true);
+                    app.set_start_maximized(false);
                     crate::app_icon::set_tray_unread_shown(true);
                     apply_mail_grouping(
                         &app,

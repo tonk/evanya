@@ -1806,8 +1806,16 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     app_icon::apply(&app, startup_presentation.app_icon);
     // Paint the first frame with the saved theme, language and layout, so the
     // window does not open in the defaults and change once the core is up.
-    if let Some(settings) = evanya_core::startup_settings(&platform.paths) {
-        startup::apply_presentation(&app, &settings);
+    let startup_settings = evanya_core::startup_settings(&platform.paths);
+    if let Some(settings) = &startup_settings {
+        startup::apply_presentation(&app, settings);
+    }
+    if autostart::launched_maximized()
+        || startup_settings
+            .as_ref()
+            .is_some_and(|settings| settings.start_maximized)
+    {
+        app.window().set_maximized(true);
     }
     app.set_app_version(env!("CARGO_PKG_VERSION").into());
     app.on_settings_search_matches(|haystack, query| {

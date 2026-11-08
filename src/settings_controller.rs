@@ -647,6 +647,16 @@ pub(super) fn register_settings_preference_callbacks(
         }
     });
 
+    let state_for_start_maximized = Rc::clone(state);
+    let runtime_for_start_maximized = Rc::clone(runtime);
+    app.on_save_start_maximized(move |enabled| {
+        let core = state_for_start_maximized.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_start_maximized
+                .block_on(core.update_settings(|settings| settings.start_maximized = enabled));
+        }
+    });
+
     let state_for_status_bar = Rc::clone(state);
     let runtime_for_status_bar = Rc::clone(runtime);
     app.on_save_show_status_bar(move |enabled| {

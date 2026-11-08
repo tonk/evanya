@@ -417,6 +417,7 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> remote-images-enabled: false;
     in-out property <bool> close_to_tray: false;
     in-out property <bool> tray_unread_mark: true;
+    in-out property <bool> start_maximized: false;
     in property <bool> setup_sync_available: false;
     in property <[string]> custom_headers_scopes;
     in-out property <int> custom_headers_scope_index: 0;
@@ -570,6 +571,7 @@ export component SettingsDialog inherits Rectangle {
     callback clear_contact_suggestions() -> bool;
     callback set_close_to_tray(bool);
     callback save_tray_unread_mark(bool);
+    callback save_start_maximized(bool);
     callback choose_account_avatar(int);
     callback select_custom_headers_scope(int);
     callback save_custom_headers(int, string);
@@ -1163,6 +1165,19 @@ export component SettingsDialog inherits Rectangle {
                                         }
                                     }
                                     Rectangle { height: 1px; background: root.border-subtle; }
+                                    if !root.compact : SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Start maximized");
+                                        description: @tr("Open the main window maximized. The --maximized option does this for one launch.");
+                                        checked: root.start_maximized;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.start_maximized = checked;
+                                            root.save_start_maximized(checked);
+                                        }
+                                    }
+                                    if !root.compact : Rectangle { height: 1px; background: root.border-subtle; }
                                     SettingsSwitchRow {
                                         compact: root.compact;
                                         title: @tr("Tabs");
