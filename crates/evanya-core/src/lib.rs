@@ -6216,7 +6216,11 @@ impl Core {
 
         // Reply goes to the organizer; without one there is nobody to notify,
         // but we still record the response locally.
-        if let Some(organizer) = ev.organizer.clone().filter(|o| !o.is_empty()) {
+        if let Some(organizer) = ev
+            .organizer
+            .clone()
+            .filter(|o| !o.is_empty() && args.send_reply)
+        {
             let me = Address {
                 name: account.display_name.clone(),
                 email: account.email.clone(),

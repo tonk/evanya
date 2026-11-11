@@ -545,6 +545,19 @@ export global EmailReader {
     in-out property <string> raw-text;
     in-out property <string> raw-error;
     callback load-raw();
+    // The calendar invitation the message carries, if any, and the answer to it
+    // (accepted | tentative | declined). `invite-event-id` is 0 without one.
+    in-out property <int> invite-event-id: 0;
+    in-out property <string> invite-title;
+    in-out property <string> invite-organizer;
+    // Our answer so far: ACCEPTED | TENTATIVE | DECLINED, or empty.
+    in-out property <string> invite-response;
+    in-out property <bool> invite-can-respond: false;
+    in-out property <bool> invite-busy: false;
+    // Mail the answer to the organizer; off only notes it in the calendar.
+    in-out property <bool> invite-send-reply: true;
+    callback load-invite();
+    callback respond-invite(string, bool);
 }
 
 export struct MailAttachment {

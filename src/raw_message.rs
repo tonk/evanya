@@ -37,7 +37,7 @@ pub(crate) fn shown_text(raw: &[u8]) -> (String, bool) {
 
 /// The stored message of what the reader shows: the message that is open in a
 /// conversation, and otherwise the message of the selected row.
-fn selected_message_id(state: &InboxState) -> Option<i64> {
+pub(crate) fn selected_message_id(state: &InboxState) -> Option<i64> {
     let selected_id = state.selected_id?;
     let message = state
         .conversation_messages

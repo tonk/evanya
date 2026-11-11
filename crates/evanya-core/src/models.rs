@@ -2773,6 +2773,13 @@ pub struct RsvpEventArgs {
     pub event_id: i64,
     /// accepted | tentative | declined
     pub response: String,
+    /// Mail the answer to the organizer. Off: only note it in the calendar.
+    #[serde(default = "send_reply_by_default")]
+    pub send_reply: bool,
+}
+
+fn send_reply_by_default() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Deserialize)]

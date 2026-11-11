@@ -619,6 +619,8 @@ export component MailReadingPane inherits FocusScope {
                 : root.email-scroll-y - root.message-body-y;
         }
     }
+    private property <int> shown-message-id: EmailReader.message-id;
+    changed shown-message-id => { EmailReader.load-invite(); }
     changed email-viewport-width => { root.viewport-pending = true; }
     changed email-viewport-height => { root.viewport-pending = true; }
     Timer { interval: 50ms; running: root.viewport-pending; triggered => {
@@ -1305,6 +1307,35 @@ export component MailReadingPane inherits FocusScope {
                                         height: root.compact ? 44px : 32px; padding: 0px; spacing: 6px;
                                         Text { text: @tr("Some images could not be loaded."); overflow: elide; color: root.secondary-text; vertical-alignment: center; horizontal-stretch: 1; }
                                         ReaderControl { compact: root.compact; icon: @image-url("../icons/lucide/outline/sync.svg"); tooltip-text: @tr("Retry images"); clicked => { EmailReader.retry-images(); } }
+                                    }
+                                    if EmailReader.invite-event-id > 0 : VerticalBox {
+                                        padding-top: 4px; padding-right: 0px; padding-bottom: 4px; padding-left: 0px; spacing: 4px;
+                                        Text {
+                                            height: self.preferred-height;
+                                            text: (EmailReader.invite-title != "" ? EmailReader.invite-title : @tr("Invitation"))
+                                                + (EmailReader.invite-organizer != "" ? " · " + EmailReader.invite-organizer : "");
+                                            wrap: word-wrap; color: root.heading; font-weight: 600;
+                                            font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+                                        }
+                                        Text {
+                                            height: self.preferred-height;
+                                            text: EmailReader.invite-response == "ACCEPTED" ? @tr("You accepted this invitation.")
+                                                : EmailReader.invite-response == "TENTATIVE" ? @tr("You answered maybe to this invitation.")
+                                                : EmailReader.invite-response == "DECLINED" ? @tr("You declined this invitation.")
+                                                : EmailReader.invite-can-respond ? @tr("Will you come?") : @tr("This is your own invitation.");
+                                            wrap: word-wrap; color: root.secondary-text;
+                                            font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+                                        }
+                                        if EmailReader.invite-can-respond : HorizontalBox {
+                                            height: root.compact ? 44px : 32px; padding: 0px; spacing: 6px;
+                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Accept"); primary: EmailReader.invite-response == "ACCEPTED"; clicked => { EmailReader.respond-invite("accepted", EmailReader.invite-send-reply); } }
+                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Maybe"); primary: EmailReader.invite-response == "TENTATIVE"; clicked => { EmailReader.respond-invite("tentative", EmailReader.invite-send-reply); } }
+                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Decline"); primary: EmailReader.invite-response == "DECLINED"; clicked => { EmailReader.respond-invite("declined", EmailReader.invite-send-reply); } }
+                                        }
+                                        if EmailReader.invite-can-respond : CheckBox {
+                                            text: @tr("Send my answer to the organizer");
+                                            checked <=> EmailReader.invite-send-reply;
+                                        }
                                     }
                                     if EmailReader.body-pending : HorizontalBox {
                                         height: root.compact ? 44px : 32px; padding: 0px; spacing: 8px;

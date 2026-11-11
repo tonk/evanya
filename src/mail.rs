@@ -45,6 +45,18 @@ pub struct EmailFixture {
 }
 
 /// Owned view data used by the Slint shell.
+/// The calendar invitation a message carries.
+#[derive(Clone, Debug)]
+pub struct Invitation {
+    pub event_id: i64,
+    pub title: String,
+    pub organizer: String,
+    /// Our answer so far: ACCEPTED | TENTATIVE | DECLINED, or empty.
+    pub response: String,
+    /// False for our own invitation, which has nobody to answer.
+    pub can_respond: bool,
+}
+
 #[derive(Clone, Debug)]
 pub struct MailMessage {
     pub id: i32,
@@ -2184,15 +2196,57 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())
     }
 
-    pub async fn rsvp_event(&self, event_id: i64, response: &str) -> Result<(), String> {
+    pub async fn rsvp_event(
+        &self,
+        event_id: i64,
+        response: &str,
+        send_reply: bool,
+    ) -> Result<(), String> {
         self.core
             .rsvp_event(evanya_core::models::RsvpEventArgs {
                 event_id,
                 response: response.to_owned(),
+                send_reply,
             })
             .await
             .map(|_| ())
             .map_err(|error| error.to_string())
+    }
+
+    /// The invitation a message carries, when it carries one.
+    pub async fn invitation_of_message(
+        &self,
+        message_id: i64,
+    ) -> Result<Option<Invitation>, String> {
+        let events = self
+            .core
+            .events_for_message(message_id)
+            .await
+            .map_err(|error| error.to_string())?;
+        let Some(event) = events.into_iter().next() else {
+            return Ok(None);
+        };
+        let accounts = self
+            .core
+            .list_accounts()
+            .await
+            .map_err(|error| error.to_string())?;
+        let own_email = accounts
+            .iter()
+            .find(|account| account.id == event.account_id)
+            .map(|account| account.email.as_str());
+        let organizer = event.organizer.clone().unwrap_or_default();
+        Ok(Some(Invitation {
+            can_respond: crate::calendar::is_invitation_from_someone_else(
+                event.is_local,
+                &organizer,
+                own_email,
+            ),
+            event_id: event.id,
+            title: event.summary.clone().unwrap_or_default(),
+            organizer,
+            response: event.rsvp_status.clone().unwrap_or_default(),
+        }))
     }
 
     pub async fn load_calendar_connections(&self) -> Result<Vec<CalendarConnection>, String> {

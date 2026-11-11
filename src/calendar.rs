@@ -1144,15 +1144,28 @@ pub(crate) fn agenda_row_index(rows: ModelRc<CalendarAgendaRow>, key: SharedStri
 /// An invitation from someone else can be answered; our own events, and events
 /// without an organizer to tell, cannot.
 fn can_respond(event: &LocalCalendarEvent, account: Option<&LocalCalendarAccount>) -> bool {
-    let organizer = event
-        .organizer
+    is_invitation_from_someone_else(
+        event.is_local,
+        &event.organizer,
+        account.map(|account| account.email.as_str()),
+    )
+}
+
+/// Whether an event is an invitation we can answer: not created here, with an
+/// organizer to tell, who is not the account itself.
+pub(crate) fn is_invitation_from_someone_else(
+    is_local: bool,
+    organizer: &str,
+    own_email: Option<&str>,
+) -> bool {
+    let organizer = organizer
         .trim()
         .trim_start_matches("mailto:")
         .trim_start_matches("MAILTO:")
         .to_lowercase();
-    !event.is_local
+    !is_local
         && !organizer.is_empty()
-        && account.is_none_or(|account| account.email.to_lowercase() != organizer)
+        && own_email.is_none_or(|email| email.to_lowercase() != organizer)
 }
 
 fn event_row(

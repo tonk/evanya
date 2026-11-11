@@ -953,6 +953,24 @@ fn states() -> Vec<State> {
             reader.set_raw_shortened(true);
             reader.set_raw_text("From: Ana Rivera <ana@example.org>\n\nHello.\n".into());
         }),
+        // The bar of a message that carries an invitation, with a long title
+        // and organizer, before and after an answer.
+        state("mail invitation", |app| {
+            let reader = app.global::<EmailReader>();
+            reader.set_invite_event_id(7);
+            reader
+                .set_invite_title("Quarterly planning review with the whole platform team".into());
+            reader.set_invite_organizer("ana.rivera@example.org".into());
+            reader.set_invite_can_respond(true);
+        }),
+        state("mail invitation answered", |app| {
+            let reader = app.global::<EmailReader>();
+            reader.set_invite_event_id(7);
+            reader.set_invite_title("Quarterly planning review".into());
+            reader.set_invite_organizer("ana.rivera@example.org".into());
+            reader.set_invite_response("TENTATIVE".into());
+            reader.set_invite_can_respond(true);
+        }),
         State {
             desktop_only: true,
             ..state("mail labels", |app| press(app, "Manage labels"))

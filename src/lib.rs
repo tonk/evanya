@@ -31,6 +31,7 @@ mod email_document;
 pub mod favicon;
 mod files_controller;
 mod import_controller;
+mod invitation;
 mod keyboard_keys;
 mod latest_load;
 mod mail;
@@ -3666,9 +3667,11 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             app.set_sync_status(UiMessage::plain("Calendar storage is unavailable."));
             return;
         };
-        if let Err(error) = runtime_for_calendar_respond
-            .block_on(core.rsvp_event(i64::from(event_id), response.as_str()))
-        {
+        if let Err(error) = runtime_for_calendar_respond.block_on(core.rsvp_event(
+            i64::from(event_id),
+            response.as_str(),
+            true,
+        )) {
             app.set_sync_status(UiMessage::detail("Could not send your response: {}", error));
             return;
         }
@@ -8708,6 +8711,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     account_avatars::register(&app, &state, &runtime);
     custom_headers::register(&app, &state, &runtime);
     raw_message::register(&app, &state, &runtime);
+    invitation::register(&app, &state, &runtime);
     move_picker::register(&app, &state);
     #[cfg(desktop)]
     mail_notifications::start(&app, &state, &runtime);
