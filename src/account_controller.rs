@@ -151,6 +151,13 @@ pub(super) fn reconcile_removed_account(state: &mut InboxState, account_id: i64)
     state.profile_avatar_pending.remove(&account_id);
     crate::account_avatars::remove(account_id);
     state.initialized_sidebar_accounts.remove(&account_id);
+    let label_prefix = format!("gmail-label:{account_id}:");
+    state
+        .initialized_sidebar_labels
+        .retain(|key| !key.starts_with(&label_prefix));
+    state
+        .collapsed_sidebar_sections
+        .retain(|key| !key.starts_with(&label_prefix));
     state
         .collapsed_sidebar_sections
         .remove(&format!("account:{account_id}"));

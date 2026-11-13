@@ -648,6 +648,8 @@ struct InboxState {
     collapsed_sidebar_sections: HashSet<String>,
     initialized_sidebar_accounts: HashSet<i64>,
     initialized_sidebar_folders: HashSet<i64>,
+    // Account labels whose open state was set, by sidebar key.
+    initialized_sidebar_labels: HashSet<String>,
     sidebar_rows: Rc<SidebarModel>,
     sidebar_animation: Rc<SidebarAnimation>,
     folder_filter: String,
@@ -1330,6 +1332,7 @@ impl InboxState {
             ]),
             initialized_sidebar_accounts: HashSet::new(),
             initialized_sidebar_folders: HashSet::new(),
+            initialized_sidebar_labels: HashSet::new(),
             sidebar_rows: Rc::new(SidebarModel::default()),
             sidebar_animation: Rc::new(SidebarAnimation::default()),
             folder_filter: String::new(),
@@ -4066,9 +4069,26 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
         }
     });
 
+    // Keep how the sidebar was left open, for the next start.
+    let remember_state = Rc::clone(&state);
+    let remember_runtime = Rc::clone(&runtime);
+    let remember_open: Rc<dyn Fn(&str, bool)> = Rc::new(move |key: &str, open: bool| {
+        let saved = sidebar_model::remember_open(key, open);
+        let Some(core) = remember_state.borrow().core.clone() else {
+            return;
+        };
+        if let Err(error) = remember_runtime
+            .block_on(core.update_settings(move |settings| settings.sidebar_open = saved))
+        {
+            tracing::warn!(%error, "the open state of the sidebar could not be saved");
+        }
+    });
+
     let section_toggle_state = Rc::clone(&state);
     let section_toggle_app = app.as_weak();
+    let section_remember = Rc::clone(&remember_open);
     app.on_toggle_sidebar_section(move |key, open| {
+        section_remember(key.as_str(), open);
         if open {
             section_toggle_state
                 .borrow_mut()
@@ -4090,6 +4110,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let folder_toggle_app = app.as_weak();
     app.on_toggle_folder(move |folder_id, expanded| {
         let folder_id = i64::from(folder_id);
+        remember_open(&format!("folder:{folder_id}"), expanded);
         if expanded {
             folder_toggle_state
                 .borrow_mut()

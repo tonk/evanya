@@ -138,6 +138,89 @@ impl SidebarModel {
     }
 }
 
+thread_local! {
+    // The open state of sidebar rows as the user left them, by key, from
+    // Settings, and the keys of it already applied to this session.
+    static SAVED_OPEN: RefCell<(HashMap<String, bool>, HashSet<String>)> = RefCell::default();
+}
+
+/// Take up the open state of the sidebar's rows as stored in Settings.
+pub(crate) fn restore_open_state(saved: &HashMap<String, bool>) {
+    SAVED_OPEN.set((saved.clone(), HashSet::new()));
+}
+
+/// Remember that a row was opened or closed; the whole state, to store.
+pub(crate) fn remember_open(key: &str, open: bool) -> HashMap<String, bool> {
+    SAVED_OPEN.with_borrow_mut(|(saved, applied)| {
+        saved.insert(key.to_owned(), open);
+        applied.insert(key.to_owned());
+        saved.clone()
+    })
+}
+
+/// The sidebar key of an account label, as the nested label rows use it.
+fn account_label_key(account_id: i64, label_id: i64) -> String {
+    format!("gmail-label:{account_id}:{label_id}")
+}
+
+/// Apply the stored open state of rows not applied yet: whatever comes first,
+/// the settings or the rows, a row opens as it was left.
+fn apply_saved_open(
+    collapsed_sections: &mut HashSet<String>,
+    collapsed_folders: &mut HashSet<i64>,
+    initialized_accounts: &mut HashSet<i64>,
+    initialized_folders: &mut HashSet<i64>,
+    initialized_labels: &mut HashSet<String>,
+) {
+    SAVED_OPEN.with_borrow_mut(|(saved, applied)| {
+        for (key, open) in saved.iter() {
+            if !applied.insert(key.clone()) {
+                continue;
+            }
+            if let Some(folder_id) = key
+                .strip_prefix("folder:")
+                .and_then(|id| id.parse::<i64>().ok())
+            {
+                initialized_folders.insert(folder_id);
+                if *open {
+                    collapsed_folders.remove(&folder_id);
+                } else {
+                    collapsed_folders.insert(folder_id);
+                }
+                continue;
+            }
+            if let Some(account_id) = key
+                .strip_prefix("account-labels:")
+                .and_then(|id| id.parse::<i64>().ok())
+            {
+                initialized_accounts.insert(account_id);
+            }
+            if key.starts_with("gmail-label:") {
+                initialized_labels.insert(key.clone());
+            }
+            if *open {
+                collapsed_sections.remove(key);
+            } else {
+                collapsed_sections.insert(key.clone());
+            }
+        }
+    });
+}
+
+/// Labels below others start closed, like folders, so opening an account's
+/// labels does not unfold every level at once.
+fn collapse_new_labels(
+    keys: impl IntoIterator<Item = String>,
+    initialized: &mut HashSet<String>,
+    collapsed: &mut HashSet<String>,
+) {
+    for key in keys {
+        if initialized.insert(key.clone()) {
+            collapsed.insert(key);
+        }
+    }
+}
+
 fn collapse_new_account_label_sections(
     account_ids: impl IntoIterator<Item = i64>,
     initialized: &mut HashSet<i64>,
@@ -240,13 +323,44 @@ pub(super) fn refresh_sidebar_with_motion(state: &Rc<RefCell<InboxState>>, anima
         .filter(|mailbox| !mailbox.is_account && mailbox.has_children && mailbox.folder_id >= 0)
         .map(|mailbox| mailbox.folder_id)
         .collect::<Vec<_>>();
+    // Labels with labels below them, named "parent/child" like Gmail does.
+    let label_names = state
+        .labels
+        .iter()
+        .filter_map(|label| Some((label.owner_account_id?, label.name.as_str())))
+        .collect::<HashSet<_>>();
+    let parent_label_keys = state
+        .labels
+        .iter()
+        .filter_map(|label| {
+            let account_id = label.owner_account_id?;
+            let prefix = format!("{}/", label.name);
+            label_names
+                .iter()
+                .any(|(owner, name)| *owner == account_id && name.starts_with(&prefix))
+                .then(|| account_label_key(account_id, label.id))
+        })
+        .collect::<Vec<_>>();
     let InboxState {
         initialized_sidebar_accounts,
         initialized_sidebar_folders,
+        initialized_sidebar_labels,
         collapsed_sidebar_sections,
         collapsed_folder_ids,
         ..
     } = &mut *state;
+    apply_saved_open(
+        collapsed_sidebar_sections,
+        collapsed_folder_ids,
+        initialized_sidebar_accounts,
+        initialized_sidebar_folders,
+        initialized_sidebar_labels,
+    );
+    collapse_new_labels(
+        parent_label_keys,
+        initialized_sidebar_labels,
+        collapsed_sidebar_sections,
+    );
     collapse_new_account_label_sections(
         account_ids,
         initialized_sidebar_accounts,
@@ -1018,6 +1132,56 @@ mod tests {
         collapsed.remove(&10);
         collapse_new_folder_sections([10, 20, 30], &mut initialized, &mut collapsed);
         assert_eq!(collapsed, HashSet::from([20, 30]));
+    }
+
+    #[test]
+    fn sidebar_rows_open_as_they_were_left() {
+        restore_open_state(&HashMap::from([
+            ("account-labels:1".to_owned(), true),
+            ("gmail-label:1:5".to_owned(), true),
+            ("gmail-label:1:6".to_owned(), false),
+            ("folder:10".to_owned(), true),
+            ("categories".to_owned(), true),
+        ]));
+        let mut sections = HashSet::from(["categories".to_owned()]);
+        let mut folders = HashSet::new();
+        let (mut accounts, mut folder_ids, mut labels) =
+            (HashSet::new(), HashSet::new(), HashSet::new());
+        apply_saved_open(
+            &mut sections,
+            &mut folders,
+            &mut accounts,
+            &mut folder_ids,
+            &mut labels,
+        );
+        // New rows take their defaults, rows left open or closed stay so.
+        collapse_new_account_label_sections([1, 2], &mut accounts, &mut sections);
+        collapse_new_folder_sections([10, 20], &mut folder_ids, &mut folders);
+        collapse_new_labels(
+            ["gmail-label:1:5", "gmail-label:1:6", "gmail-label:1:7"].map(str::to_owned),
+            &mut labels,
+            &mut sections,
+        );
+        assert_eq!(
+            sections,
+            HashSet::from(
+                ["account-labels:2", "gmail-label:1:6", "gmail-label:1:7"].map(str::to_owned)
+            )
+        );
+        assert_eq!(folders, HashSet::from([20]));
+
+        // A toggle is remembered and not applied over again.
+        let saved = remember_open("gmail-label:1:7", true);
+        assert_eq!(saved.get("gmail-label:1:7"), Some(&true));
+        sections.remove("gmail-label:1:7");
+        apply_saved_open(
+            &mut sections,
+            &mut folders,
+            &mut accounts,
+            &mut folder_ids,
+            &mut labels,
+        );
+        assert!(!sections.contains("gmail-label:1:7"));
     }
 
     #[test]

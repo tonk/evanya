@@ -899,6 +899,7 @@ pub(crate) fn apply_presentation(app: &AppWindow, settings: &Settings) {
     app.set_show_folder_unread_counts(settings.show_folder_unread_counts);
     app.set_conversation_view(settings.conversation_view);
     crate::settings_controller::apply_area_fonts(app, settings);
+    crate::sidebar_model::restore_open_state(&settings.sidebar_open);
     app.set_calendar_zoom(settings.calendar_zoom.clamp(0.4, 4.0));
     app.set_mail_list_layout(
         if settings.mail_list_layout == "table" {

@@ -2079,6 +2079,11 @@ pub struct Settings {
     /// app's font at its normal size.
     #[serde(default)]
     pub area_fonts: std::collections::HashMap<String, AreaFont>,
+    /// Which parts of the mail sidebar were left open (true) or closed
+    /// (false), by row: "account:1", "account-labels:1", "gmail-label:1:42",
+    /// "folder:7", "categories". Rows not listed take their default.
+    #[serde(default)]
+    pub sidebar_open: std::collections::HashMap<String, bool>,
     /// Check spelling while writing.
     #[serde(default = "default_true")]
     pub spellcheck_enabled: bool,
@@ -2504,6 +2509,7 @@ impl Default for Settings {
             reading_pane_bottom_percent: default_reading_pane_bottom_percent(),
             compose_plain_text: false,
             area_fonts: std::collections::HashMap::new(),
+            sidebar_open: std::collections::HashMap::new(),
             spellcheck_enabled: true,
             spellcheck_languages: Vec::new(),
             spellcheck_words: Vec::new(),
