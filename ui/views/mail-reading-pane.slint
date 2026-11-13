@@ -1,7 +1,7 @@
 import { AccountMailPreferences } from "../components/account-mail-preferences.slint";
 import { ActionMenu, ActionMenuEntry } from "../components/action-menu.slint";
 import { ZoomControls } from "../components/zoom-controls.slint";
-import { CheckBox, HorizontalBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
+import { CheckBox, ComboBox, HorizontalBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
 import { MailAttachments, EmailReader, EmailLink, EmailTile, MailLabelRow, ThreadMessageRow } from "../models.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
@@ -1319,18 +1319,44 @@ export component MailReadingPane inherits FocusScope {
                                         }
                                         Text {
                                             height: self.preferred-height;
-                                            text: EmailReader.invite-response == "ACCEPTED" ? @tr("You accepted this invitation.")
+                                            text: EmailReader.invite-cancelled ? @tr("This event has been cancelled.")
+                                                : EmailReader.invite-response == "ACCEPTED" ? @tr("You accepted this invitation.")
                                                 : EmailReader.invite-response == "TENTATIVE" ? @tr("You answered maybe to this invitation.")
                                                 : EmailReader.invite-response == "DECLINED" ? @tr("You declined this invitation.")
                                                 : EmailReader.invite-can-respond ? @tr("Will you come?") : @tr("This is your own invitation.");
                                             wrap: word-wrap; color: root.secondary-text;
                                             font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
                                         }
+                                        if EmailReader.invite-calendar != "" : Text {
+                                            height: self.preferred-height;
+                                            text: @tr("In calendar {}", EmailReader.invite-calendar);
+                                            wrap: word-wrap; color: root.secondary-text;
+                                            font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+                                        }
+                                        if EmailReader.invite-cancelled && EmailReader.invite-calendar != "" : HorizontalBox {
+                                            height: root.compact ? 44px : 32px; padding: 0px; spacing: 6px;
+                                            Button { enabled: !EmailReader.invite-busy; text: @tr("Remove from calendar"); clicked => { EmailReader.remove-invite(); } }
+                                            Rectangle { horizontal-stretch: 1; }
+                                        }
+                                        // An invitation in no calendar yet goes to the chosen one
+                                        // when answered.
+                                        if EmailReader.invite-can-respond && EmailReader.invite-calendar == "" && EmailReader.invite-calendars.length > 1 : HorizontalBox {
+                                            height: root.compact ? 44px : 36px; padding: 0px; spacing: 6px;
+                                            Text {
+                                                text: @tr("Calendar"); vertical-alignment: center; color: root.secondary-text;
+                                                font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+                                            }
+                                            ComboBox {
+                                                horizontal-stretch: 1; enabled: !EmailReader.invite-busy;
+                                                model: EmailReader.invite-calendars;
+                                                current-index <=> EmailReader.invite-calendar-index;
+                                            }
+                                        }
                                         if EmailReader.invite-can-respond : HorizontalBox {
                                             height: root.compact ? 44px : 32px; padding: 0px; spacing: 6px;
-                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Accept"); primary: EmailReader.invite-response == "ACCEPTED"; clicked => { EmailReader.respond-invite("accepted", EmailReader.invite-send-reply); } }
-                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Maybe"); primary: EmailReader.invite-response == "TENTATIVE"; clicked => { EmailReader.respond-invite("tentative", EmailReader.invite-send-reply); } }
-                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Decline"); primary: EmailReader.invite-response == "DECLINED"; clicked => { EmailReader.respond-invite("declined", EmailReader.invite-send-reply); } }
+                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Accept"); primary: EmailReader.invite-response == "ACCEPTED"; clicked => { EmailReader.respond-invite("accepted", EmailReader.invite-send-reply, EmailReader.invite-calendar-index); } }
+                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Maybe"); primary: EmailReader.invite-response == "TENTATIVE"; clicked => { EmailReader.respond-invite("tentative", EmailReader.invite-send-reply, EmailReader.invite-calendar-index); } }
+                                            Button { horizontal-stretch: 1; enabled: !EmailReader.invite-busy; text: @tr("Decline"); primary: EmailReader.invite-response == "DECLINED"; clicked => { EmailReader.respond-invite("declined", EmailReader.invite-send-reply, EmailReader.invite-calendar-index); } }
                                         }
                                         if EmailReader.invite-can-respond : CheckBox {
                                             text: @tr("Send my answer to the organizer");

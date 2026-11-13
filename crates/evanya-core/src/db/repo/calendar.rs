@@ -557,6 +557,92 @@ pub fn set_rsvp(conn: &Connection, event_id: i64, status: &str) -> Result<()> {
     Ok(())
 }
 
+/// The copy of an event that sits in a calendar of the account, if any: the
+/// one a server already holds first.
+pub fn calendar_copy(conn: &Connection, account_id: i64, uid: &str) -> Result<Option<i64>> {
+    conn.query_row(
+        "SELECT id FROM calendar_events
+         WHERE account_id = ?1 AND ical_uid = ?2
+           AND calendar_id IS NOT NULL AND deleted = 0
+         ORDER BY (caldav_href IS NOT NULL) DESC, id
+         LIMIT 1",
+        params![account_id, uid],
+        |row| row.get(0),
+    )
+    .optional()
+    .map_err(Into::into)
+}
+
+/// An answer that counts: ACCEPTED, TENTATIVE or DECLINED, in capitals.
+fn answered(status: Option<&str>) -> Option<String> {
+    let status = status?.trim().to_ascii_uppercase();
+    matches!(status.as_str(), "ACCEPTED" | "TENTATIVE" | "DECLINED").then_some(status)
+}
+
+fn bare_address(address: &str) -> String {
+    let address = address.trim();
+    let address = if address.len() >= 7 && address[..7].eq_ignore_ascii_case("mailto:") {
+        &address[7..]
+    } else {
+        address
+    };
+    address.to_ascii_lowercase()
+}
+
+/// Our answer to an invitation, over every stored copy of it. The PARTSTAT a
+/// server holds for us wins when we have no change of our own on its way,
+/// because another program may have answered since; then the answer given in
+/// Evanya; then any PARTSTAT of ours.
+pub fn own_answer(
+    conn: &Connection,
+    account_id: i64,
+    uid: &str,
+    own_email: &str,
+) -> Result<Option<String>> {
+    let mut stmt = conn.prepare(
+        "SELECT rsvp_status, attendees_json, caldav_href IS NOT NULL AND dirty = 0
+         FROM calendar_events
+         WHERE account_id = ?1 AND ical_uid = ?2 AND deleted = 0
+         ORDER BY id",
+    )?;
+    let rows = stmt
+        .query_map(params![account_id, uid], |row| {
+            Ok((
+                row.get::<_, Option<String>>(0)?,
+                row.get::<_, Option<String>>(1)?,
+                row.get::<_, bool>(2)?,
+            ))
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    let me = bare_address(own_email);
+    let own_partstat = |json: &Option<String>| -> Option<String> {
+        let attendees: Vec<EventAttendee> = serde_json::from_str(json.as_deref()?).ok()?;
+        attendees
+            .iter()
+            .find(|attendee| !me.is_empty() && bare_address(&attendee.email) == me)
+            .and_then(|attendee| answered(attendee.partstat.as_deref()))
+    };
+    let from_server = rows
+        .iter()
+        .filter(|(_, _, on_server)| *on_server)
+        .find_map(|(_, json, _)| own_partstat(json));
+    let from_evanya = || {
+        rows.iter()
+            .find_map(|(rsvp, _, _)| answered(rsvp.as_deref()))
+    };
+    let from_anywhere = || rows.iter().find_map(|(_, json, _)| own_partstat(json));
+    Ok(from_server.or_else(from_evanya).or_else(from_anywhere))
+}
+
+/// Put an event that is not on a server yet in a calendar.
+pub fn set_calendar(conn: &Connection, event_id: i64, calendar_id: i64) -> Result<()> {
+    conn.execute(
+        "UPDATE calendar_events SET calendar_id = ?2 WHERE id = ?1 AND caldav_href IS NULL",
+        params![event_id, calendar_id],
+    )?;
+    Ok(())
+}
+
 pub fn get(conn: &Connection, event_id: i64) -> Result<Option<CalendarEvent>> {
     let mut stmt = conn.prepare(event_select!("WHERE id = ?1"))?;
     let mut rows = stmt.query_map(params![event_id], from_row)?;
@@ -713,6 +799,48 @@ mod tests {
         assert_eq!(ev2.summary.as_deref(), Some("Sync v2"));
         assert_eq!(ev2.rsvp_status.as_deref(), Some("ACCEPTED"));
         assert_eq!(uid_and_sequence(&c, ev.id).unwrap().unwrap().1, 1);
+    }
+
+    #[test]
+    fn own_answer_follows_the_server_unless_a_change_is_pending() {
+        let c = testutil::calendar_conn();
+        upsert(&c, 1, 41, &sample_ics_event()).unwrap();
+        let id = for_message(&c, 41).unwrap()[0].id;
+        let answer = |c: &Connection| own_answer(c, 1, "evt-1@test", "MAILTO:Me@Test.dev").unwrap();
+        // Unanswered: NEEDS-ACTION is no answer.
+        assert_eq!(answer(&c), None);
+        assert_eq!(calendar_copy(&c, 1, "evt-1@test").unwrap(), None);
+
+        // Answered in Evanya.
+        set_rsvp(&c, id, "TENTATIVE").unwrap();
+        assert_eq!(answer(&c).as_deref(), Some("TENTATIVE"));
+
+        // On a server, where another program accepted since.
+        let calendar = seed_calendar(&c);
+        let mut accepted = sample_ics_event();
+        accepted.attendees[0].partstat = Some("ACCEPTED".into());
+        upsert_remote(&c, 1, calendar, "/x/evt.ics", "\"e1\"", "RAW", &accepted).unwrap();
+        assert_eq!(calendar_copy(&c, 1, "evt-1@test").unwrap(), Some(id));
+        assert_eq!(answer(&c).as_deref(), Some("ACCEPTED"));
+
+        // Our own change on its way to the server wins.
+        set_rsvp(&c, id, "DECLINED").unwrap();
+        mark_dirty(&c, id).unwrap();
+        assert_eq!(answer(&c).as_deref(), Some("DECLINED"));
+    }
+
+    #[test]
+    fn set_calendar_leaves_an_event_on_a_server_alone() {
+        let c = testutil::calendar_conn();
+        let first = seed_calendar(&c);
+        let second = seed_calendar_at(&c, "https://cal/y/", "Other");
+        upsert(&c, 1, 41, &sample_ics_event()).unwrap();
+        let id = for_message(&c, 41).unwrap()[0].id;
+        set_calendar(&c, id, first).unwrap();
+        assert_eq!(get(&c, id).unwrap().unwrap().calendar_id, Some(first));
+        clear_dirty_set_etag(&c, id, first, "/x/evt.ics", None, "RAW").unwrap();
+        set_calendar(&c, id, second).unwrap();
+        assert_eq!(get(&c, id).unwrap().unwrap().calendar_id, Some(first));
     }
 
     #[test]

@@ -55,6 +55,13 @@ pub struct Invitation {
     pub response: String,
     /// False for our own invitation, which has nobody to answer.
     pub can_respond: bool,
+    /// The organizer called the event off.
+    pub cancelled: bool,
+    /// The name of the calendar the event is in; empty while it is only in
+    /// the mail.
+    pub calendar_name: String,
+    /// The calendars of the account the event can go to, the default first.
+    pub calendars: Vec<(i64, String)>,
 }
 
 #[derive(Clone, Debug)]
@@ -2201,12 +2208,14 @@ impl CoreMailSource {
         event_id: i64,
         response: &str,
         send_reply: bool,
+        calendar_id: Option<i64>,
     ) -> Result<(), String> {
         self.core
             .rsvp_event(evanya_core::models::RsvpEventArgs {
                 event_id,
                 response: response.to_owned(),
                 send_reply,
+                calendar_id,
             })
             .await
             .map(|_| ())
@@ -2218,14 +2227,15 @@ impl CoreMailSource {
         &self,
         message_id: i64,
     ) -> Result<Option<Invitation>, String> {
-        let events = self
+        let Some(invitation) = self
             .core
-            .events_for_message(message_id)
+            .invitation_for_message(message_id)
             .await
-            .map_err(|error| error.to_string())?;
-        let Some(event) = events.into_iter().next() else {
+            .map_err(|error| error.to_string())?
+        else {
             return Ok(None);
         };
+        let event = invitation.event;
         let accounts = self
             .core
             .list_accounts()
@@ -2235,17 +2245,51 @@ impl CoreMailSource {
             .iter()
             .find(|account| account.id == event.account_id)
             .map(|account| account.email.as_str());
+        let calendars = self
+            .core
+            .list_calendars(Some(event.account_id))
+            .await
+            .map_err(|error| error.to_string())?;
+        let name = |calendar: &evanya_core::models::Calendar| {
+            calendar
+                .display_name
+                .clone()
+                .filter(|name| !name.trim().is_empty())
+                .unwrap_or_else(|| calendar.url.clone())
+        };
+        let calendar_name = calendars
+            .iter()
+            .find(|calendar| Some(calendar.id) == event.calendar_id)
+            .map(name)
+            .unwrap_or_default();
+        let mut targets = calendars
+            .iter()
+            .filter(|calendar| calendar.enabled && !calendar.read_only)
+            .collect::<Vec<_>>();
+        targets.sort_by_key(|calendar| !calendar.is_default);
+        let calendars = targets
+            .into_iter()
+            .map(|calendar| (calendar.id, name(calendar)))
+            .collect();
         let organizer = event.organizer.clone().unwrap_or_default();
+        let cancelled = event
+            .status
+            .as_deref()
+            .is_some_and(|status| status.eq_ignore_ascii_case("CANCELLED"));
         Ok(Some(Invitation {
-            can_respond: crate::calendar::is_invitation_from_someone_else(
-                event.is_local,
-                &organizer,
-                own_email,
-            ),
+            can_respond: !cancelled
+                && crate::calendar::is_invitation_from_someone_else(
+                    event.is_local,
+                    &organizer,
+                    own_email,
+                ),
             event_id: event.id,
             title: event.summary.clone().unwrap_or_default(),
             organizer,
-            response: event.rsvp_status.clone().unwrap_or_default(),
+            response: invitation.response.unwrap_or_default(),
+            cancelled,
+            calendar_name,
+            calendars,
         }))
     }
 

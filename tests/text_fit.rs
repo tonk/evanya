@@ -970,6 +970,27 @@ fn states() -> Vec<State> {
             reader.set_invite_organizer("ana.rivera@example.org".into());
             reader.set_invite_response("TENTATIVE".into());
             reader.set_invite_can_respond(true);
+            reader.set_invite_calendar("Work calendar of the platform team".into());
+        }),
+        // An unanswered invitation in no calendar yet offers a choice.
+        state("mail invitation calendar choice", |app| {
+            let reader = app.global::<EmailReader>();
+            reader.set_invite_event_id(7);
+            reader.set_invite_title("Quarterly planning review".into());
+            reader.set_invite_organizer("ana.rivera@example.org".into());
+            reader.set_invite_can_respond(true);
+            reader.set_invite_calendars(slint::ModelRc::new(slint::VecModel::from(vec![
+                slint::SharedString::from("Personal"),
+                slint::SharedString::from("Work calendar of the platform team"),
+            ])));
+        }),
+        state("mail invitation cancelled", |app| {
+            let reader = app.global::<EmailReader>();
+            reader.set_invite_event_id(7);
+            reader.set_invite_title("Quarterly planning review".into());
+            reader.set_invite_organizer("ana.rivera@example.org".into());
+            reader.set_invite_cancelled(true);
+            reader.set_invite_calendar("Personal".into());
         }),
         State {
             desktop_only: true,

@@ -5901,6 +5901,52 @@ impl Core {
             .await
     }
 
+    /// The invitation a message carries, for the reader: the event in a
+    /// calendar when it is in one, otherwise the one taken from the mail, and
+    /// our answer so far, wherever it was given.
+    pub async fn invitation_for_message(
+        &self,
+        message_id: i64,
+    ) -> Result<Option<MessageInvitation>> {
+        let Some(from_mail) = self
+            .events_for_message(message_id)
+            .await?
+            .into_iter()
+            .next()
+        else {
+            return Ok(None);
+        };
+        let account_id = from_mail.account_id;
+        let own_email = self
+            .db
+            .read(move |conn| repo::accounts::get(conn, account_id))
+            .await?
+            .map(|account| account.email)
+            .unwrap_or_default();
+        let mail_event_id = from_mail.id;
+        let found = self
+            .calendar_db
+            .read(move |conn| {
+                let Some((uid, _)) = repo::calendar::uid_and_sequence(conn, mail_event_id)? else {
+                    return Ok(None);
+                };
+                let event = match repo::calendar::calendar_copy(conn, account_id, &uid)? {
+                    Some(id) => repo::calendar::get(conn, id)?,
+                    None => None,
+                };
+                let response = repo::calendar::own_answer(conn, account_id, &uid, &own_email)?;
+                Ok(Some((event, response)))
+            })
+            .await?;
+        let Some((in_calendar, response)) = found else {
+            return Ok(None);
+        };
+        Ok(Some(MessageInvitation {
+            event: in_calendar.unwrap_or(from_mail),
+            response,
+        }))
+    }
+
     /// Create a meeting. The event lands on the local calendar immediately;
     /// if it has attendees, an invite email with an ICS (METHOD:REQUEST) is
     /// drafted and queued through the normal send pipeline (undo window,
@@ -6214,6 +6260,31 @@ impl Core {
             .await?
             .ok_or_else(|| CoreError::NotFound("account".into()))?;
 
+        // The calendar chosen for an invitation that is in none yet; an event
+        // already in a calendar stays there. Checked before anything is sent.
+        let place_in = match args.calendar_id.filter(|_| ev.calendar_id.is_none()) {
+            Some(calendar_id) => {
+                let cal = self
+                    .calendar_db
+                    .read(move |conn| repo::caldav::get_calendar(conn, calendar_id))
+                    .await?
+                    .ok_or_else(|| CoreError::NotFound("calendar".into()))?;
+                if cal.account_id != account_id {
+                    return Err(CoreError::Other(
+                        "calendar belongs to another account".into(),
+                    ));
+                }
+                if cal.read_only {
+                    return Err(CoreError::Other("calendar is read-only".into()));
+                }
+                if !cal.enabled {
+                    return Err(CoreError::Other("calendar is disabled".into()));
+                }
+                Some(calendar_id)
+            }
+            None => None,
+        };
+
         // Reply goes to the organizer; without one there is nobody to notify,
         // but we still record the response locally.
         if let Some(organizer) = ev
@@ -6260,9 +6331,16 @@ impl Core {
         }
 
         self.calendar_db
-            .write(move |conn| repo::calendar::set_rsvp(conn, event_id, partstat))
+            .write(move |conn| {
+                repo::calendar::set_rsvp(conn, event_id, partstat)?;
+                if let Some(calendar_id) = place_in {
+                    repo::calendar::set_calendar(conn, event_id, calendar_id)?;
+                }
+                Ok(())
+            })
             .await?;
-        // CalDAV-backed invites also sync the PARTSTAT change to the server.
+        // CalDAV-backed invites also sync the PARTSTAT change to the server;
+        // one in no calendar yet goes to the chosen or the default calendar.
         self.enqueue_cal_push(event_id, ev.account_id, "cal_put")
             .await?;
         self.calendar_db

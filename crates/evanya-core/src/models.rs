@@ -2776,6 +2776,24 @@ pub struct RsvpEventArgs {
     /// Mail the answer to the organizer. Off: only note it in the calendar.
     #[serde(default = "send_reply_by_default")]
     pub send_reply: bool,
+    /// The calendar of the account to put the event in, for an invitation
+    /// that is not in a calendar yet. None: the account's default calendar.
+    /// An event already in a calendar stays where it is.
+    #[serde(default)]
+    pub calendar_id: Option<i64>,
+}
+
+/// The invitation a message carries, as the reader shows it.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MessageInvitation {
+    /// The stored event: the copy in a calendar when there is one, otherwise
+    /// the one taken from the mail.
+    pub event: CalendarEvent,
+    /// Our answer so far: ACCEPTED | TENTATIVE | DECLINED, from Evanya or
+    /// from another program that answered for the same calendar. None while
+    /// unanswered.
+    pub response: Option<String>,
 }
 
 fn send_reply_by_default() -> bool {

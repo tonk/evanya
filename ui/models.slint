@@ -556,8 +556,18 @@ export global EmailReader {
     in-out property <bool> invite-busy: false;
     // Mail the answer to the organizer; off only notes it in the calendar.
     in-out property <bool> invite-send-reply: true;
+    // The organizer called the event off.
+    in-out property <bool> invite-cancelled: false;
+    // The calendar the event is in; empty while it is only in the mail.
+    in-out property <string> invite-calendar;
+    // The calendars it can go to when answered, and the one chosen.
+    in-out property <[string]> invite-calendars;
+    in-out property <int> invite-calendar-index: 0;
     callback load-invite();
-    callback respond-invite(string, bool);
+    // The answer, whether to mail it, and the index of the chosen calendar.
+    callback respond-invite(string, bool, int);
+    // Take a cancelled event out of the calendar.
+    callback remove-invite();
 }
 
 export struct MailAttachment {

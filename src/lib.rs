@@ -3671,6 +3671,7 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             i64::from(event_id),
             response.as_str(),
             true,
+            None,
         )) {
             app.set_sync_status(UiMessage::detail("Could not send your response: {}", error));
             return;
