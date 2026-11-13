@@ -5903,47 +5903,120 @@ impl Core {
 
     /// The invitation a message carries, for the reader: the event in a
     /// calendar when it is in one, otherwise the one taken from the mail, and
-    /// our answer so far, wherever it was given.
+    /// our answer so far, wherever it was given. For an attendee's answer to
+    /// one of our invitations, that answer and our event.
     pub async fn invitation_for_message(
         &self,
         message_id: i64,
     ) -> Result<Option<MessageInvitation>> {
-        let Some(from_mail) = self
+        let from_mail = self
             .events_for_message(message_id)
             .await?
             .into_iter()
-            .next()
-        else {
-            return Ok(None);
+            .next();
+        let (uid, account_id, reply) = match &from_mail {
+            Some(event) => {
+                let event_id = event.id;
+                let found = self
+                    .calendar_db
+                    .read(move |conn| {
+                        Ok((
+                            repo::calendar::uid_and_sequence(conn, event_id)?,
+                            repo::calendar::invite_account(conn, event_id)?,
+                        ))
+                    })
+                    .await?;
+                let (Some((uid, _)), Some(account_id)) = found else {
+                    return Ok(None);
+                };
+                (uid, account_id, None)
+            }
+            None => {
+                let replies = self
+                    .calendar_db
+                    .read(move |conn| repo::calendar::replies_for_message(conn, message_id))
+                    .await?;
+                let Some(reply) = replies.into_iter().next() else {
+                    return Ok(None);
+                };
+                let Some(row) = self
+                    .db
+                    .read(move |conn| repo::messages::get_row(conn, message_id))
+                    .await?
+                else {
+                    return Ok(None);
+                };
+                (reply.ical_uid.clone(), row.account_id, Some(reply))
+            }
         };
-        let account_id = from_mail.account_id;
         let own_email = self
             .db
             .read(move |conn| repo::accounts::get(conn, account_id))
             .await?
             .map(|account| account.email)
             .unwrap_or_default();
-        let mail_event_id = from_mail.id;
-        let found = self
+        let lookup_uid = uid.clone();
+        let lookup_email = own_email.clone();
+        let organizing = reply.is_some();
+        let (stored, response) = self
             .calendar_db
             .read(move |conn| {
-                let Some((uid, _)) = repo::calendar::uid_and_sequence(conn, mail_event_id)? else {
-                    return Ok(None);
+                let id = if organizing {
+                    repo::calendar::organized_event(conn, account_id, &lookup_uid)?
+                } else {
+                    repo::calendar::calendar_copy(conn, account_id, &lookup_uid)?
                 };
-                let event = match repo::calendar::calendar_copy(conn, account_id, &uid)? {
-                    Some(id) => repo::calendar::get(conn, id)?,
+                let stored = match id {
+                    Some(id) => repo::calendar::get(conn, id)?
+                        .zip(repo::calendar::uid_and_sequence(conn, id)?),
                     None => None,
                 };
-                let response = repo::calendar::own_answer(conn, account_id, &uid, &own_email)?;
-                Ok(Some((event, response)))
+                let response =
+                    repo::calendar::own_answer(conn, account_id, &lookup_uid, &lookup_email)?;
+                Ok((stored, response))
             })
             .await?;
-        let Some((in_calendar, response)) = found else {
-            return Ok(None);
+        let sequence = stored.as_ref().map(|(_, (_, sequence))| *sequence);
+        let event = stored.map(|(event, _)| event).or(from_mail);
+        let sequence = match (sequence, &event) {
+            (Some(sequence), _) => sequence,
+            (None, Some(event)) => {
+                let event_id = event.id;
+                self.calendar_db
+                    .read(move |conn| repo::calendar::uid_and_sequence(conn, event_id))
+                    .await?
+                    .map_or(0, |(_, sequence)| sequence)
+            }
+            (None, None) => 0,
         };
+        // An answer to an event not stored here still has a title.
+        let reply_summary = reply.as_ref().and_then(|reply| reply.summary.clone());
+        // Our own answer, as sent, reads as our answer to the invitation.
+        let own =
+            |email: &str| !own_email.is_empty() && email.eq_ignore_ascii_case(own_email.trim());
+        let (response, answer) = match reply {
+            Some(reply) if own(&reply.attendee_email) => (Some(reply.partstat), None),
+            Some(reply) => (
+                response,
+                Some(InvitationAnswer {
+                    email: reply.attendee_email,
+                    name: reply.attendee_name,
+                    partstat: reply.partstat,
+                }),
+            ),
+            None => (response, None),
+        };
+        let summary = event
+            .as_ref()
+            .and_then(|event| event.summary.clone())
+            .or(reply_summary);
         Ok(Some(MessageInvitation {
-            event: in_calendar.unwrap_or(from_mail),
+            updated: answer.is_none() && response.is_none() && sequence > 0,
+            event,
+            summary,
+            account_id,
             response,
+            answer,
         }))
     }
 
@@ -6241,27 +6314,31 @@ impl Core {
             _ => return Err(CoreError::Other("invalid RSVP response".into())),
         };
         let event_id = args.event_id;
-        let (ev, uid_seq) = self
+        let (ev, uid_seq, invite_account) = self
             .calendar_db
             .read(move |conn| {
                 Ok((
                     repo::calendar::get(conn, event_id)?,
                     repo::calendar::uid_and_sequence(conn, event_id)?,
+                    repo::calendar::invite_account(conn, event_id)?,
                 ))
             })
             .await?;
         let ev = ev.ok_or_else(|| CoreError::NotFound("event".into()))?;
         let (uid, sequence) = uid_seq.ok_or_else(|| CoreError::NotFound("event".into()))?;
 
-        let account_id = ev.account_id;
+        // The account the invitation came in on answers it, also when its
+        // event sits in a calendar of another account.
+        let account_id = invite_account.unwrap_or(ev.account_id);
         let account = self
             .db
             .read(move |conn| repo::accounts::get(conn, account_id))
             .await?
             .ok_or_else(|| CoreError::NotFound("account".into()))?;
 
-        // The calendar chosen for an invitation that is in none yet; an event
-        // already in a calendar stays there. Checked before anything is sent.
+        // The calendar chosen for an invitation that is in none yet, of any
+        // account; an event already in a calendar stays there. Checked before
+        // anything is sent.
         let place_in = match args.calendar_id.filter(|_| ev.calendar_id.is_none()) {
             Some(calendar_id) => {
                 let cal = self
@@ -6269,9 +6346,23 @@ impl Core {
                     .read(move |conn| repo::caldav::get_calendar(conn, calendar_id))
                     .await?
                     .ok_or_else(|| CoreError::NotFound("calendar".into()))?;
-                if cal.account_id != account_id {
+                let calendar_account = cal.account_id;
+                let taken_uid = uid.clone();
+                let taken = calendar_account != ev.account_id
+                    && self
+                        .calendar_db
+                        .read(move |conn| {
+                            repo::calendar::mail_uid_taken(
+                                conn,
+                                calendar_account,
+                                &taken_uid,
+                                event_id,
+                            )
+                        })
+                        .await?;
+                if taken {
                     return Err(CoreError::Other(
-                        "calendar belongs to another account".into(),
+                        "that account has its own copy of this invitation".into(),
                     ));
                 }
                 if cal.read_only {
@@ -6280,7 +6371,7 @@ impl Core {
                 if !cal.enabled {
                     return Err(CoreError::Other("calendar is disabled".into()));
                 }
-                Some(calendar_id)
+                Some((calendar_id, calendar_account))
             }
             None => None,
         };
@@ -6330,18 +6421,26 @@ impl Core {
             .await?;
         }
 
+        let own_email = account.email.clone();
         self.calendar_db
             .write(move |conn| {
                 repo::calendar::set_rsvp(conn, event_id, partstat)?;
-                if let Some(calendar_id) = place_in {
-                    repo::calendar::set_calendar(conn, event_id, calendar_id)?;
+                repo::calendar::set_own_partstat(conn, event_id, &own_email, partstat)?;
+                if let Some((calendar_id, calendar_account)) = place_in {
+                    repo::calendar::move_to_calendar(
+                        conn,
+                        event_id,
+                        calendar_id,
+                        calendar_account,
+                    )?;
                 }
                 Ok(())
             })
             .await?;
         // CalDAV-backed invites also sync the PARTSTAT change to the server;
         // one in no calendar yet goes to the chosen or the default calendar.
-        self.enqueue_cal_push(event_id, ev.account_id, "cal_put")
+        let sync_account = place_in.map_or(ev.account_id, |(_, account)| account);
+        self.enqueue_cal_push(event_id, sync_account, "cal_put")
             .await?;
         self.calendar_db
             .read(move |conn| repo::calendar::get(conn, event_id))

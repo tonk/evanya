@@ -40,6 +40,9 @@ pub struct IcsEvent {
     pub ends_at_ms: Option<i64>,
     pub all_day: bool,
     pub status: Option<String>,
+    /// When the organizer or attendee wrote this copy (DTSTAMP); orders the
+    /// answers of one attendee that arrive out of order.
+    pub dtstamp_ms: Option<i64>,
 }
 
 /// Unfold RFC 5545 folded lines (continuations start with space or tab).
@@ -460,6 +463,7 @@ pub fn parse_ics(text: &str) -> Vec<IcsEvent> {
                     "DESCRIPTION" => ev.description = Some(unescape(value.trim())),
                     "STATUS" => ev.status = Some(value.trim().to_ascii_uppercase()),
                     "SEQUENCE" => ev.sequence = value.trim().parse().unwrap_or(0),
+                    "DTSTAMP" => ev.dtstamp_ms = parse_dt(value).map(|(ms, _)| ms),
                     "RRULE" => ev.rrule = Some(value.trim().to_string()),
                     "RECURRENCE-ID" => {
                         ev.recurrence_id_ms = parse_dt(value).map(|(ms, _)| ms);

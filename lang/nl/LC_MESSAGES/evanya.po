@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-13 08:24+0000\n"
+"POT-Creation-Date: 2026-11-13 08:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -25,17 +25,17 @@ msgstr "Grafiet"
 msgid "Light"
 msgstr "Licht"
 
-#: ui/app-icon.slint:22 ui/views/mail-reading-pane.slint:2109
+#: ui/app-icon.slint:22 ui/views/mail-reading-pane.slint:2113
 msgid "Blue"
 msgstr "Blauw"
 
 #: ui/app-icon.slint:23 ui/components/theme-editor.slint:623
-#: ui/views/mail-reading-pane.slint:2114
+#: ui/views/mail-reading-pane.slint:2118
 msgid "Green"
 msgstr "Groen"
 
 #: ui/app-icon.slint:24 ui/components/theme-editor.slint:624
-#: ui/views/mail-reading-pane.slint:2110
+#: ui/views/mail-reading-pane.slint:2114
 msgid "Purple"
 msgstr "Paars"
 
@@ -1293,7 +1293,7 @@ msgstr "Lokale agenda"
 
 #: ui/app.slint:468 ui/components/calendar.slint:300
 #: ui/components/calendar.slint:349 ui/components/calendar.slint:490
-#: ui/views/mail-reading-pane.slint:1353
+#: ui/views/mail-reading-pane.slint:1357
 msgid "Calendar"
 msgstr "Agenda"
 
@@ -2108,7 +2108,7 @@ msgid "Could not mark message as read: {}"
 msgstr "Kan bericht niet markeren als gelezen: {}"
 
 #: ui/app.slint:685 ui/views/mail-reading-pane.slint:196
-#: ui/views/mail-reading-pane.slint:1375
+#: ui/views/mail-reading-pane.slint:1379
 msgid "Loading message…"
 msgstr "Bericht laden…"
 
@@ -2137,7 +2137,7 @@ msgstr ""
 #: ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
 #: ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301
 #: ui/dialogs/settings-dialog.slint:3624 ui/views/files-view.slint:491
-#: ui/views/mail-reading-pane.slint:2130
+#: ui/views/mail-reading-pane.slint:2134
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -3958,7 +3958,7 @@ msgid "Revert"
 msgstr "Terugdraaien"
 
 #: ui/components/theme-editor.slint:785 ui/dialogs/settings-dialog.slint:2336
-#: ui/views/mail-reading-pane.slint:2135
+#: ui/views/mail-reading-pane.slint:2139
 msgid "Save"
 msgstr "Opslaan"
 
@@ -4240,7 +4240,7 @@ msgstr "Op het hoogste niveau aanmaken"
 msgid "Inside “{}”"
 msgstr "Binnen “{}”"
 
-#: ui/dialogs/folder-dialog.slint:133 ui/views/mail-reading-pane.slint:2084
+#: ui/dialogs/folder-dialog.slint:133 ui/views/mail-reading-pane.slint:2088
 msgid "Create label"
 msgstr "Label aanmaken"
 
@@ -4958,7 +4958,7 @@ msgstr "Instellingen opslaan"
 
 #: ui/dialogs/rendering-info-dialog.slint:25
 #: ui/views/mail-reading-pane.slint:343 ui/views/mail-reading-pane.slint:381
-#: ui/views/mail-reading-pane.slint:2003
+#: ui/views/mail-reading-pane.slint:2007
 msgid "About email rendering"
 msgstr "Over e-mailweergave"
 
@@ -6356,7 +6356,7 @@ msgstr "Lezen"
 msgid "Find in message"
 msgstr "Zoeken in bericht"
 
-#: ui/dialogs/settings-dialog.slint:2841 ui/views/mail-reading-pane.slint:1696
+#: ui/dialogs/settings-dialog.slint:2841 ui/views/mail-reading-pane.slint:1700
 msgid "Caret browsing"
 msgstr "Cursornavigatie"
 
@@ -6732,7 +6732,7 @@ msgstr "Profielnaam"
 msgid "Personal or Work"
 msgstr "Privé of Werk"
 
-#: ui/dialogs/settings-dialog.slint:3576 ui/views/mail-reading-pane.slint:2099
+#: ui/dialogs/settings-dialog.slint:3576 ui/views/mail-reading-pane.slint:2103
 msgid "Color"
 msgstr "Kleur"
 
@@ -7804,7 +7804,7 @@ msgstr "Domein van afzender geverifieerd met DMARC en DKIM"
 msgid "to {}"
 msgstr "aan {}"
 
-#: ui/views/mail-reading-pane.slint:327 ui/views/mail-reading-pane.slint:1987
+#: ui/views/mail-reading-pane.slint:327 ui/views/mail-reading-pane.slint:1991
 msgid "Continue editing"
 msgstr "Verder bewerken"
 
@@ -7887,7 +7887,7 @@ msgstr "Beschikbare labels"
 msgid "Smart category"
 msgstr "Slimme categorie"
 
-#: ui/views/mail-reading-pane.slint:996 ui/views/mail-reading-pane.slint:2084
+#: ui/views/mail-reading-pane.slint:996 ui/views/mail-reading-pane.slint:2088
 msgid "Edit label"
 msgstr "Label bewerken"
 
@@ -7923,7 +7923,7 @@ msgstr "Zoeken sluiten"
 msgid "Some images could not be loaded."
 msgstr "Sommige afbeeldingen konden niet worden geladen."
 
-#: ui/views/mail-reading-pane.slint:1316 ui/views/mail-reading-pane.slint:1694
+#: ui/views/mail-reading-pane.slint:1316 ui/views/mail-reading-pane.slint:1698
 msgid "Retry images"
 msgstr "Afbeeldingen opnieuw proberen"
 
@@ -7932,158 +7932,174 @@ msgid "Invitation"
 msgstr "Uitnodiging"
 
 #: ui/views/mail-reading-pane.slint:1329
+msgid "{} accepted your invitation."
+msgstr "{} heeft je uitnodiging geaccepteerd."
+
+#: ui/views/mail-reading-pane.slint:1330
+msgid "{} answered maybe to your invitation."
+msgstr "{} heeft misschien geantwoord op je uitnodiging."
+
+#: ui/views/mail-reading-pane.slint:1331
+msgid "{} declined your invitation."
+msgstr "{} heeft je uitnodiging afgewezen."
+
+#: ui/views/mail-reading-pane.slint:1332
 msgid "This event has been cancelled."
 msgstr "Deze afspraak is geannuleerd."
 
-#: ui/views/mail-reading-pane.slint:1330
+#: ui/views/mail-reading-pane.slint:1333
 msgid "You accepted this invitation."
 msgstr "Je hebt deze uitnodiging geaccepteerd."
 
-#: ui/views/mail-reading-pane.slint:1331
+#: ui/views/mail-reading-pane.slint:1334
 msgid "You answered maybe to this invitation."
 msgstr "Je hebt 'misschien' geantwoord op deze uitnodiging."
 
-#: ui/views/mail-reading-pane.slint:1332
+#: ui/views/mail-reading-pane.slint:1335
 msgid "You declined this invitation."
 msgstr "Je hebt deze uitnodiging afgewezen."
 
-#: ui/views/mail-reading-pane.slint:1333
+#: ui/views/mail-reading-pane.slint:1336
+msgid "The invitation has changed. Will you come?"
+msgstr "De uitnodiging is gewijzigd. Kom je?"
+
+#: ui/views/mail-reading-pane.slint:1337
 msgid "Will you come?"
 msgstr "Kom je?"
 
-#: ui/views/mail-reading-pane.slint:1333
+#: ui/views/mail-reading-pane.slint:1337
 msgid "This is your own invitation."
 msgstr "Dit is je eigen uitnodiging."
 
-#: ui/views/mail-reading-pane.slint:1339
+#: ui/views/mail-reading-pane.slint:1343
 msgid "In calendar {}"
 msgstr "In agenda {}"
 
-#: ui/views/mail-reading-pane.slint:1345
+#: ui/views/mail-reading-pane.slint:1349
 msgid "Remove from calendar"
 msgstr "Uit agenda verwijderen"
 
-#: ui/views/mail-reading-pane.slint:1369
+#: ui/views/mail-reading-pane.slint:1373
 msgid "Send my answer to the organizer"
 msgstr "Mijn antwoord naar de organisator sturen"
 
-#: ui/views/mail-reading-pane.slint:1376
+#: ui/views/mail-reading-pane.slint:1380
 msgid "Reload message"
 msgstr "Bericht opnieuw laden"
 
-#: ui/views/mail-reading-pane.slint:1438
+#: ui/views/mail-reading-pane.slint:1442
 msgid "Remote images were blocked to protect your privacy."
 msgstr "Externe afbeeldingen zijn geblokkeerd om je privacy te beschermen."
 
-#: ui/views/mail-reading-pane.slint:1447
+#: ui/views/mail-reading-pane.slint:1451
 msgid "Load images"
 msgstr "Afbeeldingen laden"
 
-#: ui/views/mail-reading-pane.slint:1485
+#: ui/views/mail-reading-pane.slint:1489
 msgid "Loading image…"
 msgstr "Afbeelding laden…"
 
-#: ui/views/mail-reading-pane.slint:1485
+#: ui/views/mail-reading-pane.slint:1489
 msgid "Blocked image"
 msgstr "Geblokkeerde afbeelding"
 
-#: ui/views/mail-reading-pane.slint:1485
+#: ui/views/mail-reading-pane.slint:1489
 msgid "Image exceeds limits"
 msgstr "Afbeelding overschrijdt limieten"
 
-#: ui/views/mail-reading-pane.slint:1485
+#: ui/views/mail-reading-pane.slint:1489
 msgid "Image unavailable"
 msgstr "Afbeelding niet beschikbaar"
 
-#: ui/views/mail-reading-pane.slint:1633
+#: ui/views/mail-reading-pane.slint:1637
 msgid "Show rendered email"
 msgstr "Weergegeven e-mail tonen"
 
-#: ui/views/mail-reading-pane.slint:1644
+#: ui/views/mail-reading-pane.slint:1648
 msgid "Loading the full message…"
 msgstr "Het volledige bericht wordt geladen…"
 
-#: ui/views/mail-reading-pane.slint:1645
+#: ui/views/mail-reading-pane.slint:1649
 msgid "Could not load the full message: {}"
 msgstr "Het volledige bericht kon niet worden geladen: {}"
 
-#: ui/views/mail-reading-pane.slint:1661
+#: ui/views/mail-reading-pane.slint:1665
 msgid "Only the start, with headers."
 msgstr "Alleen het begin, met headers."
 
-#: ui/views/mail-reading-pane.slint:1661
+#: ui/views/mail-reading-pane.slint:1665
 msgid "The whole message, with headers."
 msgstr "Het hele bericht, met headers."
 
-#: ui/views/mail-reading-pane.slint:1662
+#: ui/views/mail-reading-pane.slint:1666
 msgid "Copy this HTML into your GitHub rendering issue."
 msgstr "Kopieer deze HTML naar je GitHub-issue over de weergave."
 
-#: ui/views/mail-reading-pane.slint:1672
+#: ui/views/mail-reading-pane.slint:1676
 msgid "Copy message"
 msgstr "Bericht kopiëren"
 
-#: ui/views/mail-reading-pane.slint:1683
+#: ui/views/mail-reading-pane.slint:1687
 msgid "Show email"
 msgstr "E-mail tonen"
 
-#: ui/views/mail-reading-pane.slint:1693
+#: ui/views/mail-reading-pane.slint:1697
 msgid "View original plain text"
 msgstr "Oorspronkelijke platte tekst bekijken"
 
-#: ui/views/mail-reading-pane.slint:1695
+#: ui/views/mail-reading-pane.slint:1699
 msgid "Copy formatted selection"
 msgstr "Opgemaakte selectie kopiëren"
 
-#: ui/views/mail-reading-pane.slint:1699
+#: ui/views/mail-reading-pane.slint:1703
 msgid "Copy selected text"
 msgstr "Geselecteerde tekst kopiëren"
 
-#: ui/views/mail-reading-pane.slint:1709
+#: ui/views/mail-reading-pane.slint:1713
 msgid "Copy all email text"
 msgstr "Alle tekst van e-mail kopiëren"
 
-#: ui/views/mail-reading-pane.slint:1719
+#: ui/views/mail-reading-pane.slint:1723
 msgid "Select all email text"
 msgstr "Alle tekst van e-mail selecteren"
 
-#: ui/views/mail-reading-pane.slint:1737
+#: ui/views/mail-reading-pane.slint:1741
 msgid "Link: {}"
 msgstr "Link: {}"
 
-#: ui/views/mail-reading-pane.slint:1926
+#: ui/views/mail-reading-pane.slint:1930
 msgid "Heading: {}"
 msgstr "Kop: {}"
 
-#: ui/views/mail-reading-pane.slint:2048
+#: ui/views/mail-reading-pane.slint:2052
 msgid "No message selected"
 msgstr "Geen bericht geselecteerd"
 
-#: ui/views/mail-reading-pane.slint:2049
+#: ui/views/mail-reading-pane.slint:2053
 msgid "Choose an email to read it here."
 msgstr "Kies een e-mail om die hier te lezen."
 
-#: ui/views/mail-reading-pane.slint:2091
+#: ui/views/mail-reading-pane.slint:2095
 msgid "Label name"
 msgstr "Labelnaam"
 
-#: ui/views/mail-reading-pane.slint:2111
+#: ui/views/mail-reading-pane.slint:2115
 msgid "Pink"
 msgstr "Roze"
 
-#: ui/views/mail-reading-pane.slint:2112
+#: ui/views/mail-reading-pane.slint:2116
 msgid "Red"
 msgstr "Rood"
 
-#: ui/views/mail-reading-pane.slint:2113
+#: ui/views/mail-reading-pane.slint:2117
 msgid "Amber"
 msgstr "Amber"
 
-#: ui/views/mail-reading-pane.slint:2116
+#: ui/views/mail-reading-pane.slint:2120
 msgid "Slate"
 msgstr "Leisteen"
 
-#: ui/views/mail-reading-pane.slint:2121
+#: ui/views/mail-reading-pane.slint:2125
 msgid "Use across all accounts (local only)"
 msgstr "Voor alle accounts gebruiken (alleen lokaal)"
 

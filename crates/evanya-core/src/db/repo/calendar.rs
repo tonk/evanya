@@ -2,6 +2,7 @@ use crate::calendar::IcsEvent;
 use crate::error::Result;
 use crate::models::{CalendarEvent, EventAttendee, UpdateEventArgs};
 use rusqlite::{Connection, OptionalExtension, Row, params};
+use std::collections::BTreeMap;
 
 use super::parse_json_column;
 
@@ -105,14 +106,16 @@ fn attendees_to_json(list: &[EventAttendee]) -> Result<Option<String>> {
     Ok(Some(serde_json::to_string(list)?))
 }
 
-/// Pick the one row an email invitation is allowed to update. Prefer the row
-/// already linked to mail, then a detached row, then a stable provider copy.
+/// Pick the one row an email invitation is allowed to update: one of the
+/// account, or one put in a calendar of another account that the invitation
+/// came in on. Prefer the row already linked to mail, then a detached row,
+/// then a stable provider copy.
 /// A UID may exist in multiple provider calendars, so callers must never
 /// update every matching row.
 fn preferred_mail_row(conn: &Connection, account_id: i64, uid: &str) -> Result<Option<i64>> {
     conn.query_row(
         "SELECT id FROM calendar_events
-         WHERE account_id = ?1 AND ical_uid = ?2
+         WHERE ical_uid = ?2 AND (account_id = ?1 OR invite_account_id = ?1)
          ORDER BY (message_id IS NOT NULL) DESC,
                   (calendar_id IS NULL) DESC, id
          LIMIT 1",
@@ -129,8 +132,14 @@ fn preferred_mail_row(conn: &Connection, account_id: i64, uid: &str) -> Result<O
 /// order and the matching REQUEST may only arrive later. REQUEST replaces the
 /// details only when its SEQUENCE is not older than the stored one, and never
 /// revives a CANCELLED event without a strictly newer SEQUENCE. Our own RSVP
-/// state, the is_local flag, and CalDAV sync bookkeeping survive updates.
+/// state survives updates, except a newer one that moves the event; the
+/// is_local flag and CalDAV sync bookkeeping always do. A REPLY only records
+/// the attendee's answer.
 pub fn upsert(conn: &Connection, account_id: i64, message_id: i64, ev: &IcsEvent) -> Result<()> {
+    // An attendee's answer changes nothing but that attendee's status.
+    if ev.method.as_deref() == Some("REPLY") {
+        return record_reply(conn, account_id, message_id, ev);
+    }
     if ev.method.as_deref() == Some("CANCEL") {
         if let Some(id) = preferred_mail_row(conn, account_id, &ev.uid)? {
             // A stale cancellation must not override a newer REQUEST.
@@ -176,7 +185,13 @@ pub fn upsert(conn: &Connection, account_id: i64, message_id: i64, ev: &IcsEvent
                 message_id = ?2, method = ?3, summary = ?4, location = ?5,
                 organizer = ?6, description = ?7, attendees_json = ?8,
                 join_url = ?9, sequence = ?10, rrule = ?11, tzid = ?12,
-                starts_at = ?13, ends_at = ?14, all_day = ?15, status = ?16
+                starts_at = ?13, ends_at = ?14, all_day = ?15, status = ?16,
+                -- A newer invitation that moves the event asks again, as the
+                -- organizer resets every answer then.
+                rsvp_status = CASE
+                    WHEN ?10 > sequence AND (starts_at IS NOT ?13 OR ends_at IS NOT ?14
+                         OR all_day IS NOT ?15 OR rrule IS NOT ?11)
+                    THEN NULL ELSE rsvp_status END
              WHERE id = ?1 AND dirty = 0
                AND (?10 > sequence
                     OR (?10 = sequence AND COALESCE(status, '') != 'CANCELLED'))",
@@ -307,6 +322,7 @@ pub fn upsert_remote(
                     ev.status,
                 ],
             )?;
+            apply_replies(conn, account_id, &ev.uid)?;
             Ok(false)
         }
         None => {
@@ -338,6 +354,7 @@ pub fn upsert_remote(
                     ev.status,
                 ],
             )?;
+            apply_replies(conn, account_id, &ev.uid)?;
             Ok(true)
         }
     }
@@ -557,12 +574,12 @@ pub fn set_rsvp(conn: &Connection, event_id: i64, status: &str) -> Result<()> {
     Ok(())
 }
 
-/// The copy of an event that sits in a calendar of the account, if any: the
-/// one a server already holds first.
+/// The copy of an invitation of the account that sits in a calendar, its own
+/// or one of another account, if any: the one a server already holds first.
 pub fn calendar_copy(conn: &Connection, account_id: i64, uid: &str) -> Result<Option<i64>> {
     conn.query_row(
         "SELECT id FROM calendar_events
-         WHERE account_id = ?1 AND ical_uid = ?2
+         WHERE ical_uid = ?2 AND (account_id = ?1 OR invite_account_id = ?1)
            AND calendar_id IS NOT NULL AND deleted = 0
          ORDER BY (caldav_href IS NOT NULL) DESC, id
          LIMIT 1",
@@ -602,7 +619,7 @@ pub fn own_answer(
     let mut stmt = conn.prepare(
         "SELECT rsvp_status, attendees_json, caldav_href IS NOT NULL AND dirty = 0
          FROM calendar_events
-         WHERE account_id = ?1 AND ical_uid = ?2 AND deleted = 0
+         WHERE ical_uid = ?2 AND (account_id = ?1 OR invite_account_id = ?1) AND deleted = 0
          ORDER BY id",
     )?;
     let rows = stmt
@@ -634,13 +651,217 @@ pub fn own_answer(
     Ok(from_server.or_else(from_evanya).or_else(from_anywhere))
 }
 
-/// Put an event that is not on a server yet in a calendar.
-pub fn set_calendar(conn: &Connection, event_id: i64, calendar_id: i64) -> Result<()> {
+/// Put an event that is not on a server yet in a calendar, of its own account
+/// or of another one. Moved to another account, it remembers the mail account
+/// its invitation came in on.
+pub fn move_to_calendar(
+    conn: &Connection,
+    event_id: i64,
+    calendar_id: i64,
+    calendar_account_id: i64,
+) -> Result<()> {
     conn.execute(
-        "UPDATE calendar_events SET calendar_id = ?2 WHERE id = ?1 AND caldav_href IS NULL",
-        params![event_id, calendar_id],
+        "UPDATE calendar_events SET
+            invite_account_id = CASE WHEN account_id != ?3
+                THEN COALESCE(invite_account_id, account_id) ELSE invite_account_id END,
+            account_id = ?3,
+            calendar_id = ?2
+         WHERE id = ?1 AND caldav_href IS NULL",
+        params![event_id, calendar_id, calendar_account_id],
+    )?;
+    // Back with the account it came in on, it needs no reminder of it.
+    conn.execute(
+        "UPDATE calendar_events SET invite_account_id = NULL
+         WHERE id = ?1 AND invite_account_id = account_id",
+        params![event_id],
     )?;
     Ok(())
+}
+
+/// The mail account an event's invitation came in on.
+pub fn invite_account(conn: &Connection, event_id: i64) -> Result<Option<i64>> {
+    conn.query_row(
+        "SELECT COALESCE(invite_account_id, account_id) FROM calendar_events WHERE id = ?1",
+        params![event_id],
+        |row| row.get(0),
+    )
+    .optional()
+    .map_err(Into::into)
+}
+
+/// Whether another event of the account already has this UID and a message.
+pub fn mail_uid_taken(
+    conn: &Connection,
+    account_id: i64,
+    uid: &str,
+    except_event_id: i64,
+) -> Result<bool> {
+    Ok(conn.query_row(
+        "SELECT EXISTS(SELECT 1 FROM calendar_events
+         WHERE account_id = ?1 AND ical_uid = ?2 AND message_id IS NOT NULL AND id != ?3)",
+        params![account_id, uid, except_event_id],
+        |row| row.get(0),
+    )?)
+}
+
+/// Set our own PARTSTAT among the attendees of an event, so the answer goes
+/// to the server with the event whichever account syncs it.
+pub fn set_own_partstat(
+    conn: &Connection,
+    event_id: i64,
+    own_email: &str,
+    partstat: &str,
+) -> Result<()> {
+    let json: Option<String> = conn
+        .query_row(
+            "SELECT attendees_json FROM calendar_events WHERE id = ?1",
+            params![event_id],
+            |row| row.get(0),
+        )
+        .optional()?
+        .flatten();
+    let Some(json) = json else {
+        return Ok(());
+    };
+    let mut attendees: Vec<EventAttendee> = serde_json::from_str(&json)?;
+    let me = bare_address(own_email);
+    let mut changed = false;
+    for attendee in attendees
+        .iter_mut()
+        .filter(|attendee| !me.is_empty() && bare_address(&attendee.email) == me)
+    {
+        attendee.partstat = Some(partstat.to_owned());
+        changed = true;
+    }
+    if changed {
+        conn.execute(
+            "UPDATE calendar_events SET attendees_json = ?2 WHERE id = ?1",
+            params![event_id, attendees_to_json(&attendees)?],
+        )?;
+    }
+    Ok(())
+}
+
+/// An answer an attendee mailed to one of our invitations.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InvitationReply {
+    pub ical_uid: String,
+    pub summary: Option<String>,
+    pub attendee_email: String,
+    pub attendee_name: Option<String>,
+    /// ACCEPTED | TENTATIVE | DECLINED
+    pub partstat: String,
+}
+
+/// Keep the answers of a REPLY and apply the latest answer of every attendee
+/// to the event it answers.
+fn record_reply(conn: &Connection, account_id: i64, message_id: i64, ev: &IcsEvent) -> Result<()> {
+    for attendee in &ev.attendees {
+        let Some(partstat) = answered(attendee.partstat.as_deref()) else {
+            continue;
+        };
+        conn.execute(
+            "INSERT OR REPLACE INTO invitation_replies
+                (message_id, account_id, ical_uid, summary, attendee_email, attendee_name,
+                 partstat, dtstamp)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            params![
+                message_id,
+                account_id,
+                ev.uid,
+                ev.summary,
+                bare_address(&attendee.email),
+                attendee.name,
+                partstat,
+                ev.dtstamp_ms,
+            ],
+        )?;
+    }
+    apply_replies(conn, account_id, &ev.uid)
+}
+
+/// Give every attendee of the account's events with this UID their latest
+/// mailed answer.
+fn apply_replies(conn: &Connection, account_id: i64, uid: &str) -> Result<()> {
+    let mut latest = conn.prepare(
+        "SELECT attendee_email, partstat FROM invitation_replies
+         WHERE account_id = ?1 AND ical_uid = ?2
+         ORDER BY COALESCE(dtstamp, 0), message_id",
+    )?;
+    let mut answers = BTreeMap::new();
+    for row in latest.query_map(params![account_id, uid], |row| {
+        Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
+    })? {
+        let (email, partstat) = row?;
+        // Later rows win.
+        answers.insert(email, partstat);
+    }
+    if answers.is_empty() {
+        return Ok(());
+    }
+    let mut events = conn.prepare(
+        "SELECT id, attendees_json FROM calendar_events
+         WHERE account_id = ?1 AND ical_uid = ?2 AND deleted = 0
+           AND attendees_json IS NOT NULL",
+    )?;
+    let rows = events
+        .query_map(params![account_id, uid], |row| {
+            Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?))
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    for (event_id, json) in rows {
+        let mut attendees: Vec<EventAttendee> = serde_json::from_str(&json)?;
+        let mut changed = false;
+        for attendee in &mut attendees {
+            if let Some(partstat) = answers.get(&bare_address(&attendee.email))
+                && attendee.partstat.as_deref() != Some(partstat.as_str())
+            {
+                attendee.partstat = Some(partstat.clone());
+                changed = true;
+            }
+        }
+        if changed {
+            conn.execute(
+                "UPDATE calendar_events SET attendees_json = ?2 WHERE id = ?1",
+                params![event_id, attendees_to_json(&attendees)?],
+            )?;
+        }
+    }
+    Ok(())
+}
+
+/// The answers a message carries to our invitations.
+pub fn replies_for_message(conn: &Connection, message_id: i64) -> Result<Vec<InvitationReply>> {
+    let mut stmt = conn.prepare(
+        "SELECT ical_uid, summary, attendee_email, attendee_name, partstat
+         FROM invitation_replies WHERE message_id = ?1 ORDER BY attendee_email",
+    )?;
+    let rows = stmt
+        .query_map(params![message_id], |row| {
+            Ok(InvitationReply {
+                ical_uid: row.get(0)?,
+                summary: row.get(1)?,
+                attendee_email: row.get(2)?,
+                attendee_name: row.get(3)?,
+                partstat: row.get(4)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    Ok(rows)
+}
+
+/// The account's event with this UID that we organize, if any.
+pub fn organized_event(conn: &Connection, account_id: i64, uid: &str) -> Result<Option<i64>> {
+    conn.query_row(
+        "SELECT id FROM calendar_events
+         WHERE account_id = ?1 AND ical_uid = ?2 AND deleted = 0
+         ORDER BY is_local DESC, (caldav_href IS NOT NULL) DESC, id
+         LIMIT 1",
+        params![account_id, uid],
+        |row| row.get(0),
+    )
+    .optional()
+    .map_err(Into::into)
 }
 
 pub fn get(conn: &Connection, event_id: i64) -> Result<Option<CalendarEvent>> {
@@ -830,17 +1051,154 @@ mod tests {
     }
 
     #[test]
-    fn set_calendar_leaves_an_event_on_a_server_alone() {
+    fn move_to_calendar_leaves_an_event_on_a_server_alone() {
         let c = testutil::calendar_conn();
         let first = seed_calendar(&c);
         let second = seed_calendar_at(&c, "https://cal/y/", "Other");
         upsert(&c, 1, 41, &sample_ics_event()).unwrap();
         let id = for_message(&c, 41).unwrap()[0].id;
-        set_calendar(&c, id, first).unwrap();
+        move_to_calendar(&c, id, first, 1).unwrap();
         assert_eq!(get(&c, id).unwrap().unwrap().calendar_id, Some(first));
+        assert_eq!(invite_account(&c, id).unwrap(), Some(1));
         clear_dirty_set_etag(&c, id, first, "/x/evt.ics", None, "RAW").unwrap();
-        set_calendar(&c, id, second).unwrap();
+        move_to_calendar(&c, id, second, 1).unwrap();
         assert_eq!(get(&c, id).unwrap().unwrap().calendar_id, Some(first));
+    }
+
+    #[test]
+    fn an_invitation_moved_to_another_account_still_takes_its_updates() {
+        let c = testutil::calendar_conn();
+        c.execute(
+            "INSERT INTO calendar_connections (id, account_id, kind, base_url)
+             VALUES (2, 2, 'generic', 'https://other/')",
+            [],
+        )
+        .unwrap();
+        c.execute(
+            "INSERT INTO calendars (account_id, connection_id, url, display_name)
+             VALUES (2, 2, 'https://other/home/', 'Home')",
+            [],
+        )
+        .unwrap();
+        let home = c.last_insert_rowid();
+        upsert(&c, 1, 41, &sample_ics_event()).unwrap();
+        let id = for_message(&c, 41).unwrap()[0].id;
+        set_rsvp(&c, id, "ACCEPTED").unwrap();
+        set_own_partstat(&c, id, "me@test.dev", "ACCEPTED").unwrap();
+        move_to_calendar(&c, id, home, 2).unwrap();
+        let moved = get(&c, id).unwrap().unwrap();
+        assert_eq!((moved.account_id, moved.calendar_id), (2, Some(home)));
+        assert_eq!(invite_account(&c, id).unwrap(), Some(1));
+        assert_eq!(moved.attendees[0].partstat.as_deref(), Some("ACCEPTED"));
+
+        // The answer and the calendar copy are found from the mail account.
+        assert_eq!(calendar_copy(&c, 1, "evt-1@test").unwrap(), Some(id));
+        assert_eq!(
+            own_answer(&c, 1, "evt-1@test", "me@test.dev")
+                .unwrap()
+                .as_deref(),
+            Some("ACCEPTED")
+        );
+
+        // A later update on the mail account changes that row, not a new one.
+        let mut update = sample_ics_event();
+        update.summary = Some("Sync, new room".into());
+        upsert(&c, 1, 42, &update).unwrap();
+        let count: i64 = c
+            .query_row("SELECT COUNT(*) FROM calendar_events", [], |row| row.get(0))
+            .unwrap();
+        assert_eq!(count, 1);
+        assert_eq!(
+            get(&c, id).unwrap().unwrap().summary.as_deref(),
+            Some("Sync, new room")
+        );
+    }
+
+    #[test]
+    fn a_newer_invitation_that_moves_the_event_asks_again() {
+        let c = testutil::calendar_conn();
+        upsert(&c, 1, 41, &sample_ics_event()).unwrap();
+        let id = for_message(&c, 41).unwrap()[0].id;
+        set_rsvp(&c, id, "ACCEPTED").unwrap();
+
+        // Same time, newer SEQUENCE: the answer stands.
+        let mut renamed = sample_ics_event();
+        renamed.sequence = 2;
+        renamed.summary = Some("Sync (agenda)".into());
+        upsert(&c, 1, 42, &renamed).unwrap();
+        assert_eq!(
+            get(&c, id).unwrap().unwrap().rsvp_status.as_deref(),
+            Some("ACCEPTED")
+        );
+
+        // Moved to another time: asked again.
+        let mut moved = renamed.clone();
+        moved.sequence = 3;
+        moved.starts_at_ms += 3_600_000;
+        moved.ends_at_ms = moved.ends_at_ms.map(|end| end + 3_600_000);
+        upsert(&c, 1, 43, &moved).unwrap();
+        assert_eq!(get(&c, id).unwrap().unwrap().rsvp_status, None);
+    }
+
+    #[test]
+    fn replies_set_the_latest_answer_of_each_attendee() {
+        let c = testutil::calendar_conn();
+        let id = insert_local(
+            &c,
+            1,
+            None,
+            "ours@evanya",
+            "Planning",
+            None,
+            None,
+            None,
+            "me@test.dev",
+            &[
+                EventAttendee {
+                    email: "ana@test.dev".into(),
+                    name: None,
+                    partstat: Some("NEEDS-ACTION".into()),
+                },
+                EventAttendee {
+                    email: "bo@test.dev".into(),
+                    name: None,
+                    partstat: Some("NEEDS-ACTION".into()),
+                },
+            ],
+            5_000,
+            6_000,
+            false,
+        )
+        .unwrap();
+        let reply = |partstat: &str, dtstamp: i64| IcsEvent {
+            uid: "ours@evanya".into(),
+            method: Some("REPLY".into()),
+            summary: Some("Planning".into()),
+            organizer: Some("me@test.dev".into()),
+            attendees: vec![IcsAttendee {
+                email: "MAILTO:Ana@test.dev".into(),
+                name: Some("Ana".into()),
+                partstat: Some(partstat.into()),
+            }],
+            starts_at_ms: 5_000,
+            dtstamp_ms: Some(dtstamp),
+            ..Default::default()
+        };
+        // The later answer arrives first; the earlier one must not win.
+        upsert(&c, 1, 52, &reply("DECLINED", 2_000)).unwrap();
+        upsert(&c, 1, 51, &reply("ACCEPTED", 1_000)).unwrap();
+        let event = get(&c, id).unwrap().unwrap();
+        assert_eq!(event.summary.as_deref(), Some("Planning"));
+        assert_eq!(event.attendees.len(), 2);
+        assert_eq!(event.attendees[0].partstat.as_deref(), Some("DECLINED"));
+        assert_eq!(event.attendees[1].partstat.as_deref(), Some("NEEDS-ACTION"));
+        // A reply is no invitation of the message.
+        assert!(for_message(&c, 51).unwrap().is_empty());
+        let shown = replies_for_message(&c, 51).unwrap();
+        assert_eq!(shown.len(), 1);
+        assert_eq!(shown[0].attendee_email, "ana@test.dev");
+        assert_eq!(shown[0].partstat, "ACCEPTED");
+        assert_eq!(organized_event(&c, 1, "ours@evanya").unwrap(), Some(id));
     }
 
     #[test]

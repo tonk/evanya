@@ -60,8 +60,16 @@ pub struct Invitation {
     /// The name of the calendar the event is in; empty while it is only in
     /// the mail.
     pub calendar_name: String,
-    /// The calendars of the account the event can go to, the default first.
+    /// The calendars the event can go to: those of the account the
+    /// invitation came in on first, each account's default first.
     pub calendars: Vec<(i64, String)>,
+    /// The organizer changed the invitation since sending it, and it is not
+    /// answered yet.
+    pub updated: bool,
+    /// The attendee whose answer to our invitation the message carries.
+    pub answer_from: String,
+    /// That answer: ACCEPTED | TENTATIVE | DECLINED, or empty.
+    pub answer: String,
 }
 
 #[derive(Clone, Debug)]
@@ -2235,7 +2243,6 @@ impl CoreMailSource {
         else {
             return Ok(None);
         };
-        let event = invitation.event;
         let accounts = self
             .core
             .list_accounts()
@@ -2243,11 +2250,11 @@ impl CoreMailSource {
             .map_err(|error| error.to_string())?;
         let own_email = accounts
             .iter()
-            .find(|account| account.id == event.account_id)
+            .find(|account| account.id == invitation.account_id)
             .map(|account| account.email.as_str());
         let calendars = self
             .core
-            .list_calendars(Some(event.account_id))
+            .list_calendars(None)
             .await
             .map_err(|error| error.to_string())?;
         let name = |calendar: &evanya_core::models::Calendar| {
@@ -2257,39 +2264,88 @@ impl CoreMailSource {
                 .filter(|name| !name.trim().is_empty())
                 .unwrap_or_else(|| calendar.url.clone())
         };
+        let event = invitation.event.as_ref();
         let calendar_name = calendars
             .iter()
-            .find(|calendar| Some(calendar.id) == event.calendar_id)
+            .find(|calendar| Some(calendar.id) == event.and_then(|event| event.calendar_id))
             .map(name)
             .unwrap_or_default();
         let mut targets = calendars
             .iter()
             .filter(|calendar| calendar.enabled && !calendar.read_only)
             .collect::<Vec<_>>();
-        targets.sort_by_key(|calendar| !calendar.is_default);
+        targets.sort_by_key(|calendar| {
+            (
+                calendar.account_id != invitation.account_id,
+                calendar.account_id,
+                !calendar.is_default,
+            )
+        });
+        // Calendars of several accounts say whose they are.
+        let several_accounts = targets
+            .iter()
+            .any(|calendar| calendar.account_id != invitation.account_id);
         let calendars = targets
             .into_iter()
-            .map(|calendar| (calendar.id, name(calendar)))
+            .map(|calendar| {
+                let label = if several_accounts {
+                    let account = account_name(calendar.account_id)
+                        .or_else(|| {
+                            accounts
+                                .iter()
+                                .find(|account| account.id == calendar.account_id)
+                                .map(|account| account.email.clone())
+                        })
+                        .unwrap_or_default();
+                    format!("{} · {account}", name(calendar))
+                } else {
+                    name(calendar)
+                };
+                (calendar.id, label)
+            })
             .collect();
-        let organizer = event.organizer.clone().unwrap_or_default();
+        let organizer = event
+            .and_then(|event| event.organizer.clone())
+            .unwrap_or_default();
         let cancelled = event
-            .status
-            .as_deref()
+            .and_then(|event| event.status.as_deref())
             .is_some_and(|status| status.eq_ignore_ascii_case("CANCELLED"));
+        let (answer_from, answer) = invitation
+            .answer
+            .as_ref()
+            .map(|answer| {
+                let who = answer
+                    .name
+                    .clone()
+                    .filter(|name| !name.trim().is_empty())
+                    .unwrap_or_else(|| answer.email.clone());
+                (who, answer.partstat.clone())
+            })
+            .unwrap_or_default();
         Ok(Some(Invitation {
-            can_respond: !cancelled
-                && crate::calendar::is_invitation_from_someone_else(
-                    event.is_local,
-                    &organizer,
-                    own_email,
-                ),
-            event_id: event.id,
-            title: event.summary.clone().unwrap_or_default(),
-            organizer,
+            can_respond: invitation.answer.is_none()
+                && !cancelled
+                && event.is_some_and(|event| {
+                    crate::calendar::is_invitation_from_someone_else(
+                        event.is_local,
+                        &organizer,
+                        own_email,
+                    )
+                }),
+            event_id: event.map_or(0, |event| event.id),
+            title: invitation.summary.clone().unwrap_or_default(),
+            organizer: if invitation.answer.is_some() {
+                String::new()
+            } else {
+                organizer
+            },
             response: invitation.response.unwrap_or_default(),
             cancelled,
             calendar_name,
             calendars,
+            updated: invitation.updated,
+            answer_from,
+            answer,
         }))
     }
 

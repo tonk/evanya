@@ -984,6 +984,23 @@ fn states() -> Vec<State> {
                 slint::SharedString::from("Work calendar of the platform team"),
             ])));
         }),
+        state("mail invitation updated", |app| {
+            let reader = app.global::<EmailReader>();
+            reader.set_invite_event_id(7);
+            reader.set_invite_title("Quarterly planning review".into());
+            reader.set_invite_organizer("ana.rivera@example.org".into());
+            reader.set_invite_can_respond(true);
+            reader.set_invite_updated(true);
+        }),
+        // An attendee's answer to our own invitation.
+        state("mail invitation answer", |app| {
+            let reader = app.global::<EmailReader>();
+            reader.set_invite_event_id(7);
+            reader
+                .set_invite_title("Quarterly planning review with the whole platform team".into());
+            reader.set_invite_answer_from("Ana Rivera-Montgomery".into());
+            reader.set_invite_answer("TENTATIVE".into());
+        }),
         state("mail invitation cancelled", |app| {
             let reader = app.global::<EmailReader>();
             reader.set_invite_event_id(7);

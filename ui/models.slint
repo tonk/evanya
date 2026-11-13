@@ -563,6 +563,12 @@ export global EmailReader {
     // The calendars it can go to when answered, and the one chosen.
     in-out property <[string]> invite-calendars;
     in-out property <int> invite-calendar-index: 0;
+    // The organizer changed the invitation since sending it; not answered yet.
+    in-out property <bool> invite-updated: false;
+    // An attendee's answer to our invitation that the message carries:
+    // who, and ACCEPTED | TENTATIVE | DECLINED. Empty for an invitation.
+    in-out property <string> invite-answer-from;
+    in-out property <string> invite-answer;
     callback load-invite();
     // The answer, whether to mail it, and the index of the chosen calendar.
     callback respond-invite(string, bool, int);

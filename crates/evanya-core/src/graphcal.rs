@@ -313,6 +313,7 @@ fn ics_event(ev: &graph::DeltaEvent) -> IcsEvent {
         rrule: None,
         tzid: None,
         recurrence_id_ms: None,
+        dtstamp_ms: None,
         starts_at_ms: ev.start_ms,
         ends_at_ms: ev.end_ms,
         all_day: ev.all_day,

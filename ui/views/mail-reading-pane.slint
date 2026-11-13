@@ -1315,7 +1315,7 @@ export component MailReadingPane inherits FocusScope {
                                         Text { text: @tr("Some images could not be loaded."); overflow: elide; color: root.secondary-text; vertical-alignment: center; horizontal-stretch: 1; }
                                         ReaderControl { compact: root.compact; icon: @image-url("../icons/lucide/outline/sync.svg"); tooltip-text: @tr("Retry images"); clicked => { EmailReader.retry-images(); } }
                                     }
-                                    if EmailReader.invite-event-id > 0 : VerticalBox {
+                                    if EmailReader.invite-event-id > 0 || EmailReader.invite-answer != "" : VerticalBox {
                                         padding-top: 4px; padding-right: 0px; padding-bottom: 4px; padding-left: 0px; spacing: 4px;
                                         Text {
                                             height: self.preferred-height;
@@ -1326,10 +1326,14 @@ export component MailReadingPane inherits FocusScope {
                                         }
                                         Text {
                                             height: self.preferred-height;
-                                            text: EmailReader.invite-cancelled ? @tr("This event has been cancelled.")
+                                            text: EmailReader.invite-answer == "ACCEPTED" ? @tr("{} accepted your invitation.", EmailReader.invite-answer-from)
+                                                : EmailReader.invite-answer == "TENTATIVE" ? @tr("{} answered maybe to your invitation.", EmailReader.invite-answer-from)
+                                                : EmailReader.invite-answer == "DECLINED" ? @tr("{} declined your invitation.", EmailReader.invite-answer-from)
+                                                : EmailReader.invite-cancelled ? @tr("This event has been cancelled.")
                                                 : EmailReader.invite-response == "ACCEPTED" ? @tr("You accepted this invitation.")
                                                 : EmailReader.invite-response == "TENTATIVE" ? @tr("You answered maybe to this invitation.")
                                                 : EmailReader.invite-response == "DECLINED" ? @tr("You declined this invitation.")
+                                                : EmailReader.invite-can-respond && EmailReader.invite-updated ? @tr("The invitation has changed. Will you come?")
                                                 : EmailReader.invite-can-respond ? @tr("Will you come?") : @tr("This is your own invitation.");
                                             wrap: word-wrap; color: root.secondary-text;
                                             font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;

@@ -2,8 +2,9 @@
 //! carries a calendar invitation says whether and how it was answered (here or
 //! in another program) and in which calendar the event is, offers Accept,
 //! Maybe and Decline with a choice of calendar for an event that is in none
-//! yet, mails the answer to the organizer when the reader asks for that, and
-//! lets a cancelled event be taken out of the calendar.
+//! yet (of any account), mails the answer to the organizer when the reader
+//! asks for that, and lets a cancelled event be taken out of the calendar. An
+//! attendee's answer to one of our invitations says who answered what.
 
 use std::{
     cell::{Cell, RefCell},
@@ -53,6 +54,9 @@ fn clear(reader: &EmailReader<'_>) {
     reader.set_invite_calendar("".into());
     reader.set_invite_calendars(ModelRc::default());
     reader.set_invite_calendar_index(0);
+    reader.set_invite_updated(false);
+    reader.set_invite_answer_from("".into());
+    reader.set_invite_answer("".into());
     CALENDAR_IDS.with_borrow_mut(Vec::clear);
 }
 
@@ -67,6 +71,9 @@ fn show(reader: &EmailReader<'_>, invitation: Invitation) {
     reader.set_invite_can_respond(invitation.can_respond);
     reader.set_invite_cancelled(invitation.cancelled);
     reader.set_invite_calendar(invitation.calendar_name.into());
+    reader.set_invite_updated(invitation.updated);
+    reader.set_invite_answer_from(invitation.answer_from.into());
+    reader.set_invite_answer(invitation.answer.into());
     let chosen = last_choice
         .and_then(|id| {
             invitation

@@ -2783,17 +2783,38 @@ pub struct RsvpEventArgs {
     pub calendar_id: Option<i64>,
 }
 
-/// The invitation a message carries, as the reader shows it.
+/// The invitation a message carries, as the reader shows it: an invitation
+/// to us, or an attendee's answer to one of ours.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MessageInvitation {
     /// The stored event: the copy in a calendar when there is one, otherwise
-    /// the one taken from the mail.
-    pub event: CalendarEvent,
+    /// the one taken from the mail. None for an answer to an event that is
+    /// not stored here.
+    pub event: Option<CalendarEvent>,
+    /// The title the message gives the event.
+    pub summary: Option<String>,
+    /// The mail account the invitation came in on, which answers it.
+    pub account_id: i64,
     /// Our answer so far: ACCEPTED | TENTATIVE | DECLINED, from Evanya or
     /// from another program that answered for the same calendar. None while
     /// unanswered.
     pub response: Option<String>,
+    /// The organizer changed the invitation since sending it, and it is not
+    /// answered yet.
+    pub updated: bool,
+    /// The answer of an attendee the message carries.
+    pub answer: Option<InvitationAnswer>,
+}
+
+/// An attendee's answer to one of our invitations.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InvitationAnswer {
+    pub email: String,
+    pub name: Option<String>,
+    /// ACCEPTED | TENTATIVE | DECLINED
+    pub partstat: String,
 }
 
 fn send_reply_by_default() -> bool {
