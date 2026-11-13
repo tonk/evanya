@@ -42,3 +42,10 @@ export global AreaFonts {
     in-out property <string> plain-family: "Google Sans Flex";
     in-out property <float> plain-scale: 1;
 }
+
+// The composer body's zoom for this session, on top of its font size.
+// `command` takes zoom-in, zoom-out or zoom-reset.
+export global ComposeZoom {
+    in-out property <float> zoom: 1;
+    callback command(string);
+}

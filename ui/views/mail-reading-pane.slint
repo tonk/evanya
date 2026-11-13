@@ -577,6 +577,13 @@ export component MailReadingPane inherits FocusScope {
         activated => { root.message_action(root.trash_view ? "delete_permanently" : "trash"); }
     }
 
+    // Zoom the message from anywhere in the reader, not only from its body.
+    private property <bool> zoom-keys: root.has_selected && EmailReader.available && !root.rendering_info_open && !root.label-editor-open;
+    KeyBinding { keys: Shortcuts.zoom-in; enabled: root.zoom-keys; activated => { EmailReader.command("zoom-in"); } }
+    KeyBinding { keys: Shortcuts.zoom-in-alternate; enabled: root.zoom-keys; activated => { EmailReader.command("zoom-in"); } }
+    KeyBinding { keys: Shortcuts.zoom-out; enabled: root.zoom-keys; activated => { EmailReader.command("zoom-out"); } }
+    KeyBinding { keys: Shortcuts.zoom-reset; enabled: root.zoom-keys; activated => { EmailReader.command("zoom-reset"); } }
+
     private property <bool> viewport-pending: false;
     private property <int> transition-message-id: EmailReader.message-id;
     private property <float> animated-content-reveal: 1;
@@ -1501,6 +1508,12 @@ export component MailReadingPane inherits FocusScope {
                                             mouse-cursor: EmailReader.destination != "" ? pointer : text;
 
                                             changed has-hover => { if !self.has-hover { EmailReader.destination = ""; } }
+                                            // Ctrl and the wheel zoom; the wheel alone scrolls.
+                                            scroll-event(event) => {
+                                                if !(event.modifiers.control || event.modifiers.meta) || event.delta-y == 0 { return reject; }
+                                                EmailReader.command(event.delta-y > 0 ? "zoom-in" : "zoom-out");
+                                                accept
+                                            }
                                             pointer-event(event) => {
                                                 // `moved` only fires while pressed; plain hover
                                                 // must also update the link cursor and destination.
@@ -1546,10 +1559,6 @@ export component MailReadingPane inherits FocusScope {
                                             keys: Shortcuts.find;
                                             activated => { EmailReader.find-open = true; EmailReader.reader-mode = false; find-input.focus(); }
                                         }
-                                        KeyBinding { keys: Shortcuts.zoom-in; activated => { EmailReader.command("zoom-in"); } }
-                                        KeyBinding { keys: Shortcuts.zoom-in-alternate; activated => { EmailReader.command("zoom-in"); } }
-                                        KeyBinding { keys: Shortcuts.zoom-out; activated => { EmailReader.command("zoom-out"); } }
-                                        KeyBinding { keys: Shortcuts.zoom-reset; activated => { EmailReader.command("zoom-reset"); } }
                                         KeyBinding { keys: Shortcuts.caret-browsing; activated => { EmailReader.caret-mode = !EmailReader.caret-mode; } }
                                         key-pressed(event) => {
                                             if event.text == Key.Escape { EmailReader.command("clear-selection"); return accept; }

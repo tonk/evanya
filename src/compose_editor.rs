@@ -81,6 +81,27 @@ pub(crate) fn set_plain_mode(plain: bool) {
     }
 }
 
+/// The composer body's zoom for this session, as `f32` bits, on top of the
+/// font size chosen in Settings.
+static ZOOM: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0x3f80_0000);
+
+pub(crate) const ZOOM_MIN: f32 = 0.5;
+pub(crate) const ZOOM_MAX: f32 = 3.0;
+
+/// Zoom the composer body to `zoom` times its font size.
+pub(crate) fn set_zoom(zoom: f32) -> f32 {
+    let zoom = zoom.clamp(ZOOM_MIN, ZOOM_MAX);
+    let bits = zoom.to_bits();
+    if ZOOM.swap(bits, std::sync::atomic::Ordering::AcqRel) != bits {
+        BODY_FONT_EPOCH.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+    }
+    zoom
+}
+
+fn zoom() -> f32 {
+    f32::from_bits(ZOOM.load(std::sync::atomic::Ordering::Acquire))
+}
+
 fn body_font_unmoded() -> (&'static str, f32) {
     *BODY_FONT
         .read()
@@ -523,6 +544,7 @@ impl CosmicComposeEditor {
         }
 
         let (family, size_scale) = body_font();
+        let size_scale = size_scale * zoom();
         let metrics = Metrics::new(
             FONT_SIZE_LOGICAL * size_scale * scale_factor,
             LINE_HEIGHT_LOGICAL * size_scale * scale_factor,

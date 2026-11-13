@@ -5,7 +5,7 @@ import { AccountRow, ComposeAttachment, ComposeContact, ComposeEditorTile, Email
 import { ComposerFromRow, ComposerHeader, ComposerRecipients, ComposerSubject } from "composer-fields.slint";
 import { ComposerAttachments, ComposerFooter, ComposerNotice, ComposerToolbar, DiscardConfirmation, LinkEditor } from "composer-actions.slint";
 import { EmailTemplates } from "email-templates.slint";
-import { AreaFonts, TypeScale } from "../typography.slint";
+import { AreaFonts, ComposeZoom, TypeScale } from "../typography.slint";
 
 
 // cosmic-text owns visible layout, selection, hit-testing, and caret geometry.
@@ -174,6 +174,9 @@ export component EmailComposer inherits Rectangle {
             root.editor-layout-changed();
         }
     }
+    // The body is laid out again at another zoom.
+    private property <float> zoom: ComposeZoom.zoom;
+    changed zoom => { root.editor-layout-changed(); }
     changed editor-width => { root.editor-layout-changed(); }
     changed editor-viewport-height => { root.editor-layout-changed(); }
     changed editor-scroll-y => { editor-scroll-layout-timer.restart(); }
@@ -365,6 +368,21 @@ export component EmailComposer inherits Rectangle {
                 horizontal-scrollbar-policy: always-off;
                 mouse-drag-pan-enabled: root.compact;
 
+                // Ctrl and the wheel zoom; the wheel alone scrolls. The body
+                // above passes the wheel on to here.
+                TouchArea {
+                    width: body-scroll.content-width;
+                    height: body-scroll.content-height;
+                    // Touch screens pan the body through here.
+                    enabled: !root.compact;
+                    clicked => { body-input.focus(); }
+                    scroll-event(event) => {
+                        if !(event.modifiers.control || event.modifiers.meta) || event.delta-y == 0 { return reject; }
+                        ComposeZoom.command(event.delta-y > 0 ? "zoom-in" : "zoom-out");
+                        accept
+                    }
+                }
+
                 Text {
                     x: 18px;
                     y: 16px;
@@ -372,7 +390,7 @@ export component EmailComposer inherits Rectangle {
                     visible: root.body == "" && root.editor-preedit-text == "";
                     text: @tr("Write your message…");
                     color: root.muted-color;
-                    font-family: AreaFonts.composer-family; font-size: TypeScale.body-large * AreaFonts.composer-scale;
+                    font-family: AreaFonts.composer-family; font-size: TypeScale.body-large * AreaFonts.composer-scale * ComposeZoom.zoom;
                     wrap: word-wrap;
                 }
 
@@ -400,7 +418,7 @@ export component EmailComposer inherits Rectangle {
                     color: transparent;
                     selection-background-color: transparent;
                     selection-foreground-color: transparent;
-                    font-family: AreaFonts.composer-family; font-size: TypeScale.body-large * AreaFonts.composer-scale;
+                    font-family: AreaFonts.composer-family; font-size: TypeScale.body-large * AreaFonts.composer-scale * ComposeZoom.zoom;
                     text-cursor-width: 0px;
                     single-line: false;
                     enabled: !root.sending;
@@ -420,6 +438,11 @@ export component EmailComposer inherits Rectangle {
                     }
                     key-pressed(event) => {
                         root.pending-key-text = "";
+                        if ((event.modifiers.control || event.modifiers.meta) && !event.modifiers.alt) {
+                            if (event.text == "+" || event.text == "=") { ComposeZoom.command("zoom-in"); return accept; }
+                            if (event.text == "-") { ComposeZoom.command("zoom-out"); return accept; }
+                            if (event.text == "0") { ComposeZoom.command("zoom-reset"); return accept; }
+                        }
                         if ((event.modifiers.control || event.modifiers.meta) && event.text.to-lowercase() == "b") {
                             root.apply-format("bold");
                             return accept;

@@ -7627,6 +7627,29 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     });
 
     let app_weak = app.as_weak();
+    // Zoom the composer body; the composer lays it out again when the zoom
+    // it shows changes.
+    let app_weak_for_zoom = app.as_weak();
+    app.global::<ComposeZoom>().on_command(move |command| {
+        let Some(app) = app_weak_for_zoom.upgrade() else {
+            return;
+        };
+        let zoom = app.global::<ComposeZoom>();
+        let current = zoom.get_zoom();
+        let wanted = match command.as_str() {
+            "zoom-in" => current * 1.2,
+            "zoom-out" => current / 1.2,
+            _ => 1.0,
+        };
+        // Steps that land near 100% snap to it.
+        let wanted = if (wanted - 1.0).abs() < 0.05 {
+            1.0
+        } else {
+            wanted
+        };
+        zoom.set_zoom(compose_editor::set_zoom(wanted));
+    });
+
     let document_for_editor_layout = Rc::clone(&compose_document);
     let editor_for_layout = Rc::clone(&compose_editor);
     app.on_compose_editor_layout_changed(move || {
