@@ -34,7 +34,7 @@
 </picture>
 
 Evanya is a lightweight, native home for your email, calendars, and
-contacts. It is engineered to open instantly, stay responsive, and use a
+contacts. It is engineered to open instantly, stay responsive, and uses a
 fraction of the memory of a typical web-based mail client.
 
 > [!NOTE]
