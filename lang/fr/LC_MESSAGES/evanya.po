@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-13 08:34+0000\n"
+"POT-Creation-Date: 2026-11-16 07:39+0000\n"
 "PO-Revision-Date: 2026-10-14 08:37+0000\n"
 "Last-Translator: Cyril Hansen <cyril.hansen@gmail.com>\n"
 "Language-Team: French <https://translate.flectar.com/projects/flectar-mail/"
@@ -391,7 +391,7 @@ msgstr "Historique de conversation disponible"
 msgid "New address-book entry"
 msgstr "Nouvelle entrée dans le carnet d’adresses"
 
-#: ui/app.slint:188 ui/app.slint:1271 ui/components/composer-fields.slint:80
+#: ui/app.slint:188 ui/app.slint:1274 ui/components/composer-fields.slint:80
 #: ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr "Aucun compte connecté"
@@ -2243,6 +2243,10 @@ msgid "Could not load account preferences: {}"
 msgstr "Impossible de charger les préférences du compte : {}"
 
 #: ui/app.slint:660
+msgid "The image on the clipboard could not be read."
+msgstr ""
+
+#: ui/app.slint:661
 #, fuzzy
 msgid ""
 "Your edited signature was preserved. Choose No signature to keep it as "
@@ -2251,21 +2255,21 @@ msgstr ""
 "Votre signature modifiée a été conservée. Choisissez Sans signature pour la "
 "garder comme texte du message avant d’en insérer une autre."
 
-#: ui/app.slint:661
+#: ui/app.slint:662
 #, fuzzy
 msgid "Certificate import failed: {}"
 msgstr "Échec de l’importation du certificat : {}"
 
-#: ui/app.slint:662
+#: ui/app.slint:663
 #, fuzzy
 msgid "Testing IMAP and SMTP connections…"
 msgstr "Test des connexions IMAP et SMTP…"
 
-#: ui/app.slint:663
+#: ui/app.slint:664
 msgid "Testing POP3 and SMTP connections…"
 msgstr ""
 
-#: ui/app.slint:668
+#: ui/app.slint:669
 #, fuzzy
 msgid ""
 "Another browser authorization is already in progress; finish it or choose "
@@ -2274,7 +2278,7 @@ msgstr ""
 "Une autre autorisation via navigateur est déjà en cours ; terminez-la ou "
 "choisissez Annuler."
 
-#: ui/app.slint:669 ui/dialogs/settings-dialog.slint:2145
+#: ui/app.slint:670 ui/dialogs/settings-dialog.slint:2145
 #: ui/dialogs/settings-dialog.slint:2188 ui/views/onboarding-view.slint:170
 #, fuzzy
 msgid "Add app keys in Sign-in settings to enable this provider."
@@ -2282,109 +2286,109 @@ msgstr ""
 "Ajoutez les clés d’application dans les paramètres de connexion pour activer "
 "ce fournisseur."
 
-#: ui/app.slint:670
+#: ui/app.slint:671
 #, fuzzy
 msgid "Choose Gmail or Outlook OAuth."
 msgstr "Choisissez l’authentification OAuth Gmail ou Outlook."
 
-#: ui/app.slint:671
+#: ui/app.slint:672
 #, fuzzy
 msgid "Complete sign-in in your browser, or choose Cancel here."
 msgstr "Terminez la connexion dans votre navigateur ou choisissez Annuler ici."
 
-#: ui/app.slint:672
+#: ui/app.slint:673
 #, fuzzy
 msgid "Cancelling browser sign-in…"
 msgstr "Annulation de la connexion via navigateur…"
 
-#: ui/app.slint:673
+#: ui/app.slint:674
 #, fuzzy
 msgid "Finishing browser sign-in…"
 msgstr "Finalisation de la connexion via navigateur…"
 
-#: ui/app.slint:674
+#: ui/app.slint:675
 #, fuzzy
 msgid "Could not use that browser address: {}"
 msgstr "Impossible d’utiliser cette adresse du navigateur : {}"
 
-#: ui/app.slint:675
+#: ui/app.slint:676
 #, fuzzy
 msgid "Calendar core is unavailable."
 msgstr "Le moteur de calendrier est indisponible."
 
-#: ui/app.slint:676
+#: ui/app.slint:677
 #, fuzzy
 msgid "Account no longer exists."
 msgstr "Le compte n’existe plus."
 
-#: ui/app.slint:677
+#: ui/app.slint:678
 #, fuzzy
 msgid "Authorize calendar access in your browser."
 msgstr "Autorisez l’accès au calendrier dans votre navigateur."
 
-#: ui/app.slint:678
+#: ui/app.slint:679
 #, fuzzy
 msgid "OAuth app keys saved."
 msgstr "Clés d’application OAuth enregistrées."
 
-#: ui/app.slint:679
+#: ui/app.slint:680
 #, fuzzy
 msgid "{} OAuth settings saved."
 msgstr "Paramètres OAuth de {} enregistrés."
 
-#: ui/app.slint:680
+#: ui/app.slint:681
 #, fuzzy
 msgid "OAuth settings failed: {}"
 msgstr "Échec des paramètres OAuth : {}"
 
-#: ui/app.slint:681
+#: ui/app.slint:682
 #, fuzzy
 msgid "Mail refresh failed: {}"
 msgstr "Échec de l’actualisation des messages : {}"
 
-#: ui/app.slint:682
+#: ui/app.slint:683
 #, fuzzy
 msgid "Mail filter failed: {}"
 msgstr "Échec du filtrage des messages : {}"
 
-#: ui/app.slint:683
+#: ui/app.slint:684
 #, fuzzy
 msgid "Mail pagination failed: {}"
 msgstr "Échec de la pagination des messages : {}"
 
-#: ui/app.slint:684
+#: ui/app.slint:685
 #, fuzzy
 msgid "Could not mark message as read: {}"
 msgstr "Impossible de marquer le message comme lu : {}"
 
-#: ui/app.slint:685 ui/views/mail-reading-pane.slint:196
+#: ui/app.slint:686 ui/views/mail-reading-pane.slint:196
 #: ui/views/mail-reading-pane.slint:1379
 #, fuzzy
 msgid "Loading message…"
 msgstr "Chargement du message…"
 
-#: ui/app.slint:691 ui/components/workspace-navigation.slint:787
+#: ui/app.slint:692 ui/components/workspace-navigation.slint:787
 #: ui/tray.slint:15 ui/tray.slint:18
 #, fuzzy
 msgid "Evanya"
 msgstr "Evanya"
 
-#: ui/app.slint:1514 ui/app.slint:1527
+#: ui/app.slint:1517 ui/app.slint:1530
 #, fuzzy
 msgid "Global Labels (local only)"
 msgstr "Étiquettes globales (locales uniquement)"
 
-#: ui/app.slint:2179
+#: ui/app.slint:2182
 msgid "Another account"
 msgstr ""
 
-#: ui/app.slint:2191
+#: ui/app.slint:2194
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
 
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
 #: ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
 #: ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301
 #: ui/dialogs/settings-dialog.slint:3624 ui/views/files-view.slint:491
@@ -2393,25 +2397,25 @@ msgstr ""
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ui/app.slint:2204 ui/components/controls.slint:87
+#: ui/app.slint:2207 ui/components/controls.slint:87
 msgid "Copy"
 msgstr ""
 
-#: ui/app.slint:2208
+#: ui/app.slint:2211
 msgid "Move"
 msgstr ""
 
-#: ui/app.slint:2699
+#: ui/app.slint:2704
 #, fuzzy
 msgid "Empty Trash?"
 msgstr "Vider la corbeille ?"
 
-#: ui/app.slint:2699 ui/views/files-view.slint:597
+#: ui/app.slint:2704 ui/views/files-view.slint:597
 #, fuzzy
 msgid "Delete permanently?"
 msgstr "Supprimer définitivement ?"
 
-#: ui/app.slint:2703
+#: ui/app.slint:2708
 #, fuzzy
 msgid ""
 "Permanently delete all messages in Trash across every connected account?"
@@ -2419,64 +2423,64 @@ msgstr ""
 "Supprimer définitivement tous les messages de la corbeille de tous les "
 "comptes connectés ?"
 
-#: ui/app.slint:2704
+#: ui/app.slint:2709
 #, fuzzy
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr ""
 "Supprimer définitivement tous les messages de la corbeille de ce compte ?"
 
-#: ui/app.slint:2706
+#: ui/app.slint:2711
 #, fuzzy
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr ""
 "Supprimer définitivement les conversations sélectionnées dans la corbeille ?"
 
-#: ui/app.slint:2707
+#: ui/app.slint:2712
 #, fuzzy
 msgid "Permanently delete this conversation from Trash?"
 msgstr "Supprimer définitivement cette conversation de la corbeille ?"
 
-#: ui/app.slint:2708 ui/components/calendar.slint:1173
+#: ui/app.slint:2713 ui/components/calendar.slint:1173
 #, fuzzy
 msgid "This action cannot be undone."
 msgstr "Cette action est irréversible."
 
-#: ui/app.slint:2709
+#: ui/app.slint:2714
 #, fuzzy
 msgid "Empty Trash"
 msgstr "Vider la corbeille"
 
-#: ui/app.slint:2709 ui/views/files-view.slint:679
+#: ui/app.slint:2714 ui/views/files-view.slint:679
 #, fuzzy
 msgid "Delete permanently"
 msgstr "Supprimer définitivement"
 
-#: ui/app.slint:2887
+#: ui/app.slint:2892
 #, fuzzy
 msgid "Mailbox startup failed"
 msgstr "Échec de l’initialisation de la boîte aux lettres"
 
-#: ui/app.slint:2893
+#: ui/app.slint:2898
 #, fuzzy
 msgid "Evanya could not open local storage"
 msgstr "Evanya n’a pas pu ouvrir le stockage local"
 
-#: ui/app.slint:2906
+#: ui/app.slint:2911
 #, fuzzy
 msgid "Diagnostic ID: {}"
 msgstr "Identifiant de diagnostic : {}"
 
-#: ui/app.slint:2909
+#: ui/app.slint:2914
 #, fuzzy
 msgid "Diagnostic ID {}"
 msgstr "Identifiant de diagnostic {}"
 
-#: ui/app.slint:2914
+#: ui/app.slint:2919
 #, fuzzy
 msgid "Retry"
 msgstr "Réessayer"
 
-#: ui/app.slint:2922 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2927 ui/components/copyable-diagnostic.slint:43
 #, fuzzy
 msgid "Copy diagnostics"
 msgstr "Copier le diagnostic"
@@ -3644,31 +3648,31 @@ msgstr "Page {} sur {}"
 msgid "Next page"
 msgstr "Page suivante"
 
-#: ui/components/email-composer.slint:262 ui/views/mail-list-pane.slint:869
+#: ui/components/email-composer.slint:266 ui/views/mail-list-pane.slint:869
 #, fuzzy
 msgid "From"
 msgstr "De"
 
-#: ui/components/email-composer.slint:263
+#: ui/components/email-composer.slint:267
 #, fuzzy
 msgid "Verified sender identity"
 msgstr "Identité d’expéditeur vérifiée"
 
-#: ui/components/email-composer.slint:276
+#: ui/components/email-composer.slint:280
 #, fuzzy
 msgid "Signature"
 msgstr "Signature"
 
-#: ui/components/email-composer.slint:391
+#: ui/components/email-composer.slint:395
 #, fuzzy
 msgid "Write your message…"
 msgstr "Rédigez votre message…"
 
-#: ui/components/email-composer.slint:516
+#: ui/components/email-composer.slint:535
 msgid "No suggestions"
 msgstr ""
 
-#: ui/components/email-composer.slint:521
+#: ui/components/email-composer.slint:540
 msgid "Add to dictionary"
 msgstr ""
 

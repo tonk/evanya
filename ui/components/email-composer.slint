@@ -83,6 +83,10 @@ export component EmailComposer inherits Rectangle {
     callback body-edited(string, int, int, string);
     callback selection-changed(string, int, int);
     callback history-requested(string);
+    // Types text at the caret that the hidden TextInput cannot, such as a tab.
+    callback insert-text(string);
+    // Pastes an image from the clipboard; false when it holds none.
+    callback paste-image() -> bool;
     callback editor-pointer-event(float, float, string, bool, bool, bool, bool);
     callback editor-key-event(string, bool, bool, bool, bool) -> bool;
     callback editor-layout-changed;
@@ -463,6 +467,21 @@ export component EmailComposer inherits Rectangle {
                             root.history-requested(event.modifiers.shift ? "redo" : "undo");
                             self.set-selection-offsets(root.selection-start, root.selection-end);
                             return accept;
+                        }
+                        // Plain text mail takes a tab; Shift+Tab still leaves the body.
+                        if (root.plain-text && event.text == Key.Tab && !event.modifiers.shift
+                            && !event.modifiers.control && !event.modifiers.alt && !event.modifiers.meta) {
+                            root.insert-text(Key.Tab);
+                            self.set-selection-offsets(root.selection-start, root.selection-end);
+                            return accept;
+                        }
+                        // An image on the clipboard goes into HTML mail; text pastes as usual.
+                        if (!root.plain-text && (event.modifiers.control || event.modifiers.meta)
+                            && !event.modifiers.alt && !event.modifiers.shift && event.text.to-lowercase() == "v") {
+                            if (root.paste-image()) {
+                                self.set-selection-offsets(root.selection-start, root.selection-end);
+                                return accept;
+                            }
                         }
                         if ((event.modifiers.control || event.modifiers.meta) && event.text == Key.Return && root.can-send) {
                             root.submit(true);

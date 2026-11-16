@@ -41,3 +41,31 @@ pub fn set_primary(text: &str) {
     #[cfg(not(linux_desktop))]
     let _ = text;
 }
+
+/// The image on the clipboard as straight-alpha RGBA (width, height, pixels),
+/// unless it also holds text, which a paste then inserts instead: office
+/// programs offer a picture of copied cells beside their text.
+pub fn image() -> Option<(u32, u32, Vec<u8>)> {
+    #[cfg(desktop)]
+    return CLIPBOARD.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        if slot.is_none() {
+            *slot = arboard::Clipboard::new().ok();
+        }
+        let clipboard = slot.as_mut()?;
+        if clipboard
+            .get_text()
+            .is_ok_and(|text| !text.trim().is_empty())
+        {
+            return None;
+        }
+        let image = clipboard.get_image().ok()?;
+        Some((
+            u32::try_from(image.width).ok()?,
+            u32::try_from(image.height).ok()?,
+            image.bytes.into_owned(),
+        ))
+    });
+    #[cfg(mobile)]
+    None
+}

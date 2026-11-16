@@ -15,11 +15,121 @@ const MAX_HISTORY: usize = 128;
 const MAX_HISTORY_BYTES: usize = 32 * 1024 * 1024;
 const MAX_TYPING_GROUP_BYTES: usize = 64;
 
+/// Stands in the text for a pasted image, which its style carries.
+pub(crate) const IMAGE_CHARACTER: char = '\u{fffc}';
+/// The widest preview kept to draw a pasted image in the composer.
+const IMAGE_PREVIEW_MAX_WIDTH: u32 = 1600;
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub(crate) struct CharacterStyle {
     pub(crate) marks: u8,
     pub(crate) link: Option<Arc<str>>,
     link_is_auto: bool,
+    /// The image an [`IMAGE_CHARACTER`] shows. Text never carries one.
+    pub(crate) image: Option<Arc<ComposeImage>>,
+}
+
+/// An image pasted into an HTML message: sent as a PNG part of the message,
+/// drawn in the composer from a premultiplied preview.
+pub(crate) struct ComposeImage {
+    id: u64,
+    png: Vec<u8>,
+    pub(crate) width: u32,
+    pub(crate) height: u32,
+    pub(crate) preview: Vec<u8>,
+    pub(crate) preview_width: u32,
+    pub(crate) preview_height: u32,
+}
+
+impl ComposeImage {
+    /// An image from straight-alpha RGBA pixels, as a clipboard offers them.
+    pub(crate) fn from_rgba(width: u32, height: u32, rgba: Vec<u8>) -> Option<Arc<Self>> {
+        use image::ImageEncoder;
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static NEXT_ID: AtomicU64 = AtomicU64::new(1);
+
+        let pixels = image::RgbaImage::from_raw(width, height, rgba)?;
+        if width == 0 || height == 0 {
+            return None;
+        }
+        let mut png = Vec::new();
+        image::codecs::png::PngEncoder::new(&mut png)
+            .write_image(
+                pixels.as_raw(),
+                width,
+                height,
+                image::ExtendedColorType::Rgba8,
+            )
+            .ok()?;
+        let preview = if width > IMAGE_PREVIEW_MAX_WIDTH {
+            let preview_height =
+                (u64::from(height) * u64::from(IMAGE_PREVIEW_MAX_WIDTH) / u64::from(width)).max(1);
+            image::imageops::resize(
+                &pixels,
+                IMAGE_PREVIEW_MAX_WIDTH,
+                u32::try_from(preview_height).ok()?,
+                image::imageops::FilterType::Triangle,
+            )
+        } else {
+            pixels
+        };
+        let (preview_width, preview_height) = preview.dimensions();
+        let mut preview = preview.into_raw();
+        for pixel in preview.chunks_exact_mut(4) {
+            let alpha = u16::from(pixel[3]);
+            for channel in &mut pixel[..3] {
+                *channel = ((u16::from(*channel) * alpha + 127) / 255) as u8;
+            }
+        }
+        Some(Arc::new(Self {
+            id: NEXT_ID.fetch_add(1, Ordering::Relaxed),
+            png,
+            width,
+            height,
+            preview,
+            preview_width,
+            preview_height,
+        }))
+    }
+
+    /// The `<img>` element that carries the image in the message's HTML.
+    /// The sender turns its `data:` address into an inline part.
+    fn append_html(&self, output: &mut String) {
+        use base64::Engine;
+        use std::fmt::Write;
+        output.push_str("<img src=\"data:image/png;base64,");
+        base64::engine::general_purpose::STANDARD.encode_string(&self.png, output);
+        let _ = write!(
+            output,
+            "\" width=\"{}\" height=\"{}\" alt=\"\" style=\"max-width:100%;height:auto\">",
+            self.width, self.height
+        );
+    }
+}
+
+impl ComposeImage {
+    pub(crate) fn id(&self) -> u64 {
+        self.id
+    }
+}
+
+impl PartialEq for ComposeImage {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for ComposeImage {}
+
+impl std::fmt::Debug for ComposeImage {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("ComposeImage")
+            .field("id", &self.id)
+            .field("width", &self.width)
+            .field("height", &self.height)
+            .finish_non_exhaustive()
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -301,6 +411,8 @@ impl RichComposeDocument {
             } else {
                 self.style_at(cursor).cloned().unwrap_or_default()
             };
+            // Text typed beside an image is text.
+            self.typing_style.image = None;
             self.typing_override = None;
         } else if anchor != cursor {
             self.typing_override = None;
@@ -313,6 +425,63 @@ impl RichComposeDocument {
     }
 
     pub fn insert_text(&mut self, value: &str) -> ComposeSelection {
+        let style = self.typing_style.clone();
+        self.insert_styled(value, style)
+    }
+
+    /// Put `image` at the caret, in place of any selection.
+    pub(crate) fn insert_image(&mut self, image: Arc<ComposeImage>) -> ComposeSelection {
+        let mut buffer = [0; 4];
+        let style = CharacterStyle {
+            image: Some(image),
+            ..CharacterStyle::default()
+        };
+        self.insert_styled(IMAGE_CHARACTER.encode_utf8(&mut buffer), style)
+    }
+
+    /// Remove every image, which plain text mail cannot carry. Undo brings
+    /// them back. Returns whether there were any.
+    pub(crate) fn remove_images(&mut self) -> bool {
+        if !self.text.contains(IMAGE_CHARACTER) {
+            return false;
+        }
+        let mut text = String::with_capacity(self.text.len());
+        let mut styles = Vec::with_capacity(self.styles.len());
+        let mapped = |offset: i32| {
+            let offset = valid_offset(&self.text, offset);
+            to_i32(
+                offset
+                    - self.text[..offset].matches(IMAGE_CHARACTER).count()
+                        * IMAGE_CHARACTER.len_utf8(),
+            )
+        };
+        let selection = (mapped(self.selection.0), mapped(self.selection.1));
+        for run in &self.styles {
+            let start = text.len();
+            text.extend(
+                self.text[run.range.clone()]
+                    .chars()
+                    .filter(|character| *character != IMAGE_CHARACTER),
+            );
+            let style = CharacterStyle {
+                image: None,
+                ..run.style.clone()
+            };
+            push_style_run(&mut styles, start..text.len(), style);
+        }
+        let before = self.take_snapshot();
+        self.typing_override = None;
+        self.text = text;
+        self.styles = styles;
+        self.merge_styles();
+        self.auto_link_urls();
+        self.bump_revision();
+        self.update_selection_internal(selection.0, selection.1, true);
+        self.commit_edit(before);
+        true
+    }
+
+    fn insert_styled(&mut self, value: &str, style: CharacterStyle) -> ComposeSelection {
         let anchor = valid_offset(&self.text, self.selection.0);
         let cursor = valid_offset(&self.text, self.selection.1);
         let (start, end) = ordered(anchor, cursor);
@@ -320,7 +489,6 @@ impl RichComposeDocument {
             return self.update_selection(to_i32(start), to_i32(end));
         }
 
-        let style = self.typing_style.clone();
         let inserted = ComposeStyleRun {
             range: 0..value.len(),
             style,
@@ -687,14 +855,16 @@ impl RichComposeDocument {
 
         let mut next = 0;
         while next < self.text.len() {
-            let Some(relative) =
-                self.text[next..].find(|character: char| !character.is_whitespace())
+            // An image ends an address as a space does.
+            let is_break =
+                |character: char| character.is_whitespace() || character == IMAGE_CHARACTER;
+            let Some(relative) = self.text[next..].find(|character: char| !is_break(character))
             else {
                 break;
             };
             let start = next + relative;
             let end = self.text[start..]
-                .find(char::is_whitespace)
+                .find(is_break)
                 .map_or(self.text.len(), |relative| start + relative);
             next = end;
             let token = self.text[start..end]
@@ -1309,6 +1479,14 @@ fn append_html_run(output: &mut String, text: &str, style: &CharacterStyle) {
     if text.is_empty() {
         return;
     }
+    if let Some(image) = &style.image {
+        for character in text.chars() {
+            if character == IMAGE_CHARACTER {
+                image.append_html(output);
+            }
+        }
+        return;
+    }
     if let Some(url) = style.link.as_deref() {
         output.push_str("<a href=\"");
         for character in url.chars() {
@@ -1352,6 +1530,8 @@ fn append_html_char(output: &mut String, character: char) {
         '>' => output.push_str("&gt;"),
         '"' => output.push_str("&quot;"),
         '\'' => output.push_str("&#39;"),
+        // A stray stand-in without its image shows nothing.
+        IMAGE_CHARACTER => {}
         _ => output.push(character),
     }
 }
@@ -1425,6 +1605,85 @@ mod tests {
         assert_eq!(
             document.body_html().unwrap(),
             "<div><a href=\"https://example.org/?a=&quot;&amp;b=&#39;\"><strong><em><s><u><code>&lt;&amp;&quot;&#39;é👩‍🚀&gt;</code></u></s></em></strong></a></div>"
+        );
+    }
+
+    fn red_pixel() -> Arc<ComposeImage> {
+        ComposeImage::from_rgba(1, 1, vec![255, 0, 0, 255]).unwrap()
+    }
+
+    #[test]
+    fn pasted_image_is_sent_as_html_image_and_typed_text_beside_it_stays_text() {
+        let mut document = RichComposeDocument::default();
+        document.synchronize("ab", 1, 1);
+        let selection = document.insert_image(red_pixel());
+        let text = format!("a{IMAGE_CHARACTER}b");
+        assert_eq!(document.text(), text);
+        assert_eq!(selection.start, 1 + IMAGE_CHARACTER.len_utf8() as i32);
+
+        // Typing right after the image does not make more images.
+        let typed = format!("a{IMAGE_CHARACTER}xb");
+        document.synchronize_key_edit(&typed, selection.end + 1, selection.end + 1, "x");
+        let html = document.body_html().unwrap();
+        assert!(
+            html.starts_with("<div>a<img src=\"data:image/png;base64,iVBORw0KGgo"),
+            "{html}"
+        );
+        assert!(
+            html.ends_with(
+                "\" width=\"1\" height=\"1\" alt=\"\" style=\"max-width:100%;height:auto\">xb</div>"
+            ),
+            "{html}"
+        );
+        assert_eq!(
+            document
+                .style_runs()
+                .iter()
+                .filter(|run| run.style.image.is_some())
+                .map(|run| (run.range.start, run.range.end))
+                .collect::<Vec<_>>(),
+            [(1, 1 + IMAGE_CHARACTER.len_utf8())]
+        );
+        assert_style_coverage(&document);
+    }
+
+    #[test]
+    fn plain_text_drops_images_and_undo_restores_them() {
+        let mut document = RichComposeDocument::default();
+        document.synchronize("ab", 1, 1);
+        document.insert_image(red_pixel());
+        let after = document.selection().end;
+        assert!(document.remove_images());
+        assert_eq!(document.text(), "ab");
+        assert_eq!(
+            document.selection().end,
+            after - IMAGE_CHARACTER.len_utf8() as i32
+        );
+        assert!(!document.remove_images());
+        assert_style_coverage(&document);
+
+        document.history("undo");
+        assert_eq!(document.text(), format!("a{IMAGE_CHARACTER}b"));
+        assert!(document.body_html().unwrap().contains("<img "));
+    }
+
+    #[test]
+    fn stand_in_without_an_image_is_left_out_of_html() {
+        let text = format!("a{IMAGE_CHARACTER}b");
+        let mut document = RichComposeDocument::default();
+        document.synchronize(&text, 0, 0);
+        assert_eq!(document.body_html().unwrap(), "<div>ab</div>");
+    }
+
+    #[test]
+    fn web_address_ends_at_an_image() {
+        let mut document = RichComposeDocument::default();
+        document.synchronize("https://example.org", 19, 19);
+        document.insert_image(red_pixel());
+        let html = document.body_html().unwrap();
+        assert!(
+            html.starts_with("<div><a href=\"https://example.org\">https://example.org</a><img "),
+            "{html}"
         );
     }
 
@@ -1975,6 +2234,7 @@ mod tests {
                     marks: BOLD,
                     link: Some(link.clone()),
                     link_is_auto: false,
+                    image: None,
                 },
             },
             ComposeStyleRun {
@@ -1983,6 +2243,7 @@ mod tests {
                     marks: ITALIC,
                     link: Some(link.clone()),
                     link_is_auto: false,
+                    image: None,
                 },
             },
         ];

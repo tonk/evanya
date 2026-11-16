@@ -1,5 +1,6 @@
 use crate::rich_compose::{
-    BOLD, CODE, CharacterStyle, ComposeSelection, ITALIC, RichComposeDocument, STRIKE, UNDERLINE,
+    BOLD, CODE, CharacterStyle, ComposeImage, ComposeSelection, IMAGE_CHARACTER, ITALIC,
+    RichComposeDocument, STRIKE, UNDERLINE,
 };
 use cosmic_text::{
     Action, Attrs, Buffer, Color as CosmicColor, Cursor, Edit, Editor, Family, FontSystem, Metrics,
@@ -9,7 +10,7 @@ use cosmic_text::{
 use slint::{Color, Image, Rgba8Pixel, SharedPixelBuffer};
 use std::{
     cell::OnceCell,
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     ops::{Deref, DerefMut, Range},
     sync::Arc,
     time::{Duration, Instant},
@@ -130,6 +131,11 @@ const MULTI_CLICK_DISTANCE: f32 = 5.0;
 // with a zero-width, transparent character. This is renderer-only and never
 // enters the editable document or its byte-offset mapping.
 const TRAILING_LINE_SENTINEL: &str = "\u{200b}";
+// A pasted image is laid out as this invisible character, as long in bytes
+// as the document's stand-in, widened and heightened to the image's size.
+// The image is drawn over the space it takes.
+const IMAGE_LAYOUT_CHARACTER: &str = "\u{200b}";
+const _: () = assert!(IMAGE_LAYOUT_CHARACTER.len() == IMAGE_CHARACTER.len_utf8());
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ComposeEditorStyle {
@@ -187,6 +193,10 @@ pub struct CosmicComposeEditor {
     pointer_down: bool,
     last_pointer_down: Option<(Instant, f32, f32)>,
     click_count: u8,
+    /// The images in the layout; a glyph's metadata is its index plus one.
+    images: Vec<Arc<ComposeImage>>,
+    /// Images scaled to the size they are drawn at, by image and size.
+    scaled_images: HashMap<(u64, u32, u32), Arc<[u8]>>,
 }
 
 /// Construct the font database only when a composer action needs its surface.
@@ -254,6 +264,8 @@ impl Default for CosmicComposeEditor {
             pointer_down: false,
             last_pointer_down: None,
             click_count: 0,
+            images: Vec::new(),
+            scaled_images: HashMap::new(),
         }
     }
 }
@@ -270,6 +282,8 @@ impl CosmicComposeEditor {
         self.pointer_down = false;
         self.last_pointer_down = None;
         self.click_count = 0;
+        self.images.clear();
+        self.scaled_images.clear();
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -561,6 +575,14 @@ impl CosmicComposeEditor {
         } else {
             Vec::new()
         };
+        self.images.clear();
+        let mut image_layout = ImageLayout {
+            font_size: metrics.font_size,
+            // An image is never wider than the body, or its line.
+            max_width: (physical_width as f32 - 2.0 * scale_factor).max(1.0),
+            scale: scale_factor,
+            images: &mut self.images,
+        };
         let mut spans = rich_spans(
             document,
             preedit_offset,
@@ -568,6 +590,7 @@ impl CosmicComposeEditor {
             &default_attrs,
             cosmic_color(style.link),
             &misspelled,
+            &mut image_layout,
         );
         self.visual_text.clear();
         self.visual_text
@@ -605,6 +628,9 @@ impl CosmicComposeEditor {
         self.layout_preedit_offset = preedit_offset;
         self.rendered_selection = None;
         self.tiles.clear();
+        let images = &self.images;
+        self.scaled_images
+            .retain(|(id, _, _), _| images.iter().any(|image| image.id() == *id));
         true
     }
 
@@ -808,6 +834,15 @@ impl CosmicComposeEditor {
                 cosmic_color(style.selection),
                 cosmic_color(style.selected_text),
             );
+            if !self.images.is_empty() {
+                draw_images(
+                    editor,
+                    &self.images,
+                    &mut self.scaled_images,
+                    &mut canvas,
+                    cosmic_color(style.selection),
+                );
+            }
         }
         Image::from_rgba8_premultiplied(pixels)
     }
@@ -828,6 +863,41 @@ impl CosmicComposeEditor {
     }
 }
 
+/// Sizes the pasted images of a layout, and numbers them for drawing.
+struct ImageLayout<'a> {
+    font_size: f32,
+    max_width: f32,
+    scale: f32,
+    images: &'a mut Vec<Arc<ComposeImage>>,
+}
+
+impl ImageLayout<'_> {
+    /// An image's physical size: its own size in logical pixels, narrowed to
+    /// the body's width.
+    fn size(&self, image: &ComposeImage) -> (f32, f32) {
+        let width = (image.width as f32 * self.scale)
+            .min(self.max_width)
+            .max(1.0);
+        let height = (width * image.height as f32 / image.width as f32).max(1.0);
+        (width.round(), height.round())
+    }
+
+    fn attrs(
+        &mut self,
+        default_attrs: &Attrs<'static>,
+        image: &Arc<ComposeImage>,
+    ) -> Attrs<'static> {
+        let (width, height) = self.size(image);
+        self.images.push(image.clone());
+        default_attrs
+            .clone()
+            .color(CosmicColor::rgba(0, 0, 0, 0))
+            .metadata(self.images.len())
+            .letter_spacing(width / self.font_size)
+            .metrics(Metrics::new(self.font_size, height))
+    }
+}
+
 fn rich_spans<'a>(
     document: &'a RichComposeDocument,
     preedit_offset: usize,
@@ -835,6 +905,7 @@ fn rich_spans<'a>(
     default_attrs: &Attrs<'static>,
     link_color: CosmicColor,
     misspelled: &[Range<usize>],
+    image_layout: &mut ImageLayout<'_>,
 ) -> Vec<(&'a str, Attrs<'static>)> {
     let runs = document.style_runs();
     let mut spans = Vec::with_capacity(runs.len().saturating_add(2).max(1));
@@ -844,6 +915,23 @@ fn rich_spans<'a>(
 
     for run in runs {
         let attrs = character_attrs(default_attrs, &run.style, link_color);
+        if let Some(image) = &run.style.image {
+            for (offset, character) in document.text()[run.range.clone()].char_indices() {
+                let at = run.range.start + offset;
+                if !inserted_preedit && preedit_offset <= at {
+                    push_span(&mut spans, preedit_text, preedit_attrs.clone());
+                    inserted_preedit = true;
+                }
+                if character == IMAGE_CHARACTER {
+                    let attrs = image_layout.attrs(default_attrs, image);
+                    push_span(&mut spans, IMAGE_LAYOUT_CHARACTER, attrs);
+                } else {
+                    let end = at + character.len_utf8();
+                    push_span(&mut spans, &document.text()[at..end], attrs.clone());
+                }
+            }
+            continue;
+        }
         if !inserted_preedit && preedit_offset <= run.range.start {
             push_span(&mut spans, preedit_text, preedit_attrs.clone());
             inserted_preedit = true;
@@ -1057,6 +1145,38 @@ impl<'a> TileCanvas<'a> {
         blend_premultiplied(&mut self.pixels[index..index + 4], color);
     }
 
+    /// Blend premultiplied RGBA `pixels`, `width` × `height`, at `x`, `y`.
+    fn image(&mut self, x: i32, y: i32, width: u32, height: u32, pixels: &[u8]) {
+        let top = y.max(self.y_offset as i32);
+        let bottom = y
+            .saturating_add(height as i32)
+            .min(self.y_offset.saturating_add(self.height) as i32);
+        let left = x.max(0);
+        let right = x.saturating_add(width as i32).min(self.width as i32);
+        for py in top..bottom {
+            let row = (py - y) as usize * width as usize;
+            let target_row = (py as u32 - self.y_offset) as usize * self.width as usize;
+            for px in left..right {
+                let source = (row + (px - x) as usize) * 4;
+                let Some(source) = pixels.get(source..source + 4) else {
+                    return;
+                };
+                let alpha = u32::from(source[3]);
+                if alpha == 0 {
+                    continue;
+                }
+                let target = (target_row + px as usize) * 4;
+                let destination = &mut self.pixels[target..target + 4];
+                let inverse = 255 - alpha;
+                for channel in 0..4 {
+                    destination[channel] = (u32::from(source[channel])
+                        + u32::from(destination[channel]) * inverse / 255)
+                        .min(255) as u8;
+                }
+            }
+        }
+    }
+
     fn rectangle(&mut self, x: i32, y: i32, width: u32, height: u32, color: CosmicColor) {
         if width == 0 || height == 0 || color.a() == 0 {
             return;
@@ -1155,6 +1275,83 @@ impl Renderer for TileRenderer<'_, '_> {
                 }
             }
         }
+    }
+}
+
+/// Draw the layout's images over the space their characters take, tinted
+/// where they are selected.
+fn draw_images(
+    editor: &Editor<'static>,
+    images: &[Arc<ComposeImage>],
+    scaled_images: &mut HashMap<(u64, u32, u32), Arc<[u8]>>,
+    canvas: &mut TileCanvas<'_>,
+    selection_color: CosmicColor,
+) {
+    let tile_top = canvas.y_offset as f32;
+    let tile_bottom = tile_top + canvas.height as f32;
+    let selection = editor.selection_bounds();
+    editor.with_buffer(|buffer| {
+        for run in buffer.layout_runs() {
+            if run.line_top > tile_bottom || run.line_top + run.line_height < tile_top {
+                continue;
+            }
+            for glyph in run.glyphs {
+                let Some(image) = glyph
+                    .metadata
+                    .checked_sub(1)
+                    .and_then(|index| images.get(index))
+                else {
+                    continue;
+                };
+                let width = glyph.w.round().max(1.0) as u32;
+                let height = (glyph.w * image.height as f32 / image.width as f32)
+                    .round()
+                    .max(1.0) as u32;
+                let x = glyph.x.round() as i32;
+                let y = (run.line_top + (run.line_height - height as f32) / 2.0).round() as i32;
+                let pixels = scaled_images
+                    .entry((image.id(), width, height))
+                    .or_insert_with(|| scaled_image(image, width, height))
+                    .clone();
+                canvas.image(x, y, width, height, &pixels);
+                let selected = selection.is_some_and(|(start, end)| {
+                    (start.line, start.index) <= (run.line_i, glyph.start)
+                        && (run.line_i, glyph.end) <= (end.line, end.index)
+                });
+                if selected {
+                    let tint = CosmicColor::rgba(
+                        selection_color.r(),
+                        selection_color.g(),
+                        selection_color.b(),
+                        selection_color.a() / 2,
+                    );
+                    canvas.rectangle(x, y, width, height, tint);
+                }
+            }
+        }
+    });
+}
+
+/// `image`'s premultiplied preview at `width` × `height`.
+fn scaled_image(image: &ComposeImage, width: u32, height: u32) -> Arc<[u8]> {
+    if (image.preview_width, image.preview_height) == (width, height) {
+        return Arc::from(image.preview.as_slice());
+    }
+    match ::image::RgbaImage::from_raw(
+        image.preview_width,
+        image.preview_height,
+        image.preview.clone(),
+    ) {
+        Some(preview) => Arc::from(
+            ::image::imageops::resize(
+                &preview,
+                width,
+                height,
+                ::image::imageops::FilterType::Triangle,
+            )
+            .into_raw(),
+        ),
+        None => Arc::from(vec![0; width as usize * height as usize * 4]),
     }
 }
 
@@ -1597,6 +1794,7 @@ mod tests {
             &attrs,
             CosmicColor::rgb(0, 90, 180),
             &[],
+            &mut no_images(),
         );
 
         assert_eq!(spans.len(), 3);
@@ -1607,6 +1805,81 @@ mod tests {
         assert_eq!(spans[1].1.text_decoration.underline, UnderlineStyle::Single);
         assert_eq!(spans[2].0.as_ptr(), document.text()[2..].as_ptr());
         assert_eq!(spans[0].0.len() + spans[2].0.len(), 1024 * 1024);
+    }
+
+    fn no_images() -> ImageLayout<'static> {
+        ImageLayout {
+            font_size: FONT_SIZE_LOGICAL,
+            max_width: 320.0,
+            scale: 1.0,
+            images: Box::leak(Box::default()),
+        }
+    }
+
+    #[test]
+    fn pasted_image_takes_its_size_in_the_layout_and_is_drawn() {
+        let pixels = [40, 200, 90, 255].repeat(60 * 30);
+        let image = crate::rich_compose::ComposeImage::from_rgba(60, 30, pixels).unwrap();
+        let mut document = RichComposeDocument::default();
+        document.synchronize("ab", 1, 1);
+        document.insert_image(image);
+        let style = ComposeEditorStyle {
+            text: Color::from_rgb_u8(240, 240, 240),
+            link: Color::from_rgb_u8(90, 150, 255),
+            selection: Color::from_argb_u8(140, 60, 120, 220),
+            selected_text: Color::from_rgb_u8(255, 255, 255),
+        };
+        let mut surface = CosmicComposeEditor::default();
+        let rendered = surface.render(
+            &document,
+            document.selection(),
+            320.0,
+            120.0,
+            0.0,
+            1.0,
+            style,
+            "",
+        );
+        assert!(
+            rendered.content_height >= 30.0,
+            "{}",
+            rendered.content_height
+        );
+        let (x, w) = surface.editor.with_buffer(|buffer| {
+            let run = buffer.layout_runs().next().unwrap();
+            let glyph = run.glyphs.iter().find(|glyph| glyph.metadata == 1).unwrap();
+            assert_eq!(glyph.start..glyph.end, 1..1 + IMAGE_CHARACTER.len_utf8());
+            (glyph.x, glyph.w)
+        });
+        assert!((w - 60.0).abs() < 1.0, "image glyph is {w} wide");
+        // The caret after the image stands past it.
+        assert!(rendered.caret_x >= x + 59.0, "{} {x}", rendered.caret_x);
+
+        let tile = rendered.tiles[0].image.to_rgba8_premultiplied().unwrap();
+        let width = tile.width() as usize;
+        let center = (rendered.content_height as usize / 2) * width + (x + 30.0) as usize;
+        assert_eq!(tile.as_slice()[center], Rgba8Pixel::new(40, 200, 90, 255));
+
+        // An image wider than the body is narrowed to it.
+        surface.render(
+            &document,
+            document.selection(),
+            40.0,
+            120.0,
+            0.0,
+            1.0,
+            style,
+            "",
+        );
+        let narrowed = surface.editor.with_buffer(|buffer| {
+            buffer
+                .layout_runs()
+                .flat_map(|run| run.glyphs.iter())
+                .find(|glyph| glyph.metadata == 1)
+                .unwrap()
+                .w
+        });
+        assert!((38.0..=40.0).contains(&narrowed), "narrowed to {narrowed}");
     }
 
     #[test]
@@ -1650,6 +1923,7 @@ mod tests {
             &default_attrs,
             CosmicColor::rgb(90, 150, 255),
             &[],
+            &mut no_images(),
         );
         assert_eq!(spans[0].1.text_decoration.underline, UnderlineStyle::Single);
         assert!(spans[0].1.text_decoration.strikethrough);

@@ -4072,7 +4072,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     // Keep how the sidebar was left open, for the next start.
     let remember_state = Rc::clone(&state);
     let remember_runtime = Rc::clone(&runtime);
-    let remember_open: Rc<dyn Fn(&str, bool)> = Rc::new(move |key: &str, open: bool| {
+    type RememberOpen = Rc<dyn Fn(&str, bool)>;
+    let remember_open: RememberOpen = Rc::new(move |key: &str, open: bool| {
         let saved = sidebar_model::remember_open(key, open);
         let Some(core) = remember_state.borrow().core.clone() else {
             return;
@@ -7541,7 +7542,9 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             return;
         }
         let mut document = document_for_plain_text.borrow_mut();
-        if document.clear_formatting() {
+        // Plain text mail cannot carry pasted images.
+        let removed_images = document.remove_images();
+        if document.clear_formatting() || removed_images {
             let selection = document.selection();
             apply_rich_compose(
                 &app,
@@ -7550,6 +7553,54 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
                 &mut editor_for_plain_text.borrow_mut(),
             );
         }
+    });
+
+    let app_weak = app.as_weak();
+    let document_for_insert = Rc::clone(&compose_document);
+    let editor_for_insert = Rc::clone(&compose_editor);
+    app.on_compose_insert_text(move |text| {
+        let Some(app) = app_weak.upgrade() else {
+            return;
+        };
+        let mut document = document_for_insert.borrow_mut();
+        let selection = document.insert_text(text.as_str());
+        apply_rich_compose(
+            &app,
+            &document,
+            selection,
+            &mut editor_for_insert.borrow_mut(),
+        );
+    });
+
+    let app_weak = app.as_weak();
+    let document_for_image = Rc::clone(&compose_document);
+    let editor_for_image = Rc::clone(&compose_editor);
+    app.on_compose_paste_image(move || {
+        let Some(app) = app_weak.upgrade() else {
+            return false;
+        };
+        if app.get_compose_plain_text() {
+            return false;
+        }
+        let Some((width, height, pixels)) = reader_clipboard::image() else {
+            return false;
+        };
+        let Some(image) = rich_compose::ComposeImage::from_rgba(width, height, pixels) else {
+            app.set_compose_notice(UiMessage::plain(
+                "The image on the clipboard could not be read.",
+            ));
+            app.set_compose_notice_is_error(true);
+            return true;
+        };
+        let mut document = document_for_image.borrow_mut();
+        let selection = document.insert_image(image);
+        apply_rich_compose(
+            &app,
+            &document,
+            selection,
+            &mut editor_for_image.borrow_mut(),
+        );
+        true
     });
 
     let app_weak = app.as_weak();
@@ -7799,6 +7850,13 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             (!app.get_compose_plain_text())
                 .then(|| document.body_html())
                 .flatten()
+        };
+        // Pasted images travel in the HTML; the plain text leaves out their
+        // stand-in characters.
+        let body: slint::SharedString = if body.contains(rich_compose::IMAGE_CHARACTER) {
+            body.replace(rich_compose::IMAGE_CHARACTER, "").into()
+        } else {
+            body
         };
         let intent = intent_for_save.borrow().clone();
         let sender_email = app

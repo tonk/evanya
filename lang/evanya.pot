@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: evanya 0.1.0\n"
-"POT-Creation-Date: 2026-11-13 08:34+0000\n"
+"POT-Creation-Date: 2026-11-16 07:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -384,8 +384,8 @@ msgstr ""
 msgid "New address-book entry"
 msgstr ""
 
-#: ui/app.slint:188 ui/app.slint:1271 ui/components/composer-fields.slint:80
-#: ui/app.slint:188 ui/app.slint:1271 ui/components/composer-fields.slint:80 ui/dialogs/compose-dialog.slint:45
+#: ui/app.slint:188 ui/app.slint:1274 ui/components/composer-fields.slint:80
+#: ui/app.slint:188 ui/app.slint:1274 ui/components/composer-fields.slint:80 ui/dialogs/compose-dialog.slint:45
 msgid "No connected account"
 msgstr ""
 
@@ -1989,205 +1989,209 @@ msgid "Could not load account preferences: {}"
 msgstr ""
 
 #: ui/app.slint:660
+msgid "The image on the clipboard could not be read."
+msgstr ""
+
+#: ui/app.slint:661
 msgid ""
 "Your edited signature was preserved. Choose No signature to keep it as "
 "message text before inserting another."
 msgstr ""
 
-#: ui/app.slint:661
+#: ui/app.slint:662
 msgid "Certificate import failed: {}"
 msgstr ""
 
-#: ui/app.slint:662
+#: ui/app.slint:663
 msgid "Testing IMAP and SMTP connections…"
 msgstr ""
 
-#: ui/app.slint:663
+#: ui/app.slint:664
 msgid "Testing POP3 and SMTP connections…"
 msgstr ""
 
-#: ui/app.slint:668
+#: ui/app.slint:669
 msgid ""
 "Another browser authorization is already in progress; finish it or choose "
 "Cancel."
 msgstr ""
 
-#: ui/app.slint:669 ui/dialogs/settings-dialog.slint:2145
-#: ui/app.slint:669 ui/dialogs/settings-dialog.slint:2145 ui/dialogs/settings-dialog.slint:2188
-#: ui/app.slint:669 ui/dialogs/settings-dialog.slint:2145 ui/dialogs/settings-dialog.slint:2188 ui/views/onboarding-view.slint:170
-#: ui/app.slint:669 ui/dialogs/settings-dialog.slint:2145 ui/dialogs/settings-dialog.slint:2188 ui/views/onboarding-view.slint:170
+#: ui/app.slint:670 ui/dialogs/settings-dialog.slint:2145
+#: ui/app.slint:670 ui/dialogs/settings-dialog.slint:2145 ui/dialogs/settings-dialog.slint:2188
+#: ui/app.slint:670 ui/dialogs/settings-dialog.slint:2145 ui/dialogs/settings-dialog.slint:2188 ui/views/onboarding-view.slint:170
+#: ui/app.slint:670 ui/dialogs/settings-dialog.slint:2145 ui/dialogs/settings-dialog.slint:2188 ui/views/onboarding-view.slint:170
 msgid "Add app keys in Sign-in settings to enable this provider."
 msgstr ""
 
-#: ui/app.slint:670
+#: ui/app.slint:671
 msgid "Choose Gmail or Outlook OAuth."
 msgstr ""
 
-#: ui/app.slint:671
+#: ui/app.slint:672
 msgid "Complete sign-in in your browser, or choose Cancel here."
 msgstr ""
 
-#: ui/app.slint:672
+#: ui/app.slint:673
 msgid "Cancelling browser sign-in…"
 msgstr ""
 
-#: ui/app.slint:673
+#: ui/app.slint:674
 msgid "Finishing browser sign-in…"
 msgstr ""
 
-#: ui/app.slint:674
+#: ui/app.slint:675
 msgid "Could not use that browser address: {}"
 msgstr ""
 
-#: ui/app.slint:675
+#: ui/app.slint:676
 msgid "Calendar core is unavailable."
 msgstr ""
 
-#: ui/app.slint:676
+#: ui/app.slint:677
 msgid "Account no longer exists."
 msgstr ""
 
-#: ui/app.slint:677
+#: ui/app.slint:678
 msgid "Authorize calendar access in your browser."
 msgstr ""
 
-#: ui/app.slint:678
+#: ui/app.slint:679
 msgid "OAuth app keys saved."
 msgstr ""
 
-#: ui/app.slint:679
+#: ui/app.slint:680
 msgid "{} OAuth settings saved."
 msgstr ""
 
-#: ui/app.slint:680
+#: ui/app.slint:681
 msgid "OAuth settings failed: {}"
 msgstr ""
 
-#: ui/app.slint:681
+#: ui/app.slint:682
 msgid "Mail refresh failed: {}"
 msgstr ""
 
-#: ui/app.slint:682
+#: ui/app.slint:683
 msgid "Mail filter failed: {}"
 msgstr ""
 
-#: ui/app.slint:683
+#: ui/app.slint:684
 msgid "Mail pagination failed: {}"
 msgstr ""
 
-#: ui/app.slint:684
+#: ui/app.slint:685
 msgid "Could not mark message as read: {}"
 msgstr ""
 
-#: ui/app.slint:685 ui/views/mail-reading-pane.slint:196
-#: ui/app.slint:685 ui/views/mail-reading-pane.slint:196 ui/views/mail-reading-pane.slint:1379
+#: ui/app.slint:686 ui/views/mail-reading-pane.slint:196
+#: ui/app.slint:686 ui/views/mail-reading-pane.slint:196 ui/views/mail-reading-pane.slint:1379
 msgid "Loading message…"
 msgstr ""
 
-#: ui/app.slint:691 ui/components/workspace-navigation.slint:787
-#: ui/app.slint:691 ui/components/workspace-navigation.slint:787 ui/tray.slint:15 ui/tray.slint:18
-#: ui/app.slint:691 ui/components/workspace-navigation.slint:787 ui/tray.slint:15 ui/tray.slint:18
+#: ui/app.slint:692 ui/components/workspace-navigation.slint:787
+#: ui/app.slint:692 ui/components/workspace-navigation.slint:787 ui/tray.slint:15 ui/tray.slint:18
+#: ui/app.slint:692 ui/components/workspace-navigation.slint:787 ui/tray.slint:15 ui/tray.slint:18
 msgid "Evanya"
 msgstr ""
 
-#: ui/app.slint:1514 ui/app.slint:1527
+#: ui/app.slint:1517 ui/app.slint:1530
 msgid "Global Labels (local only)"
 msgstr ""
 
-#: ui/app.slint:2179
+#: ui/app.slint:2182
 msgid "Another account"
 msgstr ""
 
-#: ui/app.slint:2191
+#: ui/app.slint:2194
 msgid ""
 "Moving copies the messages there and then puts them in their own account's "
 "Trash. Copying leaves them where they are."
 msgstr ""
 
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301 ui/dialogs/settings-dialog.slint:3624
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301 ui/dialogs/settings-dialog.slint:3624 ui/views/files-view.slint:491
-#: ui/app.slint:2200 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301 ui/dialogs/settings-dialog.slint:3624 ui/views/files-view.slint:491 ui/views/mail-reading-pane.slint:2134
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301 ui/dialogs/settings-dialog.slint:3624
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301 ui/dialogs/settings-dialog.slint:3624 ui/views/files-view.slint:491
+#: ui/app.slint:2203 ui/components/account-mail-preferences.slint:198 ui/dialogs/import-dialog.slint:317 ui/dialogs/oauth-setup-dialog.slint:126 ui/dialogs/settings-dialog.slint:2344 ui/dialogs/settings-dialog.slint:3301 ui/dialogs/settings-dialog.slint:3624 ui/views/files-view.slint:491 ui/views/mail-reading-pane.slint:2134
 msgid "Cancel"
 msgstr ""
 
-#: ui/app.slint:2204 ui/components/controls.slint:87
-#: ui/app.slint:2204 ui/components/controls.slint:87
+#: ui/app.slint:2207 ui/components/controls.slint:87
+#: ui/app.slint:2207 ui/components/controls.slint:87
 msgid "Copy"
 msgstr ""
 
-#: ui/app.slint:2208
+#: ui/app.slint:2211
 msgid "Move"
 msgstr ""
 
-#: ui/app.slint:2699
+#: ui/app.slint:2704
 msgid "Empty Trash?"
 msgstr ""
 
-#: ui/app.slint:2699 ui/views/files-view.slint:597
+#: ui/app.slint:2704 ui/views/files-view.slint:597
 msgid "Delete permanently?"
 msgstr ""
 
-#: ui/app.slint:2703
+#: ui/app.slint:2708
 msgid "Permanently delete all messages in Trash across every connected account?"
 msgstr ""
 
-#: ui/app.slint:2704
+#: ui/app.slint:2709
 msgid "Permanently delete all messages in this account’s Trash?"
 msgstr ""
 
-#: ui/app.slint:2706
+#: ui/app.slint:2711
 msgid "Permanently delete the selected conversations from Trash?"
 msgstr ""
 
-#: ui/app.slint:2707
+#: ui/app.slint:2712
 msgid "Permanently delete this conversation from Trash?"
 msgstr ""
 
-#: ui/app.slint:2708 ui/components/calendar.slint:1173
-#: ui/app.slint:2708 ui/components/calendar.slint:1173
+#: ui/app.slint:2713 ui/components/calendar.slint:1173
+#: ui/app.slint:2713 ui/components/calendar.slint:1173
 msgid "This action cannot be undone."
 msgstr ""
 
-#: ui/app.slint:2709
+#: ui/app.slint:2714
 msgid "Empty Trash"
 msgstr ""
 
-#: ui/app.slint:2709 ui/views/files-view.slint:679
-#: ui/app.slint:2709 ui/views/files-view.slint:679
+#: ui/app.slint:2714 ui/views/files-view.slint:679
+#: ui/app.slint:2714 ui/views/files-view.slint:679
 msgid "Delete permanently"
 msgstr ""
 
-#: ui/app.slint:2887
+#: ui/app.slint:2892
 msgid "Mailbox startup failed"
 msgstr ""
 
-#: ui/app.slint:2893
+#: ui/app.slint:2898
 msgid "Evanya could not open local storage"
 msgstr ""
 
-#: ui/app.slint:2906
+#: ui/app.slint:2911
 msgid "Diagnostic ID: {}"
 msgstr ""
 
-#: ui/app.slint:2909
+#: ui/app.slint:2914
 msgid "Diagnostic ID {}"
 msgstr ""
 
-#: ui/app.slint:2914
+#: ui/app.slint:2919
 msgid "Retry"
 msgstr ""
 
-#: ui/app.slint:2922 ui/components/copyable-diagnostic.slint:43
+#: ui/app.slint:2927 ui/components/copyable-diagnostic.slint:43
 msgid "Copy diagnostics"
 msgstr ""
 
@@ -3175,27 +3179,27 @@ msgstr ""
 msgid "Next page"
 msgstr ""
 
-#: ui/components/email-composer.slint:262 ui/views/mail-list-pane.slint:869
+#: ui/components/email-composer.slint:266 ui/views/mail-list-pane.slint:869
 msgid "From"
 msgstr ""
 
-#: ui/components/email-composer.slint:263
+#: ui/components/email-composer.slint:267
 msgid "Verified sender identity"
 msgstr ""
 
-#: ui/components/email-composer.slint:276
+#: ui/components/email-composer.slint:280
 msgid "Signature"
 msgstr ""
 
-#: ui/components/email-composer.slint:391
+#: ui/components/email-composer.slint:395
 msgid "Write your message…"
 msgstr ""
 
-#: ui/components/email-composer.slint:516
+#: ui/components/email-composer.slint:535
 msgid "No suggestions"
 msgstr ""
 
-#: ui/components/email-composer.slint:521
+#: ui/components/email-composer.slint:540
 msgid "Add to dictionary"
 msgstr ""
 

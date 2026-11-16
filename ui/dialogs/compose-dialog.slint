@@ -73,6 +73,8 @@ export component ComposeDialog inherits Rectangle {
     callback edit_compose_body(string, int, int, string);
     callback update_compose_selection(string, int, int);
     callback compose_history(string);
+    callback compose_insert_text(string);
+    callback compose_paste_image() -> bool;
     callback compose_editor_pointer_event(float, float, string, bool, bool, bool, bool);
     callback compose_editor_key_event(string, bool, bool, bool, bool) -> bool;
     callback compose_editor_layout_changed(length, length, length, string);
@@ -251,6 +253,8 @@ export component ComposeDialog inherits Rectangle {
         body-edited(body, anchor, cursor, key-text) => { root.edit_compose_body(body, anchor, cursor, key-text); }
         selection-changed(body, anchor, cursor) => { root.update_compose_selection(body, anchor, cursor); }
         history-requested(direction) => { root.compose_history(direction); }
+        insert-text(text) => { root.compose_insert_text(text); }
+        paste-image => { root.compose_paste_image() }
         editor-pointer-event(x, y, kind, control, shift, alt, meta) => {
             root.compose_editor_pointer_event(x, y, kind, control, shift, alt, meta);
         }

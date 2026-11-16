@@ -657,6 +657,7 @@ if (key == "Every year on the {} of {}") { return @tr("Every year on the {} of {
         if (key == "Discovering JMAP and checking capabilities…") { return @tr("Discovering JMAP and checking capabilities…"); }
         if (key == "Certificate imported. Connect to verify the server.") { return @tr("Certificate imported. Connect to verify the server."); }
         if (key == "Could not load account preferences: {}") { return @tr("Could not load account preferences: {}", argument); }
+        if (key == "The image on the clipboard could not be read.") { return @tr("The image on the clipboard could not be read."); }
         if (key == "Your edited signature was preserved. Choose No signature to keep it as message text before inserting another.") { return @tr("Your edited signature was preserved. Choose No signature to keep it as message text before inserting another."); }
         if (key == "Certificate import failed: {}") { return @tr("Certificate import failed: {}", argument); }
         if (key == "Testing IMAP and SMTP connections…") { return @tr("Testing IMAP and SMTP connections…"); }
@@ -821,6 +822,8 @@ export component AppWindow inherits Window {
     callback edit_compose_body(string, int, int, string);
     callback update_compose_selection(string, int, int);
     callback compose_history(string);
+    callback compose_insert_text(string);
+    callback compose_paste_image() -> bool;
     callback compose_editor_pointer_event(float, float, string, bool, bool, bool, bool);
     callback compose_editor_key_event(string, bool, bool, bool, bool) -> bool;
     callback compose_editor_layout_changed();
@@ -2645,6 +2648,8 @@ export component AppWindow inherits Window {
             edit_compose_body(body, anchor, cursor, key-text) => { root.edit_compose_body(body, anchor, cursor, key-text); }
             update_compose_selection(body, anchor, cursor) => { root.update_compose_selection(body, anchor, cursor); }
             compose_history(direction) => { root.compose_history(direction); }
+            compose_insert_text(text) => { root.compose_insert_text(text); }
+            compose_paste_image => { root.compose_paste_image() }
             compose_editor_pointer_event(x, y, kind, control, shift, alt, meta) => {
                 root.compose_editor_pointer_event(x, y, kind, control, shift, alt, meta);
             }
