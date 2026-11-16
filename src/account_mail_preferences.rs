@@ -150,6 +150,26 @@ fn verified_identities(identities: &[SenderIdentity]) -> Vec<SenderIdentity> {
         .collect()
 }
 
+/// The identity new mail is sent from: the default chosen in the account's
+/// settings, else the account's own address. A provider's default (such as a
+/// Gmail "Send mail as" alias) only applies when the account's own address
+/// cannot send.
+fn default_sender_index(identities: &[SenderIdentity], configured: Option<&str>) -> usize {
+    configured
+        .and_then(|email| {
+            identities
+                .iter()
+                .position(|identity| identity.email.eq_ignore_ascii_case(email))
+        })
+        .or_else(|| identities.iter().position(|identity| identity.is_primary))
+        .or_else(|| {
+            identities
+                .iter()
+                .position(|identity| identity.is_provider_default)
+        })
+        .unwrap_or(0)
+}
+
 fn identity_rows(identities: &[SenderIdentity]) -> Vec<SenderIdentityRow> {
     identities
         .iter()
@@ -211,20 +231,7 @@ fn project_identities(
     ui.set_sender_identities(ModelRc::new(VecModel::from(choices)));
     ui.set_sender_identity_rows(ModelRc::new(VecModel::from(identity_rows(identities))));
     ui.set_sender_identity_policy(policy_name(config).into());
-    let configured = config.settings.default_sender_email.as_deref();
-    let index = configured
-        .and_then(|email| {
-            verified
-                .iter()
-                .position(|identity| identity.email.eq_ignore_ascii_case(email))
-        })
-        .or_else(|| {
-            verified
-                .iter()
-                .position(|identity| identity.is_provider_default)
-        })
-        .or_else(|| verified.iter().position(|identity| identity.is_primary))
-        .unwrap_or(0);
+    let index = default_sender_index(&verified, config.settings.default_sender_email.as_deref());
     ui.set_default_sender_index(i32::try_from(index).unwrap_or(0));
     let status = if let Some(warning) = refresh_warning {
         format!("Using cached identities: {warning}")
@@ -1206,20 +1213,7 @@ fn register_composer(
                                 })
                             })
                             .flatten()
-                            .or_else(|| {
-                                default_email.and_then(|email| {
-                                    identities.iter().position(|identity| {
-                                        identity.email.eq_ignore_ascii_case(email)
-                                    })
-                                })
-                            })
-                            .or_else(|| {
-                                identities
-                                    .iter()
-                                    .position(|identity| identity.is_provider_default)
-                            })
-                            .or_else(|| identities.iter().position(|identity| identity.is_primary))
-                            .unwrap_or(0);
+                            .unwrap_or_else(|| default_sender_index(&identities, default_email));
                         ui.set_composer_preferences_ready(true);
                         ui.invoke_composer_sender(i32::try_from(sender_index).unwrap_or(0));
                         let signatures = choices(&settings, i64::from(account_id));
@@ -1415,6 +1409,39 @@ mod tests {
                 .recv_timeout(std::time::Duration::from_secs(5))
                 .unwrap()();
         }
+    }
+
+    #[test]
+    fn new_mail_is_sent_from_the_account_address_unless_another_default_is_chosen() {
+        let identity = |email: &str, is_primary, is_provider_default| SenderIdentity {
+            account_id: 7,
+            email: email.to_owned(),
+            display_name: None,
+            reply_to_email: None,
+            is_primary,
+            is_provider_default,
+            verification_status: "accepted".into(),
+            last_synced_at: 1,
+            source: evanya_core::models::SenderIdentitySource::Provider,
+            delivery_status: evanya_core::models::SenderDeliveryStatus::Unknown,
+            delivery_error: None,
+        };
+        let identities = [
+            identity("alias@example.org", false, true),
+            identity("other@example.com", false, false),
+            identity("me@example.com", true, false),
+        ];
+        assert_eq!(default_sender_index(&identities, None), 2);
+        assert_eq!(
+            default_sender_index(&identities, Some("OTHER@example.com")),
+            1
+        );
+        assert_eq!(
+            default_sender_index(&identities, Some("gone@example.com")),
+            2
+        );
+        assert_eq!(default_sender_index(&identities[..2], None), 0);
+        assert_eq!(default_sender_index(&[], None), 0);
     }
 
     #[test]

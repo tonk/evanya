@@ -55,7 +55,7 @@ pub fn ensure_primary(conn: &Connection, account: &AccountConfig) -> Result<()> 
 pub fn list(conn: &Connection, account_id: i64) -> Result<Vec<SenderIdentity>> {
     let mut statement = conn.prepare(&format!(
         "SELECT {COLUMNS} FROM sender_identities WHERE account_id=?1
-         ORDER BY is_provider_default DESC,is_primary DESC,LOWER(email)"
+         ORDER BY is_primary DESC,is_provider_default DESC,LOWER(email)"
     ))?;
     Ok(statement
         .query_map(params![account_id], from_row)?
@@ -157,6 +157,10 @@ pub fn get_verified(
         }))
 }
 
+/// The address new mail is sent from: the default chosen in the account's
+/// settings, else the account's own address. A provider's default (such as a
+/// Gmail "Send mail as" alias) is not the account's address and only applies
+/// when no primary identity can send.
 pub fn resolve_default(conn: &Connection, account: &AccountConfig) -> Result<SenderIdentity> {
     ensure_primary(conn, account)?;
     if let Some(email) = account.settings.default_sender_email.as_deref()
@@ -168,7 +172,7 @@ pub fn resolve_default(conn: &Connection, account: &AccountConfig) -> Result<Sen
         "SELECT {COLUMNS} FROM sender_identities
          WHERE account_id=?1 AND (is_primary=1 OR verification_status='accepted')
            AND email NOT LIKE '*@%'
-         ORDER BY is_provider_default DESC,is_primary DESC,LOWER(email) LIMIT 1"
+         ORDER BY is_primary DESC,is_provider_default DESC,LOWER(email) LIMIT 1"
     ))?;
     statement
         .query_row(params![account.id], from_row)
@@ -378,7 +382,13 @@ mod tests {
                 .unwrap()
                 .is_none()
         );
-        let account = accounts::get_config(&conn, account_id).unwrap().unwrap();
+        // Gmail's own default alias does not replace the account's address.
+        let mut account = accounts::get_config(&conn, account_id).unwrap().unwrap();
+        assert_eq!(
+            resolve_default(&conn, &account).unwrap().email,
+            "login@example.test"
+        );
+        account.settings.default_sender_email = Some("work@example.test".into());
         assert_eq!(
             resolve_default(&conn, &account).unwrap().email,
             "work@example.test"
