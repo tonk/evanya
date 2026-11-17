@@ -64,6 +64,14 @@ export component LineEdit inherits Rectangle {
             root.edited(self.text);
         }
         accepted => { root.accepted(self.text); }
+        key-pressed(event) => {
+            if (event.text == Key.Insert && event.modifiers.shift && !event.modifiers.control
+                && !event.modifiers.alt && !event.modifiers.meta) {
+                if !self.read-only { self.paste(); }
+                return accept;
+            }
+            reject
+        }
     }
 
     if root.show-leading-icon : Image {
@@ -149,6 +157,14 @@ export component TextEdit inherits Rectangle {
             read-only: root.read-only;
             page-height: editor-scroll.visible-height;
             edited => { root.edited(self.text); }
+            key-pressed(event) => {
+                if (event.text == Key.Insert && event.modifiers.shift && !event.modifiers.control
+                    && !event.modifiers.alt && !event.modifiers.meta) {
+                    if !self.read-only { self.paste(); }
+                    return accept;
+                }
+                reject
+            }
             cursor-position-changed(cursor) => {
                 let line = self.font-metrics.ascent - self.font-metrics.descent;
                 if cursor.y + editor-scroll.content-y < 0px {

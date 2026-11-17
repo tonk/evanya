@@ -501,5 +501,13 @@ export component ComposerSubject inherits Rectangle {
                 font-weight: 600;
                 single-line: true;
                 vertical-alignment: center;
+                key-pressed(event) => {
+                    if (event.text == Key.Insert && event.modifiers.shift && !event.modifiers.control
+                        && !event.modifiers.alt && !event.modifiers.meta) {
+                        if !self.read-only { self.paste(); }
+                        return accept;
+                    }
+                    reject
+                }
             }
 }

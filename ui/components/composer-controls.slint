@@ -93,6 +93,11 @@ export component RecipientRow inherits Rectangle {
                 }
             }
             key-pressed(event) => {
+                if (event.text == Key.Insert && event.modifiers.shift && !event.modifiers.control
+                    && !event.modifiers.alt && !event.modifiers.meta) {
+                    self.paste();
+                    return accept;
+                }
                 if (root.suggestions-open && event.text == Key.DownArrow) {
                     root.move-suggestion(1);
                     return accept;

@@ -400,6 +400,11 @@ export component LinkEditor inherits Rectangle {
                 single-line: true;
                 vertical-alignment: center;
                 key-pressed(event) => {
+                    if (event.text == Key.Insert && event.modifiers.shift && !event.modifiers.control
+                        && !event.modifiers.alt && !event.modifiers.meta) {
+                        self.paste();
+                        return accept;
+                    }
                     if (event.text == Key.Escape) {
                         root.cancel();
                         return accept;

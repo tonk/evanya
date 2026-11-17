@@ -486,6 +486,16 @@ export component EmailComposer inherits Rectangle {
                                 return accept;
                             }
                         }
+                        // Shift+Insert pastes like Ctrl+V, which Slint does not do itself.
+                        if (event.text == Key.Insert && event.modifiers.shift && !event.modifiers.control
+                            && !event.modifiers.alt && !event.modifiers.meta) {
+                            if (!root.plain-text && root.paste-image()) {
+                                self.set-selection-offsets(root.selection-start, root.selection-end);
+                                return accept;
+                            }
+                            self.paste();
+                            return accept;
+                        }
                         if ((event.modifiers.control || event.modifiers.meta) && event.text == Key.Return && root.can-send) {
                             root.submit(true);
                             return accept;
