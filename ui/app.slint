@@ -23,7 +23,7 @@ import { StatusBar } from "components/status-bar.slint";
 export { SyncStatusLine } from "components/status-bar.slint";
 import { SyncStatusLine } from "components/status-bar.slint";
 import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow, AreaFontRow } from "models.slint";
-export { EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
+export { CursorStyle, EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
 export { MailListNavigation, MailNavigationTarget } from "models.slint";
 export { ThreadMessageRow, StorageUsageRow } from "models.slint";
 export { CalendarAgendaNavigation } from "components/calendar-agenda.slint";
@@ -36,7 +36,7 @@ import { TabOverview } from "components/tab-overview.slint";
 import { WorkspaceFrame } from "components/workspace-layout.slint";
 import { CalendarEventDialog, CalendarImportDialog } from "dialogs/calendar-event-dialog.slint";
 import { MoveToFolderDialog } from "dialogs/move-dialog.slint";
-import { MoveTarget } from "models.slint";
+import { CursorStyle, MoveTarget } from "models.slint";
 import { ComposeDialog } from "dialogs/compose-dialog.slint";
 import { FolderDialog } from "dialogs/folder-dialog.slint";
 import { ConfirmationDialog } from "components/confirmation-dialog.slint";
@@ -743,6 +743,8 @@ export component AppWindow inherits Window {
     callback save_folder_unread_counts(bool);
     callback save_tray_unread_mark(bool);
     callback save_start_maximized(bool);
+    callback save_cursor_block(bool);
+    callback save_cursor_blink(bool);
     callback choose_account_avatar(int);
     callback select_custom_headers_scope(int);
     callback save_custom_headers(int, string);
@@ -1282,6 +1284,7 @@ export component AppWindow inherits Window {
     in property <float> compose_editor_caret_x: 0;
     in property <float> compose_editor_caret_y: 0;
     in property <float> compose_editor_caret_height: 18;
+    in property <float> compose_editor_caret_width: 9;
     in property <bool> compose_bold_active: false;
     in property <bool> compose_italic_active: false;
     in property <bool> compose_underline_active: false;
@@ -2358,6 +2361,8 @@ export component AppWindow inherits Window {
             show_folder_unread_counts <=> root.show_folder_unread_counts;
             tray_unread_mark <=> root.tray_unread_mark;
             start_maximized <=> root.start_maximized;
+            cursor_block <=> CursorStyle.block;
+            cursor_blink <=> CursorStyle.blink;
             setup_sync_available: root.desktop_host;
             custom_headers_scopes: root.custom_headers_scopes;
             custom_headers_scope_index <=> root.custom_headers_scope_index;
@@ -2477,6 +2482,8 @@ export component AppWindow inherits Window {
             save_folder_unread_counts(enabled) => { root.save_folder_unread_counts(enabled); }
             save_tray_unread_mark(enabled) => { root.save_tray_unread_mark(enabled); }
             save_start_maximized(enabled) => { root.save_start_maximized(enabled); }
+            save_cursor_block(enabled) => { root.save_cursor_block(enabled); }
+            save_cursor_blink(enabled) => { root.save_cursor_blink(enabled); }
             choose_account_avatar(account-id) => { root.choose_account_avatar(account-id); }
             select_custom_headers_scope(index) => { root.select_custom_headers_scope(index); }
             save_custom_headers(index, text) => { root.save_custom_headers(index, text); }
@@ -2627,6 +2634,7 @@ export component AppWindow inherits Window {
             compose_editor_caret_x: root.compose_editor_caret_x;
             compose_editor_caret_y: root.compose_editor_caret_y;
             compose_editor_caret_height: root.compose_editor_caret_height;
+            compose_editor_caret_width: root.compose_editor_caret_width;
             compose_bold_active: root.compose_bold_active;
             compose_italic_active: root.compose_italic_active;
             compose_underline_active: root.compose_underline_active;

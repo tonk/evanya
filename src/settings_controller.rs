@@ -657,6 +657,26 @@ pub(super) fn register_settings_preference_callbacks(
         }
     });
 
+    let state_for_cursor_block = Rc::clone(state);
+    let runtime_for_cursor_block = Rc::clone(runtime);
+    app.on_save_cursor_block(move |enabled| {
+        let core = state_for_cursor_block.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_cursor_block
+                .block_on(core.update_settings(|settings| settings.cursor_block = enabled));
+        }
+    });
+
+    let state_for_cursor_blink = Rc::clone(state);
+    let runtime_for_cursor_blink = Rc::clone(runtime);
+    app.on_save_cursor_blink(move |enabled| {
+        let core = state_for_cursor_blink.borrow().core.clone();
+        if let Some(core) = core {
+            let _ = runtime_for_cursor_blink
+                .block_on(core.update_settings(|settings| settings.cursor_blink = enabled));
+        }
+    });
+
     let state_for_status_bar = Rc::clone(state);
     let runtime_for_status_bar = Rc::clone(runtime);
     app.on_save_show_status_bar(move |enabled| {

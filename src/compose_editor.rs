@@ -158,6 +158,8 @@ pub struct RenderedComposeEditor {
     pub caret_x: f32,
     pub caret_y: f32,
     pub caret_height: f32,
+    /// The width of the character after the caret, which a block cursor covers.
+    pub caret_width: f32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -325,7 +327,7 @@ impl CosmicComposeEditor {
         self.set_selection(selection);
         self.editor.shape_as_needed(&mut self.font_system, false);
 
-        let (caret_x, caret_y, caret_height) = self.caret_geometry(scale_factor);
+        let (caret_x, caret_y, caret_height, caret_width) = self.caret_geometry(scale_factor);
         let wanted = desired_tile_range(
             scroll_y,
             viewport_height,
@@ -372,6 +374,7 @@ impl CosmicComposeEditor {
             caret_x,
             caret_y,
             caret_height,
+            caret_width,
         };
         if let Some(timing_start) = timing_start {
             let tile_bytes = self
@@ -788,9 +791,9 @@ impl CosmicComposeEditor {
         i32::try_from(document_offset).unwrap_or(i32::MAX)
     }
 
-    fn caret_geometry(&self, scale_factor: f32) -> (f32, f32, f32) {
+    fn caret_geometry(&self, scale_factor: f32) -> (f32, f32, f32, f32) {
         let Some((x, y)) = self.editor.cursor_position() else {
-            return (0.0, 0.0, LINE_HEIGHT_LOGICAL);
+            return (0.0, 0.0, LINE_HEIGHT_LOGICAL, LINE_HEIGHT_LOGICAL / 2.0);
         };
         let cursor = self.editor.cursor();
         let line_height = self.editor.with_buffer(|buffer| {
@@ -803,10 +806,21 @@ impl CosmicComposeEditor {
                 })
                 .map_or(LINE_HEIGHT_LOGICAL * scale_factor, |run| run.line_height)
         });
+        // The character after the caret. At the end of a line there is none,
+        // so a block is about half a line high wide, like a space.
+        let next_width = self.editor.with_buffer(|buffer| {
+            buffer
+                .layout_runs()
+                .filter(|run| run.line_i == cursor.line && (run.line_top - y as f32).abs() < 0.5)
+                .flat_map(|run| run.glyphs.iter())
+                .find(|glyph| glyph.start <= cursor.index && cursor.index < glyph.end)
+                .map(|glyph| glyph.w)
+        });
         (
             x as f32 / scale_factor,
             y as f32 / scale_factor,
             line_height / scale_factor,
+            next_width.unwrap_or(line_height / 2.0) / scale_factor,
         )
     }
 
@@ -1913,6 +1927,7 @@ mod tests {
         assert!(rendered.content_height >= LINE_HEIGHT_LOGICAL);
         assert!(rendered.caret_x > 0.0);
         assert!(rendered.caret_y < LINE_HEIGHT_LOGICAL);
+        assert!(rendered.caret_width > 0.0, "a block cursor needs a width");
         assert!(rendered.caret_y + rendered.caret_height <= rendered.content_height + 1.0);
 
         let default_attrs = Attrs::new().family(Family::Name(UI_FONT_FAMILY));

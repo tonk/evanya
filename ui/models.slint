@@ -506,6 +506,14 @@ export struct ContactSidebarRow {
 export struct ReaderItem { name: string, url: string, kind: string, y: float }
 export struct ReaderImage { x: float, y: float, width: float, height: float, alt: string, state: string }
 export struct ReaderCaret { x: float, y: float, height: float, valid: bool }
+// How the text cursor is drawn where the application draws it itself: the
+// message editor and caret browsing. Set from the settings in Rust.
+export global CursorStyle {
+    // A block over the next character instead of a thin line.
+    in-out property <bool> block: false;
+    in-out property <bool> blink: true;
+}
+
 export global EmailReader {
     in-out property <bool> available: false;
     in-out property <bool> body-pending: false;

@@ -412,6 +412,7 @@ pub(super) fn apply_rendered_compose_editor(app: &AppWindow, rendered: RenderedC
     app.set_compose_editor_caret_x(rendered.caret_x);
     app.set_compose_editor_caret_y(rendered.caret_y);
     app.set_compose_editor_caret_height(rendered.caret_height);
+    app.set_compose_editor_caret_width(rendered.caret_width);
     if let Some(started) = started {
         eprintln!(
             "compose Slint model update: {:.2}ms tiles={tile_count} replaced_model={replaced_model}",

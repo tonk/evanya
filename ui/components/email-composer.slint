@@ -6,6 +6,7 @@ import { ComposerFromRow, ComposerHeader, ComposerRecipients, ComposerSubject } 
 import { ComposerAttachments, ComposerFooter, ComposerNotice, ComposerToolbar, DiscardConfirmation, LinkEditor } from "composer-actions.slint";
 import { EmailTemplates } from "email-templates.slint";
 import { AreaFonts, ComposeZoom, TypeScale } from "../typography.slint";
+import { CursorStyle } from "../models.slint";
 
 
 // cosmic-text owns visible layout, selection, hit-testing, and caret geometry.
@@ -40,6 +41,8 @@ export component EmailComposer inherits Rectangle {
     in property <float> editor-caret-x: 0;
     in property <float> editor-caret-y: 0;
     in property <float> editor-caret-height: 18;
+    // The width of the character after the caret, for a block cursor.
+    in property <float> editor-caret-width: 9;
     in property <bool> bold-active: false;
     in property <bool> italic-active: false;
     in property <bool> underline-active: false;
@@ -213,7 +216,7 @@ export component EmailComposer inherits Rectangle {
 
     caret-timer := Timer {
         interval: 520ms;
-        running: root.open && body-input.has-focus;
+        running: root.open && body-input.has-focus && CursorStyle.blink;
         triggered => { root.caret-visible = !root.caret-visible; }
     }
 
@@ -587,12 +590,14 @@ export component EmailComposer inherits Rectangle {
                 Rectangle {
                     x: 18px + root.editor-caret-x * 1px;
                     y: 14px + root.editor-caret-y * 1px;
-                    width: 1px;
+                    width: CursorStyle.block ? max(2px, root.editor-caret-width * 1px) : 1px;
                     height: root.editor-caret-height * 1px;
                     visible: body-input.has-focus
                         && body-input.anchor-position-byte-offset == body-input.cursor-position_byte_offset
-                        && root.caret-visible;
+                        && (root.caret-visible || !CursorStyle.blink);
                     background: root.body-color;
+                    // A block lets the character under it show through.
+                    opacity: CursorStyle.block ? 0.45 : 1;
                 }
             }
         }

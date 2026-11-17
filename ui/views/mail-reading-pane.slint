@@ -2,7 +2,7 @@ import { AccountMailPreferences } from "../components/account-mail-preferences.s
 import { ActionMenu, ActionMenuEntry } from "../components/action-menu.slint";
 import { ZoomControls } from "../components/zoom-controls.slint";
 import { CheckBox, ComboBox, HorizontalBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
-import { MailAttachments, EmailReader, EmailLink, EmailTile, MailLabelRow, ThreadMessageRow } from "../models.slint";
+import { CursorStyle, MailAttachments, EmailReader, EmailLink, EmailTile, MailLabelRow, ThreadMessageRow } from "../models.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
 import { IconButton, LineEdit, TextEdit, ToolbarIconButton } from "../components/controls.slint";
@@ -626,6 +626,15 @@ export component MailReadingPane inherits FocusScope {
                 : root.email-scroll-y - root.message-body-y;
         }
     }
+    // Caret browsing draws its own caret, which blinks unless that is off.
+    private property <bool> caret-on: true;
+    caret-timer := Timer {
+        interval: 520ms;
+        running: EmailReader.caret-mode && CursorStyle.blink;
+        triggered => { root.caret-on = !root.caret-on; }
+    }
+    changed shown-caret-position => { root.caret-on = true; }
+    private property <float> shown-caret-position: EmailReader.selection-end.x + EmailReader.selection-end.y;
     private property <int> shown-message-id: EmailReader.message-id;
     changed shown-message-id => { EmailReader.load-invite(); }
     changed email-viewport-width => { root.viewport-pending = true; }
@@ -1585,11 +1594,14 @@ export component MailReadingPane inherits FocusScope {
                                         key-released(event) => { reject }
                                     }
 
-                                    if EmailReader.caret-mode && EmailReader.selection-end.valid && !root.has_selection && !root.text_mode && !root.source_mode : Rectangle {
+                                    if EmailReader.caret-mode && EmailReader.selection-end.valid && !root.has_selection && !root.text_mode && !root.source_mode && (root.caret-on || !CursorStyle.blink) : Rectangle {
                                         x: EmailReader.selection-end.x * 1px;
                                         y: EmailReader.selection-end.y * 1px + (root.remote-images-blocked ? 60px : 0px);
-                                        width: 2px; height: EmailReader.selection-end.height * 1px;
+                                        width: CursorStyle.block ? max(4px, EmailReader.selection-end.height * 0.55px) : 2px;
+                                        height: EmailReader.selection-end.height * 1px;
                                         background: root.accent; accessible-role: none;
+                                        // A block lets the character under it show through.
+                                        opacity: CursorStyle.block ? 0.45 : 1;
                                     }
                                     for caret[index] in [EmailReader.selection-start,EmailReader.selection-end] : Rectangle {
                                         visible: root.compact && root.has_selection && caret.valid && !root.text_mode && !root.source_mode;

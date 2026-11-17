@@ -418,6 +418,8 @@ export component SettingsDialog inherits Rectangle {
     in-out property <bool> close_to_tray: false;
     in-out property <bool> tray_unread_mark: true;
     in-out property <bool> start_maximized: false;
+    in-out property <bool> cursor_block: false;
+    in-out property <bool> cursor_blink: true;
     in property <bool> setup_sync_available: false;
     in property <[string]> custom_headers_scopes;
     in-out property <int> custom_headers_scope_index: 0;
@@ -572,6 +574,8 @@ export component SettingsDialog inherits Rectangle {
     callback set_close_to_tray(bool);
     callback save_tray_unread_mark(bool);
     callback save_start_maximized(bool);
+    callback save_cursor_block(bool);
+    callback save_cursor_blink(bool);
     callback choose_account_avatar(int);
     callback select_custom_headers_scope(int);
     callback save_custom_headers(int, string);
@@ -1443,6 +1447,32 @@ export component SettingsDialog inherits Rectangle {
                                         toggled(checked) => {
                                             root.compose_plain_text = checked;
                                             root.save_compose_plain_text(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Block cursor");
+                                        description: @tr("Show the text cursor as a block over the next character instead of a thin line. This applies to the message editor and to caret browsing.");
+                                        checked: root.cursor_block;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.cursor_block = checked;
+                                            root.save_cursor_block(checked);
+                                        }
+                                    }
+                                    Rectangle { height: 1px; background: root.border-subtle; }
+                                    SettingsSwitchRow {
+                                        compact: root.compact;
+                                        title: @tr("Blinking cursor");
+                                        description: @tr("Let the text cursor blink. Turn this off for a cursor that stays visible.");
+                                        checked: root.cursor_blink;
+                                        title-color: root.body-text;
+                                        description-color: root.faint-text;
+                                        toggled(checked) => {
+                                            root.cursor_blink = checked;
+                                            root.save_cursor_blink(checked);
                                         }
                                     }
                                     Rectangle { height: 1px; background: root.border-subtle; }

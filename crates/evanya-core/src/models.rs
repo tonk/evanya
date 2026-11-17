@@ -2032,6 +2032,13 @@ pub struct Settings {
     /// does the same for one launch.
     #[serde(default)]
     pub start_maximized: bool,
+    /// The text cursor in the message editor and in caret browsing is a block
+    /// over the next character instead of a thin line.
+    #[serde(default)]
+    pub cursor_block: bool,
+    /// The text cursor blinks.
+    #[serde(default = "default_true")]
+    pub cursor_blink: bool,
     /// The directory that a file sync tool shares between computers, where
     /// setup sync keeps `evanya-setup.json`. Empty turns setup sync off.
     #[serde(default)]
@@ -2498,6 +2505,8 @@ impl Default for Settings {
             show_folder_unread_counts: false,
             tray_unread_mark: true,
             start_maximized: false,
+            cursor_block: false,
+            cursor_blink: true,
             setup_sync_directory: String::new(),
             setup_sync_hash: String::new(),
             setup_sync_at: 0,
@@ -2982,6 +2991,8 @@ mod tests {
         assert!(s.group_mail_by_date);
         assert!(s.show_tabs);
         assert!(!s.start_maximized);
+        assert!(!s.cursor_block);
+        assert!(s.cursor_blink);
         assert!(s.conversation_view);
         // New installs draw their own frame; a saved choice stays.
         assert_eq!(s.window_frame, "integrated");

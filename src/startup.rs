@@ -858,6 +858,7 @@ pub(crate) fn apply_settings(app: &AppWindow, settings: &Settings) {
     app.set_close_to_tray(settings.close_to_tray && !cfg!(feature = "flatpak"));
     app.set_tray_unread_mark(settings.tray_unread_mark);
     app.set_start_maximized(settings.start_maximized);
+    crate::cursor_style::apply(app, settings);
     crate::app_icon::set_tray_unread_shown(settings.tray_unread_mark);
     crate::setup_sync::apply(app, settings);
     if app.get_custom_headers_scope_index() == 0 {

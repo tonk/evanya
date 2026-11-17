@@ -52,6 +52,7 @@ export component ComposeDialog inherits Rectangle {
     in property <float> compose_editor_caret_x: 0;
     in property <float> compose_editor_caret_y: 0;
     in property <float> compose_editor_caret_height: 18;
+    in property <float> compose_editor_caret_width: 9;
     in property <bool> compose_bold_active: false;
     in property <bool> compose_italic_active: false;
     in property <bool> compose_underline_active: false;
@@ -212,6 +213,7 @@ export component ComposeDialog inherits Rectangle {
         editor-caret-x: root.compose_editor_caret_x;
         editor-caret-y: root.compose_editor_caret_y;
         editor-caret-height: root.compose_editor_caret_height;
+        editor-caret-width: root.compose_editor_caret_width;
         bold-active: root.compose_bold_active;
         italic-active: root.compose_italic_active;
         underline-active: root.compose_underline_active;

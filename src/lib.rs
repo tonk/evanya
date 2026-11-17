@@ -22,6 +22,7 @@ mod calendar;
 mod compose_controller;
 mod compose_editor;
 mod contacts;
+mod cursor_style;
 mod custom_headers;
 mod data_controller;
 mod date_format;
