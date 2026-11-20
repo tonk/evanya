@@ -44,10 +44,10 @@ flatpak run com.evanya.mail
 
 ### Fedora RPM
 
-The RPM targets Fedora 43 and 44 on x86_64. Release builds use Fedora 43 as
+The RPM targets Fedora 43, 44, and 45 on x86_64. Release builds use Fedora 43 as
 their compatibility baseline; the same RPM must pass installation, PDF
 rendering, X11 and Wayland startup, and removal checks in clean containers for
-both versions before publication. Other RPM-based distributions are not yet
+all three versions before publication. Other RPM-based distributions are not yet
 tested. If Discover reports a generic conflict, run the `dnf install` command
 above and include its dependency error in your bug report.
 

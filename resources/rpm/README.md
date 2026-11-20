@@ -1,6 +1,6 @@
 # Fedora RPM support
 
-The release RPM supports Fedora 43 and 44, x86_64. Build on the oldest
+The release RPM supports Fedora 43, 44, and 45, x86_64. Build on the oldest
 supported Fedora (43) and validate the exact resulting artifact on every
 supported version. Building on a newer Fedora can introduce unavailable ELF
 symbol requirements even when the source and explicit `Requires` do not
@@ -28,7 +28,7 @@ docker run --rm \
   bash /work/scripts/test-rpm.sh /work/target/rpm/evanya.rpm /results
 ```
 
-Repeat with `fedora:44`. The test script changes system packages and creates a
+Repeat with `fedora:44` and `fedora:45`. The test script changes system packages and creates a
 test user, so run it only in a disposable container.
 
 When changing supported versions, update the runtime matrix, build container,
