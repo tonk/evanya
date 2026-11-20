@@ -22,7 +22,7 @@ import { LoadingSkeletonBlock } from "components/loading-skeleton.slint";
 import { StatusBar } from "components/status-bar.slint";
 export { SyncStatusLine } from "components/status-bar.slint";
 import { SyncStatusLine } from "components/status-bar.slint";
-import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow, AreaFontRow } from "models.slint";
+import { AccountRow, CalendarAgendaRow, CalendarAgendaFilterRow, CalendarDay, CalendarEventRow, CalendarSourceRow, CalendarWeekDay, ComposeAttachment, ComposeContact, ParkedComposeRow, ComposeEditorTile, ContactSidebarRow, ContactRow, ContactSyncState, ContactValueRow, EmailLink, EmailRow, EmailTemplateRow, EmailTile, LocalizedMessage, MailListEntry, MailProfileRow, ProfileMemberRow, SidebarRow, MailLabelRow, SpellLanguageRow, StorageUsageRow, SubscriptionRow, ThreadMessageRow, AreaFontRow } from "models.slint";
 export { CursorStyle, EmailReader, ReaderCaret, ReaderImage, ReaderItem, MailDragApi } from "models.slint";
 export { MailListNavigation, MailNavigationTarget } from "models.slint";
 export { ThreadMessageRow, StorageUsageRow } from "models.slint";
@@ -38,6 +38,7 @@ import { CalendarEventDialog, CalendarImportDialog } from "dialogs/calendar-even
 import { MoveToFolderDialog } from "dialogs/move-dialog.slint";
 import { CursorStyle, MoveTarget } from "models.slint";
 import { ComposeDialog } from "dialogs/compose-dialog.slint";
+import { ComposeTitle } from "components/compose-title.slint";
 import { FolderDialog } from "dialogs/folder-dialog.slint";
 import { ConfirmationDialog } from "components/confirmation-dialog.slint";
 import { SettingsDialog } from "dialogs/settings-dialog.slint";
@@ -609,6 +610,9 @@ if (key == "Every year on the {} of {}") { return @tr("Every year on the {} of {
         if (key == "Connected account") { return @tr("Connected account"); }
         if (key == "Could not open composer: {}") { return @tr("Could not open composer: {}", argument); }
         if (key == "Add an account to send mail.") { return @tr("Add an account to send mail."); }
+        if (key == "Send or close the message you are writing first.") { return @tr("Send or close the message you are writing first."); }
+        if (key == "Wait until this message has been sent first.") { return @tr("Wait until this message has been sent first."); }
+        if (key == "Too many unfinished messages. Send or close one first.") { return @tr("Too many unfinished messages. Send or close one first."); }
         if (key == "On this device") { return @tr("On this device"); }
         if (key == "Could not open composer: invalid account identifier") { return @tr("Could not open composer: invalid account identifier"); }
         return "";
@@ -873,6 +877,7 @@ export component AppWindow inherits Window {
     callback load_storage_usage();
     callback cancel_storage_usage();
     callback open_email_link(string);
+    callback add_sender_to_contacts(string, string);
     callback copy_email_status(string);
     callback email-pointer-event(float, float, string, bool, bool, bool, bool);
     callback email-scroll(float, float);
@@ -1121,6 +1126,9 @@ export component AppWindow inherits Window {
     in-out property <length> email-viewport-height: 0px;
     in-out property <length> email-scroll-document-height: 0px;
     in-out property <length> email-scroll-y: 0px;
+    in property <[ParkedComposeRow]> compose-parked: [];
+    callback minimize_compose();
+    callback restore_compose(int);
     in-out property <bool> settings_open: false;
     changed settings_open => {
         root.product-changed(root.active_view);
@@ -1149,7 +1157,7 @@ export component AppWindow inherits Window {
     callback product-changed(string);
     private property <string> mail-compact-page: "list";
     private property <bool> mail-folders-open: false;
-    private property <bool> contacts-detail-visible: false;
+    in-out property <bool> contacts-detail-visible: false;
     // A tab shown in a single-pane layout opens on its list or its reader.
     private property <int> tab-shown: TabsUi.shown;
     changed tab-shown => {
@@ -1403,7 +1411,7 @@ export component AppWindow inherits Window {
     private property <bool> has-mail: root.connected_accounts.length > 0 || LocalMailUi.account-id >= 0;
     // This content-driven breakpoint is the smallest width that can hold the
     // rail, folders, message list, and a useful reading pane simultaneously.
-    private property <bool> compact-layout: root.width - root.safe-area-insets.left - root.safe-area-insets.right < 980px;
+    out property <bool> compact-layout: root.width - root.safe-area-insets.left - root.safe-area-insets.right < 980px;
     // In the integrated frame the window controls sit over the top corners
     // and toolbars reserve room for them, so content keeps the full window.
     // Desktop windows with accounts show a top bar above the product rail,
@@ -1908,6 +1916,7 @@ export component AppWindow inherits Window {
             open_message_in_browser => { root.open_message_in_browser(); }
             open_compose => { root.open_compose(); }
             open_email_link(url) => { root.open_email_link(url); }
+            add_sender_to_contacts(name, address) => { root.add_sender_to_contacts(name, address); }
             copy_email_status(status) => { root.copy_email_status(status); }
             email-pointer-event(x, y, kind, control, shift, alt, meta) => {
                 root.email-pointer-event(x, y, kind, control, shift, alt, meta);
@@ -2577,8 +2586,67 @@ export component AppWindow inherits Window {
         }
         }
 
+        // Unfinished messages wait here while the mail behind stays usable.
+        // Clicking one opens it in the panel; the open one takes its place.
+        if !root.compact-layout && root.compose-parked.length > 0 : HorizontalLayout {
+            z: 8000;
+            alignment: end;
+            spacing: 8px;
+            x: 0px;
+            width: parent.width - 16px;
+            height: 48px;
+            y: parent.height - self.height - 16px;
+
+            for parked in root.compose-parked : Rectangle {
+                width: min(260px, (root.width - 16px) / max(1, root.compose-parked.length) - 8px);
+                height: 48px;
+                background: root.surface-raised;
+                border-radius: 8px;
+                border-width: 1px;
+                border-color: root.border;
+                drop-shadow-blur: 16px;
+                drop-shadow-offset-y: 4px;
+                drop-shadow-color: #00000035;
+                accessible-role: button;
+                accessible-label: @tr("Open message draft: {}", ComposeTitle.of(parked.mode, parked.subject));
+                accessible-action-default => { root.restore_compose(parked.id); }
+
+                bar-area := TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => { root.restore_compose(parked.id); }
+                }
+                Rectangle {
+                    border-radius: 8px;
+                    background: bar-area.has-hover ? root.muted-control-bg : transparent;
+                }
+                // The kind and subject on top, the recipient below, so bars of
+                // different messages are easy to tell apart.
+                VerticalLayout {
+                    x: 14px;
+                    width: parent.width - 28px;
+                    height: parent.height;
+                    alignment: center;
+                    Text {
+                        text: ComposeTitle.of(parked.mode, parked.subject);
+                        color: root.title-color;
+                        font-weight: 600;
+                        overflow: elide;
+                        accessible-role: none;
+                    }
+                    Text {
+                        text: parked.to.is-empty ? @tr("No recipient yet") : parked.to;
+                        color: root.secondary-text;
+                        font-size: 11px;
+                        overflow: elide;
+                        accessible-role: none;
+                    }
+                }
+            }
+        }
+
         if root.compose_open : ComposeDialog {
 
+            minimize_compose => { root.minimize_compose(); }
             in property <int> back-request: root.compose-back-request;
             changed back-request => { if (self.back-request > 0) { self.back-requested(); } }
             compact: root.compact-layout;

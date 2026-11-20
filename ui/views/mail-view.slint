@@ -194,6 +194,7 @@ export component MailView inherits FocusScope {
     callback open_message_in_browser();
     callback open_compose();
     callback open_email_link(string);
+    callback add_sender_to_contacts(string, string);
     callback copy_email_status(string);
     callback email-pointer-event(float, float, string, bool, bool, bool, bool);
     callback email-scroll(float, float);
@@ -572,6 +573,7 @@ export component MailView inherits FocusScope {
                 print_message => { root.print_message(); }
                 open_message_in_browser => { root.open_message_in_browser(); }
                 open_email_link(url) => { root.open_email_link(url); }
+                add_sender_to_contacts(name, address) => { root.add_sender_to_contacts(name, address); }
                 copy_email_status(status) => { root.copy_email_status(status); }
                 load-remote-images-for-message => { root.load-remote-images-for-message(); }
                 email-pointer-event(x, y, kind, control, shift, alt, meta) => {
@@ -833,6 +835,7 @@ export component MailView inherits FocusScope {
                 print_message => { root.print_message(); }
                 open_message_in_browser => { root.open_message_in_browser(); }
                 open_email_link(url) => { root.open_email_link(url); }
+                add_sender_to_contacts(name, address) => { root.add_sender_to_contacts(name, address); }
                 copy_email_status(status) => { root.copy_email_status(status); }
                 load-remote-images-for-message => { root.load-remote-images-for-message(); }
                 email-pointer-event(x, y, kind, control, shift, alt, meta) => {

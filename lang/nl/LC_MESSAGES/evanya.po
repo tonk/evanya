@@ -8224,3 +8224,51 @@ msgstr "Herstellen"
 #: ui/window-chrome.slint:202 ui/window-chrome.slint:239
 msgid "Maximize"
 msgstr "Maximaliseren"
+
+#: ui/views/mail-reading-pane.slint
+msgid "Copy name and email address"
+msgstr "Naam en e-mailadres kopiëren"
+
+#: ui/views/mail-reading-pane.slint
+msgid "Copy email address"
+msgstr "E-mailadres kopiëren"
+
+#: ui/views/mail-reading-pane.slint
+msgid "Copy name"
+msgstr "Naam kopiëren"
+
+#: ui/views/mail-reading-pane.slint
+msgid "Compose new message to…"
+msgstr "Nieuw bericht opstellen aan…"
+
+#: ui/views/mail-reading-pane.slint
+msgid "Add to addressbook"
+msgstr "Toevoegen aan adresboek"
+
+#: ui/components/composer-fields.slint
+msgid "Minimise"
+msgstr "Minimaliseren"
+
+#: ui/dialogs/compose-dialog.slint
+msgid "Restore message draft"
+msgstr "Conceptbericht herstellen"
+
+#: ui/app.slint
+msgid "Send or close the message you are writing first."
+msgstr "Verstuur of sluit eerst het bericht waaraan je werkt."
+
+#: ui/app.slint
+msgid "Wait until this message has been sent first."
+msgstr "Wacht eerst tot dit bericht is verstuurd."
+
+#: ui/app.slint
+msgid "Too many unfinished messages. Send or close one first."
+msgstr "Te veel onafgemaakte berichten. Verstuur of sluit er eerst een."
+
+#: ui/app.slint
+msgid "Open message draft: {}"
+msgstr "Concept openen: {}"
+
+#: ui/app.slint
+msgid "No recipient yet"
+msgstr "Nog geen ontvanger"

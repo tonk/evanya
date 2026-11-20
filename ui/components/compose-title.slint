@@ -1,0 +1,12 @@
+// The title of one message being written: its kind, then its subject, so the
+// panel and the bar tell several unfinished messages apart.
+export global ComposeTitle {
+    pure public function of(mode: string, subject: string) -> string {
+        return (mode == "reply" ? @tr("Reply")
+            : mode == "reply_all" ? @tr("Reply all")
+            : mode == "forward" ? @tr("Forward")
+            : mode == "draft" ? @tr("Edit draft")
+            : @tr("New message"))
+            + (subject.is-empty ? "" : " — " + subject);
+    }
+}

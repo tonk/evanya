@@ -152,6 +152,52 @@ component MessageLoadingSkeleton inherits Rectangle {
     }
 }
 
+// Hover highlight and right-click menu for a sender name or address. The hover
+// area sits below the ContextMenuArea, which forwards left clicks and hover
+// but keeps right clicks, so the header still opens on a normal click.
+component SenderContextArea inherits Rectangle {
+    in property <bool> active: true;
+    in property <bool> clickable: false;
+    in property <color> highlight;
+    callback activate;
+    callback action(string);
+
+    border-radius: 4px;
+    background: root.active && hover.has-hover ? root.highlight : transparent;
+    animate background { duration: 100ms; }
+
+    hover := TouchArea {
+        enabled: root.active;
+        mouse-cursor: root.clickable ? pointer : default;
+        clicked => { if root.clickable { root.activate(); } }
+    }
+    ContextMenuArea {
+        enabled: root.active;
+        Menu {
+            MenuItem {
+                title: @tr("Copy name and email address");
+                activated => { root.action("copy-both"); }
+            }
+            MenuItem {
+                title: @tr("Copy email address");
+                activated => { root.action("copy-address"); }
+            }
+            MenuItem {
+                title: @tr("Copy name");
+                activated => { root.action("copy-name"); }
+            }
+            MenuItem {
+                title: @tr("Compose new message to…");
+                activated => { root.action("compose"); }
+            }
+            MenuItem {
+                title: @tr("Add to addressbook");
+                activated => { root.action("add-contact"); }
+            }
+        }
+    }
+}
+
 // One conversation message header. The selected row becomes the open
 // accordion section; every other row remains a compact, directly selectable
 // summary in chronological order.
@@ -181,7 +227,9 @@ component ThreadMessageHeader inherits Rectangle {
     in property <length> sender-height: 23px;
     in property <length> detail-height: 24px;
     callback open;
+    callback sender-action(string, string, string);
 
+    private property <bool> sender-menu: !root.outgoing && root.address != "";
     height: 17px + root.sender-height + root.detail-height;
     border-radius: 8px;
     border-width: root.selected ? 0px : 1px;
@@ -276,6 +324,32 @@ component ThreadMessageHeader inherits Rectangle {
         enabled: root.thread-interactive;
         mouse-cursor: pointer;
         clicked => { root.open(); }
+    }
+    address-probe := Text {
+        visible: false;
+        text: root.address;
+        font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+    }
+    SenderContextArea {
+        active: root.sender-menu;
+        clickable: root.thread-interactive;
+        highlight: root.accent.transparentize(0.82);
+        x: sender-label.x - 3px;
+        y: sender-label.y + 1px;
+        width: min(sender-label.preferred-width, sender-label.width) + 6px;
+        height: sender-label.height - 2px;
+        activate => { root.open(); }
+        action(id) => { root.sender-action(id, root.sender, root.address); }
+    }
+    if root.selected : SenderContextArea {
+        active: root.sender-menu;
+        clickable: false;
+        highlight: root.accent.transparentize(0.82);
+        x: root.content-x - 3px;
+        y: sender-label.y + sender-label.height + 3px;
+        width: min(address-probe.preferred-width, parent.width - root.content-x - 12px) + 6px;
+        height: root.detail-height - 6px;
+        action(id) => { root.sender-action(id, root.sender, root.address); }
     }
 }
 
@@ -526,6 +600,20 @@ export component MailReadingPane inherits FocusScope {
     callback print_message();
     callback open_message_in_browser();
     callback open_email_link(string);
+    callback add_sender_to_contacts(string, string);
+    function sender-menu-action(id: string, name: string, address: string) {
+        if id == "compose" {
+            root.open_email_link("mailto:" + address);
+        } else if id == "add-contact" {
+            root.add_sender_to_contacts(name, address);
+        } else {
+            clipboard-source.text = id == "copy-address" ? address
+                : id == "copy-name" ? name
+                : (name == "" || name == address) ? address : name + " <" + address + ">";
+            clipboard-source.select-all();
+            clipboard-source.copy();
+        }
+    }
     callback copy_email_status(string);
     callback email-pointer-event(float, float, string, bool, bool, bool, bool);
     callback email-scroll(float, float);
@@ -1238,6 +1326,7 @@ export component MailReadingPane inherits FocusScope {
                                     secondary-text: root.secondary-text;
                                     sender-height: root.thread-sender-height;
                                     detail-height: root.thread-detail-height;
+                                    sender-action(id, name, address) => { root.sender-menu-action(id, name, address); }
                                 }
 
                                 for row in root.thread-messages : ThreadMessageHeader {
@@ -1270,6 +1359,7 @@ export component MailReadingPane inherits FocusScope {
                                     sender-height: root.thread-sender-height;
                                     detail-height: root.thread-detail-height;
                                     open => { root.select_thread_message(row.index); }
+                                    sender-action(id, name, address) => { root.sender-menu-action(id, name, address); }
                                 }
 
                                 // Renderer controls are part of the expanded

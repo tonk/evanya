@@ -2716,6 +2716,27 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     });
 
     app.on_usable_contact_email(|email| evanya_core::carddav::vcard::usable_email(&email));
+    // The reader's sender menu opens a new contact prefilled with the sender.
+    // The user reviews and saves it like any other new contact.
+    let sender_app = app.as_weak();
+    app.on_add_sender_to_contacts(move |name, address| {
+        let Some(app) = sender_app.upgrade() else {
+            return;
+        };
+        app.set_active_view("contacts".into());
+        app.invoke_new_contact();
+        let name = name.trim();
+        if name != address.trim() {
+            app.set_contact_name(name.into());
+        }
+        let row = ContactValueRow {
+            value: address.trim().into(),
+            preference: 100,
+            ..Default::default()
+        };
+        app.set_contact_emails(slint::ModelRc::new(slint::VecModel::from(vec![row])));
+        app.set_contacts_detail_visible(true);
+    });
     let values_app = app.as_weak();
     app.on_add_contact_value(move |kind| {
         let Some(app) = values_app.upgrade() else {
@@ -6710,6 +6731,34 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let compose_contacts = Rc::new(RefCell::new(Vec::<evanya_core::models::Address>::new()));
     let compose_intent = Rc::new(RefCell::new(ComposeIntent::default()));
     let compose_send_action = Rc::new(Cell::new(None::<i64>));
+    let compose_cells = ComposeCells {
+        files: Rc::clone(&compose_files),
+        session: Rc::clone(&compose_session),
+        document: Rc::clone(&compose_document),
+        editor: Rc::clone(&compose_editor),
+        contacts: Rc::clone(&compose_contacts),
+        intent: Rc::clone(&compose_intent),
+        send_action: Rc::clone(&compose_send_action),
+    };
+    let compose_parking = Rc::new(ComposeParking::default());
+    {
+        let weak = app.as_weak();
+        let cells = compose_cells.clone();
+        let parking = Rc::clone(&compose_parking);
+        app.on_minimize_compose(move || {
+            if let Some(app) = weak.upgrade() {
+                park_active_compose(&app, &cells, &parking);
+            }
+        });
+        let weak = app.as_weak();
+        let cells = compose_cells.clone();
+        let parking = Rc::clone(&compose_parking);
+        app.on_restore_compose(move |id| {
+            if let Some(app) = weak.upgrade() {
+                restore_parked_compose(&app, &cells, &parking, id);
+            }
+        });
+    }
     let (compose_send_raw_tx, compose_send_rx) = bounded_ui_channel::<ComposeSendUpdate>();
     let compose_send_tx = UiSender::new(
         compose_send_raw_tx,
@@ -6929,9 +6978,20 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let intent_for_open = Rc::clone(&compose_intent);
     let document_for_open = Rc::clone(&compose_document);
     let editor_for_open = Rc::clone(&compose_editor);
+    let cells_for_open = compose_cells.clone();
+    let parking_for_open = Rc::clone(&compose_parking);
     app.on_open_compose(move || {
         if let Some(app) = app_weak.upgrade() {
-            if app.get_compose_open() {
+            // A new message while one is open: the open one waits in the bar.
+            if app.get_compose_open()
+                && (app.get_compact_layout()
+                    || !park_active_compose(&app, &cells_for_open, &parking_for_open))
+            {
+                if app.get_compact_layout() {
+                    app.set_render_status(UiMessage::plain(
+                        "Send or close the message you are writing first.",
+                    ));
+                }
                 return;
             }
             // Only local mail is here: nothing could send it.
@@ -6969,6 +7029,8 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
     let state_for_message_compose = Rc::clone(&state);
     let runtime_for_message_compose = Rc::clone(&runtime);
     let files_for_message_compose = Rc::clone(&compose_files);
+    let cells_for_message_compose = compose_cells.clone();
+    let parking_for_message_compose = Rc::clone(&compose_parking);
     let session_for_message_compose = Rc::clone(&compose_session);
     let document_for_message_compose = Rc::clone(&compose_document);
     let editor_for_message_compose = Rc::clone(&compose_editor);
@@ -6996,6 +7058,21 @@ pub fn run(platform: PlatformContext) -> Result<(), Box<dyn std::error::Error>> 
             });
             (state.core.clone(), row, conversation_message_id)
         };
+        // The composer is not modal, so this can be reached mid-draft. Opening
+        // another message would clear the draft being written.
+        // The composer is not modal. On a wide window the open message waits
+        // in the bar; a single-pane window has no bar, so it must finish first.
+        if app.get_compose_open() {
+            if app.get_compact_layout() {
+                app.set_render_status(UiMessage::plain(
+                    "Send or close the message you are writing first.",
+                ));
+                return;
+            }
+            if !park_active_compose(&app, &cells_for_message_compose, &parking_for_message_compose) {
+                return;
+            }
+        }
         let Some(core) = core else {
             app.set_render_status(UiMessage::plain(
                 "Connect an account before replying or forwarding.",

@@ -446,6 +446,14 @@ export struct ComposeAttachment {
     detail: string,
 }
 
+// One unfinished message waiting in the bar at the bottom of the window.
+export struct ParkedComposeRow {
+    id: int,
+    mode: string,
+    subject: string,
+    to: string,
+}
+
 // A deliberately small contact shape for compose autocomplete. The core
 // keeps affinity/account scoping private and only exposes what the menu needs.
 export struct ComposeContact {

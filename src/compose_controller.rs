@@ -794,3 +794,165 @@ mod tests {
         assert_eq!(completed, "ada@example.com, Grace <grace@example.com>, ");
     }
 }
+
+/// How many unfinished messages may sit in the bar at once.
+const MAX_PARKED_COMPOSES: usize = 6;
+
+/// Everything one composer session owns outside the window's properties.
+#[derive(Clone)]
+pub(super) struct ComposeCells {
+    pub files: Rc<RefCell<Vec<ComposeFile>>>,
+    pub session: Rc<Cell<u64>>,
+    pub document: Rc<RefCell<RichComposeDocument>>,
+    pub editor: Rc<RefCell<LazyComposeEditor>>,
+    pub contacts: Rc<RefCell<Vec<evanya_core::models::Address>>>,
+    pub intent: Rc<RefCell<ComposeIntent>>,
+    pub send_action: Rc<Cell<Option<i64>>>,
+}
+
+/// A message being written that is not the one in the open panel. Only one
+/// composer is live at a time: parking moves its state out of the shared
+/// cells and window properties, restoring moves it back in.
+struct ParkedCompose {
+    id: i32,
+    mode: slint::SharedString,
+    to: slint::SharedString,
+    cc: slint::SharedString,
+    bcc: slint::SharedString,
+    subject: slint::SharedString,
+    from_label: slint::SharedString,
+    sender_email: slint::SharedString,
+    account_id: i32,
+    plain_text: bool,
+    files: Vec<ComposeFile>,
+    document: RichComposeDocument,
+    contacts: Vec<evanya_core::models::Address>,
+    intent: ComposeIntent,
+}
+
+#[derive(Default)]
+pub(super) struct ComposeParking {
+    sessions: RefCell<Vec<ParkedCompose>>,
+    next_id: Cell<i32>,
+}
+
+fn show_parked_composes(app: &AppWindow, parking: &ComposeParking) {
+    let rows = parking
+        .sessions
+        .borrow()
+        .iter()
+        .map(|parked| ParkedComposeRow {
+            id: parked.id,
+            mode: parked.mode.clone(),
+            subject: parked.subject.clone(),
+            to: parked.to.clone(),
+        })
+        .collect::<Vec<_>>();
+    app.set_compose_parked(ModelRc::new(VecModel::from(rows)));
+}
+
+/// Move the open composer into the bar. False when it must stay open: it is
+/// being sent, or the bar is full. The reason is already on the status line.
+pub(super) fn park_active_compose(
+    app: &AppWindow,
+    cells: &ComposeCells,
+    parking: &ComposeParking,
+) -> bool {
+    if !app.get_compose_open() {
+        return true;
+    }
+    if cells.send_action.get().is_some() {
+        app.set_render_status(UiMessage::plain(
+            "Wait until this message has been sent first.",
+        ));
+        return false;
+    }
+    if parking.sessions.borrow().len() >= MAX_PARKED_COMPOSES {
+        app.set_render_status(UiMessage::plain(
+            "Too many unfinished messages. Send or close one first.",
+        ));
+        return false;
+    }
+    let id = parking.next_id.get().wrapping_add(1);
+    parking.next_id.set(id);
+    let parked = ParkedCompose {
+        id,
+        mode: app.get_compose_mode(),
+        to: app.get_compose_to(),
+        cc: app.get_compose_cc(),
+        bcc: app.get_compose_bcc(),
+        subject: app.get_compose_subject(),
+        from_label: app.get_compose_from_label(),
+        sender_email: app
+            .global::<AccountMailPreferences>()
+            .get_composer_sender_email(),
+        account_id: app.get_compose_account_id(),
+        plain_text: app.get_compose_plain_text(),
+        files: std::mem::take(&mut *cells.files.borrow_mut()),
+        document: std::mem::take(&mut *cells.document.borrow_mut()),
+        contacts: std::mem::take(&mut *cells.contacts.borrow_mut()),
+        intent: std::mem::take(&mut *cells.intent.borrow_mut()),
+    };
+    parking.sessions.borrow_mut().push(parked);
+    // The state is gone from the cells, so this only resets the window.
+    clear_compose(
+        app,
+        &cells.files,
+        &cells.session,
+        &cells.document,
+        &cells.editor,
+        &cells.contacts,
+    );
+    show_parked_composes(app, parking);
+    true
+}
+
+/// Open a parked message in the panel, parking the open one first.
+pub(super) fn restore_parked_compose(
+    app: &AppWindow,
+    cells: &ComposeCells,
+    parking: &ComposeParking,
+    id: i32,
+) {
+    if !park_active_compose(app, cells, parking) {
+        return;
+    }
+    let parked = {
+        let mut sessions = parking.sessions.borrow_mut();
+        let Some(index) = sessions.iter().position(|parked| parked.id == id) else {
+            return;
+        };
+        sessions.remove(index)
+    };
+    show_parked_composes(app, parking);
+
+    app.set_compose_account_id(parked.account_id);
+    app.set_compose_from_label(parked.from_label);
+    app.set_compose_to(parked.to);
+    app.set_compose_cc(parked.cc);
+    app.set_compose_bcc(parked.bcc);
+    app.set_compose_subject(parked.subject);
+    app.set_compose_mode(parked.mode);
+    app.set_compose_plain_text(parked.plain_text);
+    compose_editor::set_plain_mode(parked.plain_text);
+    *cells.files.borrow_mut() = parked.files;
+    apply_compose_files(app, &cells.files.borrow());
+    *cells.contacts.borrow_mut() = parked.contacts;
+    apply_compose_contacts(app, &cells.contacts.borrow());
+    *cells.document.borrow_mut() = parked.document;
+    *cells.intent.borrow_mut() = parked.intent;
+    let prefs = app.global::<AccountMailPreferences>();
+    prefs.invoke_composer_reset();
+    prefs.set_composer_sender_email(parked.sender_email);
+    prefs.invoke_composer_account_changed(parked.account_id);
+    app.set_compose_notice(UiMessage::EMPTY);
+    app.set_compose_notice_is_error(false);
+    app.set_compose_open(true);
+    let document = cells.document.borrow();
+    apply_rich_compose(
+        app,
+        &document,
+        document.selection(),
+        &mut cells.editor.borrow_mut(),
+    );
+}

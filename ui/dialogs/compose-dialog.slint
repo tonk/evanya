@@ -60,6 +60,7 @@ export component ComposeDialog inherits Rectangle {
     in property <bool> compose_code_active: false;
     in property <string> compose_active_link_url: "";
     callback close_compose();
+    callback minimize_compose();
     callback switch_compose_format(bool);
     in property <[string]> compose_spell_suggestions: [];
     callback compose_spell_lookup() -> bool;
@@ -100,12 +101,12 @@ export component ComposeDialog inherits Rectangle {
     }
 
     visible: root.compose_open;
-    background: root.compact ? root.surface : #00000066;
+    background: root.compact ? root.surface : transparent;
     z: 9000;
 
-    // Keep the workspace visible for context, but make the composer modal so
-    // clicks and keyboard focus cannot leak into the message list behind it.
-    if !root.compact : TouchArea { }
+    // The desktop composer is not modal: the workspace behind it stays
+    // usable for reference. The Rectangle itself takes no input, so only the
+    // panel, its resize grips and the minimised bar catch pointer events.
 
     // The desktop panel stays below integrated window controls.
     private property <length> controls-inset: WindowChrome.controls-visible ? WindowChrome.band-height : 0px;
@@ -188,6 +189,7 @@ export component ComposeDialog inherits Rectangle {
         spell-add-word => { root.compose_spell_add_word(); }
         header-dragged(dx, dy) => { root.move-by(dx, dy); }
         header-reset => { root.placed = false; }
+        minimize => { root.minimize_compose(); }
         attachment-picker-supported: root.attachment-picker-supported;
         open: root.compose_open;
         mode: root.compose_mode;

@@ -69,6 +69,7 @@ export component EmailComposer inherits Rectangle {
     out property <string> editor-preedit-text: body-input.preedit-text;
 
     callback close;
+    callback minimize;
     callback switch-format(bool);
     callback header-dragged(length, length);
     // Spelling: look up the word at the caret, and act on the menu.
@@ -235,6 +236,7 @@ export component EmailComposer inherits Rectangle {
         ComposerHeader {
             compact: root.compact;
             mode: root.mode;
+            subject: root.subject;
             control-hover-color: root.control-hover-color;
             muted-color: root.muted-color;
             raised-color: root.raised-color;
@@ -242,6 +244,7 @@ export component EmailComposer inherits Rectangle {
             subtle-border-color: root.subtle-border-color;
             title-color: root.title-color;
             request-close => { root.request-close(); }
+            minimize => { root.minimize(); }
             dragged(dx, dy) => { root.header-dragged(dx, dy); }
             reset-placement => { root.header-reset(); }
         }
