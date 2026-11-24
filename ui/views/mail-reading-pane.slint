@@ -231,7 +231,9 @@ component ThreadMessageHeader inherits Rectangle {
     callback sender-action(string, string, string);
 
     private property <bool> sender-menu: !root.outgoing && root.address != "";
-    height: 17px + root.sender-height + root.detail-height;
+    // The open message gets a second line for its Cc recipients.
+    private property <bool> cc-line: root.selected && root.cc != "";
+    height: 17px + root.sender-height + root.detail-height + (root.cc-line ? root.detail-height : 0px);
     border-radius: 8px;
     border-width: root.selected ? 0px : 1px;
     border-color: root.border;
@@ -307,9 +309,20 @@ component ThreadMessageHeader inherits Rectangle {
         width: max(0px, parent.width - self.x - 12px);
         height: root.detail-height;
         text: root.selected
-            ? root.address + (root.to == "" ? "" : " · " + @tr("to {}", root.to)) + (root.cc == "" ? "" : " · " + @tr("cc {}", root.cc))
+            ? root.address + (root.to == "" ? "" : " · " + @tr("to {}", root.to))
             : root.body-pending ? @tr("Loading message…") : root.preview;
         color: root.body-pending ? root.accent : root.secondary-text;
+        font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+        overflow: elide;
+        vertical-alignment: center;
+    }
+    if root.cc-line : Text {
+        x: root.content-x;
+        y: sender-label.y + sender-label.height + 1px + root.detail-height;
+        width: max(0px, parent.width - self.x - 12px);
+        height: root.detail-height;
+        text: @tr("cc {}", root.cc);
+        color: root.secondary-text;
         font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
         overflow: elide;
         vertical-alignment: center;
@@ -519,7 +532,7 @@ export component MailReadingPane inherits FocusScope {
     );
     out property <length> email-viewport-height: max(
         40px,
-        email-surface.height - root.thread-header-height - root.renderer-controls-height
+        email-surface.height - root.thread-header-height - root.selected-cc-height - root.renderer-controls-height
     );
     private property <length> rendered-email-height: root.email-viewport-width * EmailReader.width-ratio * root.email-content-aspect + (root.remote-images-blocked ? 60px : 0px);
     // Slint's software renderer (CPU mode) panics when it paints a rectangle
@@ -555,6 +568,10 @@ export component MailReadingPane inherits FocusScope {
     private property <length> thread-sender-height: max(23px, thread-sender-probe.preferred-height);
     private property <length> thread-detail-height: max(24px, thread-detail-probe.preferred-height);
     private property <length> thread-header-height: 17px + root.thread-sender-height + root.thread-detail-height;
+    // The open message's header has one more line when it has Cc recipients.
+    private property <length> selected-cc-height: (root.thread-messages.length == 0
+        ? root.selected_cc != ""
+        : root.thread-messages[root.accordion-selected-index].cc != "") ? root.thread-detail-height : 0px;
     thread-sender-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale; font-weight: 700; }
     thread-detail-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale; }
     attachment-heading-probe := Text { visible: false; text: "Ag"; font-weight: 600; }
@@ -565,12 +582,12 @@ export component MailReadingPane inherits FocusScope {
     private property <int> accordion-selected-index: min(max(0, root.selected-thread-index), root.accordion-message-count - 1);
     private property <length> selected-header-y: root.accordion-selected-index * root.thread-item-stride;
     private property <length> renderer-controls-height: renderer-controls.preferred-height;
-    private property <length> message-body-y: root.selected-header-y + root.thread-header-height + root.renderer-controls-height;
+    private property <length> message-body-y: root.selected-header-y + root.thread-header-height + root.selected-cc-height + root.renderer-controls-height;
     private property <length> message-document-height: root.attachment-flow-y
         + root.attachment-section-height
         + (MailAttachments.rows.length > 0 ? 12px : 0px);
     private property <length> message-actions-y: root.message-body-y + root.message-document-height;
-    private property <length> expanded-message-height: root.renderer-controls-height
+    private property <length> expanded-message-height: root.selected-cc-height + root.renderer-controls-height
         + root.message-document-height
         + root.message-actions-height
         + root.message-bottom-padding;
@@ -1371,7 +1388,7 @@ export component MailReadingPane inherits FocusScope {
                                 // leave the viewport when the message is scrolled.
                                 renderer-controls := VerticalBox {
                                     x: -email-scroll.content-x + root.message-card-inset + root.message-card-border-width;
-                                    y: root.selected-header-y + root.thread-header-height;
+                                    y: root.selected-header-y + root.thread-header-height + root.selected-cc-height;
                                     width: root.email-viewport-width;
                                     height: self.preferred-height;
                                     padding-top: 4px;
