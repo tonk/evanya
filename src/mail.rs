@@ -92,6 +92,8 @@ pub struct MailMessage {
     /// the message, so the text follows the current language.
     pub date_ms: i64,
     pub to: String,
+    /// Every Cc address of the message, comma separated.
+    pub cc: String,
     pub label: String,
     pub unread: bool,
     pub starred: bool,
@@ -138,6 +140,7 @@ impl MailMessage {
             date_ms: (chrono::Local::now() - chrono::Duration::days(i64::from(email.id - 1)))
                 .timestamp_millis(),
             to: email.to.to_owned(),
+            cc: String::new(),
             label: email.label.to_owned(),
             unread: email.unread,
             starred: email.starred,
@@ -3200,6 +3203,7 @@ fn summary_to_message(
         preview: thread.snippet,
         date_ms: thread.last_message_at,
         to: String::new(),
+        cc: String::new(),
         label: if thread.unread_count > 0 {
             "UNREAD".to_owned()
         } else {
@@ -3303,6 +3307,7 @@ fn message_summary_to_message(
             .first()
             .map(|address| address.email.clone())
             .unwrap_or_default(),
+        cc: String::new(),
         label: if message.is_draft {
             "DRAFT".to_owned()
         } else if !message.is_read {
@@ -3403,6 +3408,12 @@ fn detail_to_message(row: &MailMessage, message: &MessageDetail, body_loaded: bo
             .first()
             .map(|address| address.email.clone())
             .unwrap_or_default(),
+        cc: message
+            .cc
+            .iter()
+            .map(|address| address.email.as_str())
+            .collect::<Vec<_>>()
+            .join(", "),
         label: if message.is_draft {
             "DRAFT".to_owned()
         } else if message.is_outgoing {

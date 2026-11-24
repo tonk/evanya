@@ -154,6 +154,7 @@ pub(super) fn carry_selected_detail(
     summary.html = selected_detail.html.take();
     summary.text = selected_detail.text.take();
     summary.to = std::mem::take(&mut selected_detail.to);
+    summary.cc = std::mem::take(&mut selected_detail.cc);
     summary.attachments = std::mem::take(&mut selected_detail.attachments);
     summary.body_pending = false;
 }
@@ -683,6 +684,7 @@ pub(super) fn render_current(
         });
         app.set_selected_time("".into());
         app.set_selected_to("".into());
+        app.set_selected_cc("".into());
         app.set_selected_label("".into());
         app.set_selected_is_draft(false);
         app.set_selected_initials("?".into());
@@ -760,6 +762,7 @@ fn make_thread_rows(
                 preview: display_preview(&message.preview).into(),
                 time: message_time(message.date_ms, &now).into(),
                 to: message.to.clone().into(),
+                cc: message.cc.clone().into(),
                 unread: message.unread,
                 outgoing: message.is_outgoing,
                 body_pending: message.body_pending,
@@ -1937,6 +1940,7 @@ mod tests {
             preview: String::new(),
             date_ms: 0,
             to: String::new(),
+            cc: String::new(),
             label: String::new(),
             unread: false,
             starred: false,

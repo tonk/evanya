@@ -1085,6 +1085,7 @@ export component AppWindow inherits Window {
     in property <string> selected_subject: "";
     in property <string> selected_time: "";
     in property <string> selected_to: "";
+    in property <string> selected_cc: "";
     in property <string> selected_label: "";
     in property <bool> selected_is_draft: false;
     in property <string> selected_initials: "?";
@@ -1817,6 +1818,7 @@ export component AppWindow inherits Window {
             selected_subject: root.selected_subject;
             selected_time: root.selected_time;
             selected_to: root.selected_to;
+            selected_cc: root.selected_cc;
             selected_label: root.selected_label;
             selected_is_draft: root.selected_is_draft;
             selected_initials: root.selected_initials;

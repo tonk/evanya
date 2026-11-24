@@ -148,6 +148,7 @@ pub(super) fn apply_email(
     app.set_selected_subject(email.subject.clone().into());
     app.set_selected_time(message_time(email.date_ms, &Local::now()).into());
     app.set_selected_to(email.to.clone().into());
+    app.set_selected_cc(email.cc.clone().into());
     app.set_selected_label(email.label.clone().into());
     app.set_selected_is_draft(email.folder == "Drafts" || email.label == "DRAFT");
     app.set_selected_initials(email.initials.clone().into());
