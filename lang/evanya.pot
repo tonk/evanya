@@ -7636,10 +7636,6 @@ msgstr ""
 msgid "to {}"
 msgstr ""
 
-#: ui/views/mail-reading-pane.slint:309
-msgid "cc {}"
-msgstr ""
-
 #: ui/views/mail-reading-pane.slint:327 ui/views/mail-reading-pane.slint:2003
 msgid "Continue editing"
 msgstr ""

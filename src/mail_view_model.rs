@@ -154,7 +154,7 @@ pub(super) fn carry_selected_detail(
     summary.html = selected_detail.html.take();
     summary.text = selected_detail.text.take();
     summary.to = std::mem::take(&mut selected_detail.to);
-    summary.cc = std::mem::take(&mut selected_detail.cc);
+    summary.recipients = std::mem::take(&mut selected_detail.recipients);
     summary.attachments = std::mem::take(&mut selected_detail.attachments);
     summary.body_pending = false;
 }
@@ -684,7 +684,7 @@ pub(super) fn render_current(
         });
         app.set_selected_time("".into());
         app.set_selected_to("".into());
-        app.set_selected_cc("".into());
+        app.set_selected_recipients(recipient_rows(&[]));
         app.set_selected_label("".into());
         app.set_selected_is_draft(false);
         app.set_selected_initials("?".into());
@@ -761,8 +761,7 @@ fn make_thread_rows(
                 has_favicon: favicon.is_some(),
                 preview: display_preview(&message.preview).into(),
                 time: message_time(message.date_ms, &now).into(),
-                to: message.to.clone().into(),
-                cc: message.cc.clone().into(),
+                recipients: recipient_rows(&message.recipients),
                 unread: message.unread,
                 outgoing: message.is_outgoing,
                 body_pending: message.body_pending,
@@ -1940,7 +1939,7 @@ mod tests {
             preview: String::new(),
             date_ms: 0,
             to: String::new(),
-            cc: String::new(),
+            recipients: Vec::new(),
             label: String::new(),
             unread: false,
             starred: false,
@@ -2558,4 +2557,20 @@ mod tests {
             slint::Color::from_rgb_u8(107, 114, 128)
         );
     }
+}
+
+/// The Slint rows for a message's recipients; the first of the To group and
+/// the first of the Cc group carry the label.
+pub(crate) fn recipient_rows(recipients: &[mail::Recipient]) -> slint::ModelRc<RecipientRow> {
+    let rows: Vec<RecipientRow> = recipients
+        .iter()
+        .enumerate()
+        .map(|(index, recipient)| RecipientRow {
+            is_cc: recipient.is_cc,
+            first: index == 0 || recipients[index - 1].is_cc != recipient.is_cc,
+            name: recipient.name.clone().into(),
+            address: recipient.address.clone().into(),
+        })
+        .collect();
+    slint::ModelRc::new(slint::VecModel::from(rows))
 }

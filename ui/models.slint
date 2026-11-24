@@ -208,6 +208,15 @@ export struct ProfileMemberRow {
 // Messages remain separate inside a conversation. The native side keeps the
 // bodies and renderer state; this lightweight model is safe to virtualize even
 // for long threads.
+// One recipient in the open message's header. The first of each group (To,
+// Cc) shows the group's label.
+export struct RecipientRow {
+    is_cc: bool,
+    first: bool,
+    name: string,
+    address: string,
+}
+
 export struct ThreadMessageRow {
     index: int,
     sender: string,
@@ -218,8 +227,7 @@ export struct ThreadMessageRow {
     has_favicon: bool,
     preview: string,
     time: string,
-    to: string,
-    cc: string,
+    recipients: [RecipientRow],
     unread: bool,
     outgoing: bool,
     body_pending: bool,

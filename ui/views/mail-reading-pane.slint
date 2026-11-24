@@ -2,7 +2,7 @@ import { AccountMailPreferences } from "../components/account-mail-preferences.s
 import { ActionMenu, ActionMenuEntry } from "../components/action-menu.slint";
 import { ZoomControls } from "../components/zoom-controls.slint";
 import { CheckBox, ComboBox, HorizontalBox, ListView, ScrollView, VerticalBox } from "std-widgets.slint";
-import { CursorStyle, MailAttachments, EmailReader, EmailLink, EmailTile, MailLabelRow, ThreadMessageRow } from "../models.slint";
+import { CursorStyle, MailAttachments, EmailReader, EmailLink, EmailTile, MailLabelRow, ThreadMessageRow, RecipientRow } from "../models.slint";
 import { Avatar } from "../components/avatar.slint";
 import { Button } from "../components/button.slint";
 import { IconButton, LineEdit, TextEdit, ToolbarIconButton } from "../components/controls.slint";
@@ -209,8 +209,7 @@ component ThreadMessageHeader inherits Rectangle {
     in property <bool> has-favicon: false;
     in property <string> preview;
     in property <string> time;
-    in property <string> to;
-    in property <string> cc;
+    in property <[RecipientRow]> recipients;
     in property <bool> outgoing: false;
     in property <bool> unread: false;
     in property <bool> body-pending: false;
@@ -231,9 +230,11 @@ component ThreadMessageHeader inherits Rectangle {
     callback sender-action(string, string, string);
 
     private property <bool> sender-menu: !root.outgoing && root.address != "";
-    // The open message gets a second line for its Cc recipients.
-    private property <bool> cc-line: root.selected && root.cc != "";
-    height: 17px + root.sender-height + root.detail-height + (root.cc-line ? root.detail-height : 0px);
+    // The open message lists each recipient on a line of its own.
+    private property <int> recipient-count: root.selected ? root.recipients.length : 0;
+    private property <string> from-display: (root.sender == "" || root.sender == root.address)
+        ? root.address : root.sender + " <" + root.address + ">";
+    height: 17px + root.sender-height + root.detail-height + root.recipient-count * root.detail-height;
     border-radius: 8px;
     border-width: root.selected ? 0px : 1px;
     border-color: root.border;
@@ -309,23 +310,49 @@ component ThreadMessageHeader inherits Rectangle {
         width: max(0px, parent.width - self.x - 12px);
         height: root.detail-height;
         text: root.selected
-            ? root.address + (root.to == "" ? "" : " · " + @tr("to {}", root.to))
+            ? root.from-display
             : root.body-pending ? @tr("Loading message…") : root.preview;
         color: root.body-pending ? root.accent : root.secondary-text;
         font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
         overflow: elide;
         vertical-alignment: center;
     }
-    if root.cc-line : Text {
+    for recipient[index] in root.recipients : Rectangle {
+        visible: root.selected;
         x: root.content-x;
-        y: sender-label.y + sender-label.height + 1px + root.detail-height;
+        y: sender-label.y + sender-label.height + 1px + (index + 1) * root.detail-height;
         width: max(0px, parent.width - self.x - 12px);
         height: root.detail-height;
-        text: @tr("cc {}", root.cc);
-        color: root.secondary-text;
-        font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
-        overflow: elide;
-        vertical-alignment: center;
+        Text {
+            x: 0px;
+            width: 46px;
+            height: parent.height;
+            text: recipient.first ? (recipient.is-cc ? @tr("Cc") : @tr("To")) : "";
+            color: root.secondary-text;
+            font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+            vertical-alignment: center;
+        }
+        recipient-text := Text {
+            x: 46px;
+            width: max(0px, parent.width - 46px);
+            height: parent.height;
+            text: (recipient.name == "" || recipient.name == recipient.address)
+                ? recipient.address : recipient.name + " <" + recipient.address + ">";
+            color: root.secondary-text;
+            font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
+            overflow: elide;
+            vertical-alignment: center;
+        }
+        SenderContextArea {
+            active: root.selected;
+            clickable: false;
+            highlight: root.accent.transparentize(0.82);
+            x: 43px;
+            y: 3px;
+            width: min(recipient-text.preferred-width, recipient-text.width) + 6px;
+            height: parent.height - 6px;
+            action(id) => { root.sender-action(id, recipient.name, recipient.address); }
+        }
     }
     if root.selected : Rectangle {
         x: 10px;
@@ -341,7 +368,7 @@ component ThreadMessageHeader inherits Rectangle {
     }
     address-probe := Text {
         visible: false;
-        text: root.address;
+        text: root.from-display;
         font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale;
     }
     SenderContextArea {
@@ -390,7 +417,7 @@ export component MailReadingPane inherits FocusScope {
     in property <string> selected_subject: "";
     in property <string> selected_time: "";
     in property <string> selected_to: "";
-    in property <string> selected_cc: "";
+    in property <[RecipientRow]> selected_recipients;
     in property <string> selected_label: "";
     in property <string> selected_initials: "?";
     in property <image> selected_favicon;
@@ -570,8 +597,8 @@ export component MailReadingPane inherits FocusScope {
     private property <length> thread-header-height: 17px + root.thread-sender-height + root.thread-detail-height;
     // The open message's header has one more line when it has Cc recipients.
     private property <length> selected-cc-height: (root.thread-messages.length == 0
-        ? root.selected_cc != ""
-        : root.thread-messages[root.accordion-selected-index].cc != "") ? root.thread-detail-height : 0px;
+        ? root.selected_recipients.length
+        : root.thread-messages[root.accordion-selected-index].recipients.length) * root.thread-detail-height;
     thread-sender-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.body * AreaFonts.reader-scale; font-weight: 700; }
     thread-detail-probe := Text { visible: false; text: "Ag"; font-family: AreaFonts.reader-family; font-size: TypeScale.secondary * AreaFonts.reader-scale; }
     attachment-heading-probe := Text { visible: false; text: "Ag"; font-weight: 600; }
@@ -1332,8 +1359,7 @@ export component MailReadingPane inherits FocusScope {
                                     has-favicon: root.selected_has_favicon;
                                     preview: root.selected_plain_text;
                                     time: root.selected_time;
-                                    to: root.selected_to;
-                                    cc: root.selected_cc;
+                                    recipients: root.selected_recipients;
                                     selected: true;
                                     thread-interactive: false;
                                     sender-verification: root.selected_sender_verification;
@@ -1362,8 +1388,7 @@ export component MailReadingPane inherits FocusScope {
                                     has-favicon: row.has_favicon;
                                     preview: row.preview;
                                     time: row.time;
-                                    to: row.to;
-                                    cc: row.cc;
+                                    recipients: row.recipients;
                                     outgoing: row.outgoing;
                                     unread: row.unread;
                                     body-pending: row.body_pending;

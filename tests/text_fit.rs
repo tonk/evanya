@@ -19,7 +19,7 @@ use evanya::{
     ContactValueRow, EmailReader, EmailRow, ImportAccountRow, ImportFailureRow, ImportFindingRow,
     ImportProfileRow, LocalizedMessage, MailAttachment, MailAttachments, MailLabelRow,
     MailListEntry, MailProfileRow, MailboxRow, MotionSettings, ProfileMemberRow, SidebarRow,
-    SidebarRowKind, StorageUsageRow, ThreadMessageRow,
+    SidebarRowKind, RecipientRow, StorageUsageRow, ThreadMessageRow,
 };
 use i_slint_core::accessibility::{
     AccessibilityAction, AccessibleStringProperty, SupportedAccessibilityAction,
@@ -436,7 +436,12 @@ fn apply_fixture(app: &AppWindow) {
             initials: "JR".into(),
             preview: "Here are the notes from today.".into(),
             time: "Oct 18".into(),
-            to: "Alex Morgan".into(),
+            recipients: model(vec![RecipientRow {
+                is_cc: false,
+                first: true,
+                name: "Alex Morgan".into(),
+                address: "alex.morgan@example.com".into(),
+            }]),
             ..Default::default()
         },
         ThreadMessageRow {
@@ -446,7 +451,12 @@ fn apply_fixture(app: &AppWindow) {
             initials: "AM".into(),
             preview: "Thanks, I added two questions.".into(),
             time: "9:41 AM".into(),
-            to: "Jamie Rivera".into(),
+            recipients: model(vec![RecipientRow {
+                is_cc: false,
+                first: true,
+                name: "Jamie Rivera".into(),
+                address: "jamie.rivera@example.com".into(),
+            }]),
             outgoing: true,
             selected: true,
             ..Default::default()
