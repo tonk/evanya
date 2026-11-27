@@ -104,6 +104,30 @@ pub trait DocumentProvider: Send + Sync {
     ) -> DocumentFuture<bool> {
         self.export(path, name)
     }
+    /// Exports several finished files for one user action, such as saving
+    /// every attachment of a message. Each entry is a source path and the name
+    /// to save it under. The default asks once per file; hosts that can pick a
+    /// directory override it so the user chooses the destination only once.
+    /// Returns how many files were saved; zero means the user cancelled.
+    fn export_many(
+        &self,
+        files: Vec<(PathBuf, String)>,
+        dialog: DocumentDialog,
+    ) -> DocumentFuture<usize> {
+        let exports: Vec<_> = files
+            .into_iter()
+            .map(|(path, name)| self.export_with(path, name, dialog.clone()))
+            .collect();
+        Box::pin(async move {
+            let mut saved = 0;
+            for export in exports {
+                if export.await? {
+                    saved += 1;
+                }
+            }
+            Ok(saved)
+        })
+    }
     /// Imports the documents for one user action (compose attachments). The
     /// default opens a single-document picker once; hosts with a multi-select
     /// picker override it. `limit` bounds how many copies a host makes;
@@ -150,6 +174,28 @@ pub(crate) fn run_request<T: Send + 'static>(
 #[cfg(desktop)]
 pub fn default_provider() -> std::sync::Arc<dyn DocumentProvider> {
     std::sync::Arc::new(DesktopDocuments)
+}
+/// Picks a name in `directory` that neither exists yet nor is already taken
+/// by an earlier file of the same batch: `report.pdf`, then `report (2).pdf`,
+/// `report (3).pdf` and so on. Saving never replaces an existing file.
+#[cfg_attr(not(desktop), allow(dead_code))]
+pub(crate) fn unique_destination(
+    directory: &Path,
+    name: &str,
+    taken: &mut std::collections::HashSet<String>,
+) -> PathBuf {
+    let (stem, extension) = match name.rfind('.') {
+        Some(dot) if dot > 0 => (&name[..dot], &name[dot..]),
+        _ => (name, ""),
+    };
+    let mut candidate = name.to_owned();
+    let mut counter = 2;
+    while taken.contains(&candidate) || directory.join(&candidate).exists() {
+        candidate = format!("{stem} ({counter}){extension}");
+        counter += 1;
+    }
+    taken.insert(candidate.clone());
+    directory.join(candidate)
 }
 pub(crate) fn safe_name(name: &str) -> String {
     if evanya_core::files::validate_name(name).is_ok() {
@@ -304,6 +350,18 @@ impl DocumentProvider for DesktopDocuments {
                 .collect())
         })
     }
+    fn export_many(
+        &self,
+        files: Vec<(PathBuf, String)>,
+        dialog: DocumentDialog,
+    ) -> DocumentFuture<usize> {
+        Box::pin(async move {
+            let Some(directory) = dialog.file_dialog().pick_folder().await else {
+                return Ok(0);
+            };
+            save_into(directory.path(), files).await
+        })
+    }
     fn export_with(
         &self,
         path: PathBuf,
@@ -320,6 +378,25 @@ impl DocumentProvider for DesktopDocuments {
             Ok(true)
         })
     }
+}
+
+/// Copies every file into `directory` under a free name. Stops at the first
+/// failure, naming the file that could not be saved.
+#[cfg_attr(not(desktop), allow(dead_code))]
+pub(crate) async fn save_into(
+    directory: &Path,
+    files: Vec<(PathBuf, String)>,
+) -> Result<usize, String> {
+    let mut taken = std::collections::HashSet::new();
+    let mut saved = 0;
+    for (source, name) in files {
+        let destination = unique_destination(directory, &safe_name(&name), &mut taken);
+        evanya_core::files::save_cached_file(&source, &destination)
+            .await
+            .map_err(|error| format!("{name}: {error}"))?;
+        saved += 1;
+    }
+    Ok(saved)
 }
 
 #[cfg(test)]
@@ -574,6 +651,62 @@ mod tests {
             .unwrap();
         assert!(documents.is_empty());
         assert_eq!(provider.imports.load(Ordering::SeqCst), 1);
+    }
+
+    #[test]
+    fn unique_destination_never_reuses_a_name() {
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::write(directory.path().join("report.pdf"), b"old").unwrap();
+        let mut taken = std::collections::HashSet::new();
+        let first = unique_destination(directory.path(), "report.pdf", &mut taken);
+        let second = unique_destination(directory.path(), "report.pdf", &mut taken);
+        let plain = unique_destination(directory.path(), "README", &mut taken);
+        let hidden = unique_destination(directory.path(), ".profile", &mut taken);
+        assert_eq!(first, directory.path().join("report (2).pdf"));
+        assert_eq!(second, directory.path().join("report (3).pdf"));
+        assert_eq!(plain, directory.path().join("README"));
+        assert_eq!(hidden, directory.path().join(".profile"));
+    }
+
+    #[tokio::test]
+    async fn save_into_keeps_existing_files_and_duplicate_names() {
+        let sources = tempfile::tempdir().unwrap();
+        let target = tempfile::tempdir().unwrap();
+        let a = sources.path().join("a");
+        let b = sources.path().join("b");
+        std::fs::write(&a, b"first").unwrap();
+        std::fs::write(&b, b"second").unwrap();
+        std::fs::write(target.path().join("scan.png"), b"existing").unwrap();
+        let saved = save_into(
+            target.path(),
+            vec![(a, "scan.png".into()), (b, "scan.png".into())],
+        )
+        .await
+        .unwrap();
+        assert_eq!(saved, 2);
+        let read = |name: &str| std::fs::read(target.path().join(name)).unwrap();
+        assert_eq!(read("scan.png"), b"existing");
+        assert_eq!(read("scan (2).png"), b"first");
+        assert_eq!(read("scan (3).png"), b"second");
+    }
+
+    #[tokio::test]
+    async fn export_many_falls_back_to_one_export_per_file() {
+        let directory = tempfile::tempdir().unwrap();
+        let provider = FakeDocuments {
+            directory: directory.path().to_owned(),
+            imports: AtomicUsize::new(0),
+            cancel_after: usize::MAX,
+        };
+        let saved = provider
+            .export_many(
+                vec![("a".into(), "a".into()), ("b".into(), "b".into())],
+                DocumentDialog::default(),
+            )
+            .await
+            .unwrap();
+        // FakeDocuments declines every export, as a cancelled picker does.
+        assert_eq!(saved, 0);
     }
 
     #[test]

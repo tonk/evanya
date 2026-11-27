@@ -572,7 +572,9 @@ export component MailReadingPane inherits FocusScope {
     private property <length> paint-top: -email-scroll.content-y - root.paint-margin;
     private property <length> paint-bottom: -email-scroll.content-y + email-scroll.visible-height + root.paint-margin;
     // Attachment rows share one height so the document height stays exact.
-    private property <length> attachment-heading-line: max(20px, attachment-heading-probe.preferred-height);
+    // With more than one attachment the heading also carries "Save all".
+    private property <bool> attachment-save-all: MailAttachments.rows.length > 1;
+    private property <length> attachment-heading-line: max(root.attachment-save-all ? 32px : 20px, attachment-heading-probe.preferred-height);
     private property <length> attachment-name-line: max(22px, attachment-name-probe.preferred-height);
     private property <length> attachment-detail-line: max(17px, attachment-detail-probe.preferred-height);
     private property <length> attachment-card-height: 5px + root.attachment-name-line + root.attachment-detail-line;
@@ -636,6 +638,12 @@ export component MailReadingPane inherits FocusScope {
     in property <color> surface-raised;
     in property <color> title-color;
     callback message_action(string);
+    // Saves every attachment of the open message into one chosen directory.
+    function save-all-attachments() {
+        if MailAttachments.busy { return; }
+        MailAttachments.name = @tr("Saving {} attachments", MailAttachments.rows.length);
+        MailAttachments.command("download-all", "");
+    }
     callback toggle-mail-label(int, bool);
     callback save-mail-label(int, string, color, bool);
     callback search-mail-labels(string);
@@ -1439,6 +1447,11 @@ export component MailReadingPane inherits FocusScope {
                                                     title: attachment.name;
                                                     activated => { MailAttachments.command(attachment.previewable ? "preview" : "download", attachment.id); }
                                                 }
+                                                if root.attachment-save-all : MenuSeparator {}
+                                                if root.attachment-save-all : MenuItem {
+                                                    title: @tr("Save all attachments…");
+                                                    activated => { root.save-all-attachments(); }
+                                                }
                                             }
                                         }
                                         ReaderControl { compact: root.compact; icon: EmailReader.find-open ? @image-url("../icons/lucide/filled/search.svg") : @image-url("../icons/lucide/outline/search.svg"); tooltip-text: @tr("Find in message"); active: EmailReader.find-open; clicked => { EmailReader.find-open = !EmailReader.find-open; if EmailReader.find-open { EmailReader.reader-mode = false; root.text_mode = false; root.source_mode = false; find-input.focus(); } } }
@@ -1925,11 +1938,27 @@ export component MailReadingPane inherits FocusScope {
                                     padding: 0px;
                                     padding-top: 8px;
                                     spacing: 6px;
-                                    Text {
+                                    HorizontalBox {
                                         height: root.attachment-heading-line;
-                                        text: @tr("Attachments");
-                                        color: root.heading;
-                                        font-weight: 600;
+                                        padding: 0px;
+                                        spacing: 8px;
+                                        Text {
+                                            horizontal-stretch: 1;
+                                            text: @tr("Attachments");
+                                            color: root.heading;
+                                            font-weight: 600;
+                                            vertical-alignment: center;
+                                        }
+                                        if root.attachment-save-all : Button {
+                                            width: self.content-width;
+                                            height: 32px;
+                                            has-icon: true;
+                                            icon: @image-url("../icons/lucide/outline/download.svg");
+                                            text: @tr("Save all");
+                                            accessible-description: @tr("Save all attachments to a directory");
+                                            enabled: !MailAttachments.busy;
+                                            clicked => { root.save-all-attachments(); }
+                                        }
                                     }
                                     for attachment in MailAttachments.rows : HorizontalBox {
                                         width: parent.width;

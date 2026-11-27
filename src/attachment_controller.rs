@@ -578,6 +578,69 @@ pub(crate) fn register(
                 close(&ui, &generation, &session);
                 return;
             }
+            if action == "download-all" {
+                if ui.get_busy() {
+                    return;
+                }
+                let attachments: Vec<_> = {
+                    let state = state.borrow();
+                    state
+                        .conversation_messages
+                        .iter()
+                        .chain(state.messages.iter())
+                        .find(|m| m.id == message)
+                        .map(|m| {
+                            m.attachments
+                                .iter()
+                                .filter(|a| visible_attachment(a))
+                                .cloned()
+                                .collect()
+                        })
+                        .unwrap_or_default()
+                };
+                if attachments.is_empty() {
+                    return;
+                }
+                let revision = generation.fetch_add(1, Ordering::SeqCst) + 1;
+                session.borrow_mut().stop();
+                *context.borrow_mut() = Some((core.clone(), message));
+                // The reading pane names the batch before it sends the command.
+                ui.set_pages(0);
+                ui.set_image(Default::default());
+                ui.set_text("".into());
+                ui.set_is_image(false);
+                ui.set_revision(ui.get_revision().wrapping_add(1));
+                ui.set_open(true);
+                ui.set_busy(true);
+                ui.set_status("".into());
+                let weak = weak.clone();
+                let sender = sender.clone();
+                let documents = documents.clone();
+                let task = handle.spawn(async move {
+                    let result: Result<Option<Preview>, String> = async {
+                        let mut files = Vec::with_capacity(attachments.len());
+                        for attachment in &attachments {
+                            let path = core
+                                .get_attachment(attachment.id)
+                                .await
+                                .map_err(|e| e.to_string())?;
+                            files.push((path.into(), file_name(attachment).to_owned()));
+                        }
+                        let mut dialog = crate::documents::download_dialog_for(&core).await;
+                        dialog.title = "Save attachments".into();
+                        documents.export_many(files, dialog).await?;
+                        Ok(None)
+                    }
+                    .await;
+                    if sender.send((revision, message, core, result)).await.is_ok() {
+                        let _ = weak.upgrade_in_event_loop(|app| {
+                            app.global::<MailAttachments>().invoke_deliver()
+                        });
+                    }
+                });
+                session.borrow_mut().task = Some(task.abort_handle());
+                return;
+            }
             // A message-list chip offers the first file of a conversation
             // that may not be open, so its file comes from the list rows.
             let listed = matches!(action.as_str(), "preview-listed" | "download-listed");
